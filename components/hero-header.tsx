@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import React from 'react'
 import { cn } from '@/lib/utils'
+import AuthButton from './AuthButton' // Import AuthButton
 import { useRouter } from 'next/navigation'
 
 const menuItems = [
@@ -84,6 +85,7 @@ export const HeroHeader = ({ variant = "landing" }: HeroHeaderProps) => {
                                     ))}
                                 </ul>
                             </div>
+                            <AuthButton /> {/* Add AuthButton here */}
                         </div>
                     </div>
                 </div>
