@@ -27,5 +27,5 @@ export default function AuthButton() {
     );
   }
 
-  return <Button onClick={() => signIn("google")}>Login with Google</Button>;
+  return <Button className="cursor-pointer" onClick={() => signIn("google")}>Login with Google</Button>;
 }
