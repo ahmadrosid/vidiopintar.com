@@ -25,11 +25,10 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  // Add callbacks if needed, e.g., to include user ID in the session token
   callbacks: {
     session({ session, user }) {
       if (session.user) {
-        session.user.id = user.id; // Add id to session
+        session.user.id = user.id;
       }
       return session;
     },
