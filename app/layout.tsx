@@ -1,13 +1,10 @@
-"use client";
 import type React from "react"
 import "./globals.css"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import { JetBrains_Mono } from 'next/font/google';
-import { SessionProvider } from "next-auth/react"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/sonner"
 import Script from "next/script";
+import { Providers } from "./providers"; // Import the new Providers component
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -35,12 +32,9 @@ export default function RootLayout({
         strategy="afterInteractive"
       />
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light">
-          <SessionProvider>
-            {children}
-            <Toaster />
-          </SessionProvider>
-        </ThemeProvider>
+        <Providers> {/* Use the Providers component here */}
+          {children}
+        </Providers>
       </body>
     </html>
   )

@@ -13,7 +13,12 @@ if (!process.env.GOOGLE_CLIENT_SECRET) {
 }
 
 const handler = NextAuth({
-  adapter: DrizzleAdapter(db, schema), // Pass the schema object here
+  adapter: DrizzleAdapter(db, {
+    usersTable: schema.users,
+    accountsTable: schema.accounts,
+    sessionsTable: schema.sessions,
+    verificationTokensTable: schema.verificationTokens,
+  }),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
