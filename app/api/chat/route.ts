@@ -74,12 +74,11 @@ After answering the user's question about a video, continue the conversation by 
       videoTitle ? `Video Title: ${videoTitle}` : '',
       videoDescription ? `Video Description: ${videoDescription}` : '',
       transcriptText ? `Video Transcript (partial): ${transcriptText}` : '',
-     `# Communication Guidelines
+`# RULES
 - Use markdown formatting throughout responses
 - Match the language used by the user
 - Acknowledge knowledge limitations with "I don't know" rather than fabricating information
-`,
-      suggestionPrompt
+`
     ].filter(Boolean).join('\n\n'); 
 
     enrichedMessages = [
