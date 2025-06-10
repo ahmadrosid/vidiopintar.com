@@ -10,13 +10,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Required for Next.js build: ARG values passed from luma.yml build.args
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
-ENV NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-
-# Assumes `output: 'standalone'` in next.config.js
 RUN bun run build
 
 # Stage 3: Production image
@@ -25,6 +18,11 @@ WORKDIR /app
 
 ENV NODE_ENV production
 # ENV PORT 3000 # Next.js default is 3000
+
+# Better Auth environment variables
+ENV BETTER_AUTH_SECRET="your-better-auth-secret-replace-in-production"
+ENV BETTER_AUTH_URL="https://your-production-url.com"
+ENV NEXT_PUBLIC_SITE_URL="https://your-production-url.com"
 
 RUN groupadd --system --gid 1001 nodejs
 RUN useradd --system --uid 1001 --gid nodejs nextjs

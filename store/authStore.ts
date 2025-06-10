@@ -1,13 +1,20 @@
 // store/authStore.ts
 import { create } from 'zustand'
-import type { User } from '@supabase/supabase-js'
+
+// Define a simple user type to replace Supabase User
+export interface User {
+  id: string;
+  email?: string | null;
+  name?: string | null;
+  avatar_url?: string | null;
+}
 
 interface AuthState {
-  user: User | null
-  isLoading: boolean
-  setUser: (user: User | null) => void
-  setLoading: (loading: boolean) => void
-  logout: () => Promise<void>
+  user: User | null;
+  isLoading: boolean;
+  setUser: (user: User | null) => void;
+  setLoading: (loading: boolean) => void;
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -16,34 +23,28 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user) => set({ user, isLoading: false }),
   setLoading: (loading) => set({ isLoading: loading }),
   logout: async () => {
-    const supabase = createSupabaseBrowserClient();
-    await supabase.auth.signOut();
+    // Clear user data from localStorage
+    localStorage.removeItem('auth_user');
     set({ user: null });
   },
 }))
 
 // Function to initialize auth state, can be called in a root layout or provider
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-
 export async function initializeAuthStore() {
-  const supabase = createSupabaseBrowserClient()
-  useAuthStore.getState().setLoading(true)
+  useAuthStore.getState().setLoading(true);
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    useAuthStore.getState().setUser(user)
-
-    // Listen to auth changes to keep the store in sync
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      useAuthStore.getState().setUser(session?.user ?? null)
-    })
-
-    // It's good practice to return the subscription so it can be cleaned up if needed,
-    // though for a global store listener, it might live for the app's lifetime.
-    return subscription
+    // Check if user data exists in localStorage
+    const storedUser = localStorage.getItem('auth_user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser) as User;
+      useAuthStore.getState().setUser(user);
+    } else {
+      useAuthStore.getState().setUser(null);
+    }
   } catch (error) {
-    console.error('Error initializing auth store:', error)
-    useAuthStore.getState().setUser(null) // Ensure user is null on error
+    console.error('Error initializing auth store:', error);
+    useAuthStore.getState().setUser(null); // Ensure user is null on error
   } finally {
-    useAuthStore.getState().setLoading(false)
+    useAuthStore.getState().setLoading(false);
   }
 }

@@ -1,62 +1,70 @@
 'use client'
 
 import Link from 'next/link'
-import { Auth } from '@supabase/auth-ui-react'
-import { ThemeSupa } from '@supabase/auth-ui-shared'
-import { createSupabaseBrowserClient } from '@/lib/supabase/client'
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { authClient } from '@/lib/auth-client'
 
 export default function LoginPage() {
-  const supabase = createSupabaseBrowserClient()
   const router = useRouter()
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        router.push('/')
-      }
-    })
-    return () => {
-      subscription?.unsubscribe()
+  const signInWithGoogle = async () => {
+    try {
+      setError('')
+      setIsLoading(true)
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/',
+      })
+    } catch (err) {
+      console.error('Google login error:', err)
+      setError('Failed to login with Google. Please try again.')
+      setIsLoading(false)
     }
-  }, [supabase, router])
-
-  useEffect(() => {
-    async function getUser() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        router.push('/')
-      }
-    }
-    getUser()
-  }, [supabase, router])
+  }
 
   return (
     <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
       <div className="max-w-92 m-auto h-fit w-full">
-        <div className="p-6">
+        <div className="p-6 bg-white dark:bg-zinc-900 rounded-lg shadow-sm">
           <div className='text-center'>
             <h1 className="mb-1 mt-4 font-semibold">Sign In to Vidiopintar</h1>
-            <p className="mb-8">Welcome back! Sign in to continue</p>
+            <p className="mb-8">Continue with your Google account</p>
           </div>
 
-          <Auth
-            supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
-            providers={['google']}
-            onlyThirdPartyProviders
-            redirectTo={`${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`}
-          />
+          {error && (
+            <div className="p-3 mb-4 bg-red-50 border border-red-200 text-red-700 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2"
+            onClick={signInWithGoogle}
+            disabled={isLoading}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="0.98em"
+              height="1em"
+              viewBox="0 0 256 262">
+              <path fill="#4285f4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622l38.755 30.023l2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" />
+              <path fill="#34a853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055c-34.523 0-63.824-22.773-74.269-54.25l-1.531.13l-40.298 31.187l-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" />
+              <path fill="#fbbc05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82c0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602z" />
+              <path fill="#eb4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" />
+            </svg>
+            <span className="ml-2">{isLoading ? 'Redirecting...' : 'Continue with Google'}</span>
+          </Button>
         </div>
 
-        <p className="text-accent-foreground text-center text-sm">
-          Don't have an account ?
-          <Button
-            asChild
-            variant="link"
-            className="px-2">
+        <p className="text-accent-foreground text-center text-sm mt-4">
+          Don't have an account?{' '}
+          <Button asChild variant="link" className="px-2">
             <Link href="/signup">Create account</Link>
           </Button>
         </p>

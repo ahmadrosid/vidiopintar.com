@@ -1,24 +1,22 @@
 'use client'
 
 import { useEffect } from 'react'
-import { initializeAuthStore } from '@/store/authStore'
-import type { Subscription } from '@supabase/supabase-js'
+import { authClient } from '@/lib/auth-client'
 
 export default function AuthInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    let subscription: Subscription | undefined | null;
+    // Initialize auth client
+    const initAuth = async () => {
+      try {
+        // Check session on mount
+        await authClient.getSession();
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      }
+    };
 
-    async function initAuth() {
-      subscription = await initializeAuthStore()
-    }
+    initAuth();
+  }, []);
 
-    initAuth()
-
-    // Cleanup subscription on component unmount
-    return () => {
-      subscription?.unsubscribe()
-    }
-  }, [])
-
-  return <>{children}</>
+  return <>{children}</>;
 }
