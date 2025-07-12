@@ -83,7 +83,7 @@ export function TranscriptView({ transcript }: TranscriptViewProps) {
           {filteredSegments.map((segment, index) => (
             <div
               key={index}
-              className={`p-3 rounded-xl transition-all duration-200 hover:bg-secondary/40 cursor-pointer ${
+              className={`p-3 mr-1 rounded-xl transition-all duration-200 hover:bg-secondary/40 cursor-pointer ${
                 searchQuery && segment.text.toLowerCase().includes(searchQuery.toLowerCase())
                   ? "bg-melody/10 border bg-accent border-melody/20"
                   : ""

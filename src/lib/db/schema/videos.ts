@@ -62,3 +62,20 @@ export const transcriptSegments = pgTable("transcript_segments", {
   text: varchar("text", { length: 1000 }).notNull(),
   isChapterStart: boolean("is_chapter_start").notNull(),
 })
+
+export const feedback = pgTable("feedback", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  type: varchar("type", { length: 20 }).notNull(), // 'platform', 'video', 'chat_response'
+  rating: varchar("rating", { length: 10 }).notNull(), // 'bad', 'decent', 'love_it'
+  comment: text("comment"),
+  metadata: json("metadata").$type<{
+    videoId?: string;
+    messageId?: string;
+    page?: string;
+    userAgent?: string;
+  }>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+})

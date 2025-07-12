@@ -1,6 +1,6 @@
 import { db } from "@/lib/db/index"
 import { and, desc, eq, InferInsertModel, InferSelectModel } from "drizzle-orm"
-import { messages, sharedVideos, transcriptSegments, userVideos, videos } from "./schema"
+import { feedback, messages, sharedVideos, transcriptSegments, userVideos, videos } from "./schema"
 import { user } from "./schema/auth"
 
 export { TokenUsageRepository } from "./repository/token-usage"
@@ -22,6 +22,8 @@ export type Video = InferSelectModel<typeof videos>
 export type NewVideo = InferInsertModel<typeof videos>
 export type Message = InferSelectModel<typeof messages>
 export type NewMessage = InferInsertModel<typeof messages>
+export type Feedback = InferSelectModel<typeof feedback>
+export type NewFeedback = InferInsertModel<typeof feedback>
 
 export const VideoRepository = {
   // Get all user_videos for a user, joined with video details
@@ -309,5 +311,36 @@ export const UserRepository = {
       .from(user)
       .where(eq(user.id, userId))
     return result[0]?.preferredLanguage
+  },
+}
+
+export const FeedbackRepository = {
+  // Create new feedback
+  async create(feedbackData: NewFeedback): Promise<Feedback> {
+    const result = await db.insert(feedback).values(feedbackData).returning()
+    return result[0]
+  },
+
+  // Get all feedback for analytics (admin use)
+  async getAll(): Promise<Feedback[]> {
+    return await db.select().from(feedback).orderBy(desc(feedback.createdAt))
+  },
+
+  // Get feedback by user ID
+  async getByUserId(userId: string): Promise<Feedback[]> {
+    return await db
+      .select()
+      .from(feedback)
+      .where(eq(feedback.userId, userId))
+      .orderBy(desc(feedback.createdAt))
+  },
+
+  // Get feedback by type
+  async getByType(type: string): Promise<Feedback[]> {
+    return await db
+      .select()
+      .from(feedback)
+      .where(eq(feedback.type, type))
+      .orderBy(desc(feedback.createdAt))
   },
 }
