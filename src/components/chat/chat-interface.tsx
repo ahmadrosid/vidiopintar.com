@@ -94,6 +94,7 @@ export function ChatInterface({
           <MessageItem
             messages={messages}
             status={status}
+            videoId={videoId}
           />
         )}
       </ChatContainerRoot>

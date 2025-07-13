@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DeleteProfile } from "./delete-profile";
 import { UserPreferences } from "./user-preferences";
+import { ProfileFeedback } from "./profile-feedback";
 
 interface ProfileSettingsProps {
   user: {
@@ -54,6 +55,8 @@ export function ProfileSettings({ user, userLanguage }: ProfileSettingsProps) {
       </Card>
 
       <UserPreferences defaultLanguage={userLanguage} />
+
+      <ProfileFeedback />
 
       <DeleteProfile />
     </div>
