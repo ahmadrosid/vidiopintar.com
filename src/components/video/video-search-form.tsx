@@ -5,12 +5,12 @@ import { PromptInput, PromptInputTextarea, PromptInputActions } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { searchVideos } from "@/lib/services/api";
-import { useVideoSearch } from "@/contexts/video-search-context";
+import { useVideoSearchStore } from "@/stores/video-search-store";
 import { RuntimeClient } from "@/lib/services/RuntimeClient";
 
 export function VideoSearchForm() {
   const [query, setQuery] = useState("");
-  const { setResults, isLoading, setIsLoading } = useVideoSearch();
+  const { setResults, isLoading, setIsLoading } = useVideoSearchStore();
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -21,7 +21,9 @@ export function VideoSearchForm() {
       setResults(result.data.map(item => ({
         ...item,
         thumbnails: [...item.thumbnails],
-        author: { ...item.author }
+        author: { ...item.author },
+        published: item.published || '',
+        duration: item.duration || ''
       })));
     } catch (error) {
       console.error("Search failed:", error);

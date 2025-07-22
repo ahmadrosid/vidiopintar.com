@@ -3,7 +3,8 @@ import { UserVideoRepository, TranscriptRepository, UserRepository } from "@/lib
 import { getCurrentUser } from "@/lib/auth"
 import { generateSummary } from "@/lib/ai/summary"
 
-export async function POST(request: NextRequest, { params }: { params: { videoId: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ videoId: string }> }) {
+  const params = await props.params;
   try {
     const { videoId } = params
     const user = await getCurrentUser()

@@ -7,6 +7,7 @@ import { extractVideoId } from "@/lib/utils";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
+import { toast } from "sonner";
 
 function ButtonSubmitStartLearning() {
     const { pending } = useFormStatus();
@@ -25,18 +26,29 @@ export function FormStartLearning() {
     const handleSubmit = async (formData: FormData) => {
         const videoUrl = formData.get("videoUrl") as string;
 
+        if (!videoUrl) {
+            toast.error("Video URL is required");
+            return;
+        }
+
         if (!session) {
-            if (videoUrl) {
-                const videoId = extractVideoId(videoUrl);
-                if (videoId) {
-                    // Store the video ID for redirect after login/register
-                    sessionStorage.setItem("pendingVideoId", videoId);
-                }
+            const videoId = extractVideoId(videoUrl);
+            if (!videoId) {
+                toast.error("Invalid YouTube URL. Please check the URL and try again.");
+                return;
             }
+            // Store the video ID for redirect after login/register
+            sessionStorage.setItem("pendingVideoId", videoId);
             router.push("/register");
             return;
         }
-        await handleVideoSubmit(formData);
+        
+        const result = await handleVideoSubmit({}, formData);
+        if (result && !result.success && result.errors) {
+            result.errors.forEach(error => {
+                toast.error(error);
+            });
+        }
     };
 
     return (

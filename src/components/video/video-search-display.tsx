@@ -1,10 +1,10 @@
 "use client";
 
-import { useVideoSearch } from "@/contexts/video-search-context";
+import { useVideoSearchStore } from "@/stores/video-search-store";
 import { VideoSearchResults } from "./video-search-results";
 
 export function VideoSearchDisplay() {
-  const { results } = useVideoSearch();
+  const { results } = useVideoSearchStore();
 
   if (results.length === 0) {
     return null;

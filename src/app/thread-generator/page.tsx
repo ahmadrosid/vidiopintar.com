@@ -3,8 +3,13 @@
 import { FooterSection } from "@/components/footer";
 import { HeroHeader } from "@/components/hero-header";
 import { ThreadGeneratorForm } from "@/components/thread-generator/thread-generator-form";
+import { notFound } from "next/navigation";
 
 export default function ThreadGeneratorPage() {
+  if (true) {
+    return notFound();
+  }
+
   return (
     <>
       <HeroHeader />

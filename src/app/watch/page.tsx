@@ -13,7 +13,8 @@ async function ProcessAndRedirect({ videoUrl }: { videoUrl: string }) {
   return null;
 }
 
-export default function WatchPage({ searchParams }: { searchParams: { v?: string } }) {
+export default async function WatchPage(props: { searchParams: Promise<{ v?: string }> }) {
+  const searchParams = await props.searchParams;
   if (!searchParams.v) {
     return <div className="container mx-auto py-12 text-center">Video ID is missing from URL.</div>;
   }

@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useDeleteVideoDialogStore } from '@/lib/store/dialog-store'
 import { handleDeleteVideo } from "@/app/actions"
-import { useFormState } from "react-dom";
-import { useEffect } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
@@ -30,7 +29,7 @@ function DeleteButton() {
 
 export function DeleteVideoDialog() {
     const { isOpen, closeDialog, id } = useDeleteVideoDialogStore()
-    const [state, formAction] = useFormState(handleDeleteVideo, { success: false, errors: undefined });
+    const [state, formAction] = useActionState(handleDeleteVideo, { success: false, errors: undefined });
 
     useEffect(() => {
         if (state.success) {

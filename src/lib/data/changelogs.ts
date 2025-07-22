@@ -10,6 +10,27 @@ export interface ChangelogEntry {
 
 export const changelogs: ChangelogEntry[] = [
   {
+    date: "2025-07-13",
+    version: "1.2.9",
+    type: "patch",
+    changes: [
+      {
+        category: "changed",
+        items: [
+          "Improved authentication and search result handling",
+          "Enhanced YouTube search schema validation"
+        ]
+      },
+      {
+        category: "added",
+        items: [
+          "Chat response feedback system",
+          "Admin feedback management with delete confirmation dialog"
+        ]
+      }
+    ]
+  },
+  {
     date: "2025-07-10",
     version: "1.2.8",
     type: "patch",

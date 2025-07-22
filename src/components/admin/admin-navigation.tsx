@@ -12,6 +12,7 @@ interface AdminNavigationProps {
 const navigationItems = [
   { href: "/admin", label: "Dashboard" },
   { href: "/admin/users", label: "Users" },
+  { href: "/admin/cost", label: "Cost" },
   { href: "/admin/feedback", label: "Feedback" },
 ];
 

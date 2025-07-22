@@ -262,6 +262,8 @@ export async function fetchVideoTranscript(videoId: string) {
     console.error('Error fetching transcript:', error)
     return {
       segments: [],
+      error: true,
+      errorMessage: "Transcript not available for this video"
     }
   }
 }

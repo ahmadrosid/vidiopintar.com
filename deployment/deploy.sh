@@ -13,7 +13,7 @@ PORT_A="5000"
 PORT_B="5001"
 INTERNAL_PORT="3000"
 LOG_FILE="/var/log/vidiopintar-deploy.log"
-MAX_HEALTH_RETRIES=10
+MAX_HEALTH_RETRIES=5
 HEALTH_CHECK_INTERVAL=3
 
 # Colors for output
@@ -35,12 +35,54 @@ warning() {
     echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING:${NC} $1" | tee -a "$LOG_FILE"
 }
 
+# Check if a port has a healthy running container
+is_port_healthy() {
+    local port=$1
+    local url="http://localhost:${port}/api/health"
+    
+    # Quick single health check (no retries for this function)
+    if curl -f "$url" > /dev/null 2>&1; then
+        return 0  # Healthy
+    else
+        return 1  # Unhealthy or not responding
+    fi
+}
+
+# Clean up failing containers on both ports
+cleanup_failing_containers() {
+    log "Checking for failing containers on both ports..."
+    
+    # Check port A
+    if docker ps --filter "publish=$PORT_A" -q | grep -q "."; then
+        log "Container found on port $PORT_A, checking health..."
+        if ! is_port_healthy "$PORT_A"; then
+            warning "Container on port $PORT_A is unhealthy, removing it..."
+            local container_a=$(docker ps --filter "publish=$PORT_A" -q)
+            docker stop "$container_a" 2>/dev/null || true
+            docker rm "$container_a" 2>/dev/null || true
+            log "Removed failing container from port $PORT_A"
+        fi
+    fi
+    
+    # Check port B
+    if docker ps --filter "publish=$PORT_B" -q | grep -q "."; then
+        log "Container found on port $PORT_B, checking health..."
+        if ! is_port_healthy "$PORT_B"; then
+            warning "Container on port $PORT_B is unhealthy, removing it..."
+            local container_b=$(docker ps --filter "publish=$PORT_B" -q)
+            docker stop "$container_b" 2>/dev/null || true
+            docker rm "$container_b" 2>/dev/null || true
+            log "Removed failing container from port $PORT_B"
+        fi
+    fi
+}
+
 # Determine which port is currently active and which is the target
 get_active_port() {
-    # Check which port has a running container
-    if docker ps --filter "publish=$PORT_A" --filter "name=${CONTAINER_NAME}" -q | grep -q "."; then
+    # Check which port has a running AND healthy container
+    if docker ps --filter "publish=$PORT_A" --filter "name=${CONTAINER_NAME}" -q | grep -q "." && is_port_healthy "$PORT_A"; then
         echo "$PORT_A"
-    elif docker ps --filter "publish=$PORT_B" --filter "name=${CONTAINER_NAME}" -q | grep -q "."; then
+    elif docker ps --filter "publish=$PORT_B" --filter "name=${CONTAINER_NAME}" -q | grep -q "." && is_port_healthy "$PORT_B"; then
         echo "$PORT_B"
     else
         echo "none"
@@ -89,6 +131,9 @@ log "Starting blue-green deployment process..."
 # Pull latest image
 log "Pulling latest Docker image: $IMAGE_NAME"
 docker pull "$IMAGE_NAME"
+
+# Clean up any failing containers first
+cleanup_failing_containers
 
 # Determine active and target ports
 ACTIVE_PORT=$(get_active_port)

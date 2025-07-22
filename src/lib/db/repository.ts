@@ -362,6 +362,12 @@ export const FeedbackRepository = {
     return result.length > 0
   },
 
+  // Get feedback by ID
+  async getById(id: number): Promise<Feedback | undefined> {
+    const result = await db.select().from(feedback).where(eq(feedback.id, id))
+    return result[0]
+  },
+
   // Delete feedback by ID
   async delete(id: number): Promise<void> {
     const result = await db.delete(feedback).where(eq(feedback.id, id))

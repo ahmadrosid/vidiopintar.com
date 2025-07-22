@@ -28,6 +28,8 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
+.env.db.neon
+.env.db.docker
 
 # vercel
 .vercel
@@ -36,3 +38,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 i18n.cache
+
+backup/data
+deployment/postgres-data

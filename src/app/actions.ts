@@ -7,12 +7,25 @@ import { UserVideoRepository } from "@/lib/db/repository";
 import { getCurrentUser } from "@/lib/auth";
 import { extractVideoId } from "@/lib/utils";
 
-export async function handleVideoSubmit(formData: FormData) {
-  const videoUrl = formData.get("videoUrl") as string;
-  if (!videoUrl) return;
+function normalizeYouTubeUrl(url: string): string {
+  const liveMatch = url.match(/\/live\/([a-zA-Z0-9_-]+)/);
+  if (liveMatch) {
+    return `https://www.youtube.com/watch?v=${liveMatch[1]}`;
+  }
+  return url;
+}
 
-  const youtubeVideoId = extractVideoId(videoUrl);
-  if (!youtubeVideoId) return;
+export async function handleVideoSubmit(prevState: any, formData: FormData): Promise<{ success: boolean, errors?: string[], videoId?: string }> {
+  const videoUrl = formData.get("videoUrl") as string;
+  if (!videoUrl) {
+    return { success: false, errors: ["Video URL is required"] };
+  }
+
+  const normalizedUrl = normalizeYouTubeUrl(videoUrl);
+  const youtubeVideoId = extractVideoId(normalizedUrl);
+  if (!youtubeVideoId) {
+    return { success: false, errors: ["Invalid YouTube URL. Please check the URL and try again."] };
+  }
 
   redirect(`/video/${youtubeVideoId}`);
 }

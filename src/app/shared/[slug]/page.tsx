@@ -14,12 +14,13 @@ import { ChevronRight } from "lucide-react";
 import { env } from "@/lib/env/server";
 
 interface SharedVideoPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: SharedVideoPageProps): Promise<Metadata> {
+export async function generateMetadata(props: SharedVideoPageProps): Promise<Metadata> {
+  const params = await props.params;
   const { slug } = params;
 
   const sharedVideo = await SharedVideoRepository.getBySlugWithDetails(slug);
@@ -41,10 +42,11 @@ export async function generateMetadata({ params }: SharedVideoPageProps): Promis
   };
 }
 
-export default async function SharedVideoPage({ params }: SharedVideoPageProps) {
+export default async function SharedVideoPage(props: SharedVideoPageProps) {
+  const params = await props.params;
   const { slug } = params;
 
-  const session = await auth.api.getSession({ headers: headers() });
+  const session = await auth.api.getSession({ headers: await headers() });
   const isLoggedIn = !!session?.user;
   const shareChatUrl = `${env.BETTER_AUTH_URL}/shared/${slug}`;
   const sharedVideo = await SharedVideoRepository.getBySlugWithDetails(slug);
@@ -61,7 +63,7 @@ export default async function SharedVideoPage({ params }: SharedVideoPageProps) 
   return (
     <main className="flex flex-col min-h-screen bg-melody-gradient relative">
       <div className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-7 h-screen">
+        <div className="grid grid-cols-1 lg:grid-cols-7 min-h-screen">
           <div className="lg:col-span-4 h-full overflow-y-auto scrollbar-none relative">
             <div className="sticky top-0 z-50 bg-white dark:bg-black border-b">
               <div className="flex items-center p-4 gap-2">

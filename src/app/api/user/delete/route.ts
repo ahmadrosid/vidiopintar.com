@@ -16,7 +16,7 @@ export async function DELETE() {
     await db.delete(user).where(eq(user.id, currentUser.id));
 
     // Clear session cookies
-    cookies().delete("session");
+    (await cookies()).delete("session");
 
     return NextResponse.json({ success: true });
   } catch (error) {

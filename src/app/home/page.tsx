@@ -6,7 +6,6 @@ import { categories } from "@/lib/data/categories";
 import { HeroHeader } from "@/components/hero-header";
 import { FooterSection } from "@/components/footer";
 import { getCurrentUser } from "@/lib/auth";
-import { VideoSearchProvider } from "@/contexts/video-search-context";
 import { VideoSearchDisplay } from "@/components/video/video-search-display";
 
 import Link from "next/link";
@@ -31,7 +30,7 @@ export default async function Home() {
   const user = await getCurrentUser()
   const videos = await VideoRepository.getAllForUserWithDetails(user.id);
   return (
-    <VideoSearchProvider>
+    <>
       <HeroHeader />
       <main className="relative min-h-screen overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto">
@@ -60,6 +59,6 @@ export default async function Home() {
         </div>
       </main>
       <FooterSection />
-    </VideoSearchProvider>
+    </>
   );
 }

@@ -4,15 +4,16 @@ import { getCategoryBySlug } from "@/lib/data/categories";
 import { HeroHeader } from "@/components/hero-header";
 import { FooterSection } from "@/components/footer";
 import { notFound } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { VideoSearchResults } from "@/components/video/video-search-results";
 import { searchVideos } from "@/lib/services/api";
 import { RuntimeClient } from "@/lib/services/RuntimeClient";
 
-export default function CategoryPage({ params }: { params: { slug: string } }) {
+export default function CategoryPage(props: { params: Promise<{ slug: string }> }) {
+  const params = use(props.params);
   const [videos, setVideos] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const category = getCategoryBySlug(params.slug);
 
   if (!category) {

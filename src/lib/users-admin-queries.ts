@@ -1,6 +1,8 @@
 import { db } from "@/lib/db";
-import { user, userVideos } from "@/lib/db/schema";
+import { user, userVideos, messages, session } from "@/lib/db/schema";
 import { sql } from "drizzle-orm";
+import { RetentionCohort } from "@/types/admin";
+
 
 export interface RetentionMetrics {
   mau: number;
@@ -10,6 +12,7 @@ export interface RetentionMetrics {
   newUsersToday: number;
   totalUsers: number;
   stickinessRatio: number;
+  cohorts: RetentionCohort[];
 }
 
 export interface UserActivityData {
@@ -51,6 +54,7 @@ export async function getRetentionMetrics(): Promise<RetentionMetrics> {
 
   const activeUsers = activeUsersResult.rows[0] as any;
   const signupStats = signupStatsResult.rows[0] as any;
+  const cohorts = await getRetentionCohorts();
 
   return {
     mau: parseInt(activeUsers?.mau || '0'),
@@ -60,6 +64,7 @@ export async function getRetentionMetrics(): Promise<RetentionMetrics> {
     newUsersToday: parseInt(signupStats?.new_users_today || '0'),
     totalUsers: parseInt(signupStats?.total_users || '0'),
     stickinessRatio: parseFloat(activeUsers?.stickiness_ratio || '0'),
+    cohorts,
   };
 }
 
@@ -146,6 +151,67 @@ export interface RecentActiveUser {
   lastActivity: Date;
   videoCount: number;
   recentVideoCount: number;
+}
+
+export async function getRetentionCohorts(): Promise<RetentionCohort[]> {
+
+  const query = `
+    WITH cohort_users AS (
+      SELECT 
+        u.id,
+        DATE_TRUNC('week', u.created_at) as cohort_period,
+        u.created_at as signup_date
+      FROM "user" u
+      WHERE u.created_at >= NOW() - INTERVAL '4 weeks'
+    ),
+    user_activities AS (
+      SELECT 
+        cu.id,
+        cu.cohort_period,
+        cu.signup_date,
+        MIN(s.created_at) as first_return,
+        MAX(CASE WHEN DATE(s.created_at) > DATE(cu.signup_date) 
+                  AND s.created_at <= cu.signup_date + INTERVAL '1 day' THEN s.created_at END) as day1_activity,
+        MAX(CASE WHEN DATE(s.created_at) > DATE(cu.signup_date) 
+                  AND s.created_at <= cu.signup_date + INTERVAL '3 days' THEN s.created_at END) as day3_activity,
+        MAX(CASE WHEN DATE(s.created_at) > DATE(cu.signup_date) 
+                  AND s.created_at <= cu.signup_date + INTERVAL '5 days' THEN s.created_at END) as day5_activity,
+        MAX(CASE WHEN DATE(s.created_at) > DATE(cu.signup_date) 
+                  AND s.created_at <= cu.signup_date + INTERVAL '7 days' THEN s.created_at END) as day7_activity
+      FROM cohort_users cu
+      LEFT JOIN session s ON cu.id = s.user_id 
+      GROUP BY cu.id, cu.cohort_period, cu.signup_date
+    )
+    SELECT 
+      TO_CHAR(cohort_period, 'YYYY-MM-DD') as cohort_period,
+      COUNT(*) as total_users,
+      COUNT(day1_activity) as day1_retained,
+      COUNT(day3_activity) as day3_retained,
+      COUNT(day5_activity) as day5_retained,
+      COUNT(day7_activity) as day7_retained,
+      ROUND(100.0 * COUNT(day1_activity) / NULLIF(COUNT(*), 0), 1) as day1_percentage,
+      ROUND(100.0 * COUNT(day3_activity) / NULLIF(COUNT(*), 0), 1) as day3_percentage,
+      ROUND(100.0 * COUNT(day5_activity) / NULLIF(COUNT(*), 0), 1) as day5_percentage,
+      ROUND(100.0 * COUNT(day7_activity) / NULLIF(COUNT(*), 0), 1) as day7_percentage
+    FROM user_activities
+    GROUP BY cohort_period
+    ORDER BY cohort_period ASC
+  `;
+
+  const result = await db.execute(sql.raw(query));
+
+  return result.rows.map((row: any) => ({
+    cohortPeriod: row.cohort_period,
+    totalUsers: parseInt(row.total_users || '0'),
+    day1Retained: parseInt(row.day1_retained || '0'),
+    day3Retained: parseInt(row.day3_retained || '0'),
+    day5Retained: parseInt(row.day5_retained || '0'),
+    day7Retained: parseInt(row.day7_retained || '0'),
+    day1Percentage: parseFloat(row.day1_percentage || '0'),
+    day3Percentage: parseFloat(row.day3_percentage || '0'),
+    day5Percentage: parseFloat(row.day5_percentage || '0'),
+    day7Percentage: parseFloat(row.day7_percentage || '0'),
+  }));
 }
 
 export async function getRecentActiveUsers(limit: number = 10): Promise<RecentActiveUser[]> {

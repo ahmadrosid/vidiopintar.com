@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RetentionMetricsCards } from "./retention-metrics-cards";
 import { UserActivityChart } from "./retention-chart";
+import { RetentionCohortView } from "./retention-cohort-view";
 import { Users } from "lucide-react";
 import { RetentionDashboardData } from "@/types/admin";
 
@@ -17,6 +18,9 @@ export function RetentionOverview({ data }: RetentionOverviewProps) {
     <div className="space-y-6">
       {/* Metrics Cards */}
       <RetentionMetricsCards metrics={metrics} />
+
+      {/* Retention Cohorts */}
+      <RetentionCohortView initialCohorts={metrics.cohorts} />
 
       {/* Retention Chart and User Segments */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

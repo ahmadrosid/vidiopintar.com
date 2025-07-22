@@ -1,4 +1,5 @@
 import { getCurrentUser } from '@/lib/auth';
+import { isUserAdmin } from '@/lib/auth-admin';
 import { FeedbackRepository } from '@/lib/db/repository';
 import { NextRequest } from 'next/server';
 
@@ -95,7 +96,14 @@ export async function DELETE(request: NextRequest) {
       return Response.json({ error: 'Invalid feedback ID' }, { status: 400 });
     }
 
-    // Delete the feedback
+    if (!isUserAdmin(user)) {
+      return Response.json({ error: 'Forbidden: Only admins can delete feedback' }, { status: 403 });
+    }
+
+    const existingFeedback = await FeedbackRepository.getById(id);
+    if (!existingFeedback) {
+      return Response.json({ error: 'Feedback not found' }, { status: 404 });
+    }
     await FeedbackRepository.delete(id);
 
     return Response.json({ success: true });

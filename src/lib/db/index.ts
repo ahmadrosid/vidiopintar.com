@@ -1,6 +1,4 @@
 import { Pool } from 'pg';
-import { neon, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
 import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
 import { env } from '../env/server';
 
@@ -23,6 +21,9 @@ if (env.NODE_ENV === 'production') {
     ssl: {
       rejectUnauthorized: false,
     },
+    connectionTimeoutMillis: 5000,
+    idleTimeoutMillis: 10000,
+    max: 10,
   });
 } else {
   // In development, we can reuse the same pool
@@ -30,6 +31,9 @@ if (env.NODE_ENV === 'production') {
     global.pg = new Pool({
       connectionString: databaseUrl,
       ssl: false, // Disable SSL for local development
+      connectionTimeoutMillis: 5000,
+      idleTimeoutMillis: 10000,
+      max: 10,
     });
   }
   pool = global.pg;
@@ -37,14 +41,3 @@ if (env.NODE_ENV === 'production') {
 
 // Create a SQL client for server components
 export const db = drizzlePg(pool);
-
-// Create a SQL client for edge runtime (Neon only)
-export const dbEdge = () => {
-  if (!databaseUrl.includes('neon.tech')) {
-    throw new Error('dbEdge is only supported for Neon databases');
-  }
-  const sql = neon(databaseUrl);
-  return drizzle(sql);
-};
-
-

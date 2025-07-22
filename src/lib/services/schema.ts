@@ -30,9 +30,9 @@ export class VideoSearchItem extends Schema.Class<VideoSearchItem>("VideoSearchI
         width: Schema.Number,
         height: Schema.Number,
     })),
-    published: Schema.String,
+    published: Schema.optional(Schema.String),
     view_count: Schema.String,
-    duration: Schema.String,
+    duration: Schema.optional(Schema.String),
     author: Schema.Struct({
         id: Schema.String,
         name: Schema.String,

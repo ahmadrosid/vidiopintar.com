@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
+
     if (!response.ok) {
       throw new Error(`External API responded with ${response.status}`);
     }

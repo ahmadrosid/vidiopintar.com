@@ -36,7 +36,7 @@ export function VideoSearchResults({ results }: VideoSearchResultsProps) {
     formData.append('videoUrl', `https://www.youtube.com/watch?v=${videoId}`);
     
     try {
-      await handleVideoSubmit(formData);
+      await handleVideoSubmit({}, formData);
     } catch (error) {
       console.error('Failed to add video:', error);
     } finally {
