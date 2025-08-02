@@ -65,7 +65,7 @@ export function UserPreferences({ defaultLanguage }: UserPreferencesProps) {
           <div>
             <h4 className="text-sm md:text-base mb-3">{t('selectTheme')}</h4>
             <Select value={theme} onValueChange={handleThemeChange}>
-              <SelectTrigger className="w-full sm:w-[200px]">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('selectThemePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
