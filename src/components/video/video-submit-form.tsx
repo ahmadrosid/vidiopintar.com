@@ -66,8 +66,8 @@ export function VideoSubmitForm() {
       }
       
     } catch (error) {
-      console.error('Submit error:', error);
-      setErrors(['Network error. Please try again.']);
+      const errorMessage = error instanceof Error ? error.message : 'Network error. Please try again.';
+      setErrors([errorMessage]);
     } finally {
       setIsSubmitting(false);
     }

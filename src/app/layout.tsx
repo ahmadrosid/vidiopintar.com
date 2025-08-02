@@ -20,7 +20,27 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Vidiopintar - Turn YouTube into Your Personal Learning Academy",
-  description: "Learn from YouTube videos with ai chat, note-taking, and quizz",
+  description: "Learn from YouTube videos with AI chat, note-taking, and interactive quizzes. Transform any video into a personalized learning experience.",
+  keywords: "YouTube learning, AI video chat, video summaries, educational AI, video notes",
+  authors: [{ name: "Vidiopintar Team" }],
+  creator: "Vidiopintar",
+  metadataBase: new URL('https://vidiopintar.com'),
+  openGraph: {
+    title: "Vidiopintar - AI-Powered YouTube Learning",
+    description: "Transform YouTube videos into interactive learning experiences with AI",
+    url: "https://vidiopintar.com",
+    siteName: "Vidiopintar",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vidiopintar - AI-Powered YouTube Learning",
+    description: "Transform YouTube videos into interactive learning experiences with AI",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default async function RootLayout({
