@@ -92,6 +92,13 @@
       "when": 1753555748666,
       "tag": "0012_shiny_thaddeus_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1754683679529,
+      "tag": "0013_broad_monster_badoon",
+      "breakpoints": true
     }
   ]
 }
