@@ -101,7 +101,7 @@ export default function NewPricing() {
                 )}
               </div>
               <div className="flex flex-col gap-1.5">
-                <div className="flex gap-2 text-4xl font-semibold text-primary">
+                <div className="flex gap-2 text-3xl font-semibold text-primary">
                   {data.price}
                   {data.originalPrice && (
                     <div className="text-base text-secondary-foreground font-normal line-through mt-2.5">
@@ -135,7 +135,7 @@ export default function NewPricing() {
               >
                 <Button
                   variant="default"
-                  className="rounded-xs min-w-[100px] font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] hover:cursor-pointer shadow-[inset_0px_0.5px_1px_0px_#88F8FF,0px_6px_20px_2px_#000000] active:shadow-none active:scale-[0.975] transition-shadow duration-200 ease-in-out"
+                  className="rounded-xs min-w-[100px] w-fit font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] hover:cursor-pointer shadow-[inset_0px_0.5px_1px_0px_#88F8FF,0px_6px_20px_2px_#000000] active:shadow-none active:scale-[0.975] transition-shadow duration-200 ease-in-out"
                 >
                   {data.cta}
                 </Button>
@@ -143,7 +143,7 @@ export default function NewPricing() {
             ) : (
               <Button
                 variant="default"
-                className="mt-auto rounded-xs min-w-[100px] font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] hover:cursor-pointer shadow-[inset_0px_0.5px_1px_0px_#88F8FF,0px_6px_20px_2px_#000000] active:shadow-none active:scale-[0.975] transition-shadow duration-200 ease-in-out"
+                className="mt-auto rounded-xs min-w-[100px] w-fit font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] hover:cursor-pointer shadow-[inset_0px_0.5px_1px_0px_#88F8FF,0px_6px_20px_2px_#000000] active:shadow-none active:scale-[0.975] transition-shadow duration-200 ease-in-out"
                 onClick={() => {
                   if (session) {
                     // User is logged in, go directly to payment
