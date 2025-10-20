@@ -4,3 +4,4 @@ export * from './auth';
 export * from './token-usage';
 export * from './payment-settings';
 export * from './transactions';
+export * from './sponsor-deals';
