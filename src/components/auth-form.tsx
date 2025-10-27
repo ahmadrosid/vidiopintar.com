@@ -2,17 +2,22 @@
 
 import { authClient } from "@/lib/auth-client";
 import { Button } from '@/components/ui/button'
-import { useState, useEffect } from "react";
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useState, useEffect, FormEvent } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
 import { useTranslations } from 'next-intl';
 
 interface AuthFormProps {
     returnTo?: string;
+    smtpEnabled: boolean;
 }
 
-export function AuthForm({ returnTo }: AuthFormProps) {
+export function AuthForm({ returnTo, smtpEnabled }: AuthFormProps) {
     const [loading, setLoading] = useState(false);
+    const [magicLinkLoading, setMagicLinkLoading] = useState(false);
+    const [email, setEmail] = useState("");
     const [callbackUrl, setCallbackUrl] = useState("/home");
     const t = useTranslations('auth');
 
@@ -35,6 +40,29 @@ export function AuthForm({ returnTo }: AuthFormProps) {
             setCallbackUrl(`/payment?plan=${selectedPlan}`);
         }
     }, [returnTo]);
+
+    const handleMagicLinkSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!email) {
+            toast.error(t('emailRequired'));
+            return;
+        }
+
+        try {
+            setMagicLinkLoading(true);
+            await authClient.signIn.magicLink({
+                email,
+                callbackURL: callbackUrl,
+            });
+            toast.success(t('magicLinkSent'));
+            setEmail("");
+        } catch (error) {
+            console.log(error);
+            toast.error(t('failedToSendMagicLink'));
+        } finally {
+            setMagicLinkLoading(false);
+        }
+    };
 
     const signInWithGoogle = async () => {
         try {
@@ -59,11 +87,50 @@ export function AuthForm({ returnTo }: AuthFormProps) {
 
     return (
         <div className="mt-6">
+            {smtpEnabled && (
+                <>
+                    <form onSubmit={handleMagicLinkSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <Label
+                                htmlFor="email"
+                                className="block text-sm">
+                                {t('emailLabel')}
+                            </Label>
+                            <Input
+                                type="email"
+                                required
+                                name="email"
+                                id="email"
+                                className="dark:bg-muted/50 text-white placeholder:text-white"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder={t('emailPlaceholder')}
+                                disabled={magicLinkLoading}
+                            />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            className="w-full cursor-pointer"
+                            disabled={magicLinkLoading}>
+                            {magicLinkLoading ? <LoadingSpinner text="" /> : t('continueWithEmail')}
+                        </Button>
+                    </form>
+
+                    <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                        <hr className="border-dashed" />
+                        <span className="text-muted-foreground text-xs">{t('orContinueWith')}</span>
+                        <hr className="border-dashed" />
+                    </div>
+                </>
+            )}
+
             <Button
                 type="button"
                 onClick={signInWithGoogle}
                 variant="outline"
-                className="w-full cursor-pointer">
+                className="w-full cursor-pointer"
+                disabled={loading}>
                 {loading ? <LoadingSpinner text="" /> : <><svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="0.98em"
