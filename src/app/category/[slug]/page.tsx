@@ -9,7 +9,9 @@ import { VideoSearchResults } from "@/components/video/video-search-results";
 import { searchVideos } from "@/lib/services/api";
 import { RuntimeClient } from "@/lib/services/RuntimeClient";
 
-export default function CategoryPage(props: { params: Promise<{ slug: string }> }) {
+export default function CategoryPage(props: {
+  params: Promise<{ slug: string }>;
+}) {
   const params = use(props.params);
   const [videos, setVideos] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,14 +29,18 @@ export default function CategoryPage(props: { params: Promise<{ slug: string }> 
         if (!category?.searchQuery) {
           return;
         }
-        const result = await RuntimeClient.runPromise(searchVideos(category.searchQuery));
-        setVideos(result.data.map(item => ({
-          ...item,
-          thumbnails: [...item.thumbnails],
-          author: { ...item.author }
-        })));
+        const result = await RuntimeClient.runPromise(
+          searchVideos(category.searchQuery)
+        );
+        setVideos(
+          result.data.map((item) => ({
+            ...item,
+            thumbnails: [...item.thumbnails],
+            author: { ...item.author },
+          }))
+        );
       } catch (error) {
-        console.error('Search failed:', error);
+        console.error("Search failed:", error);
         setVideos([]);
       } finally {
         setIsLoading(false);
