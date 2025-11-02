@@ -114,12 +114,12 @@ export function VideoSubmitForm() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="rounded-xl cursor-pointer bg-gradient-to-r from-[#00D4DD] to-[#00AAB6] hover:from-[#00AAB6] hover:to-[#008B94] text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              className="rounded-xl cursor-pointer text-black shadow-lg hover:shadow-xl transition-all duration-200"
             >
               {isSubmitting ? (
                 <Loader className="size-4 animate-spin" />
               ) : (
-                tHero("startLearning") || "Submit"
+                "Submit"
               )}
             </Button>
           </PromptInputActions>
