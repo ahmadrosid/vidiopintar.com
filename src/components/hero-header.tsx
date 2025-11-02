@@ -46,7 +46,7 @@ export const HeroHeader = () => {
             "border-black/5 border-b bg-background/75 backdrop-blur-lg"
         )}
       >
-        <div className="mx-auto max-w-5xl px-6">
+        <div className="mx-auto max-w-[1328px] px-8">
           <div className="relative flex flex-wrap items-center justify-between gap-6 py-4 lg:gap-0 lg:py-3">
             <Link
               aria-label="home"

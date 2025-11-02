@@ -35,8 +35,8 @@ export default async function Home() {
     <>
       <HeroHeader />
       <main className="relative min-h-screen overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto">
-          <div className="my-8 p-6">
+        <div className="relative z-10 max-w-[1328px] px-8 mx-auto">
+          <div className="my-8">
             <div className="text-center mb-6 mt-8">
               <h1 className="text-4xl font-bold tracking-tighter">{t('title')}</h1>
               <p className="tracking-tight">{t('subtitle')}</p>
@@ -44,7 +44,7 @@ export default async function Home() {
             <VideoInputSection userId={user.id} />
           </div>
           <VideoSearchDisplay />
-          <div className="max-w-5xl px-6 mx-auto w-full mb-8">
+          <div className="w-full mb-8">
             <h2 className="text-xl font-semibold text-left mb-6 tracking-tighter">{t('chooseTopics')}</h2>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
               {categories.map((category, idx) => (

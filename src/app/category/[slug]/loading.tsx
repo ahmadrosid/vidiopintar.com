@@ -19,7 +19,7 @@ export default function Loading() {
     <>
       <HeroHeader />
       <main className="relative min-h-screen p-6 overflow-hidden">
-        <div className="relative z-10 max-w-5xl px-6 mx-auto mt-24">
+        <div className="relative z-10 max-w-[1328px] px-8 mx-auto mt-24">
           {/* Hero Section with Background Image */}
           <div className="relative h-64 overflow-hidden rounded-2xl mb-8">
             <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
@@ -32,7 +32,7 @@ export default function Loading() {
           </div>
 
           {/* Video Cards Section */}
-          <div className="max-w-5xl px-6 mx-auto w-full mb-8">
+          <div className="w-full mb-8">
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, index) => (
                 <LoadingSkeleton key={index} />

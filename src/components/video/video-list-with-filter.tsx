@@ -69,7 +69,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
 
     if (!videos || videos.length === 0) {
         return (
-            <div className="max-w-5xl px-6 mx-auto w-full">
+            <div className="w-full">
                 <h2 className="text-xl font-semibold tracking-tighter mb-6">{t('videoList.title')}</h2>
                 <VideoList videos={[]} />
             </div>
@@ -77,7 +77,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
     }
 
     return (
-        <div className="max-w-5xl px-6 mx-auto w-full">
+        <div className="w-full">
             <h2 className="text-xl font-semibold tracking-tighter mb-6">{t('videoList.title')}</h2>
 
             <div className="flex flex-wrap items-center gap-3 mb-8 overflow-x-auto py-2">
