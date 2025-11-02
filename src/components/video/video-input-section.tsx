@@ -25,8 +25,17 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
 
   return (
     <div className="w-full space-y-6">
-      {!effectiveSearchMode && <PlanUsageNotification userId={userId} />}
-      {!effectiveSearchMode ? <VideoSubmitForm /> : <VideoSearchForm />}
+      {!effectiveSearchMode ? (
+        <>
+          <PlanUsageNotification userId={userId} />
+          <VideoSubmitForm />
+        </>
+      ) : (
+        <>
+          <PlanUsageNotification userId={userId} />
+          <VideoSearchForm />
+        </>
+      )}
       <div className="flex items-center justify-center space-x-3">
         <Label
           htmlFor="mode-switch"

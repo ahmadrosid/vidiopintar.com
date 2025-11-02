@@ -121,16 +121,16 @@ export function PlanUsageNotification({ userId }: PlanUsageNotificationProps) {
   const remainingVideos = usageStats.dailyLimit - usageStats.videosUsedToday;
 
   return (
-    <Alert className="border-accent/10 bg-card/50 shadow-sm">
+    <Alert className="border-accent/10 bg-card/50 shadow-sm py-1 px-0 pr-1">
       <AlertDescription className="flex items-center justify-between">
-        <div className="text-primary">
+        <div className="text-primary text-sm px-3">
           {remainingVideos} of {usageStats.dailyLimit} daily video{usageStats.dailyLimit > 1 ? 's' : ''} remaining
         </div>
         <Link href="/profile/billing">
           <Button
             size="sm"
             variant="ghost"
-            className="text-[#00D4DD] hover:text-[#00D4DD] hover:bg-[#00D4DD]/10 dark:hover:bg-[#00D4DD]/20 transition-all duration-200"
+            className="cursor-pointer text-[#00D4DD] hover:text-[#00D4DD] hover:bg-[#00D4DD]/10 dark:hover:bg-[#00D4DD]/20 transition-all duration-200"
           >
             <Crown className="w-4 h-4 mr-1" />
             Upgrade

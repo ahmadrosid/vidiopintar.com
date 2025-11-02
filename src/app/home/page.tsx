@@ -36,7 +36,7 @@ export default async function Home() {
       <HeroHeader />
       <main className="relative min-h-screen overflow-hidden">
         <div className="relative z-10 max-w-[1328px] px-8 mx-auto">
-          <div className="my-8">
+          <div className="mt-24 mb-16 max-w-xl mx-auto">
             <div className="text-center mb-6 mt-8">
               <h1 className="text-4xl font-bold tracking-tighter">{t('title')}</h1>
               <p className="tracking-tight">{t('subtitle')}</p>

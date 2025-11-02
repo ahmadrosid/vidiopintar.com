@@ -52,7 +52,7 @@ export function VideoSearchForm() {
           onClick={handleSearch}
           type="submit"
           disabled={isLoading}
-          className="rounded-xl cursor-pointer bg-gradient-to-r from-[#00D4DD] to-[#00AAB6] hover:from-[#00AAB6] hover:to-[#008B94] text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          className="rounded-xl text-black cursor-pointer bg-gradient-to-r from-[#00D4DD] to-[#00AAB6] hover:from-[#00AAB6] hover:to-[#008B94] shadow-lg hover:shadow-xl transition-all duration-200"
         >
           {isLoading ? <Loader className="size-4 animate-spin" /> : t("search")}
         </Button>
