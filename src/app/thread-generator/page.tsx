@@ -18,7 +18,8 @@ export default function ThreadGeneratorPage() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Thread Generator</h1>
             <p className="text-muted-foreground">
-              Generate engaging threads from YouTube videos. Simply paste a YouTube URL and let AI create viral-ready threads.
+              Generate engaging threads from YouTube videos. Simply paste a
+              YouTube URL and let AI create viral-ready threads.
             </p>
           </div>
           <ThreadGeneratorForm />
