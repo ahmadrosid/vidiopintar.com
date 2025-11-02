@@ -62,21 +62,24 @@ export function PlanUsageNotification({ userId }: PlanUsageNotificationProps) {
 
   if (isAtLimit) {
     return (
-      <Alert className="border-red-200 bg-red-50 dark:bg-red-900/20">
-        <AlertTriangle className="h-4 w-4 text-red-600" />
+      <Alert className="border-accent/30 bg-card shadow-sm">
+        <AlertTriangle className="h-4 w-4 text-accent" />
         <AlertDescription className="space-y-3">
-          <div className="text-red-800 dark:text-red-200">
-            You've reached your daily limit of {usageStats.dailyLimit} video{usageStats.dailyLimit > 1 ? 's' : ''}. 
+          <div className="text-primary">
+            You've reached your daily limit of {usageStats.dailyLimit} video{usageStats.dailyLimit > 1 ? 's' : ''}.
             Upgrade for unlimited access or try again tomorrow.
           </div>
           <div className="flex gap-2">
             <Link href="/profile/billing">
-              <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white">
+              <Button
+                size="sm"
+                className="bg-[#6155F5] hover:bg-[#6155F5]/90 text-white border-[#463CBC] shadow-[inset_0px_0.5px_1px_0px_rgba(136,248,255,0.3),0px_4px_12px_1px_rgba(0,0,0,0.2)]"
+              >
                 <Crown className="w-4 h-4 mr-1" />
                 Upgrade Plan
               </Button>
             </Link>
-            <div className="flex items-center text-sm text-red-700 dark:text-red-300">
+            <div className="flex items-center text-sm text-muted-foreground">
               <Clock className="w-4 h-4 mr-1" />
               Resets tomorrow
             </div>
@@ -88,18 +91,22 @@ export function PlanUsageNotification({ userId }: PlanUsageNotificationProps) {
 
   if (isNearLimit) {
     const remainingVideos = usageStats.dailyLimit - usageStats.videosUsedToday;
-    
+
     return (
-      <Alert className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
-        <AlertTriangle className="h-4 w-4 text-yellow-600" />
+      <Alert className="border-accent/20 bg-card shadow-sm">
+        <AlertTriangle className="h-4 w-4 text-accent" />
         <AlertDescription className="space-y-3">
-          <div className="text-yellow-800 dark:text-yellow-200">
-            You have {remainingVideos} video{remainingVideos > 1 ? 's' : ''} remaining for today. 
+          <div className="text-primary">
+            You have {remainingVideos} video{remainingVideos > 1 ? 's' : ''} remaining for today.
             Upgrade for unlimited access.
           </div>
           <div className="flex gap-2">
             <Link href="/profile/billing">
-              <Button size="sm" variant="outline" className="border-yellow-600 text-yellow-700 hover:bg-yellow-100">
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-[#00D4DD] text-[#00D4DD] hover:bg-[#00D4DD]/10 dark:hover:bg-[#00D4DD]/20 transition-all duration-200"
+              >
                 <Crown className="w-4 h-4 mr-1" />
                 View Plans
               </Button>
@@ -112,15 +119,19 @@ export function PlanUsageNotification({ userId }: PlanUsageNotificationProps) {
 
   // Show regular usage info for free users
   const remainingVideos = usageStats.dailyLimit - usageStats.videosUsedToday;
-  
+
   return (
-    <Alert className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+    <Alert className="border-accent/10 bg-card/50 shadow-sm">
       <AlertDescription className="flex items-center justify-between">
-        <div className="text-blue-800 dark:text-blue-200">
+        <div className="text-primary">
           {remainingVideos} of {usageStats.dailyLimit} daily video{usageStats.dailyLimit > 1 ? 's' : ''} remaining
         </div>
         <Link href="/profile/billing">
-          <Button size="sm" variant="ghost" className="text-blue-700 hover:text-blue-800 hover:bg-blue-100">
+          <Button
+            size="sm"
+            variant="ghost"
+            className="text-[#00D4DD] hover:text-[#00D4DD] hover:bg-[#00D4DD]/10 dark:hover:bg-[#00D4DD]/20 transition-all duration-200"
+          >
             <Crown className="w-4 h-4 mr-1" />
             Upgrade
           </Button>
