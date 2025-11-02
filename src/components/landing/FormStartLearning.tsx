@@ -52,7 +52,7 @@ export function FormStartLearning({ isFooter } : { isFooter?: boolean}) {
             }
             // Store the video ID for redirect after login/register
             sessionStorage.setItem("pendingVideoId", videoId);
-            router.push("/register");
+            router.push(`/register?videoId=${videoId}`);
             return;
         }
 

@@ -9,9 +9,10 @@ import { useTranslations } from "next-intl";
 
 interface AuthFormProps {
   returnTo?: string;
+  videoId?: string;
 }
 
-export function AuthForm({ returnTo }: AuthFormProps) {
+export function AuthForm({ returnTo, videoId }: AuthFormProps) {
   const [loading, setLoading] = useState(false);
   const [callbackUrl, setCallbackUrl] = useState("/home");
   const t = useTranslations("auth");
@@ -19,6 +20,11 @@ export function AuthForm({ returnTo }: AuthFormProps) {
   useEffect(() => {
     if (returnTo) {
       setCallbackUrl(returnTo);
+      return;
+    }
+
+    if (videoId) {
+      setCallbackUrl(`/video/${videoId}`);
       return;
     }
 
@@ -31,7 +37,7 @@ export function AuthForm({ returnTo }: AuthFormProps) {
     if (selectedPlan) {
       setCallbackUrl(`/payment?plan=${selectedPlan}`);
     }
-  }, [returnTo]);
+  }, [returnTo, videoId]);
 
   const signInWithGoogle = async () => {
     try {

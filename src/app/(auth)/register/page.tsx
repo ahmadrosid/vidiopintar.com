@@ -3,8 +3,13 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 
-export default async function RegisterPage() {
+interface RegisterPageProps {
+    searchParams: Promise<{ videoId?: string }>
+}
+
+export default async function RegisterPage({ searchParams }: RegisterPageProps) {
     const t = await getTranslations('auth');
+    const { videoId } = await searchParams;
     return (
         <section className="flex min-h-screen bg-zinc-50 px-4 py-16 md:py-32 dark:bg-transparent">
             <form
@@ -21,7 +26,7 @@ export default async function RegisterPage() {
                         <p>{t('registerSubtitle')}</p>
                     </div>
 
-                    <AuthForm />
+                    <AuthForm videoId={videoId} />
                     
                     {/* 
                     <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
