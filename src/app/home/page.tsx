@@ -11,7 +11,6 @@ import { getTranslations } from 'next-intl/server';
 
 import Link from "next/link";
 
-
 function CategoryCard({ image, label, slug }: { image: string; label: string; slug: string }) {
   return (
     <Link href={`/category/${slug}`}>
