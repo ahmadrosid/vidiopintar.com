@@ -2,7 +2,7 @@ export const categories = [
   {
     slug: "productivity",
     label: "Productivity",
-    image: "https://images.unsplash.com/photo-1533225307893-db39ecce099a?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1531489956451-20957fab52f2?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     searchQuery: "productivity tips"
   },
   {
@@ -14,25 +14,25 @@ export const categories = [
   {
     slug: "mental-health",
     label: "Mental Health",
-    image: "https://images.unsplash.com/photo-1511297968426-a869b61af3da?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     searchQuery: "mental health wellness"
   },
   {
     slug: "marketing",
     label: "Marketing",
-    image: "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1543840302-34f367d7024f?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     searchQuery: "digital marketing tips"
   },
   {
     slug: "copywriting",
     label: "Copywriting",
-    image: "https://images.unsplash.com/photo-1586943759341-be5595944989?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     searchQuery: "copywriting techniques"
   },
   {
     slug: "economics",
     label: "Economics",
-    image: "https://images.unsplash.com/photo-1650821414390-276561abd95a?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     searchQuery: "economics explained"
   },
   {
@@ -44,7 +44,7 @@ export const categories = [
   {
     slug: "history",
     label: "History",
-    image: "https://images.unsplash.com/photo-1583502023538-55ce7997721a?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "https://images.unsplash.com/photo-1461360228754-6e81c478b882?q=80&w=1280&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     searchQuery: "history documentary"
   },
 ];
