@@ -59,35 +59,6 @@ export class Api extends Effect.Service<Api>()("Api", {
                 req: Schema.Struct({ query: Schema.String }),
                 res: VideoSearchResponse,
             })),
-            generateThreads: Effect.fn("generateThreads")(post({
-                url: "/thread-generator",
-                req: Schema.Struct({ 
-                    youtubeUrl: Schema.String,
-                    language: Schema.optional(Schema.String)
-                }),
-                res: Schema.Struct({
-                    success: Schema.Boolean,
-                    data: Schema.Struct({
-                        outline: Schema.Struct({
-                            hook: Schema.String,
-                            painPoint: Schema.String,
-                            promise: Schema.String,
-                            keyPoints: Schema.Array(Schema.String)
-                        }),
-                        threads: Schema.Array(Schema.Struct({
-                            tweetNumber: Schema.Number,
-                            content: Schema.String,
-                            isOpening: Schema.Boolean
-                        }))
-                    }),
-                    videoDetails: Schema.optional(Schema.Struct({
-                        title: Schema.String,
-                        channelTitle: Schema.String,
-                        thumbnailUrl: Schema.NullOr(Schema.String),
-                        publishedAt: Schema.String
-                    }))
-                }),
-            })),
             getComments: Effect.fn("getComments")(post({
                 url: "/youtube/comments",
                 req: Schema.Struct({ 
@@ -119,14 +90,6 @@ export const searchVideos = (
 ) => Effect.gen(function* () {
     const api = yield* Api;
     return yield* api.searchVideos({ query });
-});
-
-export const generateThreads = (
-    youtubeUrl: string,
-    language?: string
-) => Effect.gen(function* () {
-    const api = yield* Api;
-    return yield* api.generateThreads({ youtubeUrl, language });
 });
 
 export const getComments = (

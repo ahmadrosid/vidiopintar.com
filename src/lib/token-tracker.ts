@@ -5,7 +5,7 @@ export interface TokenUsageData {
   userId: string;
   model: string;
   provider: 'openai' | 'google';
-  operation: 'chat' | 'summary' | 'quick_start_questions' | 'thread_generator';
+  operation: 'chat' | 'summary' | 'quick_start_questions';
   inputTokens: number;
   outputTokens: number;
   videoId?: string;
