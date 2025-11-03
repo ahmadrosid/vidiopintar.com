@@ -20,7 +20,26 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Vidiopintar - Learn anything from YouTube with AI!",
-  description: "Learn from YouTube videos with ai chat, note-taking, and quizz",
+  description: "Learn from YouTube videos with AI chat",
+  openGraph: {
+    title: "Vidiopintar - Learn anything from YouTube with AI!",
+    description: "Learn from YouTube videos with AI chat",
+    images: [
+      {
+        url: "/images/vidiopintar-og.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Vidiopintar - Learn anything from YouTube with AI",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vidiopintar - Learn anything from YouTube with AI!",
+    description: "Learn from YouTube videos with AI chat",
+    images: ["/images/vidiopintar-og.jpeg"],
+  },
 }
 
 export default async function RootLayout({
