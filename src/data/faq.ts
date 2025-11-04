@@ -7,22 +7,12 @@ export interface FAQItem {
 export const faqData: FAQItem[] = [
   // Core Product Questions (High Search Volume)
   {
-    question: "What is an AI YouTube summarizer and how does it work?",
-    answer: "An AI YouTube summarizer like VidioPintar uses artificial intelligence to analyze video transcripts and extract key insights automatically. Simply paste any YouTube video URL, and our AI generates instant summaries, outlines, key takeaways, and actionable next steps - saving you hours of watch time while helping you learn faster.",
+    question: "What is VidioPintar and how does it work?",
+    answer: "VidioPintar is an AI YouTube summarizer that uses artificial intelligence to analyze video transcripts and extract key insights automatically. Simply paste any YouTube video URL, and our AI generates instant summaries, outlines, key takeaways, and actionable next steps. You can also chat with the video content to ask specific questions, request clarifications, or explore concepts in depth - transforming passive watching into active learning.",
     category: "Getting Started"
   },
   {
-    question: "Can I chat with YouTube videos using AI?",
-    answer: "Yes! VidioPintar lets you have interactive conversations with any YouTube video content. After processing a video, you can ask the AI specific questions about topics discussed, request clarifications, get examples, or explore concepts in depth - making passive watching into active learning.",
-    category: "Getting Started"
-  },
-  {
-    question: "How do I get a transcript and summary of a YouTube video?",
-    answer: "To get a YouTube video transcript and AI-generated summary, paste the video URL into VidioPintar. Our AI will instantly extract the transcript, create a comprehensive summary with key points, generate an outline, and provide actionable takeaways - all without watching the entire video.",
-    category: "Getting Started"
-  },
-  {
-    question: "Is there a free YouTube AI learning tool?",
+    question: "Is there a free plan available?",
     answer: "Yes, VidioPintar offers a free plan that lets you process up to 2 YouTube videos per day with AI-powered summaries and basic insights. It's perfect for students, professionals, and anyone who wants to learn faster from YouTube content without commitment.",
     category: "Getting Started"
   },
@@ -46,13 +36,8 @@ export const faqData: FAQItem[] = [
 
   // Pricing & Value Questions
   {
-    question: "How much does Vidiopintar cost?",
-    answer: "VidioPintar offers three plans: Free (2 videos/day with basic summaries), Monthly (IDR 50,000 for unlimited videos and advanced AI insights), and Yearly (IDR 500,000 - save 20%). All plans include AI summaries, video chat, and personal library access. Start free and upgrade anytime.",
-    category: "Pricing"
-  },
-  {
-    question: "What's the difference between free and premium YouTube AI tools?",
-    answer: "VidioPintar's free plan processes 2 videos daily with basic summaries - great for casual learners. Premium plans (starting at IDR 50,000/month) unlock unlimited video processing, advanced AI insights with deeper analysis, instant summaries, and priority email support - ideal for professionals, students, and content creators who learn from YouTube daily.",
+    question: "How much does VidioPintar cost and what's included?",
+    answer: "VidioPintar offers three plans: Free (2 videos/day with basic summaries), Monthly (IDR 50,000 for unlimited videos and advanced AI insights), and Yearly (IDR 500,000 - save 20%). Premium plans unlock unlimited video processing, advanced AI insights with deeper analysis, instant summaries, and priority email support - ideal for professionals, students, and content creators who learn from YouTube daily.",
     category: "Pricing"
   },
 
