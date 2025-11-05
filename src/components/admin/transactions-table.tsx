@@ -270,7 +270,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
 
   if (transactions.length === 0) {
     return (
-      <Card className="shadow-none">
+      <Card className="rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
         <div className="flex items-center justify-center py-24">
           <div className="text-center">
             <h3 className="text-lg font-medium mb-2">No transactions</h3>
@@ -284,16 +284,16 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
   }
 
   return (
-    <Card className="shadow-none">
+    <Card className="rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
       {/* Compact Filter Header */}
-      <div className="border-b px-4 py-3 bg-white">
+      <div className="border-b px-4 py-3 bg-card/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="h-8 px-3 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              className="h-9 px-4 text-sm font-medium rounded-xs hover:bg-accent/80 transition"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -303,27 +303,27 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                 <ChevronDown className="h-4 w-4 ml-2" />
               )}
             </Button>
-            
+
             {hasActiveFilters && (
               <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1 text-xs text-blue-600">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  Filters active
+                <div className="flex items-center gap-1.5 text-xs font-medium">
+                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                  <span className="text-primary">Filters active</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={resetFilters}
-                  className="h-7 px-2 text-xs text-gray-600 hover:bg-gray-100"
+                  className="h-7 px-3 text-xs rounded-xs hover:bg-accent/80 transition"
                 >
-                  <RotateCcw className="h-3 w-3 mr-1" />
+                  <RotateCcw className="h-3 w-3 mr-1.5" />
                   Reset
                 </Button>
               </div>
             )}
           </div>
-          
-          <div className="text-sm text-gray-500">
+
+          <div className="text-sm text-muted-foreground font-medium">
             {filteredTransactions.length !== transactions.length ? (
               <>Showing {filteredTransactions.length} of {transactions.length} transactions</>
             ) : (
@@ -335,20 +335,20 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
 
       {/* Collapsible Filter Content */}
       {showFilters && (
-        <div className="border-b bg-gray-50/30 p-4">
+        <div className="border-b bg-accent/30 p-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <Input
               placeholder="Search by reference, name, or email..."
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="h-9 flex-1"
+              className="h-10 flex-1 rounded-xs"
             />
-            
+
             <Select
               value={filters.status}
               onValueChange={(value) => setFilters(prev => ({ ...prev, status: value }))}
             >
-              <SelectTrigger className="h-9 w-full sm:w-48">
+              <SelectTrigger className="h-10 w-full sm:w-48 rounded-xs">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -359,12 +359,12 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select
               value={filters.planType}
               onValueChange={(value) => setFilters(prev => ({ ...prev, planType: value }))}
             >
-              <SelectTrigger className="h-9 w-full sm:w-48">
+              <SelectTrigger className="h-10 w-full sm:w-48 rounded-xs">
                 <SelectValue placeholder="All plans" />
               </SelectTrigger>
               <SelectContent>

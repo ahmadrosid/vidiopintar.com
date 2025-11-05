@@ -26,7 +26,7 @@ export default async function AdminUsersPage() {
 
   return (
     <main className="bg-accent dark:bg-background">
-      <div className="container max-w-6xl w-full mx-auto py-8 px-4">
+      <div className="container max-w-[1328px] w-full mx-auto py-8 px-4">
         <AdminNavigation
           title="User Analytics Dashboard"
           description="User retention and engagement insights for vidiopintar.com"

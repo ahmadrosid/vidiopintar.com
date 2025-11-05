@@ -65,7 +65,7 @@ export function AdminFeedbackPage({ initialFeedback, initialStats }: AdminFeedba
 
   return (
     <main className="bg-accent dark:bg-background min-h-screen">
-      <div className="container max-w-6xl w-full mx-auto py-8 px-4">
+      <div className="container max-w-[1328px] w-full mx-auto py-8 px-4">
         <AdminNavigation
           title="Feedback Analytics"
           description="User feedback insights for vidiopintar.com"
@@ -73,7 +73,7 @@ export function AdminFeedbackPage({ initialFeedback, initialStats }: AdminFeedba
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Feedback</CardTitle>
               <MessageCircle className="h-4 w-4 text-muted-foreground" />
@@ -86,7 +86,7 @@ export function AdminFeedbackPage({ initialFeedback, initialStats }: AdminFeedba
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Positive Rating</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -99,7 +99,7 @@ export function AdminFeedbackPage({ initialFeedback, initialStats }: AdminFeedba
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">With Comments</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -112,14 +112,14 @@ export function AdminFeedbackPage({ initialFeedback, initialStats }: AdminFeedba
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg Rating</CardTitle>
               <Star className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {stats.total > 0 
+                {stats.total > 0
                   ? ((stats.byRating.love_it * 3 + stats.byRating.decent * 2 + stats.byRating.bad * 1) / stats.total).toFixed(1)
                   : '0.0'}
               </div>
@@ -132,7 +132,7 @@ export function AdminFeedbackPage({ initialFeedback, initialStats }: AdminFeedba
 
         {/* Rating Breakdown */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card className="shadow-none">
+          <Card className="rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader>
               <CardTitle className="text-lg">Rating Distribution</CardTitle>
             </CardHeader>
@@ -185,7 +185,7 @@ export function AdminFeedbackPage({ initialFeedback, initialStats }: AdminFeedba
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader>
               <CardTitle className="text-lg">Feedback Types</CardTitle>
             </CardHeader>

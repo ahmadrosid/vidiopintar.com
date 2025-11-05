@@ -25,16 +25,16 @@ export default async function AdminTransactionsPage() {
 
   return (
     <main className="bg-accent dark:bg-background">
-      <div className="container max-w-6xl w-full mx-auto py-8 px-4">
-        <AdminNavigation 
-          title="Transaction Management" 
+      <div className="container max-w-[1328px] w-full mx-auto py-8 px-4">
+        <AdminNavigation
+          title="Transaction Management"
           description="Payment transactions and revenue monitoring"
           currentPath="/admin/transactions"
         />
-        
+
         {/* Transaction Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending</CardTitle>
               <Clock className="h-4 w-4 text-muted-foreground" />
@@ -47,7 +47,7 @@ export default async function AdminTransactionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Confirmed</CardTitle>
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
@@ -60,7 +60,7 @@ export default async function AdminTransactionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Transactions</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
@@ -73,7 +73,7 @@ export default async function AdminTransactionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -92,7 +92,7 @@ export default async function AdminTransactionsPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />

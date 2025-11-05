@@ -14,7 +14,7 @@ export default async function AdminCostPage() {
 
   return (
     <main className="bg-accent dark:bg-background">
-      <div className="container max-w-6xl w-full mx-auto py-8 px-4">
+      <div className="container max-w-[1328px] w-full mx-auto py-8 px-4">
         <AdminNavigation
           title="Cost Analytics"
           description="LLM usage costs and top spending users"
@@ -22,7 +22,7 @@ export default async function AdminCostPage() {
 
         {/* Cost Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Cost</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -35,7 +35,7 @@ export default async function AdminCostPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Users</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -48,7 +48,7 @@ export default async function AdminCostPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
               <Calculator className="h-4 w-4 text-muted-foreground" />
@@ -61,7 +61,7 @@ export default async function AdminCostPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-none">
+          <Card className="rounded-xs border-t-3 border-card hover:border-accent transition hover:bg-card/85 shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg Cost/Request</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -76,7 +76,7 @@ export default async function AdminCostPage() {
         </div>
 
         {/* Top Users by Cost */}
-        <Card className="shadow-none">
+        <Card className="rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
           <CardHeader>
             <CardTitle className="text-lg font-semibold">Top 10 Users by LLM Cost</CardTitle>
           </CardHeader>

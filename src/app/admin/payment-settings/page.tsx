@@ -118,7 +118,7 @@ export default function PaymentSettingsPage() {
   if (loading) {
     return (
       <main className="bg-accent dark:bg-background min-h-screen">
-        <div className="container max-w-6xl w-full mx-auto py-8 px-4">
+        <div className="container max-w-[1328px] w-full mx-auto py-8 px-4">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
             <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
@@ -135,13 +135,13 @@ export default function PaymentSettingsPage() {
 
   return (
     <main className="bg-accent dark:bg-background min-h-screen">
-      <div className="container max-w-6xl w-full mx-auto py-8 px-4">
-        <AdminNavigation 
-          title="Payment Settings" 
+      <div className="container max-w-[1328px] w-full mx-auto py-8 px-4">
+        <AdminNavigation
+          title="Payment Settings"
           description="Configure bank details and WhatsApp settings for manual payment processing"
         />
-        
-        <Card className="shadow-none">
+
+        <Card className="rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
           <CardHeader>
             <CardTitle>Payment Configuration</CardTitle>
             <CardDescription>
@@ -235,7 +235,7 @@ export default function PaymentSettingsPage() {
         </Card>
 
       {settings && (
-        <Card className="mt-6 shadow-none">
+        <Card className="mt-6 rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)]">
           <CardHeader>
             <CardTitle>Preview</CardTitle>
             <CardDescription>
