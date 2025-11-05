@@ -94,7 +94,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
             placeholder={t("videoList.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 ml-0.5 w-64 rounded-full"
+            className="pl-10 ml-0.5 w-64 rounded-full h-fit py-1 bg-white! text-black text-sm placeholder:text-sm placeholder:text-muted-foreground"
           />
         </div>
         <Button
