@@ -41,7 +41,7 @@ export default async function VideoPage(props: {
               </div>
 
               <div className="space-y-4">
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="bg-card border rounded-lg p-4">
                   <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
                     {t("premiumBenefits")}
                   </h3>
@@ -55,7 +55,7 @@ export default async function VideoPage(props: {
 
                 <div className="flex flex-col gap-3">
                   <Link href="/profile/billing">
-                    <Button className="w-full">
+                    <Button className="w-full cursor-pointer">
                       <Crown className="w-4 h-4 mr-2" />
                       {t("upgradeNow")}
                     </Button>

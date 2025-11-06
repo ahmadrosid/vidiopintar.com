@@ -129,7 +129,7 @@ export function FormStartLearning({ isFooter }: { isFooter?: boolean }) {
               type="text"
               name="videoUrl"
               placeholder="Paste youtube url.."
-              className="pr-12 text-slate-950" // extra padding so text doesn't overlap button
+              className="pr-12 text-slate-950"
             />
             <ButtonSubmitStartLearning isSubmitting={isSubmitting} />
           </div>
