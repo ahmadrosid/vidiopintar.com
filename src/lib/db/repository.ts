@@ -26,7 +26,6 @@ export type Feedback = InferSelectModel<typeof feedback>
 export type NewFeedback = InferInsertModel<typeof feedback>
 
 export const VideoRepository = {
-  // Get all user_videos for a user, joined with video details
   async getAllForUserWithDetails(userId: string) {
     return await db
       .select({
@@ -42,25 +41,20 @@ export const VideoRepository = {
       .where(eq(userVideos.userId, userId))
       .orderBy(desc(userVideos.createdAt))
   },
-  // Get a video by YouTube ID
   async getByYoutubeId(youtubeId: string): Promise<Video | undefined> {
     const result = await db.select().from(videos).where(eq(videos.youtubeId, youtubeId))
     return result[0]
   },
 
-  // Create a new video
   async create(video: NewVideo): Promise<Video> {
     const result = await db.insert(videos).values(video).returning()
     return result[0]
   },
 
-  // Upsert a video (create if not exists, update if exists)
   async upsert(video: NewVideo): Promise<Video> {
-    // Check if video exists
     const existingVideo = await this.getByYoutubeId(video.youtubeId)
 
     if (existingVideo) {
-      // Update existing video
       const result = await db
         .update(videos)
         .set({ ...video, updatedAt: new Date() })
@@ -68,19 +62,15 @@ export const VideoRepository = {
         .returning()
       return result[0]
     } else {
-      // Create new video
       return await this.create(video)
     }
   },
 
-  // Fetch all videos
   async getAll(): Promise<Video[]> {
-    // Order by creation timestamp descending
     return await db.select().from(videos).orderBy(desc(videos.createdAt))
   },
 
   async delete(id: number): Promise<void> {
-    // check if video is exists if not throw error
     const video = await db.select().from(videos).where(eq(videos.id, id)).limit(1)
     if (video.length === 0) {
       throw new Error("Video not found")
@@ -90,7 +80,6 @@ export const VideoRepository = {
 }
 
 export const MessageRepository = {
-  // Get all messages for a user_video (user-video relationship)
   async getByUserVideoId(userVideoId: number): Promise<Message[]> {
     return await db
       .select()
@@ -106,16 +95,13 @@ export const MessageRepository = {
 }
 
 export const UserVideoRepository = {
-  // Get a user_video by id
   async getById(id: number): Promise<UserVideo | undefined> {
     const result = await db.select().from(userVideos).where(eq(userVideos.id, id))
     return result[0]
   },
-  // Delete a user_video by id
   async delete(id: number): Promise<void> {
     await db.delete(userVideos).where(eq(userVideos.id, id))
   },
-  // Get a user_video by userId and youtubeId
   async getByUserAndYoutubeId(userId: string, youtubeId: string): Promise<UserVideo | undefined> {
     const result = await db
       .select()
@@ -124,38 +110,58 @@ export const UserVideoRepository = {
     return result[0]
   },
 
-  // Create a new user_video
   async create(userVideo: NewUserVideo): Promise<UserVideo> {
     const result = await db.insert(userVideos).values(userVideo).returning()
     return result[0]
   },
 
-  // Upsert a user_video (create if not exists, update if exists)
   async upsert(userVideo: NewUserVideo): Promise<UserVideo> {
-    const existingUserVideo = await this.getByUserAndYoutubeId(
-      userVideo.userId!,
-      userVideo.youtubeId!
-    )
-
-    if (existingUserVideo) {
-      // Update existing user_video
+    try {
       const result = await db
-        .update(userVideos)
-        .set({ summary: userVideo.summary, updatedAt: new Date() })
-        .where(eq(userVideos.id, existingUserVideo.id))
+        .insert(userVideos)
+        .values({
+          ...userVideo,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: [userVideos.userId, userVideos.youtubeId],
+          set: {
+            summary: userVideo.summary,
+            quickStartQuestions: userVideo.quickStartQuestions,
+            updatedAt: new Date(),
+          },
+        })
         .returning()
       return result[0]
-    } else {
-      // Create new user_video
-      return await this.create({
-        ...userVideo,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
+    } catch (error) {
+      console.warn('ON CONFLICT failed, falling back to check-then-insert:', error)
+      const existingUserVideo = await this.getByUserAndYoutubeId(
+        userVideo.userId!,
+        userVideo.youtubeId!
+      )
+
+      if (existingUserVideo) {
+        const result = await db
+          .update(userVideos)
+          .set({
+            summary: userVideo.summary,
+            quickStartQuestions: userVideo.quickStartQuestions,
+            updatedAt: new Date()
+          })
+          .where(eq(userVideos.id, existingUserVideo.id))
+          .returning()
+        return result[0]
+      } else {
+        return await this.create({
+          ...userVideo,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+      }
     }
   },
 
-  // Update summary for a user_video
   async updateSummary(id: number, summary: string): Promise<UserVideo | undefined> {
     const result = await db
       .update(userVideos)
@@ -165,7 +171,6 @@ export const UserVideoRepository = {
     return result[0]
   },
 
-  // Update quickStartQuestions for a user_video
   async updateQuickStartQuestions(
     id: number,
     quickStartQuestions: string[]
@@ -178,7 +183,6 @@ export const UserVideoRepository = {
     return result[0]
   },
 
-  // Get all user_videos for a user
   async getAllByUser(userId: string): Promise<UserVideo[]> {
     return await db
       .select()
@@ -187,14 +191,12 @@ export const UserVideoRepository = {
       .orderBy(desc(userVideos.createdAt))
   },
 
-  // Clear all messages for a user_video
   async clearMessages(userVideoId: number): Promise<void> {
     await db.delete(messages).where(eq(messages.userVideoId, userVideoId))
   },
 }
 
 export const TranscriptRepository = {
-  // Get all transcript segments for a video
   async getByVideoId(videoId: string) {
     return await db
       .select()
@@ -203,7 +205,6 @@ export const TranscriptRepository = {
       .orderBy(transcriptSegments.start)
   },
 
-  // Insert multiple segments (after deleting existing ones)
   async upsertSegments(
     videoId: string,
     segments: Array<{ start: string; end: string; text: string; isChapterStart: boolean }>
@@ -224,19 +225,16 @@ export const TranscriptRepository = {
 }
 
 export const SharedVideoRepository = {
-  // Create a new shared video
   async create(sharedVideo: NewSharedVideo): Promise<SharedVideo> {
     const result = await db.insert(sharedVideos).values(sharedVideo).returning()
     return result[0]
   },
 
-  // Get a shared video by slug
   async getBySlug(slug: string): Promise<SharedVideo | undefined> {
     const result = await db.select().from(sharedVideos).where(eq(sharedVideos.slug, slug))
     return result[0]
   },
 
-  // Get all shared videos by owner ID
   async getByOwnerId(ownerId: string): Promise<SharedVideo[]> {
     return await db
       .select()
@@ -245,7 +243,6 @@ export const SharedVideoRepository = {
       .orderBy(desc(sharedVideos.createdAt))
   },
 
-  // Get shared video with video details
   async getBySlugWithDetails(slug: string) {
     const result = await db
       .select({
@@ -271,12 +268,10 @@ export const SharedVideoRepository = {
     return result[0]
   },
 
-  // Delete a shared video
   async delete(id: number): Promise<void> {
     await db.delete(sharedVideos).where(eq(sharedVideos.id, id))
   },
 
-  // Check if a YouTube video is already shared by a specific owner
   async isSharedByOwner(youtubeId: string, ownerId: string): Promise<boolean> {
     const result = await db
       .select()
@@ -288,13 +283,11 @@ export const SharedVideoRepository = {
 }
 
 export const UserRepository = {
-  // Get a user by ID
   async getById(id: string): Promise<User | undefined> {
     const result = await db.select().from(user).where(eq(user.id, id))
     return result[0]
   },
 
-  // Update user's preferred language
   async updatePreferredLanguage(userId: string, language: 'en' | 'id'): Promise<User | undefined> {
     const result = await db
       .update(user)
@@ -304,7 +297,6 @@ export const UserRepository = {
     return result[0]
   },
 
-  // Get user's preferred language
   async getPreferredLanguage(userId: string): Promise<string | undefined> {
     const result = await db
       .select({ preferredLanguage: user.preferredLanguage })
@@ -315,18 +307,15 @@ export const UserRepository = {
 }
 
 export const FeedbackRepository = {
-  // Create new feedback
   async create(feedbackData: NewFeedback): Promise<Feedback> {
     const result = await db.insert(feedback).values(feedbackData).returning()
     return result[0]
   },
 
-  // Get all feedback for analytics (admin use)
   async getAll(): Promise<Feedback[]> {
     return await db.select().from(feedback).orderBy(desc(feedback.createdAt))
   },
 
-  // Get feedback by user ID
   async getByUserId(userId: string): Promise<Feedback[]> {
     return await db
       .select()
@@ -335,7 +324,6 @@ export const FeedbackRepository = {
       .orderBy(desc(feedback.createdAt))
   },
 
-  // Get feedback by type
   async getByType(type: string): Promise<Feedback[]> {
     return await db
       .select()
@@ -344,7 +332,6 @@ export const FeedbackRepository = {
       .orderBy(desc(feedback.createdAt))
   },
 
-  // Check if user has already provided feedback for a specific message
   async existsByUserAndMessage(userId: string, messageId: string): Promise<boolean> {
     const result = await db
       .select({ id: feedback.id })
@@ -353,7 +340,6 @@ export const FeedbackRepository = {
         and(
           eq(feedback.userId, userId),
           eq(feedback.type, 'chat_response'),
-          // Use SQL to extract messageId from metadata JSON
           sql`${feedback.metadata}->>'messageId' = ${messageId}`
         )
       )
@@ -362,13 +348,11 @@ export const FeedbackRepository = {
     return result.length > 0
   },
 
-  // Get feedback by ID
   async getById(id: number): Promise<Feedback | undefined> {
     const result = await db.select().from(feedback).where(eq(feedback.id, id))
     return result[0]
   },
 
-  // Delete feedback by ID
   async delete(id: number): Promise<void> {
     const result = await db.delete(feedback).where(eq(feedback.id, id))
     if (result.rowCount === 0) {

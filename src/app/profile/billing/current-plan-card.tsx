@@ -82,20 +82,14 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
   };
 
   const plan = planDetails[currentPlan];
-  const IconComponent = plan.icon;
 
   return (
-    <Card className={`${plan.bgColor} border-2 shadow-none`}>
+    <Card className="bg-card transition-all shadow-[0px_6px_20px_2px_#00000033]">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-full bg-white dark:bg-gray-800 ${plan.color}`}>
-              <IconComponent className="h-5 w-5" />
-            </div>
-            <div>
-              <CardTitle className="text-lg">{tBilling('currentPlan.title')}</CardTitle>
-              <p className="text-sm text-muted-foreground">{tBilling('currentPlan.description')}</p>
-            </div>
+          <div>
+            <CardTitle className="text-lg text-primary">{tBilling('currentPlan.title')}</CardTitle>
+            <p className="text-sm text-secondary-foreground">{tBilling('currentPlan.description')}</p>
           </div>
           <Badge variant={currentPlan === 'yearly' ? 'default' : currentPlan === 'monthly' ? 'secondary' : 'outline'}>
             {plan.name}
@@ -105,24 +99,24 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{plan.price}</span>
-            {plan.period && <span className="text-sm text-muted-foreground">/ {plan.period}</span>}
+            <span className="text-4xl font-semibold text-primary">{plan.price}</span>
+            {plan.period && <span className="text-[0.9375rem] text-secondary-foreground">/ {plan.period}</span>}
           </div>
           
           {subscriptionDetails && (
-            <div className="mb-4 p-3 bg-white dark:bg-gray-900 rounded-lg border">
+            <div className="mb-4 p-4 bg-card/50 rounded-xs border-2 border-dashed border-accent">
               <div className="flex items-center gap-2 mb-2">
-                <Clock className="h-4 w-4 text-gray-500" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <Clock className="h-4 w-4 text-accent" />
+                <span className="text-[0.9375rem] font-semibold text-primary">
                   Subscription Status
                 </span>
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-[0.9375rem] text-secondary-foreground">
                 <p>
                   Expires on {formatExpirationDate(subscriptionDetails.expiresAt)}
                 </p>
-                <p className="text-xs mt-1">
-                  {getDaysUntilExpiry(subscriptionDetails.expiresAt) > 0 
+                <p className="text-sm mt-1">
+                  {getDaysUntilExpiry(subscriptionDetails.expiresAt) > 0
                     ? `${getDaysUntilExpiry(subscriptionDetails.expiresAt)} days remaining`
                     : 'Expired'
                   }
@@ -131,12 +125,12 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
             </div>
           )}
 
-          <div className="space-y-2">
-            <h4 className="font-medium text-sm">{tBilling('currentPlan.features')}</h4>
+          <div className="space-y-3">
+            <h4 className="font-semibold text-[0.9375rem] text-secondary-foreground">{tBilling('currentPlan.features')}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {plan.features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                <div key={index} className="flex items-center gap-2 text-[0.9375rem] text-primary">
+                  <CheckCircle className="size-4 text-primary flex-shrink-0" />
                   <span>{feature}</span>
                 </div>
               ))}

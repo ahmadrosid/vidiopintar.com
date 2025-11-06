@@ -12,32 +12,36 @@ import { UserVideoRepository } from "@/lib/db/repository";
 import { getCurrentUser } from "./auth";
 import { addSeconds, format } from "date-fns";
 
-async function saveVideoUser(videoId: string, video: Video, segments: any[]) {
+async function saveVideoUser(videoId: string, video: Video, segments: any[], generateSummaryAsync: boolean = false) {
   const user = await getCurrentUser();
-  
-  // First create/get the user video to have the ID
+
   const userVideo = await UserVideoRepository.upsert({
     userId: user.id,
     youtubeId: videoId,
-    summary: '', // Will be updated below
+    summary: '',
   });
-  
-  const summary = await generateUserVideoSummary(video, segments, userVideo.id);
-  
-  // Update with the generated summary
-  return await UserVideoRepository.upsert({
-    userId: user.id,
-    youtubeId: videoId,
-    summary: summary,
-  });
+
+  if (generateSummaryAsync) {
+    generateUserVideoSummary(video, segments, userVideo.id)
+      .then(summary => {
+        return UserVideoRepository.updateSummary(userVideo.id, summary);
+      })
+      .catch(error => {
+        console.error('Failed to generate summary asynchronously:', error);
+      });
+
+    return userVideo;
+  } else {
+    const summary = await generateUserVideoSummary(video, segments, userVideo.id);
+    return await UserVideoRepository.updateSummary(userVideo.id, summary) || userVideo;
+  }
 }
 
 export async function generateUserVideoSummary(video: Video, segments: any[], userVideoId?: number) {
   const transcriptText = segments.map((seg: {text: string}) => seg.text);
   const textToSummarize = `${video.title}\n${video.description ?? ""}\n${transcriptText}`;
-  
-  // Get user's language preference from database
-  let userLanguage: 'en' | 'id' = 'en'; // Default to English
+
+  let userLanguage: 'en' | 'id' = 'en';
   try {
     const user = await getCurrentUser();
     const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
@@ -127,7 +131,6 @@ export async function fetchVideoDetails(videoId: string) {
       description: data.description,
       channelTitle: data.channelTitle,
       publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
-      // Prefer highest-resolution thumbnail available
       thumbnailUrl:
         data.thumbnails?.maxres?.url ||
         data.thumbnails?.standard?.url ||
@@ -148,8 +151,7 @@ export async function fetchVideoDetails(videoId: string) {
     };
   } catch (error) {
     console.error('Error fetching video details:', error);
-    
-    // Fallback to basic info in case of error
+
     return {
       title: `Video ${videoId}`,
       description: "Unable to load video description.",
@@ -183,8 +185,6 @@ export async function fetchVideoTranscript(videoId: string) {
       return { segments, userVideo };
     }
 
-    // No transcript found in database, fetch from API
-
     const videoUrl = `https://www.youtube.com/watch?v=${videoId}`
     const encodedUrl = encodeURIComponent(videoUrl)
     const response = await fetch(`${env.API_BASE_URL}/youtube/transcript?videoUrl=${encodedUrl}`, {
@@ -198,24 +198,21 @@ export async function fetchVideoTranscript(videoId: string) {
     }
     
     const data = await response.json()
-    
+
     const segments = data.content.map((item: any, index: number) => {
-      // Convert start and end times from strings to numbers
-      const start = parseInt(item.start, 10) / 1000 // Convert milliseconds to seconds if needed
-      const end = parseInt(item.end, 10) / 1000 // Convert milliseconds to seconds if needed
+      const start = parseInt(item.start, 10) / 1000
+      const end = parseInt(item.end, 10) / 1000
 
       const baseDate = new Date(0)
       baseDate.setHours(0, 0, 0, 0)
 
       const startTime = addSeconds(baseDate, Number(start))
       const endTime = addSeconds(baseDate, Number(end))
-      
-      // Check if this might be a chapter start (simple heuristic)
-      // We'll consider segments with short text that might be titles as potential chapter starts
-      const isChapterStart = item.text.length < 30 && 
-                            !item.text.includes('segment') && 
+
+      const isChapterStart = item.text.length < 30 &&
+                            !item.text.includes('segment') &&
                             item.text !== 'N/A' &&
-                            (index === 0 || index % 10 === 0) // Just a heuristic
+                            (index === 0 || index % 10 === 0)
 
       return {
         start: format(startTime, 'HH:mm:ss'),
@@ -227,15 +224,12 @@ export async function fetchVideoTranscript(videoId: string) {
 
     await TranscriptRepository.upsertSegments(videoId, segments);
 
-    // Generate and update summary for the video
-    // Only generate summary if none exists
     const video = await VideoRepository.getByYoutubeId(videoId);
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
     if (video) {
       if (!userVideo) {
         userVideo = await saveVideoUser(videoId, video, segments);
       } else {
-        // Generate summary if it doesn't exist
         if (!userVideo.summary) {
           const summary = await generateUserVideoSummary(video, segments, userVideo.id);
           userVideo = await UserVideoRepository.upsert({
@@ -269,8 +263,7 @@ export async function fetchVideoTranscript(videoId: string) {
 }
 
 export async function generateQuickStartQuestions(summary: string, userVideoId?: number, videoId?: string) {
-  // Get user's language preference from database
-  let userLanguage: 'en' | 'id' = 'en'; // Default to English
+  let userLanguage: 'en' | 'id' = 'en';
   try {
     const user = await getCurrentUser();
     const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
@@ -300,8 +293,7 @@ ${summary}
       questions: z.array(z.string()),
     }),
   });
-  
-  // Track token usage
+
   try {
     const user = await getCurrentUser();
     await trackGenerateTextUsage(result, {
@@ -316,10 +308,9 @@ ${summary}
   } catch (error) {
     console.error('Failed to track quick start questions token usage:', error);
   }
-  
+
   const questions = result.object?.questions || [];
-  
-  // Save to database if userVideoId is provided
+
   if (userVideoId && questions.length > 0) {
     await UserVideoRepository.updateQuickStartQuestions(userVideoId, questions);
   }
