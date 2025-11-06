@@ -153,7 +153,7 @@ export function FormStartLearning({ isFooter } : { isFooter?: boolean}) {
                             {t('description')}
                         </p>
 
-                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-lg border">
+                        <div className="bg-card p-4 rounded-lg border">
                             <div className="flex items-center gap-2 mb-2">
                                 <Crown className="h-4 w-4 text-blue-600" />
                                 <span className="font-medium text-sm">{t('premiumBenefits')}</span>
@@ -176,7 +176,7 @@ export function FormStartLearning({ isFooter } : { isFooter?: boolean}) {
                             {t('waitTomorrow')}
                         </Button>
                         <Link href="/profile/billing" className="flex-1">
-                            <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                            <Button className="w-full">
                                 <Crown className="w-4 h-4 mr-2" />
                                 {t('upgradeNow')}
                             </Button>
