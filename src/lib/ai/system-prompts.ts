@@ -160,7 +160,9 @@ Your questions should:
 
 Write questions as if you're having an internal dialogue - sometimes excited ("Oh, so I could..."), sometimes puzzled ("Wait, does this mean I..."), sometimes connecting dots ("This reminds me... could I..."). Match the energy and tone to what's being discussed.
 
-Format: Present only the 4 questions as a numbered list (1-4), without any additional text, explanation, or preamble.`;
+Format: Present only the 4 questions as a numbered list (1-4), without any additional text, explanation, or preamble.
+
+OUTPUT THE QUESTIONS IN ENGLISH.`;
 }
 
 function generateIndonesianQuickStartPrompt(): string {
