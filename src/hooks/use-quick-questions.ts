@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 interface UseQuickQuestionsOptions {
   videoId: string;
@@ -21,15 +21,8 @@ export function useQuickQuestions({
   const [questions, setQuestions] = useState<string[]>(initialQuestions);
   const [isLoading, setIsLoading] = useState(initialQuestions.length === 0);
   const [error, setError] = useState<string | null>(null);
-  const isFetchingRef = useRef(false);
 
   const fetchQuestions = async () => {
-    // Prevent duplicate requests
-    if (isFetchingRef.current) {
-      return;
-    }
-
-    isFetchingRef.current = true;
     setIsLoading(true);
     setError(null);
 
@@ -51,7 +44,6 @@ export function useQuickQuestions({
       console.error('Error fetching questions:', err);
     } finally {
       setIsLoading(false);
-      isFetchingRef.current = false;
     }
   };
 

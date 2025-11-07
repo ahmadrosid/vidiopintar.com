@@ -10,13 +10,11 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
     const user = await getCurrentUser()
     const userId = user.id
 
-    // Get user_video from database
     const userVideo = await UserVideoRepository.getByUserAndYoutubeId(userId, videoId)
     if (!userVideo) {
       return NextResponse.json({ error: "User video not found" }, { status: 404 })
     }
 
-    // Check if summary already exists in DB
     if (userVideo.summary && userVideo.summary.trim() !== '') {
       return NextResponse.json({
         summary: userVideo.summary,
@@ -24,7 +22,6 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       })
     }
 
-    // Fetch video info for title/description
     const video = await VideoRepository.getByYoutubeId(videoId)
     if (!video) {
       return NextResponse.json({ error: "Video not found" }, { status: 404 })
@@ -35,7 +32,6 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       return NextResponse.json({ error: "No transcript available for this video" }, { status: 400 })
     }
 
-    // Get user's language preference
     let userLanguage: 'en' | 'id' = 'en';
     try {
       const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
@@ -46,12 +42,10 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       console.log('Could not get user language preference for summary generation, using default:', error);
     }
 
-    // Generate summary from transcript
     const transcriptText = dbSegments.map((seg) => seg.text).join(" ")
     const textToSummarize = `${video.title}\n${video.description ?? ""}\n${transcriptText}`
     const summary = await generateSummary(textToSummarize, userLanguage, video.youtubeId, userVideo.id)
 
-    // Save to database for future requests
     await UserVideoRepository.updateSummary(userVideo.id, summary)
 
     return NextResponse.json({
