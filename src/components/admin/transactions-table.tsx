@@ -293,7 +293,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
               variant="ghost"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="h-9 px-4 text-sm font-medium rounded-xs hover:bg-accent/80 transition"
+              className="h-9 px-4 text-sm font-medium rounded-xs hover:bg-accent/90 transition-all duration-200"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -307,14 +307,14 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
             {hasActiveFilters && (
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1.5 text-xs font-medium">
-                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+                  <div className="w-2 h-2 bg-accent rounded-full"></div>
                   <span className="text-primary">Filters active</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={resetFilters}
-                  className="h-7 px-3 text-xs rounded-xs hover:bg-accent/80 transition"
+                  className="h-7 px-3 text-xs rounded-xs hover:bg-accent/90 transition-all duration-200"
                 >
                   <RotateCcw className="h-3 w-3 mr-1.5" />
                   Reset
@@ -335,13 +335,13 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
 
       {/* Collapsible Filter Content */}
       {showFilters && (
-        <div className="border-b bg-accent/30 p-6">
+        <div className="border-b bg-card/50 hover:bg-card/85 transition-colors duration-200 p-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <Input
               placeholder="Search by reference, name, or email..."
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="h-10 flex-1 rounded-xs"
+              className="h-10 flex-1 rounded-xs dark:text-black !bg-white"
             />
 
             <Select
@@ -381,7 +381,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="border-b dark:bg-gray-800 dark:border-gray-700">
+            <TableRow className="border-b bg-card/50 hover:bg-card/85 transition-colors duration-200">
               <TableHead className="font-medium min-w-[120px] dark:text-white">Reference</TableHead>
               <TableHead className="font-medium min-w-[150px] dark:text-white">User</TableHead>
               <TableHead className="font-medium min-w-[80px] dark:text-white">Plan</TableHead>
@@ -401,11 +401,11 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
               </TableRow>
             ) : (
               filteredTransactions.map((transaction) => (
-              <TableRow 
-                key={transaction.id} 
-                className={`hover:bg-gray-50/50 ${
-                  transaction.status === 'waiting_confirmation' 
-                    ? 'bg-blue-50/30 border-l-4 border-l-blue-400' 
+              <TableRow
+                key={transaction.id}
+                className={`transition-colors duration-200 hover:bg-card/85 ${
+                  transaction.status === 'waiting_confirmation'
+                    ? 'bg-blue-50/30 dark:bg-blue-900/20 border-l-4 border-l-blue-400'
                     : ''
                 }`}
               >
@@ -477,10 +477,10 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                           <Button
                             size="sm"
                             variant="ghost"
-                            className={`h-8 w-8 p-0 ${
-                              transaction.status === 'waiting_confirmation' 
-                                ? 'text-green-700 hover:text-green-800 hover:bg-green-100 ring-2 ring-green-200' 
-                                : 'text-green-600 hover:text-green-700 hover:bg-green-50'
+                            className={`h-8 w-8 p-0 transition-all duration-200 ${
+                              transaction.status === 'waiting_confirmation'
+                                ? 'text-green-700 hover:text-green-800 hover:bg-green-100/90 ring-2 ring-green-200'
+                                : 'text-green-600 hover:text-green-700 hover:bg-green-50/85'
                             }`}
                             disabled={processingIds.has(transaction.id)}
                             title={transaction.status === 'waiting_confirmation' ? 'Payment confirmation received - Click to confirm' : 'Confirm transaction'}
@@ -539,7 +539,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50/85 transition-all duration-200"
                             disabled={processingIds.has(transaction.id)}
                             title="Cancel transaction"
                           >

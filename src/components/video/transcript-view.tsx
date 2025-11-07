@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import FuzzySearch from "fuzzy-search"
 import { Search, X } from "lucide-react"
 import { useState, useMemo } from "react"
@@ -94,13 +93,13 @@ export function TranscriptView({ transcript }: TranscriptViewProps) {
             placeholder="Search transcript..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-10"
+            className="pl-10 text-black !bg-white/90 h-10"
           />
           {searchQuery && (
             <Button
               variant="ghost"
               onClick={() => handleSearchChange("")}
-              className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1 h-8 w-8 rounded-full"
+              className="absolute right-1 top-1/2 transform text-black -translate-y-1/2 p-1 h-8 w-8 rounded-full"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -116,7 +115,7 @@ export function TranscriptView({ transcript }: TranscriptViewProps) {
               setTimeout(() => setIsCopied(false), 2000)
             })
           }}
-          className="shrink-0"
+          className="shrink-0 h-10"
         >
           {isCopied ? (
             <>
@@ -128,7 +127,7 @@ export function TranscriptView({ transcript }: TranscriptViewProps) {
         </Button>
       </div>
 
-      <ScrollArea className="h-full max-h-[320px] overflow-y-auto">
+      <div className="h-full max-h-[320px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="space-y-1">
           {filteredSegments.map((segment, index) => {
             const hasSearch = searchQuery && searchQuery.trim() !== ""
@@ -136,15 +135,11 @@ export function TranscriptView({ transcript }: TranscriptViewProps) {
             return (
               <div
                 key={index}
-                className={`p-3 mr-1 rounded-xl transition-all duration-200 cursor-pointer ${
-                  hasSearch
-                    ? "bg-accent border border-melody/20 hover:bg-accent/80"
-                    : "hover:bg-secondary/40"
-                }`}
+                className={`p-3 mr-1 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50`}
                 onClick={() => seekAndPlay(parseTimeToSeconds(segment.start))}
               >
               <div className="flex">
-                <span className="text-muted-foreground font-mono mr-3 whitespace-nowrap hover:text-primary transition-colors">
+                <span className="text-muted-foreground font-mono mr-3 whitespace-nowrap transition-colors">
                   {typeof segment.start === 'string' ? segment.start : formatTime(segment.start)}
                 </span>
                 <span className="flex-1">{segment.text}</span>
@@ -153,7 +148,7 @@ export function TranscriptView({ transcript }: TranscriptViewProps) {
             )
           })}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   )
 }
