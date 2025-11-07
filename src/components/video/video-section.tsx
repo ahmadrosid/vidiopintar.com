@@ -2,6 +2,7 @@ import { fetchVideoDetails, fetchVideoTranscript } from "@/lib/youtube";
 import { VideoPlayer } from "@/components/video/video-player";
 import { TranscriptView } from "@/components/video/transcript-view";
 import { CommentsView } from "@/components/video/comments-view";
+import { NotesView } from "@/components/video/notes-view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight } from "lucide-react";
 import { SummarySection } from "@/components/video/summary-section";
@@ -69,6 +70,9 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
             <TabsTrigger value="comments">
               <span className="flex items-center gap-2">{t("comments")}</span>
             </TabsTrigger>
+            <TabsTrigger value="notes">
+              <span className="flex items-center gap-2">{t("notesTab")}</span>
+            </TabsTrigger>
           </TabsList>
           <TabsContent
             value="summary"
@@ -90,6 +94,20 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
             className="h-full overflow-y-auto p-0 m-0"
           >
             <CommentsView videoId={videoId} />
+          </TabsContent>
+          <TabsContent
+            value="notes"
+            className="h-full overflow-y-auto p-0 m-0"
+          >
+            {videoDetails.userVideo?.id ? (
+              <NotesView userVideoId={videoDetails.userVideo.id} />
+            ) : (
+              <div className="p-4 text-center">
+                <p className="text-muted-foreground">
+                  Please add this video to your library first to take notes.
+                </p>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
         <TipsAlert videoId={videoId} />

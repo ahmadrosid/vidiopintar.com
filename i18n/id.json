@@ -146,6 +146,7 @@
     "summary": "Ringkasan",
     "transcript": "Transkrip",
     "comments": "Komentar",
+    "notesTab": "Catatan",
     "chat": "Chat dengan Video",
     "enterYouTubeUrl": "Masukkan URL YouTube",
     "processing": "Memproses video...",
@@ -163,6 +164,24 @@
       "allChannels": "Semua Channel",
       "showLess": "Tampilkan Lebih Sedikit",
       "more": "Lainnya"
+    },
+    "notes": {
+      "title": "Catatan",
+      "addNote": "Tambah Catatan",
+      "notePlaceholder": "Tulis catatan kamu di sini...",
+      "timestamp": "Waktu",
+      "color": "Warna",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "noNotes": "Belum ada catatan. Tambahkan catatan pertama kamu!",
+      "noteCreated": "Catatan berhasil dibuat",
+      "noteUpdated": "Catatan berhasil diperbarui",
+      "noteDeleted": "Catatan berhasil dihapus",
+      "createError": "Gagal membuat catatan",
+      "updateError": "Gagal memperbarui catatan",
+      "deleteError": "Gagal menghapus catatan",
+      "emptyNoteError": "Teks catatan tidak boleh kosong",
+      "deleteConfirm": "Apakah kamu yakin ingin menghapus catatan ini?"
     }
   },
   "auth": {

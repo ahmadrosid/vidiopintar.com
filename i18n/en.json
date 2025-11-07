@@ -146,6 +146,7 @@
     "summary": "Summary",
     "transcript": "Transcript",
     "comments": "Comments",
+    "notesTab": "Notes",
     "chat": "Chat with Video",
     "enterYouTubeUrl": "Enter YouTube URL",
     "processing": "Processing video...",
@@ -163,6 +164,24 @@
       "allChannels": "All Channels",
       "showLess": "Show Less",
       "more": "More"
+    },
+    "notes": {
+      "title": "Notes",
+      "addNote": "Add Note",
+      "notePlaceholder": "Write your note here...",
+      "timestamp": "Timestamp",
+      "color": "Color",
+      "save": "Save",
+      "cancel": "Cancel",
+      "noNotes": "No notes yet. Add your first note!",
+      "noteCreated": "Note created successfully",
+      "noteUpdated": "Note updated successfully",
+      "noteDeleted": "Note deleted successfully",
+      "createError": "Failed to create note",
+      "updateError": "Failed to update note",
+      "deleteError": "Failed to delete note",
+      "emptyNoteError": "Note text cannot be empty",
+      "deleteConfirm": "Are you sure you want to delete this note?"
     }
   },
   "auth": {

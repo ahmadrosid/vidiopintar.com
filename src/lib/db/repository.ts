@@ -1,6 +1,6 @@
 import { db } from "@/lib/db/index"
 import { and, desc, eq, InferInsertModel, InferSelectModel, sql } from "drizzle-orm"
-import { feedback, messages, sharedVideos, transcriptSegments, userVideos, videos } from "./schema"
+import { feedback, messages, notes, sharedVideos, transcriptSegments, userVideos, videos } from "./schema"
 import { user } from "./schema/auth"
 
 export { TokenUsageRepository } from "./repository/token-usage"
@@ -22,6 +22,8 @@ export type Video = InferSelectModel<typeof videos>
 export type NewVideo = InferInsertModel<typeof videos>
 export type Message = InferSelectModel<typeof messages>
 export type NewMessage = InferInsertModel<typeof messages>
+export type Note = InferSelectModel<typeof notes>
+export type NewNote = InferInsertModel<typeof notes>
 export type Feedback = InferSelectModel<typeof feedback>
 export type NewFeedback = InferInsertModel<typeof feedback>
 
@@ -90,6 +92,43 @@ export const MessageRepository = {
 
   async create(message: NewMessage): Promise<Message> {
     const result = await db.insert(messages).values(message).returning()
+    return result[0]
+  },
+}
+
+export const NoteRepository = {
+  async getByUserVideoId(userVideoId: number): Promise<Note[]> {
+    return await db
+      .select()
+      .from(notes)
+      .where(eq(notes.userVideoId, userVideoId))
+      .orderBy(notes.timestamp)
+  },
+
+  async create(note: NewNote): Promise<Note> {
+    const result = await db.insert(notes).values({
+      ...note,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }).returning()
+    return result[0]
+  },
+
+  async update(id: number, updates: Partial<NewNote>): Promise<Note | undefined> {
+    const result = await db
+      .update(notes)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(notes.id, id))
+      .returning()
+    return result[0]
+  },
+
+  async delete(id: number): Promise<void> {
+    await db.delete(notes).where(eq(notes.id, id))
+  },
+
+  async getById(id: number): Promise<Note | undefined> {
+    const result = await db.select().from(notes).where(eq(notes.id, id)).limit(1)
     return result[0]
   },
 }
