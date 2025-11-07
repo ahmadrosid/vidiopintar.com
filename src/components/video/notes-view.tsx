@@ -4,11 +4,11 @@ import { useState } from "react";
 import { useNotes } from "@/hooks/use-notes";
 import { useVideo } from "@/hooks/use-video";
 import { formatTime } from "@/lib/utils";
-import { 
-  NOTE_COLOR_OPTIONS, 
-  NOTE_COLOR_CLASSES, 
+import {
+  NOTE_COLOR_OPTIONS,
+  NOTE_COLOR_CLASSES,
   NOTE_COLOR_DOT_CLASSES,
-  NoteColor 
+  NoteColor,
 } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,9 +20,25 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Loader, StickyNote, Edit2, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+
+// Color border classes for left border indicator
+const NOTE_COLOR_BORDER_CLASSES: Record<NoteColor, string> = {
+  yellow: "bg-yellow-300 dark:bg-yellow-700",
+  blue: "bg-blue-300 dark:bg-blue-700",
+  green: "bg-green-300 dark:bg-green-700",
+  red: "bg-red-300 dark:bg-red-700",
+  purple: "bg-purple-300 dark:bg-purple-700",
+};
 
 interface NotesViewProps {
   userVideoId: number;
@@ -30,9 +46,10 @@ interface NotesViewProps {
 
 export function NotesView({ userVideoId }: NotesViewProps) {
   const t = useTranslations("video.notes");
-  const { notes, isLoading, error, createNote, updateNote, deleteNote } = useNotes({ userVideoId });
+  const { notes, isLoading, error, createNote, updateNote, deleteNote } =
+    useNotes({ userVideoId });
   const { currentTime, seekAndPlay } = useVideo();
-  
+
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [noteText, setNoteText] = useState("");
@@ -47,7 +64,11 @@ export function NotesView({ userVideoId }: NotesViewProps) {
       return;
     }
 
-    const newNote = await createNote(currentTime, noteText.trim(), selectedColor);
+    const newNote = await createNote(
+      currentTime,
+      noteText.trim(),
+      selectedColor
+    );
     if (newNote) {
       toast.success(t("noteCreated"));
       setNoteText("");
@@ -64,7 +85,12 @@ export function NotesView({ userVideoId }: NotesViewProps) {
     setSelectedColor("yellow");
   };
 
-  const handleStartEdit = (id: number, text: string, color: NoteColor, timestamp: number) => {
+  const handleStartEdit = (
+    id: number,
+    text: string,
+    color: NoteColor,
+    timestamp: number
+  ) => {
     setEditingId(id);
     setEditingText(text);
     setEditingColor(color);
@@ -123,7 +149,7 @@ export function NotesView({ userVideoId }: NotesViewProps) {
   }
 
   return (
-    <div className="space-y-4 py-4 px-2">
+    <div className="space-y-4 py-4 px-1">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           <StickyNote className="h-4 w-4 text-muted-foreground" />
@@ -147,15 +173,17 @@ export function NotesView({ userVideoId }: NotesViewProps) {
           <DialogHeader>
             <DialogTitle>{t("addNote")}</DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">{t("timestamp")}:</span>
+              <span className="text-sm text-muted-foreground">
+                {t("timestamp")}:
+              </span>
               <span className="text-sm font-mono text-foreground">
                 {formatTime(currentTime)}
               </span>
             </div>
-            
+
             <Textarea
               placeholder={t("notePlaceholder")}
               value={noteText}
@@ -165,35 +193,42 @@ export function NotesView({ userVideoId }: NotesViewProps) {
             />
 
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{t("color")}:</span>
-              <div className="flex gap-2">
-                {NOTE_COLOR_OPTIONS.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-7 h-7 rounded-full ${NOTE_COLOR_DOT_CLASSES[color]} border-2 ${
-                      selectedColor === color ? "border-foreground scale-110" : "border-transparent"
-                    } transition-all hover:scale-105`}
-                    aria-label={color}
-                  />
-                ))}
-              </div>
+              <span className="text-sm text-muted-foreground">
+                {t("color")}:
+              </span>
+              <Select
+                value={selectedColor}
+                onValueChange={(value) => setSelectedColor(value as NoteColor)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-4 h-4 rounded-full ${NOTE_COLOR_DOT_CLASSES[selectedColor]}`}
+                    />
+                    <SelectValue />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {NOTE_COLOR_OPTIONS.map((color) => (
+                    <SelectItem key={color} value={color}>
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-4 h-4 rounded-full ${NOTE_COLOR_DOT_CLASSES[color]}`}
+                        />
+                        <span className="capitalize">{color}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={handleCloseCreateDialog}
-            >
+            <Button variant="outline" onClick={handleCloseCreateDialog}>
               {t("cancel")}
             </Button>
-            <Button
-              onClick={handleCreateNote}
-            >
-              {t("save")}
-            </Button>
+            <Button onClick={handleCreateNote}>{t("save")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -204,93 +239,115 @@ export function NotesView({ userVideoId }: NotesViewProps) {
           <p className="text-muted-foreground">{t("noNotes")}</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {notes.map((note) => (
-            <div
-              key={note.id}
-              className={`p-3 rounded-md border-l-4 ${NOTE_COLOR_CLASSES[note.color as NoteColor]} transition-all cursor-pointer hover:opacity-90`}
-            >
-              {editingId === note.id ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">{t("timestamp")}:</span>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      value={editingTimestamp}
-                      onChange={(e) => setEditingTimestamp(Number(e.target.value))}
-                      className="w-24 h-7 text-xs"
+        <div className="h-full max-h-[320px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="space-y-1">
+            {notes.map((note) => (
+              <div
+                key={note.id}
+                className={`p-3 mr-1 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50 relative group`}
+                onClick={() => handleJumpToTimestamp(note.timestamp)}
+              >
+                {editingId === note.id ? (
+                  <div
+                    className="space-y-3"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        {t("timestamp")}:
+                      </span>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        value={editingTimestamp}
+                        onChange={(e) =>
+                          setEditingTimestamp(Number(e.target.value))
+                        }
+                        className="w-24 h-7 text-xs"
+                      />
+                      <span className="text-xs font-mono text-muted-foreground">
+                        ({formatTime(editingTimestamp)})
+                      </span>
+                    </div>
+
+                    <Textarea
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      className="min-h-[60px] resize-none text-sm"
+                      autoFocus
                     />
-                    <span className="text-xs font-mono text-muted-foreground">
-                      ({formatTime(editingTimestamp)})
-                    </span>
-                  </div>
-                  
-                  <Textarea
-                    value={editingText}
-                    onChange={(e) => setEditingText(e.target.value)}
-                    className="min-h-[60px] resize-none text-sm"
-                    autoFocus
-                  />
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">{t("color")}:</span>
-                    <div className="flex gap-2">
-                      {NOTE_COLOR_OPTIONS.map((color) => (
-                        <button
-                          key={color}
-                          type="button"
-                          onClick={() => setEditingColor(color)}
-                          className={`w-5 h-5 rounded-full ${NOTE_COLOR_DOT_CLASSES[color]} border-2 ${
-                            editingColor === color ? "border-foreground" : "border-transparent"
-                          } transition-all`}
-                          aria-label={color}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleSaveEdit}
-                      size="sm"
-                      className="flex-1"
-                    >
-                      {t("save")}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingId(null)}
-                    >
-                      {t("cancel")}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-start justify-between gap-2">
-                    <div
-                      className="flex-1 min-w-0"
-                      onClick={() => handleJumpToTimestamp(note.timestamp)}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-mono text-muted-foreground">
-                          {formatTime(note.timestamp)}
-                        </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">
+                        {t("color")}:
+                      </span>
+                      <div className="flex gap-2">
+                        {NOTE_COLOR_OPTIONS.map((color) => (
+                          <button
+                            key={color}
+                            type="button"
+                            onClick={() => setEditingColor(color)}
+                            className={`w-5 h-5 rounded-full ${
+                              NOTE_COLOR_DOT_CLASSES[color]
+                            } border-2 ${
+                              editingColor === color
+                                ? "border-foreground"
+                                : "border-transparent"
+                            } transition-all`}
+                            aria-label={color}
+                          />
+                        ))}
                       </div>
-                      <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
-                        {note.text}
-                      </p>
                     </div>
-                    <div className="flex gap-1 shrink-0">
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleSaveEdit}
+                        size="sm"
+                        className="flex-1"
+                      >
+                        {t("save")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditingId(null)}
+                      >
+                        {t("cancel")}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex">
+                      <div
+                        className={`w-1 h-full absolute left-0 top-0 bottom-0 rounded-l-xs ${
+                          NOTE_COLOR_BORDER_CLASSES[note.color as NoteColor]
+                        }`}
+                      />
+                      <span className="text-muted-foreground font-mono mr-3 whitespace-nowrap transition-colors">
+                        {formatTime(note.timestamp)}
+                      </span>
+                      <span className="flex-1 text-foreground whitespace-pre-wrap">
+                        {note.text}
+                      </span>
+                    </div>
+                    <div
+                      className="flex gap-1 shrink-0 absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Button
                         variant="ghost"
                         size="sm"
                         className="h-7 w-7 p-0"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleStartEdit(note.id, note.text, note.color as NoteColor, note.timestamp);
+                          handleStartEdit(
+                            note.id,
+                            note.text,
+                            note.color as NoteColor,
+                            note.timestamp
+                          );
                         }}
                       >
                         <Edit2 className="h-3 w-3" />
@@ -307,14 +364,13 @@ export function NotesView({ userVideoId }: NotesViewProps) {
                         <Trash2 className="h-3 w-3" />
                       </Button>
                     </div>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
   );
 }
-
