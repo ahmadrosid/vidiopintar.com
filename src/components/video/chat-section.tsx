@@ -1,10 +1,9 @@
 import {
   fetchVideoDetails,
   fetchVideoTranscript,
-  generateQuickStartQuestions,
 } from "@/lib/youtube";
 import { getChatHistory } from "@/lib/storage";
-import { ChatInterface } from "@/components/chat/chat-interface";
+import { ChatInterfaceWrapper } from "@/components/chat/chat-interface-wrapper";
 import { UserPlanService } from "@/lib/user-plan-service";
 import { getCurrentUser } from "@/lib/auth";
 import { AlertTriangle, Clock, Crown } from "lucide-react";
@@ -76,13 +75,25 @@ export async function ChatSection({ videoId, videoDetailsPromise, transcriptProm
   const videoDetails = await videoDetailsPromise;
   const transcript = await transcriptPromise;
 
-  // Handle missing userVideo
+  // Handle missing userVideo or transcript error
   if (!videoDetails.userVideo && !transcript.userVideo) {
+    const errorMessage = transcript.error
+      ? transcript.errorMessage || "Transcript not available for this video"
+      : "Unable to load chat interface. Video details are incomplete.";
+
     return (
-      <div className="p-4 text-center h-screen h-screen-dvh w-full">
-        <p className="text-muted-foreground">
-          Unable to load chat interface. Video details are incomplete.
-        </p>
+      <div className="p-4 text-center h-screen h-screen-dvh w-full border-l">
+        <div className="flex flex-col items-center justify-center h-full gap-4">
+          <AlertTriangle className="h-12 w-12 text-muted-foreground" />
+          <p className="text-muted-foreground max-w-md">
+            {errorMessage}
+          </p>
+          {transcript.error && (
+            <p className="text-sm text-muted-foreground">
+              This video may not have captions available, or captions are disabled by the creator.
+            </p>
+          )}
+        </div>
       </div>
     );
   }
@@ -93,23 +104,15 @@ export async function ChatSection({ videoId, videoDetailsPromise, transcriptProm
   // Load chat history
   const messages = await getChatHistory(videoId, userVideo!.id);
 
-  // Get or generate quick start questions (SLOW - AI operation)
-  let quickStartQuestions = userVideo?.quickStartQuestions ?? [];
-
-  if (quickStartQuestions.length === 0 && userVideo?.summary) {
-    quickStartQuestions = await generateQuickStartQuestions(
-      `${videoDetails.title}\n${videoDetails.description}\nSummary: \n${userVideo.summary}`,
-      userVideo.id,
-      videoId
-    );
-  }
+  // Quick start questions will be loaded client-side to avoid blocking page load
+  const quickStartQuestions = userVideo?.quickStartQuestions ?? [];
 
   return (
-    <ChatInterface
+    <ChatInterfaceWrapper
       videoId={videoId}
       userVideoId={userVideo!.id}
       initialMessages={messages}
-      quickStartQuestions={quickStartQuestions}
+      initialQuestions={quickStartQuestions}
     />
   );
 }

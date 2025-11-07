@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Markdown} from '@/components/ui/markdown';
 import { toast } from 'sonner';
 import { CopyButton } from "@/components/ui/copy-button";
 import { Ellipsis } from '@/components/ui/loader';
+import { Skeleton } from '@/components/ui/skeleton';
+import { RefreshCw } from 'lucide-react';
+import { useVideoSummary } from '@/hooks/use-video-summary';
 
 interface SummarySectionProps {
   videoId: string;
@@ -13,11 +15,12 @@ interface SummarySectionProps {
 }
 
 export function SummarySection({ videoId, initialSummary }: SummarySectionProps) {
-  const [summary, setSummary] = useState(initialSummary);
-  const [isRegenerating, setIsRegenerating] = useState(false);
+  const { summary, isLoading, error, refetch } = useVideoSummary({
+    videoId,
+    initialSummary,
+  });
 
-  const regenerateSummary = useCallback(async () => {
-    setIsRegenerating(true);
+  const regenerateSummary = async () => {
     try {
       const response = await fetch(`/api/videos/${videoId}/regenerate-summary`, {
         method: 'POST',
@@ -28,39 +31,54 @@ export function SummarySection({ videoId, initialSummary }: SummarySectionProps)
       }
 
       const data = await response.json();
-      setSummary(data.summary);
-      toast.success('Summary regenerated successfully!');
+      // After regenerating, refetch to update the UI
+      await refetch();
     } catch (error) {
       console.error('Error regenerating summary:', error);
-      toast.error('Failed to regenerate summary. Please try again.');
-    } finally {
-      setIsRegenerating(false);
+      const errorMessage = 'Unable to generate summary. Please try again.';
+      toast.error(errorMessage);
     }
-  }, [videoId]);
+  };
 
-  useEffect(() => {
-    if (!initialSummary) {
-      regenerateSummary();
-    }
-  }, [initialSummary, regenerateSummary]);
+  const showRegenerateButton = !summary || summary.trim() === '' || summary.includes('Unable to generate summary') || error;
 
-  const showRegenerateButton = !summary || summary.trim() === '' || summary.includes('Unable to generate summary');
+  // Show skeleton loader during initial generation
+  if (isLoading && !summary && !error) {
+    return (
+      <div className="space-y-3 py-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+      </div>
+    );
+  }
 
   return (
     <div>
       {showRegenerateButton ? (
         <div className="text-left py-2">
           <p className="text-muted-foreground mb-4">
-            {!summary ? 'Summary not available' : 'Summary generation failed'}
+            {isLoading ? 'Generating summary...' : (error || (!summary ? 'Summary not available' : 'Summary generation failed'))}
           </p>
           <Button
             onClick={regenerateSummary}
-            disabled={isRegenerating}
+            disabled={isLoading}
             variant="outline"
             className="gap-2 cursor-pointer"
           >
-            {isRegenerating && <Ellipsis className="text-secondary-foreground/25" />}
-            {isRegenerating ? 'Generating...' : 'Generate'}
+            {isLoading ? (
+              <>
+                <Ellipsis className="text-secondary-foreground/25" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="h-4 w-4" />
+                {error ? 'Retry' : 'Generate'}
+              </>
+            )}
           </Button>
         </div>
       ) : (

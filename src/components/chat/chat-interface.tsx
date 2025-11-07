@@ -62,7 +62,7 @@ export function ChatInterface({
           <ChatContainerContent className="flex flex-col gap-4 p-4 h-full justify-center">
             <div>
               <p className="text-left py-2 text-foreground/75 font-semibold tracking-tight">
-                Start your video chat with these quick questions!
+                Start chatting with these quick questions!
               </p>
             </div>
             <div className="flex flex-col gap-2">

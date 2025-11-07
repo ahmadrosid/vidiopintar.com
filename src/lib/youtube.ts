@@ -180,7 +180,12 @@ export async function fetchVideoTranscript(videoId: string) {
       let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
       if (!userVideo) {
         const video = await VideoRepository.getByYoutubeId(videoId);
-        userVideo = await saveVideoUser(videoId, video!, segments);
+        // Create userVideo without generating summary (will be done client-side)
+        userVideo = await UserVideoRepository.upsert({
+          userId: user.id,
+          youtubeId: videoId,
+          summary: '', // Empty initially, will be generated client-side
+        });
       }
       return { segments, userVideo };
     }
@@ -198,6 +203,11 @@ export async function fetchVideoTranscript(videoId: string) {
     }
     
     const data = await response.json()
+
+    // Check if transcript content exists
+    if (!data.content || data.content.length === 0) {
+      throw new Error('No transcript content available')
+    }
 
     const segments = data.content.map((item: any, index: number) => {
       const start = parseInt(item.start, 10) / 1000
@@ -222,23 +232,21 @@ export async function fetchVideoTranscript(videoId: string) {
       }
     })
 
+    // Only save transcript and create userVideo if we have valid segments
     await TranscriptRepository.upsertSegments(videoId, segments);
 
     const video = await VideoRepository.getByYoutubeId(videoId);
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
     if (video) {
       if (!userVideo) {
-        userVideo = await saveVideoUser(videoId, video, segments);
-      } else {
-        if (!userVideo.summary) {
-          const summary = await generateUserVideoSummary(video, segments, userVideo.id);
-          userVideo = await UserVideoRepository.upsert({
-            userId: user.id,
-            youtubeId: videoId,
-            summary: summary,
-          });
-        }
+        // Create userVideo only when we have a valid transcript
+        userVideo = await UserVideoRepository.upsert({
+          userId: user.id,
+          youtubeId: videoId,
+          summary: '', // Empty initially, will be generated client-side
+        });
       }
+      // Update video metadata
       await VideoRepository.upsert({
         youtubeId: videoId,
         title: video.title,
@@ -254,15 +262,23 @@ export async function fetchVideoTranscript(videoId: string) {
     }
   } catch (error) {
     console.error('Error fetching transcript:', error)
+    // Don't create userVideo if transcript is not available
     return {
       segments: [],
       error: true,
-      errorMessage: "Transcript not available for this video"
+      errorMessage: "Transcript not available for this video",
+      userVideo: null
     }
   }
 }
 
-export async function generateQuickStartQuestions(summary: string, userVideoId?: number, videoId?: string) {
+export async function generateQuickStartQuestions(
+  transcriptSegments: Array<{ text: string }>,
+  videoTitle?: string,
+  videoDescription?: string,
+  userVideoId?: number,
+  videoId?: string
+) {
   let userLanguage: 'en' | 'id' = 'en';
   try {
     const user = await getCurrentUser();
@@ -274,14 +290,31 @@ export async function generateQuickStartQuestions(summary: string, userVideoId?:
     console.log('Could not get user language preference for quick start questions, using default:', error);
   }
 
+  // Join transcript segments and truncate if too long
+  const fullTranscript = transcriptSegments.map(seg => seg.text).join(' ');
+
+  // Truncate to approximately 6000 words to manage token usage
+  const words = fullTranscript.split(/\s+/);
+  const truncatedTranscript = words.slice(0, 6000).join(' ');
+
   const promptText = getQuickStartPrompt(userLanguage);
+
+  // Build context with optional video metadata
+  let contextSection = '';
+  if (videoTitle) {
+    contextSection += `Video Title: ${videoTitle}\n`;
+  }
+  if (videoDescription) {
+    contextSection += `Video Description: ${videoDescription}\n`;
+  }
+
   const prompt = `${promptText}
 
-Here is the transcript summary:
+${contextSection ? contextSection + '\n' : ''}Here is the video transcript:
 
-<summary>
-${summary}
-</summary>
+<transcript>
+${truncatedTranscript}
+</transcript>
 `;
 
   const startTime = Date.now();
@@ -314,6 +347,6 @@ ${summary}
   if (userVideoId && questions.length > 0) {
     await UserVideoRepository.updateQuickStartQuestions(userVideoId, questions);
   }
-  
+
   return questions;
 }
