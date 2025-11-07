@@ -30,7 +30,7 @@ export function LatestMessages({ messages }: LatestMessagesProps) {
             <p className="text-sm text-muted-foreground">No messages yet</p>
           ) : (
             messages.map((message) => (
-              <div key={message.id} className="space-y-1 mb-2 border-l-4 border-l-primary pl-4 bg-accent/75 py-2">
+              <div key={message.id} className="space-y-1 mb-2 border-l-4 border-l-primary pl-4 bg-accent/25 py-2">
                 <p className="text-sm line-clamp-2">{message.content}</p>
                 <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                   <span className="font-medium">{message.userName}</span>
