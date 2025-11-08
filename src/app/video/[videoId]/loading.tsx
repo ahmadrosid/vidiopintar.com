@@ -28,17 +28,6 @@ export default function Loading() {
             {/* Tabs and Content */}
             <div className="p-3">
               <Tabs defaultValue="summary" className="w-full">
-                <TabsList>
-                  <TabsTrigger value="summary">
-                    <span className="flex items-center gap-2">Summary</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="transcript">
-                    <span className="flex items-center gap-2">Transcript</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="comments">
-                    <span className="flex items-center gap-2">Comments</span>
-                  </TabsTrigger>
-                </TabsList>
                 <TabsContent
                   value="summary"
                   className="h-full overflow-y-auto p-0 m-0"
