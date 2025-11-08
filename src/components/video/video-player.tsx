@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { Loader } from "lucide-react"
 import { useVideo } from "@/hooks/use-video"
 
 declare global {
@@ -76,7 +77,7 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
     <div className="relative w-full aspect-video bg-black overflow-hidden">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-card">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-spotify"></div>
+          <Loader className="size-12 animate-spin text-spotify" />
         </div>
       )}
       <div ref={playerRef} className="w-full h-full" />

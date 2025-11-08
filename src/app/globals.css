@@ -138,3 +138,13 @@
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
+
+/* Hide scrollbar on wrapper divs created by use-stick-to-bottom library */
+.scrollbar-hidden > div {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hidden > div::-webkit-scrollbar {
+  display: none;
+}

@@ -57,6 +57,7 @@
     "react-is": "^19.1.0",
     "react-markdown": "^10.1.0",
     "react-player": "^3.3.2",
+    "react-resizable-panels": "^3.0.6",
     "react-use-measure": "^2.1.7",
     "recharts": "^3.0.0",
     "remark-breaks": "^4.0.0",

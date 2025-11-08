@@ -49,7 +49,7 @@ export function ChatInterface({
   });
 
   return (
-    <div className="flex flex-col overflow-hidden h-screen h-screen-dvh w-full border-l">
+    <div className="flex flex-col overflow-hidden h-full w-full border-l min-h-0 max-h-full">
       <ChatHeader
         videoId={videoId}
         userVideoId={userVideoId}
@@ -57,7 +57,7 @@ export function ChatInterface({
         setMessages={setMessages}
         isSharePage={isSharePage}
       />
-      <ChatContainerRoot className="relative w-full flex-1 scrollbar-hidden">
+      <ChatContainerRoot className="relative w-full flex-1 min-h-0">
         {messages.length === 0 && quickStartQuestions.length > 0 ? (
           <ChatContainerContent className="flex flex-col gap-4 p-4 h-full justify-center">
             <div>
@@ -99,7 +99,7 @@ export function ChatInterface({
           />
         )}
       </ChatContainerRoot>
-      <div className="p-4">
+      <div className="p-4 flex-shrink-0">
         {isSharePage ? (
           <div className="text-center text-sm text-muted-foreground">
             {isLoggedIn ? (
