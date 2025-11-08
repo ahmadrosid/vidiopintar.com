@@ -8,6 +8,7 @@ import { useState, useEffect, use } from "react";
 import { VideoSearchResults } from "@/components/video/video-search-results";
 import { searchVideos } from "@/lib/services/api";
 import { RuntimeClient } from "@/lib/services/RuntimeClient";
+import { VideoSearchSkeletonGrid } from "@/components/video/video-search-skeleton";
 
 export default function CategoryPage(props: {
   params: Promise<{ slug: string }>;
@@ -76,11 +77,7 @@ export default function CategoryPage(props: {
           {/* Video Cards Section */}
           <div className="w-full mb-8">
             {isLoading ? (
-              <div className="text-center py-12">
-                <p className="text-gray-500 dark:text-gray-400 text-lg">
-                  Loading videos...
-                </p>
-              </div>
+              <VideoSearchSkeletonGrid />
             ) : videos.length > 0 ? (
               <VideoSearchResults results={videos} />
             ) : (
