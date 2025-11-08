@@ -71,40 +71,45 @@ export function CommentsView({ videoId }: CommentsViewProps) {
   };
 
   return (
-    <div className="space-y-0 py-4 px-2">
+    <div className="space-y-4 py-4 px-1">
       <div className="flex items-center gap-2 mb-6">
         <MessageCircle className="h-4 w-4 text-muted-foreground" />
         <h3 className="font-medium text-sm text-muted-foreground">Top Comments ({comments.length})</h3>
       </div>
       
-      <div className="space-y-0">
-        {comments.map((comment) => (
-          <div key={comment.comment_id} className="flex items-start gap-3 py-3 border-l-4 border-primary/35 bg-accent/50 mb-2 px-2">
-            <div className="flex-1 min-w-0">
-              <p className="text-sm leading-relaxed text-foreground/80 pb-1 whitespace-pre-wrap">
-                {comment.text}
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-xs text-muted-foreground truncate">
-                  {comment.author}
-                </span>
-                {comment.like_count > 0 && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
-                    <Heart className="size-3" />
-                    <span>{formatLikeCount(comment.like_count)}</span>
-                  </div>
-                )}
-                {comment.reply_count > 0 && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
-                    <TextQuote className="size-3" />
-                    <span>{comment.reply_count} replies</span>
-                  </div>
-                )}
-                <CopyButton content={comment.text} copyMessage="Copied comment" label="Copy" className="text-primary/75" />
+      <div className="h-full max-h-[320px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="space-y-1">
+          {comments.map((comment) => (
+            <div
+              key={comment.comment_id}
+              className="p-3 mr-1 rounded-xs transition-all duration-200 bg-card hover:bg-card/50"
+            >
+              <div className="flex flex-col gap-2">
+                <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap">
+                  {comment.text}
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-medium text-xs text-muted-foreground truncate">
+                    {comment.author}
+                  </span>
+                  {comment.like_count > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
+                      <Heart className="size-3" />
+                      <span>{formatLikeCount(comment.like_count)}</span>
+                    </div>
+                  )}
+                  {comment.reply_count > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground/70">
+                      <TextQuote className="size-3" />
+                      <span>{comment.reply_count} replies</span>
+                    </div>
+                  )}
+                  <CopyButton content={comment.text} copyMessage="Copied comment" label="Copy" className="text-primary/75" />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
