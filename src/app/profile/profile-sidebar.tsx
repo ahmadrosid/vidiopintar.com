@@ -8,7 +8,8 @@ import {
   Share2, 
   Palette, 
   Bell,
-  CreditCard
+  CreditCard,
+  StickyNote
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -24,6 +25,11 @@ const getSidebarItems = (t: any) => [
     href: "/profile/chat",
     label: t('profileSidebar.chats'),
     icon: MessageSquare,
+  },
+  {
+    href: "/profile/notes",
+    label: t('profileSidebar.notes'),
+    icon: StickyNote,
   },
   {
     href: "/profile/shared",
@@ -51,7 +57,7 @@ export function ProfileSidebar({ onItemClick }: ProfileSidebarProps) {
       <h2 className="text-lg font-semibold mb-4 px-3 lg:hidden">{t('profileSidebar.menu')}</h2>
       <nav className="space-y-1">
         {sidebarItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href !== "/profile" && pathname?.startsWith(item.href));
           return (
             <Link
               key={item.href}

@@ -2,6 +2,7 @@
   "navigation": {
     "home": "Home",
     "profile": "Profile",
+    "notes": "Notes",
     "admin": "Admin",
     "login": "Login",
     "register": "Register",
@@ -225,8 +226,13 @@
       "menu": "Menu",
       "profile": "Profile",
       "chats": "Chats",
+      "notes": "Notes",
       "shared": "Shared",
       "usage": "Usage"
+    },
+    "notes": {
+      "allVideos": "All Videos",
+      "noNotes": "No notes yet. Start taking notes while watching videos!"
     },
     "sharedChats": {
       "title": "Shared Chats",

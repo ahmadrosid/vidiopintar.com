@@ -79,6 +79,15 @@ export const HeroHeader = () => {
                   <GuestMenus isScrolled={isScrolled} t={t} />
                 ) : (
                   <div className="flex gap-2">
+                    <Link href="/profile/notes">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="cursor-pointer"
+                      >
+                        <span>{t("notes")}</span>
+                      </Button>
+                    </Link>
                     <Link href="/profile">
                       <Button
                         variant="ghost"

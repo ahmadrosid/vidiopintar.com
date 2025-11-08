@@ -7,6 +7,7 @@ import { formatTime } from "@/lib/utils";
 import {
   NOTE_COLOR_OPTIONS,
   NOTE_COLOR_DOT_CLASSES,
+  NOTE_COLOR_BORDER_CLASSES,
   NoteColor,
 } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -38,14 +39,6 @@ import {
 import { Loader, StickyNote, Edit2, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-
-const NOTE_COLOR_BORDER_CLASSES: Record<NoteColor, string> = {
-  yellow: "bg-yellow-300 dark:bg-yellow-700",
-  blue: "bg-blue-300 dark:bg-blue-700",
-  green: "bg-green-300 dark:bg-green-700",
-  red: "bg-red-300 dark:bg-red-700",
-  purple: "bg-purple-300 dark:bg-purple-700",
-};
 
 interface NotesViewProps {
   userVideoId: number;

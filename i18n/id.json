@@ -2,6 +2,7 @@
   "navigation": {
     "home": "Beranda",
     "profile": "Profil",
+    "notes": "Catatan",
     "admin": "Admin",
     "login": "Masuk",
     "register": "Daftar",
@@ -225,8 +226,13 @@
       "menu": "Menu",
       "profile": "Profil",
       "chats": "Chat",
+      "notes": "Catatan",
       "shared": "Dibagikan",
       "usage": "Penggunaan"
+    },
+    "notes": {
+      "allVideos": "Semua Video",
+      "noNotes": "Belum ada catatan. Mulai membuat catatan saat menonton video!"
     },
     "sharedChats": {
       "title": "Chat yang Dibagikan",

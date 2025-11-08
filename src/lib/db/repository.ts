@@ -105,6 +105,28 @@ export const NoteRepository = {
       .orderBy(notes.timestamp)
   },
 
+  async getAllByUserIdWithVideoDetails(userId: string) {
+    return await db
+      .select({
+        id: notes.id,
+        userId: notes.userId,
+        userVideoId: notes.userVideoId,
+        timestamp: notes.timestamp,
+        text: notes.text,
+        color: notes.color,
+        createdAt: notes.createdAt,
+        updatedAt: notes.updatedAt,
+        youtubeId: userVideos.youtubeId,
+        videoTitle: videos.title,
+        channelTitle: videos.channelTitle,
+      })
+      .from(notes)
+      .innerJoin(userVideos, eq(notes.userVideoId, userVideos.id))
+      .innerJoin(videos, eq(userVideos.youtubeId, videos.youtubeId))
+      .where(eq(notes.userId, userId))
+      .orderBy(desc(notes.createdAt))
+  },
+
   async create(note: NewNote): Promise<Note> {
     const result = await db.insert(notes).values({
       ...note,

@@ -34,3 +34,12 @@ export const NOTE_COLOR_DOT_CLASSES: Record<NoteColor, string> = {
   purple: "bg-purple-400",
 };
 
+// Color border classes for note borders
+export const NOTE_COLOR_BORDER_CLASSES: Record<NoteColor, string> = {
+  yellow: "bg-yellow-300 dark:bg-yellow-700",
+  blue: "bg-blue-300 dark:bg-blue-700",
+  green: "bg-green-300 dark:bg-green-700",
+  red: "bg-red-300 dark:bg-red-700",
+  purple: "bg-purple-300 dark:bg-purple-700",
+};
+
