@@ -83,7 +83,7 @@ export function PendingPaymentAlert({ transactions, currentPaymentSettings }: Pe
 
   return (
     <>
-      <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950 dark:border-orange-800">
+      <Card className="border-none bg-orange-50 dark:bg-orange-950 rounded-xs">
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
             <div className="flex-shrink-0">

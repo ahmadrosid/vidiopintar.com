@@ -139,7 +139,7 @@ export function UpgradePlansSection({
 
   if (availableUpgrades.length === 0) {
     return (
-      <Card className="bg-card border-t-3 border-accent shadow-[0px_6px_20px_2px_#00000033]">
+      <Card className="bg-card border-none shadow-[0px_6px_20px_2px_#00000033] rounded-xs">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-primary">
             <Crown className="h-5 w-5 text-yellow-500" />
@@ -182,7 +182,7 @@ export function UpgradePlansSection({
             return (
               <Card
                 key={planId}
-                className={`flex flex-col gap-7 bg-card px-7 py-8 rounded-xs min-h-[472px] w-full hover:bg-card/85 transition relative ${
+                className={`flex flex-col gap-7 bg-card px-7 py-8 rounded-xs border-none min-h-[472px] w-full hover:bg-card/85 transition relative ${
                   plan.popular ? "shadow-[0px_6px_20px_2px_#00000033]" : ""
                 }`}
               >

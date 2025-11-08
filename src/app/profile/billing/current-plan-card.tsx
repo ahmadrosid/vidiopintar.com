@@ -84,7 +84,7 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
   const plan = planDetails[currentPlan];
 
   return (
-    <Card className="bg-card transition-all shadow-[0px_6px_20px_2px_#00000033]">
+    <Card className="bg-card border-none transition-all shadow-[0px_6px_20px_2px_#00000033] rounded-xs">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>

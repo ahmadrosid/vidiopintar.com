@@ -34,7 +34,7 @@ export const Testimonial = () => {
         {socialPostsData.map((post) => (
           <div
             key={post.id}
-            className="bg-card hover:bg-card/90 rounded-[6px] pl-5 pr-6 py-7 shadow-lg "
+            className="bg-card hover:bg-card/90 rounded-xs pl-5 pr-6 py-7 shadow-lg "
           >
             <div className="flex items-start space-x-4">
               <img

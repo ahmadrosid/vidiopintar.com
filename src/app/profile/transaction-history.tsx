@@ -93,7 +93,7 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
 
   if (localTransactions.length === 0) {
     return (
-      <Card className="shadow-none">
+      <Card className="shadow-none border-none rounded-xs">
         <CardHeader>
           <CardTitle className="text-lg">Transaction History</CardTitle>
         </CardHeader>
@@ -107,7 +107,7 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
   }
 
   return (
-    <Card className="shadow-none">
+    <Card className="shadow-none border-none rounded-xs">
       <CardHeader>
         <CardTitle className="text-lg">Transaction History</CardTitle>
       </CardHeader>
