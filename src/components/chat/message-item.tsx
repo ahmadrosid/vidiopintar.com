@@ -64,7 +64,7 @@ export function MessageItem({ messages, status, videoId }: MessageItemProps) {
                             </div>
                         ) : (
                             <div className="max-w-[85%] flex-1 sm:max-w-[75%]">
-                                <MessageContent className="bg-secondary text-secondary-foreground p-3" markdown={true}>
+                                <MessageContent className="bg-secondary text-white p-3" markdown={true}>
                                     {message.content}
                                 </MessageContent>
                             </div>
