@@ -20,7 +20,7 @@ export function ProfileContent({ children }: ProfileContentProps) {
 
   return (
     <main className="relative min-h-screen overflow-hidden pt-24">
-      <div className="relative z-10 max-w-5xl px-6 sm:px-6 mx-auto">
+      <div className="relative z-10 max-w-[1328px] px-8 mx-auto">
         {/* Mobile menu button */}
         <div className="lg:hidden flex justify-between items-center mb-6">
           <h2 className="text-lg font-semibold">Account Settings</h2>

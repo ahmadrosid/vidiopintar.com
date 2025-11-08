@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { MessageCircle } from "lucide-react"
 import { FeedbackModal } from "@/components/feedback/feedback-modal"
@@ -43,27 +42,24 @@ export function ProfileFeedback() {
 
   return (
     <>
-      <Card className="shadow-none">
-        <CardContent className="px-4 md:px-6 py-4 md:py-6">
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold">{t('helpUsImprove')}</h2>
-              <p className="text-sm text-muted-foreground">
-                {t('helpUsImproveDesc')}
-              </p>
-            </div>
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              variant="outline"
-              size="sm"
-              className="ml-4 flex-shrink-0"
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              {t('giveFeedback')}
-            </Button>
+      <div className="p-4 rounded-xs transition-all duration-200 bg-card hover:bg-card/50">
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold">{t('helpUsImprove')}</h2>
+            <p className="text-sm text-muted-foreground">
+              {t('helpUsImproveDesc')}
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            variant="outline"
+            size="sm"
+          >
+            <MessageCircle className="h-4 w-4 mr-2" />
+            {t('giveFeedback')}
+          </Button>
+        </div>
+      </div>
 
       <FeedbackModal
         isOpen={isModalOpen}

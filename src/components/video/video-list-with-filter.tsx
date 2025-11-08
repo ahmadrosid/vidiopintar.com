@@ -101,7 +101,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
           variant={selectedChannel === null ? "default" : "secondary"}
           size="sm"
           onClick={() => setSelectedChannel(null)}
-          className="rounded-full px-4 py-2 text-sm whitespace-nowrap"
+          className="rounded-full px-4 py-2 text-sm whitespace-nowrap cursor-pointer"
         >
           {t("videoList.allChannels")}
         </Button>
@@ -113,7 +113,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
             onClick={() =>
               setSelectedChannel(selectedChannel === channel ? null : channel)
             }
-            className="rounded-full px-4 py-2 text-sm whitespace-nowrap flex items-center gap-2"
+            className="rounded-full px-4 py-2 text-sm whitespace-nowrap flex items-center gap-2 cursor-pointer"
           >
             {channel}
           </Button>
@@ -124,7 +124,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
             variant="outline"
             size="sm"
             onClick={() => setShowAllChannels(!showAllChannels)}
-            className="rounded-full px-4 py-2 text-sm whitespace-nowrap"
+            className="rounded-full px-4 py-2 text-sm whitespace-nowrap cursor-pointer"
           >
             {showAllChannels
               ? t("videoList.showLess")

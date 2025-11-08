@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -41,7 +40,7 @@ export function DeleteProfile() {
   };
 
   return (
-    <Card className="p-4 md:p-6 border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/20 shadow-none">
+    <div className="p-4 rounded-xs transition-all duration-200 border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30">
       <h2 className="text-base md:text-lg font-semibold mb-2 text-red-900 dark:text-red-100">{t('dangerZone')}</h2>
       <p className="text-xs md:text-sm text-red-700 dark:text-red-300 mb-4">
         {t('dangerZoneDesc')}
@@ -71,6 +70,6 @@ export function DeleteProfile() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </div>
   );
 }

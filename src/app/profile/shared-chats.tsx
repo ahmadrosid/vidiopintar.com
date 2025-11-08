@@ -27,8 +27,8 @@ export async function SharedChats({ userId }: SharedChatsProps) {
 
   if (shared.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
-        <p>{t('sharedChats.empty')}</p>
+      <div className="p-12 text-center">
+        <p className="text-muted-foreground">{t('sharedChats.empty')}</p>
       </div>
     );
   }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { useTheme } from "next-themes";
 import {
   Select,
@@ -36,7 +35,7 @@ export function UserPreferences({ defaultLanguage }: UserPreferencesProps) {
   if (!isMounted) {
     return (
       <div className="space-y-6">
-        <Card className="p-6 shadow-none">
+        <div className="p-4 rounded-xs transition-all duration-200 bg-card hover:bg-card/50">
           <div className="animate-pulse">
             <div className="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
             <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
@@ -48,14 +47,14 @@ export function UserPreferences({ defaultLanguage }: UserPreferencesProps) {
               <div className="h-3 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <Card className="p-4 md:p-6 shadow-none">
+      <div className="p-4 rounded-xs transition-all duration-200 bg-card hover:bg-card/50">
         <h3 className="text-lg font-semibold mb-4">{t('preferences')}</h3>
         <div className="space-y-6">
           <div>
@@ -79,7 +78,7 @@ export function UserPreferences({ defaultLanguage }: UserPreferencesProps) {
         <div className="text-xs md:text-sm text-gray-500 mt-6">
           <p>{t('preferencesNote')}</p>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

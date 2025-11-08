@@ -39,7 +39,7 @@ export function VideoList({ videos }: VideoListProps) {
         {videos.map((video) => (
           <div key={video.userVideoId} className="relative group">
             <a href={`/video/${video.youtubeId}`}>
-              <Card className=" dark:border-white/10 overflow-hidden rounded-2xl shadow-none">
+              <Card className="overflow-hidden rounded-xs shadow-none border-none bg-card hover:bg-card/50 transition-all duration-200">
                 <CardContent className="p-0 relative">
                   <img
                     src={video.thumbnailUrl!}
