@@ -55,7 +55,7 @@ export default function CategoryPage(props: {
       <main className="relative min-h-screen overflow-hidden">
         <div className="relative z-10 max-w-[1328px] px-8 mx-auto mt-24">
           {/* Hero Section with Background Image */}
-          <div className="relative h-64 overflow-hidden rounded-2xl mb-8">
+          <div className="relative h-64 overflow-hidden rounded-xs mb-8">
             <img
               src={category.image}
               alt={category.label}

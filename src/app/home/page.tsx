@@ -14,7 +14,7 @@ import Link from "next/link";
 function CategoryCard({ image, label, slug }: { image: string; label: string; slug: string }) {
   return (
     <Link href={`/category/${slug}`}>
-      <Card className="rounded-2xl overflow-hidden relative cursor-pointer group hover:shadow-lg transition-shadow dark:border-white/10">
+      <Card className="rounded-xs overflow-hidden relative cursor-pointer group hover:shadow-lg transition-shadow border-none">
         <img src={image} className="w-full h-20 object-cover group-hover:scale-105 transition-all" />
         <div className="absolute inset-0 bg-black/35">
           <div className="p-4 flex justify-center items-center h-full">

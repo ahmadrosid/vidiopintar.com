@@ -86,9 +86,9 @@ export function VideoSearchResults({ results }: VideoSearchResultsProps) {
 
   return (
     <>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         {results.map((video, index) => (
-          <Card key={`${video.id}-${index}`} className="overflow-hidden">
+          <Card key={`${video.id}-${index}`} className="overflow-hidden rounded-xs shadow-none border-none bg-card hover:bg-card/50 transition-all duration-200">
             <div className="aspect-video relative">
               <img 
                 src={video.thumbnails[0]?.url} 

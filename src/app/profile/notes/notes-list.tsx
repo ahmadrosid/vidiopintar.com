@@ -144,7 +144,7 @@ export function NotesList({ userId }: NotesListProps) {
               className="block"
             >
               <div
-                className="p-4 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50 relative group"
+                className="p-4 rounded-xs transition-all duration-200 cursor-pointer bg-card hover:bg-card/50 relative group"
               >
                 <div className="flex flex-col gap-2">
                   {/* Video info */}
