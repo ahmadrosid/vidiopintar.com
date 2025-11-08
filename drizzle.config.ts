@@ -5,6 +5,11 @@ export default {
   out: './src/drizzle',
   dialect: "postgresql",
   dbCredentials: {
-    url: `postgres://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`,
+    host: env.DB_HOST,
+    port: parseInt(env.DB_PORT),
+    user: env.DB_USER,
+    password: env.DB_PASSWORD,
+    database: env.DB_NAME,
+    ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
   },
 };
