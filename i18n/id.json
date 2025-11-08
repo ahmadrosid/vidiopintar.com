@@ -121,7 +121,8 @@
   "home": {
     "title": "Vidiopintar",
     "subtitle": "Apa yang ingin kamu pelajari hari ini?",
-    "chooseTopics": "Pilih topik"
+    "chooseTopics": "Pilih topik",
+    "lastNotes": "Catatan terakhir"
   },
   "topicMarquee": {
     "title": "Pelajari topik apa pun dari YouTube",

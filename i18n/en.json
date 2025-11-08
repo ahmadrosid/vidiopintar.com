@@ -121,7 +121,8 @@
   "home": {
     "title": "Vidiopintar",
     "subtitle": "What do you want to learn today?",
-    "chooseTopics": "Choose topics"
+    "chooseTopics": "Choose topics",
+    "lastNotes": "Last notes"
   },
   "topicMarquee": {
     "title": "Learn any topic from YouTube",
