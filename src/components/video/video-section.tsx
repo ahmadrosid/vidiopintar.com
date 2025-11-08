@@ -70,9 +70,11 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
             <TabsTrigger value="comments">
               <span className="flex items-center gap-2">{t("comments")}</span>
             </TabsTrigger>
-            <TabsTrigger value="notes">
-              <span className="flex items-center gap-2">{t("notesTab")}</span>
-            </TabsTrigger>
+            {videoDetails.userVideo?.id && (
+              <TabsTrigger value="notes">
+                <span className="flex items-center gap-2">{t("notesTab")}</span>
+              </TabsTrigger>
+            )}
           </TabsList>
           <TabsContent
             value="summary"
@@ -95,20 +97,14 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
           >
             <CommentsView videoId={videoId} />
           </TabsContent>
-          <TabsContent
-            value="notes"
-            className="h-full overflow-y-auto p-0 m-0"
-          >
-            {videoDetails.userVideo?.id ? (
+          {videoDetails.userVideo?.id && (
+            <TabsContent
+              value="notes"
+              className="h-full overflow-y-auto p-0 m-0"
+            >
               <NotesView userVideoId={videoDetails.userVideo.id} />
-            ) : (
-              <div className="p-4 text-center">
-                <p className="text-muted-foreground">
-                  Please add this video to your library first to take notes.
-                </p>
-              </div>
-            )}
-          </TabsContent>
+            </TabsContent>
+          )}
         </Tabs>
         <TipsAlert videoId={videoId} />
       </div>

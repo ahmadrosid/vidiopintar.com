@@ -35,10 +35,8 @@ export default function Loading() {
                   <TabsTrigger value="transcript">
                     <span className="flex items-center gap-2">Transcript</span>
                   </TabsTrigger>
-                  <TabsTrigger value="transcript">
-                    <span className="flex items-center gap-2">
-                      Top comments
-                    </span>
+                  <TabsTrigger value="comments">
+                    <span className="flex items-center gap-2">Comments</span>
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent
@@ -69,6 +67,19 @@ export default function Loading() {
                       <div key={i} className="flex gap-3">
                         <div className="w-16 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                         <div className="flex-1 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+                <TabsContent
+                  value="comments"
+                  className="h-full overflow-y-auto p-0 m-0"
+                >
+                  <div className="p-4 space-y-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-1/4" />
+                        <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                       </div>
                     ))}
                   </div>

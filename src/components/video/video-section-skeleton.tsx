@@ -54,6 +54,32 @@ export function VideoSectionSkeleton() {
               </div>
             </div>
           </TabsContent>
+          <TabsContent
+            value="transcript"
+            className="h-full overflow-y-auto p-0 m-0"
+          >
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="flex gap-3">
+                  <div className="w-16 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="flex-1 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+          <TabsContent
+            value="comments"
+            className="h-full overflow-y-auto p-0 m-0"
+          >
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-1/4" />
+                  <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </>
