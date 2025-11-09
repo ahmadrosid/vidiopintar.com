@@ -183,7 +183,10 @@
       "updateError": "Gagal memperbarui catatan",
       "deleteError": "Gagal menghapus catatan",
       "emptyNoteError": "Teks catatan tidak boleh kosong",
-      "deleteConfirm": "Apakah kamu yakin ingin menghapus catatan ini?"
+      "deleteConfirm": "Apakah kamu yakin ingin menghapus catatan ini?",
+      "proPlanRequired": "Menyimpan catatan hanya tersedia untuk pengguna pro",
+      "proPlanRequiredDesc": "Upgrade ke paket pro untuk menyimpan catatan dari video",
+      "upgradePlan": "Upgrade Paket"
     }
   },
   "auth": {

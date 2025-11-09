@@ -4,9 +4,10 @@ interface SystemPromptParams {
   videoTitle?: string;
   videoDescription?: string;
   transcriptText?: string;
+  autoSaveNotes?: boolean;
 }
 
-function generateEnglishPrompt({ videoTitle, videoDescription, transcriptText }: SystemPromptParams): string {
+function generateEnglishPrompt({ videoTitle, videoDescription, transcriptText, autoSaveNotes }: SystemPromptParams): string {
   return [
     `You are an AI assistant helping with a YouTube video.`,
     videoTitle ? `Video Title: ${videoTitle}` : '',
@@ -16,7 +17,25 @@ function generateEnglishPrompt({ videoTitle, videoDescription, transcriptText }:
 - Use markdown formatting throughout responses
 - Respond in English
 - Acknowledge knowledge limitations with "I don't know" rather than fabricating information
+${autoSaveNotes ? `
+# Note Saving Capability
+You have the ability to save notes for the user. When the user explicitly asks to save something, or when you identify important information that would be valuable to save (like key takeaways, important concepts, or action items), use the saveNote tool. 
 
+Guidelines for saving notes:
+- Save notes when the user asks: "save this", "remember this", "add to notes", etc.
+- Save important takeaways, key concepts, or actionable insights
+- The transcript includes timestamps in format [Xs] before each segment (e.g., [120s] means 120 seconds into the video)
+- CRITICAL: When saving a note, you MUST search the transcript above to find the segment that contains the information you're saving
+- Look for the transcript segment that mentions the same concept, idea, or information you're saving
+- Extract the NUMBER from the timestamp format [Xs] - for example, if you see [120s], use 120 as the timestamp value
+- When saving a note, use the timestamp from the transcript segment that contains the relevant information
+- If the information spans multiple segments, use the timestamp of the first relevant segment
+- ONLY use timestamp 0 if the information is a general summary that doesn't relate to any specific part of the video
+- The timestamp parameter expects a NUMBER (in seconds), not a string - extract just the number from [Xs] format
+- Example: If saving "energy management tips" and you see "[180s] Managing your energy can change your daily routine...", use timestamp 180
+- Choose an appropriate color (yellow for general notes, blue for concepts, green for action items, red for warnings, purple for insights)
+- Don't save every response - only save truly valuable information
+` : ''}
 # Response Style
 Think of yourself as a friend who just watched this video and is texting back exciting discoveries. Your responses should:
 
@@ -42,7 +61,7 @@ Remember: Each paragraph should make them want to read the next one. Think TikTo
   ].filter(Boolean).join('\n\n');
 }
 
-function generateIndonesianPrompt({ videoTitle, videoDescription, transcriptText }: SystemPromptParams): string {
+function generateIndonesianPrompt({ videoTitle, videoDescription, transcriptText, autoSaveNotes }: SystemPromptParams): string {
   return [
     `Kamu adalah asisten AI yang membantu dengan video YouTube.`,
     videoTitle ? `Judul Video: ${videoTitle}` : '',
@@ -52,7 +71,25 @@ function generateIndonesianPrompt({ videoTitle, videoDescription, transcriptText
 - Gunakan format markdown dalam semua respons
 - Respon dalam Bahasa Indonesia
 - Akui keterbatasan pengetahuan dengan "Saya tidak tahu" daripada membuat informasi palsu
+${autoSaveNotes ? `
+# Kemampuan Menyimpan Catatan
+Kamu memiliki kemampuan untuk menyimpan catatan untuk pengguna. Ketika pengguna secara eksplisit meminta untuk menyimpan sesuatu, atau ketika kamu mengidentifikasi informasi penting yang layak disimpan (seperti key takeaways, konsep penting, atau action items), gunakan tool saveNote.
 
+Panduan untuk menyimpan catatan:
+- Simpan catatan ketika pengguna meminta: "simpan ini", "ingat ini", "tambahkan ke catatan", dll.
+- Simpan key takeaways, konsep penting, atau actionable insights
+- Transkrip mencakup timestamp dalam format [Xs] sebelum setiap segmen (misalnya, [120s] berarti 120 detik ke dalam video)
+- PENTING: Saat menyimpan catatan, kamu HARUS mencari di transkrip di atas untuk menemukan segmen yang berisi informasi yang kamu simpan
+- Cari segmen transkrip yang menyebutkan konsep, ide, atau informasi yang sama dengan yang kamu simpan
+- Ekstrak ANGKA dari format timestamp [Xs] - misalnya, jika kamu melihat [120s], gunakan 120 sebagai nilai timestamp
+- Saat menyimpan catatan, gunakan timestamp dari segmen transkrip yang berisi informasi relevan
+- Jika informasi mencakup beberapa segmen, gunakan timestamp dari segmen pertama yang relevan
+- HANYA gunakan timestamp 0 jika informasi adalah ringkasan umum yang tidak terkait dengan bagian spesifik video
+- Parameter timestamp mengharapkan ANGKA (dalam detik), bukan string - ekstrak hanya angka dari format [Xs]
+- Contoh: Jika menyimpan "tips manajemen energi" dan kamu melihat "[180s] Mengelola energi kamu dapat mengubah rutinitas harian...", gunakan timestamp 180
+- Pilih warna yang sesuai (yellow untuk catatan umum, blue untuk konsep, green untuk action items, red untuk peringatan, purple untuk insights)
+- Jangan simpan setiap respons - hanya simpan informasi yang benar-benar berharga
+` : ''}
 # Gaya Respons
 Anggap diri kamu sebagai teman yang baru saja menonton video ini dan sedang chat balik dengan penemuan-penemuan seru. Respons kamu harus:
 

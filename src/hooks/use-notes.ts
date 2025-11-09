@@ -81,7 +81,7 @@ export function useNotes({
       return newNote;
     } catch (err) {
       console.error('Error creating note:', err);
-      return null;
+      throw err; // Re-throw to let the component handle it
     }
   }, [userVideoId]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNotes } from "@/hooks/use-notes";
 import { useVideo } from "@/hooks/use-video";
 import { formatTime } from "@/lib/utils";
@@ -50,6 +50,9 @@ export function NotesView({ userVideoId }: NotesViewProps) {
     useNotes({ userVideoId });
   const { currentTime, seekAndPlay } = useVideo();
 
+  // Memoize formatted time to avoid recalculating on every render
+  const formattedCurrentTime = useMemo(() => formatTime(currentTime), [currentTime]);
+
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isCreatingNote, setIsCreatingNote] = useState(false);
@@ -84,6 +87,8 @@ export function NotesView({ userVideoId }: NotesViewProps) {
       } else {
         toast.error(t("createError"));
       }
+    } catch (err) {
+      toast.error(t("createError"));
     } finally {
       setIsCreatingNote(false);
     }
@@ -170,7 +175,13 @@ export function NotesView({ userVideoId }: NotesViewProps) {
   };
 
   const handleJumpToTimestamp = (timestamp: number) => {
-    seekAndPlay(timestamp);
+    // Scroll video player into view so user can see where it seeked to
+    const videoPlayer = document.querySelector('[data-video-player]')
+    if (videoPlayer) {
+      videoPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+    
+    seekAndPlay(timestamp)
   };
 
   if (isLoading) {
@@ -221,7 +232,7 @@ export function NotesView({ userVideoId }: NotesViewProps) {
                 {t("timestamp")}:
               </span>
               <span className="text-sm font-mono text-foreground">
-                {formatTime(currentTime)}
+                {formattedCurrentTime}
               </span>
             </div>
 
@@ -395,7 +406,9 @@ export function NotesView({ userVideoId }: NotesViewProps) {
               <div
                 key={note.id}
                 className={`p-3 mr-1 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50 relative group`}
-                onClick={() => handleJumpToTimestamp(note.timestamp)}
+                onClick={() => {
+                  handleJumpToTimestamp(note.timestamp);
+                }}
               >
                 <div className="flex">
                   <div
