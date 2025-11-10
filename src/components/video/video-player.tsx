@@ -274,4 +274,3 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
     </div>
   )
 }
-
