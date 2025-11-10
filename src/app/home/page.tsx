@@ -45,7 +45,7 @@ export default async function Home() {
             <VideoInputSection userId={user.id} />
           </div>
           <VideoSearchDisplay />
-          <LastNotes limit={5} />
+          <LastNotes limit={6} />
           <div className="w-full mb-8">
             <h2 className="text-xl font-semibold text-left mb-6 tracking-tighter">{t('chooseTopics')}</h2>
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">

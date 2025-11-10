@@ -183,7 +183,10 @@
       "updateError": "Failed to update note",
       "deleteError": "Failed to delete note",
       "emptyNoteError": "Note text cannot be empty",
-      "deleteConfirm": "Are you sure you want to delete this note?"
+      "deleteConfirm": "Are you sure you want to delete this note?",
+      "proPlanRequired": "Saving notes is only available for pro users",
+      "proPlanRequiredDesc": "Upgrade to a pro plan to save notes from videos",
+      "upgradePlan": "Upgrade Plan"
     }
   },
   "auth": {

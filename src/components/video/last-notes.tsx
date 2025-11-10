@@ -24,7 +24,7 @@ interface LastNotesProps {
   limit?: number;
 }
 
-export function LastNotes({ limit = 5 }: LastNotesProps) {
+export function LastNotes({ limit = 3 }: LastNotesProps) {
   const t = useTranslations("home");
   const [notes, setNotes] = useState<NoteWithVideo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,7 +59,7 @@ export function LastNotes({ limit = 5 }: LastNotesProps) {
       <h2 className="text-xl font-semibold tracking-tighter mb-6">
         {t("lastNotes")}
       </h2>
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {notes.map((note) => {
           const videoUrl = `/video/${note.youtubeId}?t=${Math.floor(note.timestamp)}`;
           return (
@@ -69,7 +69,7 @@ export function LastNotes({ limit = 5 }: LastNotesProps) {
               className="block"
             >
               <div
-                className="p-4 rounded-xs transition-all duration-200 cursor-pointer bg-card hover:bg-card/50 relative group"
+                className="p-4 rounded-xs transition-all duration-200 cursor-pointer bg-card hover:bg-card/50 relative group h-full"
               >
                 <div className="flex flex-col gap-2">
                   {/* Video info */}

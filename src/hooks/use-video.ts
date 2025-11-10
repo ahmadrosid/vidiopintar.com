@@ -1,18 +1,31 @@
 import { useVideoStore } from '@/stores/video-store'
 
 export const useVideo = () => {
-  const store = useVideoStore()
+  // Use selectors to ensure reactivity
+  const currentTime = useVideoStore((state) => state.currentTime)
+  const isReady = useVideoStore((state) => state.isReady)
+  const player = useVideoStore((state) => state.player)
+  
+  // Actions don't need selectors, they're stable references
+  const seekAndPlay = useVideoStore((state) => state.seekAndPlay)
+  const seek = useVideoStore((state) => state.seek)
+  const setCurrentTime = useVideoStore((state) => state.setCurrentTime)
+  const setReady = useVideoStore((state) => state.setReady)
+  const setPlayer = useVideoStore((state) => state.setPlayer)
+  const completePendingSeek = useVideoStore((state) => state.completePendingSeek)
   
   return {
     // State
-    currentTime: store.currentTime,
-    isReady: store.isReady,
-    player: store.player,
+    currentTime,
+    isReady,
+    player,
     
     // Actions
-    seekAndPlay: store.seekAndPlay,
-    setCurrentTime: store.setCurrentTime,
-    setReady: store.setReady,
-    setPlayer: store.setPlayer,
+    seekAndPlay,
+    seek,
+    setCurrentTime,
+    setReady,
+    setPlayer,
+    completePendingSeek,
   }
 }

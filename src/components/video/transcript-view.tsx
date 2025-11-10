@@ -136,7 +136,14 @@ export function TranscriptView({ transcript }: TranscriptViewProps) {
               <div
                 key={index}
                 className={`p-3 mr-1 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50`}
-                onClick={() => seekAndPlay(parseTimeToSeconds(segment.start))}
+                onClick={() => {
+                  // Scroll video player into view so user can see where it seeked to
+                  const videoPlayer = document.querySelector('[data-video-player]')
+                  if (videoPlayer) {
+                    videoPlayer.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                  }
+                  seekAndPlay(parseTimeToSeconds(segment.start))
+                }}
               >
               <div className="flex">
                 <span className="text-muted-foreground font-mono mr-3 whitespace-nowrap transition-colors">

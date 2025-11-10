@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChevronDown } from "lucide-react";
 import { faqData, faqCategories } from "@/data/faq";
 
@@ -17,8 +17,8 @@ export function FAQ() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  // Generate JSON-LD schema for FAQPage
-  const faqSchema = {
+  // Generate JSON-LD schema for FAQPage (memoized to prevent unnecessary re-renders)
+  const faqSchema = useMemo(() => ({
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: filteredFaqs.map((faq) => ({
@@ -29,15 +29,35 @@ export function FAQ() {
         text: faq.answer,
       },
     })),
-  };
+  }), [filteredFaqs]);
+
+  // Inject JSON-LD schema using useEffect to avoid React hydration issues
+  useEffect(() => {
+    // Remove existing FAQ schema if any
+    const existingScript = document.getElementById("faq-schema");
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Create and inject new schema script
+    const script = document.createElement("script");
+    script.id = "faq-schema";
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(faqSchema);
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup on unmount
+      const scriptToRemove = document.getElementById("faq-schema");
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [faqSchema]);
 
   return (
     <section className="flex flex-col gap-7 pt-28">
-      {/* Schema Markup */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
 
       {/* Header */}
       <div className="flex justify-start items-center gap-2 w-full">

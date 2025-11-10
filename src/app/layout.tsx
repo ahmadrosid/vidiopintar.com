@@ -106,22 +106,24 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} className="dark" suppressHydrationWarning>
-      <Script
-        src="https://vince.ngooding.com/js/script.js"
-        data-domain="vidiopintar.com"
-        strategy="afterInteractive"
-      />
-      {/* Organization Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-      />
-      {/* WebSite Schema */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}>
+        {/* Organization Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          async=""
+        />
+        {/* WebSite Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+          async=""
+        />
+        <Script
+          src="https://vince.ngooding.com/js/script.js"
+          data-domain="vidiopintar.com"
+          strategy="afterInteractive"
+        />
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem storageKey="vidiopintar-theme">
             {children}

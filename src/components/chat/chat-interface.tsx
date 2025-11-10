@@ -2,8 +2,11 @@
 
 import { useChat } from "@ai-sdk/react";
 import { ArrowUp, Square, MessageCircleMore } from "lucide-react"
+import { useState, useEffect } from "react"
 import { flushSync } from "react-dom"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { ChatContainerRoot, ChatContainerContent, ChatContainerScrollAnchor } from "@/components/ui/chat-container"
 import {
   PromptInput,
@@ -34,6 +37,49 @@ export function ChatInterface({
   isSharePage = false,
   isLoggedIn = false }: ChatInterfaceProps) {
   const language = useLocale();
+  const [autoSaveNotes, setAutoSaveNotes] = useState(false);
+  const [isProUser, setIsProUser] = useState(false);
+  const [isCheckingPlan, setIsCheckingPlan] = useState(true);
+  
+  // Check if user has pro plan
+  useEffect(() => {
+    if (isSharePage) {
+      setIsCheckingPlan(false);
+      return;
+    }
+
+    const checkUserPlan = async () => {
+      try {
+        const response = await fetch('/api/user/usage-stats');
+        if (response.ok) {
+          const data = await response.json();
+          const isPro = data.currentPlan === 'monthly' || data.currentPlan === 'yearly';
+          setIsProUser(isPro);
+          // Disable autoSaveNotes if user is not pro
+          if (!isPro) {
+            setAutoSaveNotes(false);
+          }
+        } else if (response.status === 401) {
+          // User is not logged in, hide toggle
+          setIsProUser(false);
+          setAutoSaveNotes(false);
+        }
+      } catch (error) {
+        console.error('Failed to check user plan:', error);
+      } finally {
+        setIsCheckingPlan(false);
+      }
+    };
+
+    checkUserPlan();
+  }, [isSharePage]);
+
+  // Ensure autoSaveNotes is disabled if user is not pro
+  useEffect(() => {
+    if (!isProUser && autoSaveNotes) {
+      setAutoSaveNotes(false);
+    }
+  }, [isProUser, autoSaveNotes]);
   
   const {
     messages,
@@ -45,7 +91,7 @@ export function ChatInterface({
   } = useChat({
     api: '/api/chat',
     initialMessages,
-    body: { videoId, userVideoId, language },
+    body: { videoId, userVideoId, language, autoSaveNotes },
   });
 
   return (
@@ -127,7 +173,22 @@ export function ChatInterface({
             className="w-full"
           >
             <PromptInputTextarea className="bg-transparent!" placeholder="Ask anything..." />
-            <PromptInputActions className="justify-end pt-2">
+            <PromptInputActions className="justify-end gap-2 pt-2">
+              {!isCheckingPlan && isProUser && (
+                <div className="flex items-center gap-2">
+                  <Label 
+                    htmlFor="auto-save-notes" 
+                    className="text-xs text-muted-foreground cursor-pointer"
+                  >
+                    Notes agent
+                  </Label>
+                  <Switch
+                    id="auto-save-notes"
+                    checked={autoSaveNotes}
+                    onCheckedChange={setAutoSaveNotes}
+                  />
+                </div>
+              )}
               <PromptInputAction
                 tooltip={status === "streaming" ? "Stop generation" : "Send message"}
               >
