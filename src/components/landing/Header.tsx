@@ -22,9 +22,9 @@ export function Header() {
     <header className="flex flex-col justify-between items-center pt-20 h-fit">
       <div className="flex w-full justify-between">
         <h1 className="text-5xl font-semibold tracking-tight max-w-lg leading-[3.75rem] text-primary mb-9">
-          Learn anything on YouTube,{" "}
+          Learn Faster. Stay Ahead.{" "}
           <i className="hover:animate-[pulse_200ms_linear_infinite] cursor-default">
-            faster
+            Own Your Future
           </i>
           .
         </h1>
