@@ -2,12 +2,9 @@
 
 import React, { useState } from "react";
 import ReactPlayer from "react-player";
-import { Fullscreen, Link } from "lucide-react";
+import { Link } from "lucide-react";
 import { Lightbulb } from "lucide-react";
 import { MessagesSquare } from "lucide-react";
-import { ArrowUp } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { FormStartLearning } from "./FormStartLearning";
 
 export function Header() {
@@ -22,7 +19,7 @@ export function Header() {
     <header className="flex flex-col justify-between items-center pt-20 h-fit">
       <div className="flex w-full justify-between">
         <h1 className="text-5xl font-semibold tracking-tight max-w-lg leading-[3.75rem] text-primary mb-9">
-          Learn Faster. Stay Ahead.{" "}
+          Stay Focused. Stay Ahead.{" "}
           <i className="hover:animate-[pulse_200ms_linear_infinite] cursor-default">
             Own Your Future
           </i>
