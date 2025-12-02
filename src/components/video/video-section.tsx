@@ -21,6 +21,8 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
   const videoDetails = await videoDetailsPromise;
   const transcript = await transcriptPromise;
 
+  const userVideoId = videoDetails.userVideo?.id ?? transcript.userVideo?.id ?? null;
+
   const t = await getTranslations("video");
 
   // Handle transcript error
@@ -70,7 +72,7 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
             <TabsTrigger value="comments">
               <span className="flex items-center gap-2">{t("comments")}</span>
             </TabsTrigger>
-            {videoDetails.userVideo?.id && (
+            {userVideoId && (
               <TabsTrigger value="notes">
                 <span className="flex items-center gap-2">{t("notesTab")}</span>
               </TabsTrigger>
@@ -97,12 +99,12 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
           >
             <CommentsView videoId={videoId} />
           </TabsContent>
-          {videoDetails.userVideo?.id && (
+          {userVideoId && (
             <TabsContent
               value="notes"
               className="h-full overflow-y-auto p-0 m-0"
             >
-              <NotesView userVideoId={videoDetails.userVideo.id} />
+              <NotesView userVideoId={userVideoId} />
             </TabsContent>
           )}
         </Tabs>
