@@ -237,16 +237,18 @@ export async function fetchVideoTranscript(videoId: string) {
 
     const video = await VideoRepository.getByYoutubeId(videoId);
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
+    
+    // Ensure userVideo exists for this user + video now that we have a transcript
+    if (!userVideo) {
+      userVideo = await UserVideoRepository.upsert({
+        userId: user.id,
+        youtubeId: videoId,
+        summary: '', // Empty initially, will be generated client-side
+      });
+    }
+
+    // If we already have a video record, keep its metadata up to date
     if (video) {
-      if (!userVideo) {
-        // Create userVideo only when we have a valid transcript
-        userVideo = await UserVideoRepository.upsert({
-          userId: user.id,
-          youtubeId: videoId,
-          summary: '', // Empty initially, will be generated client-side
-        });
-      }
-      // Update video metadata
       await VideoRepository.upsert({
         youtubeId: videoId,
         title: video.title,
