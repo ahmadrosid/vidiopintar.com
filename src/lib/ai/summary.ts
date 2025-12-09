@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google';
+import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { trackGenerateTextUsage } from '@/lib/token-tracker';
 import { getCurrentUser } from '@/lib/auth';
@@ -17,7 +17,7 @@ export async function generateSummary(text: string, language: 'en' | 'id' = 'en'
 
     const startTime = Date.now();
     const result = await generateText({
-        model: google('gemini-2.0-flash-001'),
+        model: openai('gpt-5-nano'),
         messages: [
             {
                 role: 'system',
@@ -35,8 +35,8 @@ export async function generateSummary(text: string, language: 'en' | 'id' = 'en'
         const user = await getCurrentUser();
         await trackGenerateTextUsage(result, {
             userId: user.id,
-            model: 'gemini-2.0-flash-001',
-            provider: 'google',
+            model: 'gpt-5-nano',
+            provider: 'openai',
             operation: 'summary',
             videoId,
             userVideoId,

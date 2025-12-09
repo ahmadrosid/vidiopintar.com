@@ -320,7 +320,7 @@ ${truncatedTranscript}
 `;
 
   const startTime = Date.now();
-  const modelName = 'gpt-4o-mini-2024-07-18';
+  const modelName = 'gpt-5-nano';
   const result = await generateObject({
     model: openai(modelName),
     prompt: prompt,

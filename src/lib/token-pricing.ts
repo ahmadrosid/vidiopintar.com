@@ -9,6 +9,10 @@ export const TOKEN_PRICING = {
       input: 2.00,   // $2.00 per 1M input tokens (updated from official pricing)
       output: 8.00,  // $8.00 per 1M output tokens (updated from official pricing)
     },
+    'gpt-5-nano': {
+      input: 0.05,   // $0.05 per 1M input tokens
+      output: 0.40,  // $0.40 per 1M output tokens
+    },
   },
   google: {
     'gemini-2.0-flash-001': {
