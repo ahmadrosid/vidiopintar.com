@@ -7,6 +7,9 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
   const params = await props.params;
   try {
     const { videoId } = params
+    const { searchParams } = new URL(request.url)
+    const force = searchParams.get('force') === 'true'
+
     const user = await getCurrentUser()
     const userId = user.id
 
@@ -15,7 +18,8 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       return NextResponse.json({ error: "User video not found" }, { status: 404 })
     }
 
-    if (userVideo.summary && userVideo.summary.trim() !== '') {
+    // Return cached summary unless force regeneration is requested
+    if (!force && userVideo.summary && userVideo.summary.trim() !== '') {
       return NextResponse.json({
         summary: userVideo.summary,
         cached: true
@@ -32,20 +36,23 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       return NextResponse.json({ error: "No transcript available for this video" }, { status: 400 })
     }
 
-    let userLanguage: 'en' | 'id' = 'en';
+    // Get user's language preference
+    let userLanguage: 'en' | 'id' = 'en'
     try {
-      const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
+      const savedLanguage = await UserRepository.getPreferredLanguage(user.id)
       if (savedLanguage === 'en' || savedLanguage === 'id') {
-        userLanguage = savedLanguage;
+        userLanguage = savedLanguage
       }
     } catch (error) {
-      console.log('Could not get user language preference for summary generation, using default:', error);
+      console.log('Could not get user language preference for summary generation, using default:', error)
     }
 
+    // Generate summary
     const transcriptText = dbSegments.map((seg) => seg.text).join(" ")
     const textToSummarize = `${video.title}\n${video.description ?? ""}\n${transcriptText}`
     const summary = await generateSummary(textToSummarize, userLanguage, video.youtubeId, userVideo.id)
 
+    // Save to database
     await UserVideoRepository.updateSummary(userVideo.id, summary)
 
     return NextResponse.json({

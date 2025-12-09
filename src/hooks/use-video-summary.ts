@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 interface UseVideoSummaryOptions {
   videoId: string;
@@ -10,7 +10,7 @@ interface UseVideoSummaryResult {
   summary: string | null;
   isLoading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  regenerate: () => Promise<void>;
 }
 
 export function useVideoSummary({
@@ -23,7 +23,7 @@ export function useVideoSummary({
   const [error, setError] = useState<string | null>(null);
   const isFetchingRef = useRef(false);
 
-  const fetchSummary = async () => {
+  const fetchSummary = useCallback(async (force = false) => {
     // Prevent duplicate requests
     if (isFetchingRef.current) {
       return;
@@ -34,7 +34,8 @@ export function useVideoSummary({
     setError(null);
 
     try {
-      const response = await fetch(`/api/video/${videoId}/generate-summary`, {
+      const url = `/api/video/${videoId}/summary${force ? '?force=true' : ''}`;
+      const response = await fetch(url, {
         method: 'POST',
       });
 
@@ -52,7 +53,9 @@ export function useVideoSummary({
       setIsLoading(false);
       isFetchingRef.current = false;
     }
-  };
+  }, [videoId]);
+
+  const regenerate = useCallback(() => fetchSummary(true), [fetchSummary]);
 
   useEffect(() => {
     // If we have initial summary or not enabled, don't fetch
@@ -60,13 +63,13 @@ export function useVideoSummary({
       return;
     }
 
-    fetchSummary();
-  }, [videoId, initialSummary, enabled]);
+    fetchSummary(false);
+  }, [videoId, initialSummary, enabled, fetchSummary]);
 
   return {
     summary,
     isLoading,
     error,
-    refetch: fetchSummary,
+    regenerate,
   };
 }
