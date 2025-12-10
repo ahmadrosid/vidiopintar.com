@@ -16,6 +16,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.string().min(1),
     ADMIN_MASTER_EMAIL: z.string().email(),
+    GOAKAL_TOKEN: z.string().min(1),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: process.env,
