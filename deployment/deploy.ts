@@ -238,7 +238,8 @@ async function deploy(): Promise<void> {
     await $`docker run -d \
       --name ${targetContainer} \
       --restart unless-stopped \
-      -p ${targetPort}:${CONFIG.internalPort} \
+      --network host \
+      -e PORT=${targetPort} \
       --env-file .env \
       ${CONFIG.imageName}`;
   } catch (err) {
