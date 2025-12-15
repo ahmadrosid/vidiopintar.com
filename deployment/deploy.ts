@@ -68,13 +68,20 @@ function sleep(ms: number): Promise<void> {
 }
 
 // Check if a port has a healthy running container
-async function isPortHealthy(port: string): Promise<boolean> {
+async function isPortHealthy(port: string, verbose = false): Promise<boolean> {
   try {
     const response = await fetch(`http://localhost:${port}/api/health`, {
       signal: AbortSignal.timeout(5000),
     });
+    if (verbose) {
+      const text = await response.text();
+      log(`Health check response (${response.status}): ${text}`);
+    }
     return response.ok;
-  } catch {
+  } catch (err) {
+    if (verbose) {
+      error(`Health check error: ${err}`);
+    }
     return false;
   }
 }
@@ -158,7 +165,9 @@ async function healthCheck(port: string): Promise<boolean> {
   log(`Performing health check on port ${port}...`);
 
   for (let i = 1; i <= CONFIG.maxHealthRetries; i++) {
-    if (await isPortHealthy(port)) {
+    // Use verbose mode on last attempt to see the actual error
+    const verbose = i === CONFIG.maxHealthRetries;
+    if (await isPortHealthy(port, verbose)) {
       log(`Health check passed on port ${port}`);
       return true;
     }
@@ -263,8 +272,18 @@ async function deploy(): Promise<void> {
     log("Container status:");
     await $`docker ps --filter "name=${CONFIG.containerName}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"`;
   } else {
-    // Health check failed, clean up
-    error("Deployment failed! Removing failed container...");
+    // Health check failed, show container logs before cleanup
+    error("Deployment failed! Checking container logs...");
+    try {
+      const logs = await $`docker logs ${targetContainer} --tail 50`.quiet();
+      console.log("\n--- Container Logs (last 50 lines) ---");
+      console.log(logs.text());
+      console.log("--- End of Container Logs ---\n");
+    } catch {
+      error("Could not retrieve container logs");
+    }
+
+    error("Removing failed container...");
     await removeContainer(targetContainer);
 
     if (activePort !== "none") {
