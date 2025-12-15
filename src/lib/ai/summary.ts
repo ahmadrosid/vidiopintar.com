@@ -18,6 +18,7 @@ export async function generateSummary(text: string, language: 'en' | 'id' = 'en'
     const startTime = Date.now();
     const result = await generateText({
         model: openai('gpt-5-nano'),
+        temperature: 1, // gpt-5-nano only supports temperature=1
         messages: [
             {
                 role: 'system',

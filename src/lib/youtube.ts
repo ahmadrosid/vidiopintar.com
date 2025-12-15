@@ -323,6 +323,7 @@ ${truncatedTranscript}
   const modelName = 'gpt-5-nano';
   const result = await generateObject({
     model: openai(modelName),
+    temperature: 1, // gpt-5-nano only supports temperature=1
     prompt: prompt,
     schema: z.object({
       questions: z.array(z.string()),
