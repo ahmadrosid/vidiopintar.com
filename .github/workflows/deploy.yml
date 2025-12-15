@@ -55,7 +55,7 @@ jobs:
             cd /root/vidiopintar.com
             git checkout main
             git pull origin main || (sleep 15 && git pull origin main) || (sleep 30 && git pull origin main)
-            bash ./deployment/deploy.sh
+            bun ./deployment/deploy.ts
           EOF
       - name: cleanup
         run: rm -rf ~/.ssh
