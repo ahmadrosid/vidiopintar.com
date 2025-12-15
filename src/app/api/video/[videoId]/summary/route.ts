@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { UserVideoRepository, TranscriptRepository, VideoRepository, UserRepository } from "@/lib/db/repository"
+import { UserVideoRepository, TranscriptRepository, VideoRepository } from "@/lib/db/repository"
 import { getCurrentUser } from "@/lib/auth"
-import { generateSummary } from "@/lib/ai/summary"
+import { generateUserVideoSummary } from "@/lib/youtube"
 
 export async function POST(request: NextRequest, props: { params: Promise<{ videoId: string }> }) {
   const params = await props.params;
@@ -36,21 +36,8 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       return NextResponse.json({ error: "No transcript available for this video" }, { status: 400 })
     }
 
-    // Get user's language preference
-    let userLanguage: 'en' | 'id' = 'en'
-    try {
-      const savedLanguage = await UserRepository.getPreferredLanguage(user.id)
-      if (savedLanguage === 'en' || savedLanguage === 'id') {
-        userLanguage = savedLanguage
-      }
-    } catch (error) {
-      console.log('Could not get user language preference for summary generation, using default:', error)
-    }
-
     // Generate summary
-    const transcriptText = dbSegments.map((seg) => seg.text).join(" ")
-    const textToSummarize = `${video.title}\n${video.description ?? ""}\n${transcriptText}`
-    const summary = await generateSummary(textToSummarize, userLanguage, video.youtubeId, userVideo.id)
+    const summary = await generateUserVideoSummary(video, dbSegments, userVideo.id)
 
     // Save to database
     await UserVideoRepository.updateSummary(userVideo.id, summary)
