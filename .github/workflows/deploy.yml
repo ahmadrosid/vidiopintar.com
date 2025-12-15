@@ -52,6 +52,7 @@ jobs:
         run: |
           ssh root@vidiopintar.com << 'EOF'
             set -e
+            export PATH="$HOME/.bun/bin:$PATH"
             cd /root/vidiopintar.com
             git checkout main
             git pull origin main || (sleep 15 && git pull origin main) || (sleep 30 && git pull origin main)
