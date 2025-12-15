@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { getComments } from "@/lib/services/api";
 import { VideoComment } from "@/lib/services/schema";
-import { RuntimeClient } from "@/lib/services/RuntimeClient";
 import { MessageCircle, Heart, TextQuote, Loader } from "lucide-react";
 import { CopyButton } from "../ui/copy-button";
 
@@ -22,7 +21,7 @@ export function CommentsView({ videoId }: CommentsViewProps) {
         setLoading(true);
         setError(null);
         
-        const result = await RuntimeClient.runPromise(getComments(videoId));
+        const result = await getComments(videoId);
         // Convert readonly array to mutable array
         setComments([...result.results]);
       } catch (err) {

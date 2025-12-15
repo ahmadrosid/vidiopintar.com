@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { searchVideos } from "@/lib/services/api";
 import { useVideoSearchStore } from "@/stores/video-search-store";
-import { RuntimeClient } from "@/lib/services/RuntimeClient";
 import { useTranslations } from "next-intl";
 
 export function VideoSearchForm() {
@@ -23,7 +22,7 @@ export function VideoSearchForm() {
 
     setIsLoading(true);
     try {
-      const result = await RuntimeClient.runPromise(searchVideos(query));
+      const result = await searchVideos(query);
       setResults(
         result.data.map((item) => ({
           ...item,

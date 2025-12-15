@@ -11,7 +11,6 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useState } from "react";
 import { createShareVideo, clearChatMessages } from "@/lib/services/api";
-import { RuntimeClient } from "@/lib/services/RuntimeClient";
 import { toast } from "sonner";
 
 interface ChatHeaderProps {
@@ -37,7 +36,7 @@ export function ChatHeader({
         if (isSharePage) return;
         setStatus("sharing");
         try {
-            const response = await RuntimeClient.runPromise(createShareVideo({ youtubeId: videoId, userVideoId }))
+            const response = await createShareVideo({ youtubeId: videoId, userVideoId })
             setShareUrl(response.url);
         } catch (error) {
             toast.error("Failed to generate share URL");
@@ -51,7 +50,7 @@ export function ChatHeader({
 
         setStatus("deleting");
         try {
-            await RuntimeClient.runPromise(clearChatMessages({ userVideoId }));
+            await clearChatMessages({ userVideoId });
             setMessages([]);
             toast.success("Chat messages cleared successfully");
         } catch (error) {

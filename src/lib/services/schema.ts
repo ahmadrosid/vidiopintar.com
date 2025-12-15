@@ -1,57 +1,75 @@
-import { Schema } from "effect";
+import { z } from "zod";
 
-export class ShareChatRequest extends Schema.Class<ShareChatRequest>("ShareChatRequest")({
-    youtubeId: Schema.String,
-    userVideoId: Schema.Number,
-}) { }
+export const ShareChatRequestSchema = z.object({
+    youtubeId: z.string(),
+    userVideoId: z.number(),
+});
 
-export class ShareChatResponse extends Schema.Class<ShareChatResponse>("ShareChatResponse")({
-    url: Schema.String,
-}) { }
+export type ShareChatRequest = z.infer<typeof ShareChatRequestSchema>;
 
-export class ClearMessagesRequest extends Schema.Class<ClearMessagesRequest>("ClearMessagesRequest")({
-    userVideoId: Schema.Number,
-}) { }
+export const ShareChatResponseSchema = z.object({
+    url: z.string(),
+});
 
-export class ClearMessagesResponse extends Schema.Class<ClearMessagesResponse>("ClearMessagesResponse")({
-    success: Schema.Boolean,
-}) { }
+export type ShareChatResponse = z.infer<typeof ShareChatResponseSchema>;
 
-export class VideoSearchRequest extends Schema.Class<VideoSearchRequest>("VideoSearchRequest")({
-    q: Schema.String,
-}) { }
+export const ClearMessagesRequestSchema = z.object({
+    userVideoId: z.number(),
+});
 
-export class VideoSearchItem extends Schema.Class<VideoSearchItem>("VideoSearchItem")({
-    id: Schema.String,
-    title: Schema.String,
-    description: Schema.String,
-    thumbnails: Schema.Array(Schema.Struct({
-        url: Schema.String,
-        width: Schema.Number,
-        height: Schema.Number,
+export type ClearMessagesRequest = z.infer<typeof ClearMessagesRequestSchema>;
+
+export const ClearMessagesResponseSchema = z.object({
+    success: z.boolean(),
+});
+
+export type ClearMessagesResponse = z.infer<typeof ClearMessagesResponseSchema>;
+
+export const VideoSearchRequestSchema = z.object({
+    q: z.string(),
+});
+
+export type VideoSearchRequest = z.infer<typeof VideoSearchRequestSchema>;
+
+export const VideoSearchItemSchema = z.object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    thumbnails: z.array(z.object({
+        url: z.string(),
+        width: z.number(),
+        height: z.number(),
     })),
-    published: Schema.optional(Schema.String),
-    view_count: Schema.String,
-    duration: Schema.optional(Schema.String),
-    author: Schema.Struct({
-        id: Schema.String,
-        name: Schema.String,
+    published: z.string().optional(),
+    view_count: z.string(),
+    duration: z.string().optional(),
+    author: z.object({
+        id: z.string(),
+        name: z.string(),
     }),
-}) { }
+});
 
-export class VideoSearchResponse extends Schema.Class<VideoSearchResponse>("VideoSearchResponse")({
-    data: Schema.Array(VideoSearchItem),
-}) { }
+export type VideoSearchItem = z.infer<typeof VideoSearchItemSchema>;
 
-export class VideoComment extends Schema.Class<VideoComment>("VideoComment")({
-    author: Schema.String,
-    text: Schema.String,
-    like_count: Schema.Number,
-    reply_count: Schema.Number,
-    published_time: Schema.String,
-    comment_id: Schema.String,
-}) { }
+export const VideoSearchResponseSchema = z.object({
+    data: z.array(VideoSearchItemSchema),
+});
 
-export class VideoCommentsResponse extends Schema.Class<VideoCommentsResponse>("VideoCommentsResponse")({
-    results: Schema.Array(VideoComment),
-}) { }
+export type VideoSearchResponse = z.infer<typeof VideoSearchResponseSchema>;
+
+export const VideoCommentSchema = z.object({
+    author: z.string(),
+    text: z.string(),
+    like_count: z.number(),
+    reply_count: z.number(),
+    published_time: z.string(),
+    comment_id: z.string(),
+});
+
+export type VideoComment = z.infer<typeof VideoCommentSchema>;
+
+export const VideoCommentsResponseSchema = z.object({
+    results: z.array(VideoCommentSchema),
+});
+
+export type VideoCommentsResponse = z.infer<typeof VideoCommentsResponseSchema>;

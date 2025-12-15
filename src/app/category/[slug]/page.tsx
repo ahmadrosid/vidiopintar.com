@@ -7,7 +7,6 @@ import { notFound } from "next/navigation";
 import { useState, useEffect, use } from "react";
 import { VideoSearchResults } from "@/components/video/video-search-results";
 import { searchVideos } from "@/lib/services/api";
-import { RuntimeClient } from "@/lib/services/RuntimeClient";
 import { VideoSearchSkeletonGrid } from "@/components/video/video-search-skeleton";
 
 export default function CategoryPage(props: {
@@ -30,9 +29,7 @@ export default function CategoryPage(props: {
         if (!category?.searchQuery) {
           return;
         }
-        const result = await RuntimeClient.runPromise(
-          searchVideos(category.searchQuery)
-        );
+        const result = await searchVideos(category.searchQuery);
         setVideos(
           result.data.map((item) => ({
             ...item,
