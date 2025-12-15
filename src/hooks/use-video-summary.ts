@@ -21,15 +21,17 @@ export function useVideoSummary({
   const [summary, setSummary] = useState<string | null>(initialSummary || null);
   const [isLoading, setIsLoading] = useState(!initialSummary);
   const [error, setError] = useState<string | null>(null);
-  const isFetchingRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchSummary = useCallback(async (force = false) => {
-    // Prevent duplicate requests
-    if (isFetchingRef.current) {
-      return;
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
 
-    isFetchingRef.current = true;
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     setIsLoading(true);
     setError(null);
 
@@ -37,6 +39,7 @@ export function useVideoSummary({
       const url = `/api/video/${videoId}/summary${force ? '?force=true' : ''}`;
       const response = await fetch(url, {
         method: 'POST',
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -46,12 +49,17 @@ export function useVideoSummary({
       const data = await response.json();
       setSummary(data.summary);
     } catch (err) {
+      // Ignore abort errors
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
       const errorMessage = err instanceof Error ? err.message : 'Failed to load summary';
       setError(errorMessage);
       console.error('Error fetching summary:', err);
     } finally {
-      setIsLoading(false);
-      isFetchingRef.current = false;
+      if (!abortController.signal.aborted) {
+        setIsLoading(false);
+      }
     }
   }, [videoId]);
 
@@ -64,6 +72,13 @@ export function useVideoSummary({
     }
 
     fetchSummary(false);
+
+    // Cleanup: abort request on unmount
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [videoId, initialSummary, enabled, fetchSummary]);
 
   return {
