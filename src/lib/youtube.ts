@@ -11,6 +11,7 @@ import { trackGenerateTextUsage } from '@/lib/token-tracker';
 import { UserVideoRepository } from "@/lib/db/repository";
 import { getCurrentUser } from "./auth";
 import { addSeconds, format } from "date-fns";
+import { supadata } from "@/lib/supadata";
 
 async function saveVideoUser(videoId: string, video: Video, segments: any[], generateSummaryAsync: boolean = false) {
   const user = await getCurrentUser();
@@ -190,28 +191,26 @@ export async function fetchVideoTranscript(videoId: string) {
       return { segments, userVideo };
     }
 
-    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`
-    const encodedUrl = encodeURIComponent(videoUrl)
-    const response = await fetch(`${env.API_BASE_URL}/youtube/transcript?videoUrl=${encodedUrl}`, {
-      headers: {
-        'X-API-Key': env.API_X_HEADER_API_KEY,
-      },
-    })
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch transcript: ${response.status} ${response.statusText}`)
-    }
-    
-    const data = await response.json()
+    const transcriptResult = await supadata.youtube.transcript({
+      videoId: videoId,
+    });
 
     // Check if transcript content exists
-    if (!data.content || data.content.length === 0) {
+    if (!transcriptResult.content || (Array.isArray(transcriptResult.content) && transcriptResult.content.length === 0)) {
       throw new Error('No transcript content available')
     }
 
-    const segments = data.content.map((item: any, index: number) => {
-      const start = parseInt(item.start, 10) / 1000
-      const end = parseInt(item.end, 10) / 1000
+    // Handle case where content is a string (plain text mode)
+    if (typeof transcriptResult.content === 'string') {
+      throw new Error('Transcript returned as plain text, expected chunks')
+    }
+
+    const segments = transcriptResult.content.map((item, index) => {
+      const startMs = item.offset;
+      const endMs = item.offset + item.duration;
+
+      const start = startMs / 1000;  // convert ms to seconds
+      const end = endMs / 1000;
 
       const baseDate = new Date(0)
       baseDate.setHours(0, 0, 0, 0)

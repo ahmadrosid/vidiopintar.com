@@ -7,6 +7,7 @@ import {
   text,
   time,
   timestamp,
+  uniqueIndex,
   varchar,
 } from "drizzle-orm/pg-core"
 import { user } from "./auth"
@@ -36,7 +37,9 @@ export const userVideos = pgTable("user_videos", {
   quickStartQuestions: json("quick_start_questions").$type<string[]>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-})
+}, (table) => [
+  uniqueIndex("user_videos_user_id_youtube_id_idx").on(table.userId, table.youtubeId),
+])
 
 export const sharedVideos = pgTable("shared_videos", {
   id: serial("id").primaryKey(),
