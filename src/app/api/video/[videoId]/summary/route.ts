@@ -26,6 +26,14 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       })
     }
 
+    // Check if summary generation is already in progress
+    if (userVideo.summaryStatus === 'generating') {
+      return NextResponse.json({
+        error: "Summary generation already in progress",
+        status: "generating"
+      }, { status: 409 })
+    }
+
     const video = await VideoRepository.getByYoutubeId(videoId)
     if (!video) {
       return NextResponse.json({ error: "Video not found" }, { status: 404 })
@@ -36,16 +44,27 @@ export async function POST(request: NextRequest, props: { params: Promise<{ vide
       return NextResponse.json({ error: "No transcript available for this video" }, { status: 400 })
     }
 
-    // Generate summary
-    const summary = await generateUserVideoSummary(video, dbSegments, userVideo.id)
+    // Set status to generating (with atomic check)
+    const lockAcquired = await UserVideoRepository.trySetGenerating(userVideo.id)
+    if (!lockAcquired) {
+      return NextResponse.json({
+        error: "Summary generation already in progress",
+        status: "generating"
+      }, { status: 409 })
+    }
 
-    // Save to database
-    await UserVideoRepository.updateSummary(userVideo.id, summary)
+    try {
+      const summary = await generateUserVideoSummary(video, dbSegments, userVideo.id)
+      await UserVideoRepository.updateSummaryWithStatus(userVideo.id, summary, 'completed')
 
-    return NextResponse.json({
-      summary,
-      cached: false
-    })
+      return NextResponse.json({
+        summary,
+        cached: false
+      })
+    } catch (error) {
+      await UserVideoRepository.updateSummaryStatus(userVideo.id, 'failed')
+      throw error
+    }
   } catch (error) {
     console.error("Error generating summary:", error)
     return NextResponse.json({ error: "Failed to generate summary" }, { status: 500 })

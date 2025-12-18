@@ -1,0 +1,1 @@
+ALTER TABLE "user_videos" ADD COLUMN "summary_status" varchar(20) DEFAULT 'idle';
