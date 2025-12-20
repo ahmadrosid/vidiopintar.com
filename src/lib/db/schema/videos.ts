@@ -34,7 +34,6 @@ export const userVideos = pgTable("user_videos", {
     .notNull()
     .references(() => videos.youtubeId, { onDelete: "cascade" }),
   summary: text("summary"),
-  summaryStatus: varchar("summary_status", { length: 20 }).default('idle'),
   quickStartQuestions: json("quick_start_questions").$type<string[]>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

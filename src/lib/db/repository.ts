@@ -232,34 +232,6 @@ export const UserVideoRepository = {
     return result[0]
   },
 
-  async trySetGenerating(id: number): Promise<boolean> {
-    // Atomically set status to 'generating' only if not already generating
-    const result = await db
-      .update(userVideos)
-      .set({ summaryStatus: 'generating', updatedAt: new Date() })
-      .where(and(eq(userVideos.id, id), sql`${userVideos.summaryStatus} != 'generating'`))
-      .returning()
-    return result.length > 0
-  },
-
-  async updateSummaryWithStatus(id: number, summary: string, status: string): Promise<UserVideo | undefined> {
-    const result = await db
-      .update(userVideos)
-      .set({ summary, summaryStatus: status, updatedAt: new Date() })
-      .where(eq(userVideos.id, id))
-      .returning()
-    return result[0]
-  },
-
-  async updateSummaryStatus(id: number, status: string): Promise<UserVideo | undefined> {
-    const result = await db
-      .update(userVideos)
-      .set({ summaryStatus: status, updatedAt: new Date() })
-      .where(eq(userVideos.id, id))
-      .returning()
-    return result[0]
-  },
-
   async updateQuickStartQuestions(
     id: number,
     quickStartQuestions: string[]

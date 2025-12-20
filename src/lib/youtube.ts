@@ -13,31 +13,6 @@ import { getCurrentUser } from "./auth";
 import { addSeconds, format } from "date-fns";
 import { supadata } from "@/lib/supadata";
 
-async function saveVideoUser(videoId: string, video: Video, segments: any[], generateSummaryAsync: boolean = false) {
-  const user = await getCurrentUser();
-
-  const userVideo = await UserVideoRepository.upsert({
-    userId: user.id,
-    youtubeId: videoId,
-    summary: '',
-  });
-
-  if (generateSummaryAsync) {
-    generateUserVideoSummary(video, segments, userVideo.id)
-      .then(summary => {
-        return UserVideoRepository.updateSummary(userVideo.id, summary);
-      })
-      .catch(error => {
-        console.error('Failed to generate summary asynchronously:', error);
-      });
-
-    return userVideo;
-  } else {
-    const summary = await generateUserVideoSummary(video, segments, userVideo.id);
-    return await UserVideoRepository.updateSummary(userVideo.id, summary) || userVideo;
-  }
-}
-
 export async function generateUserVideoSummary(video: Video, segments: any[], userVideoId?: number) {
   const transcriptText = segments.map((seg: {text: string}) => seg.text);
   const textToSummarize = `${video.title}\n${video.description ?? ""}\n${transcriptText}`;
@@ -58,21 +33,20 @@ export async function generateUserVideoSummary(video: Video, segments: any[], us
   return summary;
 }
 
-async function getVideoDetailFromApi(videoId: string) {
-  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`
-  const encodedUrl = encodeURIComponent(videoUrl)
+async function fetchVideoFromApi(videoId: string) {
+  const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  const encodedUrl = encodeURIComponent(videoUrl);
   const response = await fetch(`${env.API_BASE_URL}/youtube/video?videoUrl=${encodedUrl}`, {
     headers: {
       'X-API-Key': env.API_X_HEADER_API_KEY,
     },
-  })
-  
+  });
+
   if (!response.ok) {
-    throw new Error(`Failed to fetch video details: ${response.status} ${response.statusText}`)
+    throw new Error(`Failed to fetch video details: ${response.status} ${response.statusText}`);
   }
-  
-  const data = await response.json()
-  return data;
+
+  return response.json();
 }
 
 export async function fetchVideoDetails(videoId: string) {
@@ -80,10 +54,10 @@ export async function fetchVideoDetails(videoId: string) {
     const user = await getCurrentUser();
     let existingVideo = await VideoRepository.getByYoutubeId(videoId);
     const userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
-    
+
     if (existingVideo) {
       if (existingVideo.channelTitle === "Unknown Channel") {
-        const videoDetails = await getVideoDetailFromApi(videoId);
+        const videoDetails = await fetchVideoFromApi(videoId);
         existingVideo = await VideoRepository.upsert({
           youtubeId: videoId,
           title: videoDetails.title,
@@ -111,20 +85,7 @@ export async function fetchVideoDetails(videoId: string) {
       };
     }
 
-    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-    const encodedUrl = encodeURIComponent(videoUrl);
-    
-    const response = await fetch(`${env.API_BASE_URL}/youtube/video?videoUrl=${encodedUrl}`, {
-      headers: {
-        'X-API-Key': env.API_X_HEADER_API_KEY,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch video details: ${response.status} ${response.statusText}`);
-    }
-    
-    const data = await response.json();
+    const data = await fetchVideoFromApi(videoId);
 
     await VideoRepository.upsert({
       youtubeId: videoId,
@@ -180,8 +141,6 @@ export async function fetchVideoTranscript(videoId: string) {
         .sort((a, b) => a.start - b.start);
       let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
       if (!userVideo) {
-        const video = await VideoRepository.getByYoutubeId(videoId);
-        // Create userVideo without generating summary (will be done client-side)
         userVideo = await UserVideoRepository.upsert({
           userId: user.id,
           youtubeId: videoId,
@@ -231,32 +190,17 @@ export async function fetchVideoTranscript(videoId: string) {
       }
     })
 
-    // Only save transcript and create userVideo if we have valid segments
     await TranscriptRepository.upsertSegments(videoId, segments);
 
-    const video = await VideoRepository.getByYoutubeId(videoId);
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
-    
-    // Ensure userVideo exists for this user + video now that we have a transcript
     if (!userVideo) {
       userVideo = await UserVideoRepository.upsert({
         userId: user.id,
         youtubeId: videoId,
-        summary: '', // Empty initially, will be generated client-side
+        summary: '',
       });
     }
 
-    // If we already have a video record, keep its metadata up to date
-    if (video) {
-      await VideoRepository.upsert({
-        youtubeId: videoId,
-        title: video.title,
-        description: video.description,
-        channelTitle: video.channelTitle,
-        publishedAt: video.publishedAt,
-        thumbnailUrl: video.thumbnailUrl,
-      });
-    }
     return {
       segments,
       userVideo
