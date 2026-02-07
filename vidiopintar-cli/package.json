@@ -1,5 +1,5 @@
 {
-  "name": "youtube-cli",
+  "name": "vidiopintar-cli",
   "version": "1.0.0",
   "description": "A command-line tool to chat with YouTube video transcripts",
   "main": "src/index.ts",
