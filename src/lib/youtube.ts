@@ -2,7 +2,43 @@ import { env } from "@/lib/env/server";
 import { VideoRepository, TranscriptRepository, Video, UserRepository } from "@/lib/db/repository";
 import { openai } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
-import { fetchTranscript } from 'youtube-transcript-plus';
+import { fetchTranscript, TranscriptConfig } from 'youtube-transcript-plus';
+
+// Browser-like headers to bypass bot detection
+const BROWSER_HEADERS = {
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'DNT': '1',
+  'Connection': 'keep-alive',
+  'Upgrade-Insecure-Requests': '1',
+  'Sec-Fetch-Dest': 'document',
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-Site': 'none',
+  'Sec-Fetch-User': '?1',
+  'Cache-Control': 'max-age=0',
+};
+
+/**
+ * Creates a browser-like fetch function
+ */
+function createBrowserFetch(originalFetch: typeof fetch) {
+  return async (url: string, init?: RequestInit) => {
+    const headers = new Headers(init?.headers || {});
+    
+    // Add browser-like headers
+    Object.entries(BROWSER_HEADERS).forEach(([key, value]) => {
+      if (!headers.has(key)) {
+        headers.set(key, value);
+      }
+    });
+
+    return originalFetch(url, {
+      ...init,
+      headers,
+    });
+  };
+}
 import { z } from 'zod';
 import { generateSummary } from "@/lib/ai/summary";
 import { getQuickStartPrompt } from "@/lib/ai/system-prompts";
@@ -150,7 +186,40 @@ export async function fetchVideoTranscript(videoId: string) {
       return { segments, userVideo };
     }
 
-    const transcriptResult = await fetchTranscript(videoId);
+    const transcriptConfig: TranscriptConfig = {
+      videoFetch: async ({ url, lang, userAgent }) => {
+        const browserFetch = createBrowserFetch(fetch);
+        return browserFetch(url, {
+          headers: {
+            ...(lang && { 'Accept-Language': lang }),
+            'User-Agent': userAgent,
+          },
+        });
+      },
+      playerFetch: async ({ url, method, body, headers, lang, userAgent }) => {
+        const browserFetch = createBrowserFetch(fetch);
+        return browserFetch(url, {
+          method,
+          headers: {
+            ...(lang && { 'Accept-Language': lang }),
+            'User-Agent': userAgent,
+            ...headers,
+          },
+          body,
+        });
+      },
+      transcriptFetch: async ({ url, lang, userAgent }) => {
+        const browserFetch = createBrowserFetch(fetch);
+        return browserFetch(url, {
+          headers: {
+            ...(lang && { 'Accept-Language': lang }),
+            'User-Agent': userAgent,
+          },
+        });
+      },
+    };
+
+    const transcriptResult = await fetchTranscript(videoId, transcriptConfig);
 
     if (!transcriptResult || transcriptResult.length === 0) {
       throw new Error('No transcript content available')
