@@ -32,7 +32,7 @@ export const mdxComponents = {
   a: ({ href, children }: { href?: string; children: React.ReactNode }) => (
     <a
       href={href}
-      className="text-blue-600 dark:text-blue-200 hover:underline underline-offset-4 font-medium"
+      className="text-blue-600 dark:text-white hover:underline underline-offset-4 font-medium"
       target={href?.startsWith('http') ? '_blank' : undefined}
       rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
     >
