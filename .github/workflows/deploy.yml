@@ -40,21 +40,6 @@ jobs:
             tags: ghcr.io/${{ github.repository }}:latest
             cache-from: type=gha
             cache-to: type=gha,mode=max
-            build-args: |
-              DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-              DB_USER=${{ secrets.DB_USER }}
-              DB_HOST=${{ secrets.DB_HOST }}
-              DB_PORT=${{ secrets.DB_PORT }}
-              DB_NAME=${{ secrets.DB_NAME }}
-              OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-              GOOGLE_GENERATIVE_AI_API_KEY=${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
-              NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
-              GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-              GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-              BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
-              BETTER_AUTH_URL=${{ vars.BETTER_AUTH_URL }}
-              API_BASE_URL=${{ secrets.API_BASE_URL }}
-              API_X_HEADER_API_KEY=${{ secrets.API_X_HEADER_API_KEY }}
 
       - name: VPS install ssh keys
         # check this thread to understand why its needed:

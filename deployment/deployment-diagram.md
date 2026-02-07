@@ -55,7 +55,7 @@ TRIGGER: Push to 'main' branch
 │ 6. Deploy to    │ ← SSH to vidiopintar.com
 │    Production   │   cd /root/vidiopintar.com
 │    VPS          │   git pull origin main
-│                 │   bash ./deployment/deploy.sh
+│                 │   bun ./deployment/deploy.ts
 └─────────┬───────┘
           │
 ┌─────────▼───────┐
@@ -75,11 +75,11 @@ SECRETS USED:
 • SSH_PRIVATE_KEY      → SSH access to VPS  
 • ENV_RAW              → Environment variables for build
 
-## Blue-Green Deployment Script (deployment/deploy.sh)
+## Blue-Green Deployment Script (deployment/deploy.ts)
 
 ┌─────────────────────────────────────────────────────────────────┐
 │                    BLUE-GREEN DEPLOYMENT                        │
-│                    deployment/deploy.sh                         │
+│                    deployment/deploy.ts                         │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────┐    ┌─────────────────┐
