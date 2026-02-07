@@ -10,6 +10,44 @@ export interface ChangelogEntry {
 
 export const changelogs: ChangelogEntry[] = [
   {
+    date: "2026-02-07",
+    version: "1.5.0",
+    type: "minor",
+    changes: [
+      {
+        category: "added",
+        items: [
+          "MDX-based blog with SEO optimization (OG tags, JSON-LD, RSS feed)",
+          "CLI tool (vidiopintar-cli) for chatting with YouTube transcripts",
+          "Browser-like headers to bypass bot detection for YouTube fetching",
+          "Transcript-only mode without requiring OpenAI API key",
+          "Tag-based filtering for blog posts",
+          "Auto-generated sitemap and RSS feed for blog"
+        ]
+      },
+      {
+        category: "changed",
+        items: [
+          "Migrated summary generation to gpt-5-nano model",
+          "Updated Next.js to 15.4.10 (security patches for CVE-2025-55184, CVE-2025-55183, CVE-2025-67779)",
+          "Switched from Supadata to youtube-transcript-plus for transcripts",
+          "CI/CD now uses GITHUB_TOKEN instead of PAT for GHCR authentication",
+          "Deployment script migrated to Bun + TypeScript",
+          "Removed effect-ts dependency"
+        ]
+      },
+      {
+        category: "fixed",
+        items: [
+          "Docker login to GHCR.io on VPS before deployment",
+          "Type errors for build process",
+          "Duplicate request issues when generating summaries",
+          "Added locking mechanism to prevent concurrent summary generation"
+        ]
+      }
+    ]
+  },
+  {
     date: "2025-11-08",
     version: "1.4.0",
     type: "minor",
