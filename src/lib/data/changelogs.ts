@@ -22,7 +22,9 @@ export const changelogs: ChangelogEntry[] = [
           "Browser-like headers to bypass bot detection for YouTube fetching",
           "Transcript-only mode without requiring OpenAI API key",
           "Tag-based filtering for blog posts",
-          "Auto-generated sitemap and RSS feed for blog"
+          "Auto-generated sitemap and RSS feed for blog",
+          "Canonical URLs for main pages (home, blog, changelogs, privacy, terms)",
+          "SEO metadata for privacy policy and terms of service pages"
         ]
       },
       {
@@ -42,7 +44,10 @@ export const changelogs: ChangelogEntry[] = [
           "Docker login to GHCR.io on VPS before deployment",
           "Type errors for build process",
           "Duplicate request issues when generating summaries",
-          "Added locking mechanism to prevent concurrent summary generation"
+          "Added locking mechanism to prevent concurrent summary generation",
+          "Blog link color contrast in dark mode",
+          "Code block dark mode support with theme switching",
+          "External image URL support in blog posts"
         ]
       }
     ]
