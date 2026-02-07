@@ -1,4 +1,19 @@
-import { fetchTranscript } from 'youtube-transcript-plus';
+import { fetchTranscript, TranscriptConfig } from 'youtube-transcript-plus';
+
+// Browser-like headers to bypass bot detection
+const BROWSER_HEADERS = {
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'DNT': '1',
+  'Connection': 'keep-alive',
+  'Upgrade-Insecure-Requests': '1',
+  'Sec-Fetch-Dest': 'document',
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-Site': 'none',
+  'Sec-Fetch-User': '?1',
+  'Cache-Control': 'max-age=0',
+};
 
 /**
  * Decodes HTML entities in a string
@@ -60,6 +75,27 @@ export function extractVideoId(url: string): string | null {
 }
 
 /**
+ * Creates a browser-like fetch function
+ */
+function createProxiedFetch(originalFetch: typeof fetch) {
+  return async (url: string, init?: RequestInit) => {
+    const headers = new Headers(init?.headers || {});
+    
+    // Add browser-like headers
+    Object.entries(BROWSER_HEADERS).forEach(([key, value]) => {
+      if (!headers.has(key)) {
+        headers.set(key, value);
+      }
+    });
+
+    return originalFetch(url, {
+      ...init,
+      headers,
+    });
+  };
+}
+
+/**
  * Fetches transcript from a YouTube video URL or video ID
  */
 export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<string> {
@@ -70,7 +106,40 @@ export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<stri
   }
 
   try {
-    const transcriptResult = await fetchTranscript(videoId);
+    const config: TranscriptConfig = {
+      videoFetch: async ({ url, lang, userAgent }) => {
+        const proxiedFetch = createProxiedFetch(fetch);
+        return proxiedFetch(url, {
+          headers: {
+            ...(lang && { 'Accept-Language': lang }),
+            'User-Agent': userAgent,
+          },
+        });
+      },
+      playerFetch: async ({ url, method, body, headers, lang, userAgent }) => {
+        const proxiedFetch = createProxiedFetch(fetch);
+        return proxiedFetch(url, {
+          method,
+          headers: {
+            ...(lang && { 'Accept-Language': lang }),
+            'User-Agent': userAgent,
+            ...headers,
+          },
+          body,
+        });
+      },
+      transcriptFetch: async ({ url, lang, userAgent }) => {
+        const proxiedFetch = createProxiedFetch(fetch);
+        return proxiedFetch(url, {
+          headers: {
+            ...(lang && { 'Accept-Language': lang }),
+            'User-Agent': userAgent,
+          },
+        });
+      },
+    };
+
+    const transcriptResult = await fetchTranscript(videoId, config);
 
     if (!transcriptResult || transcriptResult.length === 0) {
       throw new Error('No transcript available for this video. The video may not have captions enabled.');
