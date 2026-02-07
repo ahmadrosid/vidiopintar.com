@@ -2,7 +2,10 @@ import { env } from "@/lib/env/server";
 import { VideoRepository, TranscriptRepository, Video, UserRepository } from "@/lib/db/repository";
 import { openai } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
-import { fetchTranscript, TranscriptConfig } from 'youtube-transcript-plus';
+import { fetchTranscript } from 'youtube-transcript-plus';
+
+// Type for transcript config (not exported from library)
+type TranscriptConfig = Parameters<typeof fetchTranscript>[1];
 
 // Browser-like headers to bypass bot detection
 const BROWSER_HEADERS = {
@@ -189,33 +192,24 @@ export async function fetchVideoTranscript(videoId: string) {
     const transcriptConfig: TranscriptConfig = {
       videoFetch: async ({ url, lang, userAgent }) => {
         const browserFetch = createBrowserFetch(fetch);
-        return browserFetch(url, {
-          headers: {
-            ...(lang && { 'Accept-Language': lang }),
-            'User-Agent': userAgent,
-          },
-        });
+        const headers: Record<string, string> = {};
+        if (lang) headers['Accept-Language'] = lang;
+        if (userAgent) headers['User-Agent'] = userAgent;
+        return browserFetch(url, { headers });
       },
-      playerFetch: async ({ url, method, body, headers, lang, userAgent }) => {
+      playerFetch: async ({ url, method, body, headers: baseHeaders, lang, userAgent }) => {
         const browserFetch = createBrowserFetch(fetch);
-        return browserFetch(url, {
-          method,
-          headers: {
-            ...(lang && { 'Accept-Language': lang }),
-            'User-Agent': userAgent,
-            ...headers,
-          },
-          body,
-        });
+        const headers: Record<string, string> = { ...baseHeaders };
+        if (lang) headers['Accept-Language'] = lang;
+        if (userAgent) headers['User-Agent'] = userAgent;
+        return browserFetch(url, { method, headers, body });
       },
       transcriptFetch: async ({ url, lang, userAgent }) => {
         const browserFetch = createBrowserFetch(fetch);
-        return browserFetch(url, {
-          headers: {
-            ...(lang && { 'Accept-Language': lang }),
-            'User-Agent': userAgent,
-          },
-        });
+        const headers: Record<string, string> = {};
+        if (lang) headers['Accept-Language'] = lang;
+        if (userAgent) headers['User-Agent'] = userAgent;
+        return browserFetch(url, { headers });
       },
     };
 

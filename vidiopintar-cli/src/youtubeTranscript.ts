@@ -1,4 +1,7 @@
-import { fetchTranscript, TranscriptConfig } from 'youtube-transcript-plus';
+import { fetchTranscript } from 'youtube-transcript-plus';
+
+// Type for transcript config (not exported from library)
+type TranscriptConfig = Parameters<typeof fetchTranscript>[1];
 
 // Browser-like headers to bypass bot detection
 const BROWSER_HEADERS = {
@@ -109,33 +112,24 @@ export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<stri
     const config: TranscriptConfig = {
       videoFetch: async ({ url, lang, userAgent }) => {
         const proxiedFetch = createProxiedFetch(fetch);
-        return proxiedFetch(url, {
-          headers: {
-            ...(lang && { 'Accept-Language': lang }),
-            'User-Agent': userAgent,
-          },
-        });
+        const headers: Record<string, string> = {};
+        if (lang) headers['Accept-Language'] = lang;
+        if (userAgent) headers['User-Agent'] = userAgent;
+        return proxiedFetch(url, { headers });
       },
-      playerFetch: async ({ url, method, body, headers, lang, userAgent }) => {
+      playerFetch: async ({ url, method, body, headers: baseHeaders, lang, userAgent }) => {
         const proxiedFetch = createProxiedFetch(fetch);
-        return proxiedFetch(url, {
-          method,
-          headers: {
-            ...(lang && { 'Accept-Language': lang }),
-            'User-Agent': userAgent,
-            ...headers,
-          },
-          body,
-        });
+        const headers: Record<string, string> = { ...baseHeaders };
+        if (lang) headers['Accept-Language'] = lang;
+        if (userAgent) headers['User-Agent'] = userAgent;
+        return proxiedFetch(url, { method, headers, body });
       },
       transcriptFetch: async ({ url, lang, userAgent }) => {
         const proxiedFetch = createProxiedFetch(fetch);
-        return proxiedFetch(url, {
-          headers: {
-            ...(lang && { 'Accept-Language': lang }),
-            'User-Agent': userAgent,
-          },
-        });
+        const headers: Record<string, string> = {};
+        if (lang) headers['Accept-Language'] = lang;
+        if (userAgent) headers['User-Agent'] = userAgent;
+        return proxiedFetch(url, { headers });
       },
     };
 

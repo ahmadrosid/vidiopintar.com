@@ -111,6 +111,7 @@ async function main() {
 
   if (!videoUrl) {
     printUsage();
+    return;
   }
 
   if (!OPENAI_API_KEY && !transcriptOnly) {
@@ -134,7 +135,7 @@ async function main() {
   console.log('Fetching transcript...');
 
   try {
-    const transcript = await fetchYoutubeTranscript(videoUrl);
+    const transcript = await fetchYoutubeTranscript(videoUrl!);
     console.log(`✓ Transcript loaded (${transcript.split(/\s+/).length} words)\n`);
 
     if (transcriptOnly) {
