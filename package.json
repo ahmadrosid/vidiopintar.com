@@ -12,7 +12,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "deploy": "bun deployment/deploy.ts"
+    "deploy": "bun deployment/deploy.ts",
+    "youtube-chat": "bun run youtube-cli/src/index.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.12",

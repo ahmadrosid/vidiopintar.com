@@ -1,0 +1,33 @@
+{
+  "name": "youtube-cli",
+  "version": "1.0.0",
+  "description": "A command-line tool to chat with YouTube video transcripts",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "youtube-chat": "bun run src/index.ts",
+    "transcript": "bun run src/transcript.ts"
+  },
+  "keywords": [
+    "youtube",
+    "transcript",
+    "cli",
+    "ai",
+    "chat"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@ai-sdk/openai": "^1.0.0",
+    "ai": "^4.0.0",
+    "dotenv": "^16.4.0",
+    "marked": "^17.0.1",
+    "marked-terminal": "^7.3.0",
+    "youtube-transcript-plus": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  }
+}

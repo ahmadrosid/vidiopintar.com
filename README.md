@@ -88,3 +88,19 @@ docker exec -it vidiopintar-dev npx tsx scripts/seed-payment-settings.ts
 docker stop vidiopintar-dev
 docker rm vidiopintar-dev
 ```
+
+## YouTube CLI Chat Tool
+
+A simple command-line tool to chat with YouTube video transcripts. See [`youtube-cli/README.md`](youtube-cli/README.md) for detailed documentation.
+
+### Quick Start
+
+```bash
+# Set your OpenAI API key
+export OPENAI_API_KEY=your-api-key-here
+
+# Run the CLI
+bun run youtube-chat <youtube-url>
+```
+
+For more details, see the [youtube-cli documentation](youtube-cli/README.md).
