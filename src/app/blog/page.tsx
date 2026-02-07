@@ -1,11 +1,9 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getAllPosts, getAllTags } from '@/lib/blog';
-import { Badge } from '@/components/ui/badge';
+import { getAllPosts } from '@/lib/blog';
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowUpRight, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Blog | Vidiopintar',
@@ -20,23 +18,6 @@ export const metadata: Metadata = {
     canonical: '/blog',
   },
 };
-
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-function getAuthorInitials(author: string) {
-  return author
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 function CoverImage({ src, alt, className }: { src?: string; alt: string; className?: string }) {
   if (!src) {
@@ -59,7 +40,6 @@ function CoverImage({ src, alt, className }: { src?: string; alt: string; classN
 
 export default function BlogPage() {
   const posts = getAllPosts();
-  const tags = getAllTags();
 
   const featuredPost = posts.find((p) => p.featured) || posts[0];
   const otherPosts = posts.filter((p) => p.slug !== featuredPost?.slug);
@@ -84,22 +64,6 @@ export default function BlogPage() {
 
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          {/* Tags */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-12">
-              {tags.map((tag) => (
-                <Link key={tag} href={`/blog/tag/${encodeURIComponent(tag)}`}>
-                  <Badge
-                    variant="secondary"
-                    className="bg-muted hover:bg-muted/80 text-muted-foreground font-normal cursor-pointer transition-colors"
-                  >
-                    {tag}
-                  </Badge>
-                </Link>
-              ))}
-            </div>
-          )}
-
           {posts.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-muted-foreground">No posts yet. Check back soon!</p>
@@ -120,25 +84,13 @@ export default function BlogPage() {
                     </div>
 
                     {/* Featured Content */}
-                    <div className="space-y-4">
-                      <div className="text-sm text-muted-foreground">
-                        <span>{formatDate(featuredPost.publishedAt)}</span>
-                      </div>
-
+                    <div className="space-y-3">
                       <h2 className="text-2xl md:text-3xl font-bold leading-tight group-hover:text-primary transition-colors">
                         {featuredPost.title}
                       </h2>
-
                       <p className="text-muted-foreground leading-relaxed">
                         {featuredPost.description}
                       </p>
-
-                      <div className="flex items-center gap-2 text-sm font-medium pt-2">
-                        <span className="group-hover:text-primary transition-colors">
-                          Read Article
-                        </span>
-                        <ArrowUpRight className="w-4 h-4 group-hover:text-primary transition-colors" />
-                      </div>
                     </div>
                   </div>
                 </Link>
@@ -146,58 +98,27 @@ export default function BlogPage() {
 
               {/* Posts Grid */}
               {otherPosts.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {otherPosts.map((post) => (
                     <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
-                      <Card className="h-full overflow-hidden border-0 shadow-none hover:shadow-lg transition-shadow duration-300">
+                      <Card className="overflow-hidden rounded-xs shadow-none border-none bg-card hover:bg-card/50 transition-all duration-200">
                         {/* Cover Image */}
-                        <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-muted mb-4">
+                        <div className="relative h-40 overflow-hidden bg-muted">
                           <CoverImage
                             src={post.coverImage}
                             alt={post.title}
-                            className="w-full h-full group-hover:scale-105 transition-transform duration-500"
+                            className="w-full h-full group-hover:scale-105 transition-transform duration-300"
                           />
                         </div>
 
                         {/* Content */}
-                        <div className="space-y-4 p-1">
-                          {/* Tags */}
-                          {post.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {post.tags.slice(0, 2).map((tag) => (
-                                <Badge
-                                  key={tag}
-                                  variant="secondary"
-                                  className="bg-muted hover:bg-muted/80 text-muted-foreground font-normal text-xs px-2.5 py-1"
-                                >
-                                  {tag}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-
-                          <h3 className="text-lg font-semibold leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                        <div className="p-4 space-y-2">
+                          <h3 className="text-base font-semibold truncate group-hover:text-primary transition-colors">
                             {post.title}
                           </h3>
-
-                          <p className="text-muted-foreground text-sm line-clamp-2">
-                            {post.description}
+                          <p className="text-sm text-muted-foreground truncate">
+                            {post.author}
                           </p>
-
-                          {/* Author */}
-                          <div className="flex items-center gap-3 pt-3">
-                            <Avatar className="w-9 h-9">
-                              <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
-                                {getAuthorInitials(post.author)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="text-sm">
-                              <p className="font-medium">{post.author}</p>
-                              <p className="text-muted-foreground text-xs">
-                                Updated on {formatDate(post.updatedAt || post.publishedAt)}
-                              </p>
-                            </div>
-                          </div>
                         </div>
                       </Card>
                     </Link>
