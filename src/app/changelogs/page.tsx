@@ -1,6 +1,15 @@
 import { ChangelogList } from "@/components/changelog/changelog-list"
 import MainLayout from "@/components/layouts/main-layout"
 import { changelogs } from "@/lib/data/changelogs"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Changelogs | Vidiopintar",
+  description: "Stay up to date with the latest features, improvements, and updates to Vidiopintar.",
+  alternates: {
+    canonical: "/changelogs",
+  },
+}
 
 export default function ChangelogsPage() {
   return (

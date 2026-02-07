@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://vidiopintar.com/blog',
   },
+  alternates: {
+    canonical: '/blog',
+  },
 };
 
 export default function BlogPage() {

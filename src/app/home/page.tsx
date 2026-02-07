@@ -9,8 +9,17 @@ import { FooterSection } from "@/components/footer";
 import { getCurrentUser } from "@/lib/auth";
 import { VideoSearchDisplay } from "@/components/video/video-search-display";
 import { getTranslations } from 'next-intl/server';
+import type { Metadata } from "next";
 
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Dashboard | Vidiopintar",
+  description: "Your AI-powered YouTube learning dashboard. Summarize videos, chat with content, and organize your knowledge.",
+  alternates: {
+    canonical: "/home",
+  },
+}
 
 function CategoryCard({ image, label, slug }: { image: string; label: string; slug: string }) {
   return (

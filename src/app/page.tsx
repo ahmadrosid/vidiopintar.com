@@ -6,6 +6,13 @@ import { Testimonials2 } from "@/components/landing/Testimonial2"
 import { Topics } from "@/components/landing/Topic"
 import { FAQ } from "@/components/landing/FAQ"
 import MainLayout from "@/components/layouts/main-layout"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+}
 
 export default function Page() {
   return (
