@@ -121,16 +121,7 @@ export default function BlogPage() {
 
                     {/* Featured Content */}
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        {featuredPost.tags.slice(0, 2).map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="secondary"
-                            className="bg-muted hover:bg-muted/80 text-muted-foreground font-normal"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
+                      <div className="text-sm text-muted-foreground">
                         <span>{formatDate(featuredPost.publishedAt)}</span>
                       </div>
 
