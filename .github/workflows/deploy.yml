@@ -65,9 +65,10 @@ jobs:
           ssh-keyscan -H vidiopintar.com > ~/.ssh/known_hosts
       - name: Connect, pull and deploy
         run: |
-          ssh root@vidiopintar.com << 'EOF'
+          ssh root@vidiopintar.com << EOF
             set -e
-            export PATH="$HOME/.bun/bin:$PATH"
+            export PATH="\$HOME/.bun/bin:\$PATH"
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             cd /root/vidiopintar.com
             git checkout main
             git pull origin main || (sleep 15 && git pull origin main) || (sleep 30 && git pull origin main)
