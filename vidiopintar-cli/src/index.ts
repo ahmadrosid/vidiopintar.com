@@ -4,10 +4,15 @@ import { fetchYoutubeTranscript, extractVideoId } from './youtubeTranscript';
 import { chatWithTranscript, ChatMessage } from './chatWithTranscript';
 import * as readline from 'readline';
 import { marked } from 'marked';
-import { markedTerminal } from 'marked-terminal';
-
-// Configure marked to render markdown in terminal
-marked.use(markedTerminal());
+async function configureMarkedForTerminal() {
+  try {
+    const { markedTerminal } = await import('marked-terminal');
+    // Configure marked to render markdown in terminal when available
+    marked.use(markedTerminal());
+  } catch {
+    // Fallback to plain markdown rendering if marked-terminal isn't installed
+  }
+}
 
 // Load environment variables from project root
 import 'dotenv/config';
@@ -16,7 +21,7 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = 'gpt-4o-mini';
 
 function printUsage() {
-  console.error('Usage: bun run youtube-cli/src/index.ts <youtube-url>');
+  console.error('Usage: bun run youtube-cli/src/index.ts <youtube-url> [--transcript|-t|--no-chat]');
   console.error('');
   console.error('Environment variables:');
   console.error('  OPENAI_API_KEY (required) - Your OpenAI API key');
@@ -99,28 +104,43 @@ async function runChatLoop(transcript: string, videoTitle?: string) {
 }
 
 async function main() {
-  const videoUrl = process.argv[2];
+  const args = process.argv.slice(2);
+  const transcriptOnly =
+    args.includes('--transcript') || args.includes('--no-chat') || args.includes('-t');
+  const videoUrl = args.find((arg) => !arg.startsWith('-'));
 
   if (!videoUrl) {
     printUsage();
   }
 
-  if (!OPENAI_API_KEY) {
-    console.error('Error: OPENAI_API_KEY environment variable is required');
+  if (!OPENAI_API_KEY && !transcriptOnly) {
+    console.error('Error: OPENAI_API_KEY environment variable is required for chat mode');
     console.error('');
-    console.error('Please set it in your .env file or export it:');
+    console.error('Either set it in your .env file or export it:');
     console.error('  export OPENAI_API_KEY=your-api-key');
+    console.error('');
+    console.error('Or run in transcript-only mode:');
+    console.error('  bun run youtube-cli/src/index.ts <youtube-url> --transcript');
     process.exit(1);
   }
 
-  // Set the API key for the OpenAI SDK
-  process.env.OPENAI_API_KEY = OPENAI_API_KEY;
+  await configureMarkedForTerminal();
+
+  // Set the API key for the OpenAI SDK when available
+  if (OPENAI_API_KEY) {
+    process.env.OPENAI_API_KEY = OPENAI_API_KEY;
+  }
 
   console.log('Fetching transcript...');
 
   try {
     const transcript = await fetchYoutubeTranscript(videoUrl);
     console.log(`✓ Transcript loaded (${transcript.split(/\s+/).length} words)\n`);
+
+    if (transcriptOnly) {
+      console.log(transcript);
+      process.exit(0);
+    }
 
     // Try to extract video title (optional, can be enhanced later)
     let videoTitle: string | undefined;

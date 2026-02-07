@@ -33,7 +33,10 @@ Optional environment variables:
 bun run youtube-chat <youtube-url>
 
 # Or directly with bun
-bun run youtube-cli/src/index.ts <youtube-url>
+bun run vidiopintar-cli/src/index.ts <youtube-url>
+
+# Transcript only (no OpenAI API key required)
+bun run vidiopintar-cli/src/index.ts <youtube-url> --transcript
 ```
 
 ## Examples
@@ -47,6 +50,9 @@ bun run youtube-chat https://youtu.be/dQw4w9WgXcQ
 
 # Using video ID directly
 bun run youtube-chat dQw4w9WgXcQ
+
+# Transcript only
+bun run youtube-chat https://www.youtube.com/watch?v=dQw4w9WgXcQ --transcript
 ```
 
 ## Example Session
@@ -87,13 +93,13 @@ Goodbye!
 ## Requirements
 
 - Bun runtime
-- OpenAI API key
+- OpenAI API key (required only for chat mode)
 - YouTube video with captions/transcripts enabled
 
 ## Project Structure
 
 ```
-youtube-cli/
+vidiopintar-cli/
 ├── src/
 │   ├── index.ts              # Main CLI entry point
 │   ├── youtubeTranscript.ts  # YouTube transcript fetching
