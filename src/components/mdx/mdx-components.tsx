@@ -29,6 +29,9 @@ export const mdxComponents = {
   li: ({ children }: { children: React.ReactNode }) => (
     <li className="leading-7">{children}</li>
   ),
+  strong: ({ children }: { children: React.ReactNode }) => (
+    <strong className="font-bold text-foreground">{children}</strong>
+  ),
   a: ({ href, children }: { href?: string; children: React.ReactNode }) => (
     <a
       href={href}
