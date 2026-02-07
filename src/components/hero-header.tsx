@@ -126,6 +126,15 @@ const GuestMenus = ({
 }) => {
   return (
     <>
+      <Link href="/blog">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="cursor-pointer"
+        >
+          <span>Blog</span>
+        </Button>
+      </Link>
       <Link href="/login">
         <Button
           variant="outline"

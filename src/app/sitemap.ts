@@ -1,8 +1,11 @@
 import { MetadataRoute } from 'next'
+import { getAllPosts, getAllTags } from '@/lib/blog'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://vidiopintar.com'
   const currentDate = new Date()
+  const posts = getAllPosts()
+  const tags = getAllTags()
 
   // Static pages
   const staticPages = [
@@ -75,6 +78,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }))
 
+  // Blog pages
+  const blogPages = [
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: currentDate,
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    },
+  ]
+
+  // Individual blog posts
+  const blogPosts = posts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.updatedAt || post.publishedAt),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+
+  // Tag pages
+  const tagPages = tags.map((tag) => ({
+    url: `${baseUrl}/blog/tag/${encodeURIComponent(tag)}`,
+    lastModified: currentDate,
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
+  }))
+
   // Combine all pages
-  return [...staticPages, ...topicPages]
+  return [...staticPages, ...topicPages, ...blogPages, ...blogPosts, ...tagPages]
 }

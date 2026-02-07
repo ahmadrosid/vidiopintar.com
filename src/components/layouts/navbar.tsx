@@ -53,14 +53,22 @@ export default function Navbar({ session }: NavbarProps) {
   const renderNavigation = () => {
     if (session) {
       return (
-        <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
-          <Link href="/home">Home</Link>
-        </Button>
+        <>
+          <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
+            <Link href="/home">Home</Link>
+          </Button>
+          <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
+            <Link href="/blog">Blog</Link>
+          </Button>
+        </>
       )
     }
 
     return (
       <>
+        <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
+          <Link href="/blog">Blog</Link>
+        </Button>
         <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
           <Link href="/login">Login</Link>
         </Button>
