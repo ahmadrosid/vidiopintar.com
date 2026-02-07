@@ -1,0 +1,178 @@
+---
+title: "Introducing Vidiopintar CLI: Chat with YouTube Videos from Your Terminal"
+description: "Learn how to use the Vidiopintar CLI tool to chat with YouTube video transcripts directly from your command line. No browser needed."
+publishedAt: "2026-02-07"
+author: "Ahmad Rosid"
+tags: ["cli", "tutorial", "vidiopintar", "productivity"]
+coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&q=80"
+featured: true
+---
+
+Sometimes you just want to quickly extract insights from a YouTube video without opening a browser. That's why we built **Vidiopintar CLI** — a command-line tool that lets you chat with YouTube video transcripts directly from your terminal.
+
+## What is Vidiopintar CLI?
+
+Vidiopintar CLI is a lightweight, fast command-line tool that:
+
+- 🎥 **Fetches video transcripts** automatically from any YouTube URL
+- 💬 **Interactive chat** — ask questions about the video content
+- 📝 **Conversation history** — maintains context from your last 5 exchanges
+- 🌍 **Multi-language support** — works with English and Indonesian videos
+- ⚡ **Transcript-only mode** — get the transcript without an OpenAI API key
+
+## Installation & Setup
+
+The CLI is included in the Vidiopintar repository. Make sure you have [Bun](https://bun.sh/) installed, then:
+
+```bash
+# Clone the repository
+git clone https://github.com/ahmadrosid/vidiopintar.com.git
+cd vidiopintar.com
+
+# Install dependencies
+bun install
+```
+
+### Environment Setup
+
+For the AI chat features, you'll need an OpenAI API key:
+
+```bash
+# Option 1: Export in your shell
+export OPENAI_API_KEY=your-api-key-here
+
+# Option 2: Create a .env file
+echo "OPENAI_API_KEY=your-api-key-here" > .env
+```
+
+Optional configuration:
+- `OPENAI_MODEL` — Choose your model (default: `gpt-4o-mini`)
+- `OPENAI_BASE_URL` — Use custom OpenAI-compatible APIs
+
+## Usage
+
+### Chat Mode
+
+Start an interactive chat session with any YouTube video:
+
+```bash
+bun run cli https://www.youtube.com/watch?v=VIDEO_ID
+```
+
+The tool accepts multiple URL formats:
+
+```bash
+# Full URL
+bun run cli https://www.youtube.com/watch?v=dQw4w9WgXcQ
+
+# Short URL
+bun run cli https://youtu.be/dQw4w9WgXcQ
+
+# Just the video ID
+bun run cli dQw4w9WgXcQ
+```
+
+### Example Session
+
+```bash
+$ bun run cli https://www.youtube.com/watch?v=example
+Fetching transcript...
+✓ Transcript loaded (1,234 words)
+
+============================================================
+Video ID: example
+Chat with YouTube video transcript
+Type your questions (or :q to quit)
+============================================================
+
+> What are the main points discussed in this video?
+
+Thinking...
+
+Based on the video, here are the main points:
+
+1. **Point one** — Description here...
+2. **Point two** — Description here...
+3. **Point three** — Description here...
+
+> Can you explain the first point in more detail?
+
+Thinking...
+
+[Detailed explanation with context from the video...]
+
+> :q
+Goodbye!
+```
+
+### Transcript-Only Mode
+
+Don't have an OpenAI API key? No problem! Get just the transcript:
+
+```bash
+bun run cli https://www.youtube.com/watch?v=VIDEO_ID --transcript
+```
+
+This mode:
+- ✅ Requires **no API key**
+- ✅ Outputs clean text to stdout
+- ✅ Perfect for piping to other tools
+- ✅ Great for quick reference
+
+### Pro Tips
+
+**Pipe the transcript to a file:**
+```bash
+bun run cli VIDEO_URL --transcript > video-notes.txt
+```
+
+**Search within the transcript:**
+```bash
+bun run cli VIDEO_URL --transcript | grep -i "keyword"
+```
+
+**Copy to clipboard (macOS):**
+```bash
+bun run cli VIDEO_URL --transcript | pbcopy
+```
+
+## Use Cases
+
+Here are some ways I use Vidiopintar CLI daily:
+
+1. **Quick research** — Summarize long tutorials without watching
+2. **Note-taking** — Extract key points for documentation
+3. **Content creation** — Get transcripts for quote verification
+4. **Learning** — Ask clarifying questions about complex topics
+5. **Accessibility** — Read transcripts when audio isn't available
+
+## Behind the Scenes
+
+The CLI is built with:
+
+- **Bun** — Fast JavaScript runtime
+- **youtube-transcript-plus** — Reliable transcript fetching
+- **OpenAI SDK** — AI-powered responses
+- **marked** — Markdown rendering in terminal
+
+It's a simple but powerful tool that demonstrates how AI can make video content more accessible and actionable.
+
+## What's Next?
+
+We're considering adding:
+
+- Batch processing multiple videos
+- Export to JSON/Markdown formats
+- Integration with note-taking apps
+- Support for more languages
+
+Have ideas? [Let us know](mailto:hello@vidiopintar.com) or [contribute on GitHub](https://github.com/ahmadrosid/vidiopintar.com).
+
+## Try It Now
+
+```bash
+# Quick start with a popular tech talk
+bun run cli https://www.youtube.com/watch?v=8jPQjjsBbIc
+```
+
+Happy hacking! 🚀
