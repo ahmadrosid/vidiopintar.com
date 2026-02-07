@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { CodeBlock } from '@/components/ui/code-block';
+import { CodeBlock, CodeBlockCode } from '@/components/ui/code-block';
 
 export const mdxComponents = {
   h1: ({ children }: { children: React.ReactNode }) => (
@@ -48,7 +48,11 @@ export const mdxComponents = {
         </code>
       );
     }
-    return <CodeBlock code={String(children)} lang={className?.replace('language-', '') || 'text'} />;
+    return (
+      <CodeBlock>
+        <CodeBlockCode code={String(children)} language={className?.replace('language-', '') || 'text'} />
+      </CodeBlock>
+    );
   },
   pre: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   blockquote: ({ children }: { children: React.ReactNode }) => (
