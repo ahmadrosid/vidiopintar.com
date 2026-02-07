@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { getAllPosts, getAllTags } from '@/lib/blog';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Calendar, Clock, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Blog | Vidiopintar',
@@ -30,6 +30,13 @@ export default function BlogPage() {
       <section className="border-b border-border bg-muted/30">
         <div className="container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </Link>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
               Blog
             </h1>
