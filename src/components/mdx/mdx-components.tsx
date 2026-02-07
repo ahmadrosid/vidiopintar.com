@@ -63,18 +63,30 @@ export const mdxComponents = {
       {children}
     </blockquote>
   ),
-  img: ({ src, alt }: { src?: string; alt?: string }) => (
-    <div className="my-6">
-      <Image
-        src={src || ''}
-        alt={alt || ''}
-        width={800}
-        height={400}
-        className="rounded-lg border border-border/50"
-      />
-      {alt && <p className="text-center text-sm text-muted-foreground mt-2">{alt}</p>}
-    </div>
-  ),
+  img: ({ src, alt }: { src?: string; alt?: string }) => {
+    const isExternal = src?.startsWith('http');
+    return (
+      <div className="my-6">
+        {isExternal ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src}
+            alt={alt || ''}
+            className="w-full rounded-lg border border-border/50"
+          />
+        ) : (
+          <Image
+            src={src || ''}
+            alt={alt || ''}
+            width={800}
+            height={400}
+            className="rounded-lg border border-border/50"
+          />
+        )}
+        {alt && <p className="text-center text-sm text-muted-foreground mt-2">{alt}</p>}
+      </div>
+    );
+  },
   hr: () => <hr className="my-8 border-border" />,
   table: ({ children }: { children: React.ReactNode }) => (
     <div className="overflow-x-auto my-6">

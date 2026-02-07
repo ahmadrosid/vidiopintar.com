@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPostsByTag, getAllTags } from '@/lib/blog';
 import { Badge } from '@/components/ui/badge';
@@ -79,12 +80,21 @@ export default async function TagPage({ params }: Props) {
                 <Card className="group h-full overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-lg cursor-pointer">
                   <div className="aspect-video relative overflow-hidden bg-muted">
                     {post.coverImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={post.coverImage}
-                        alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                      post.coverImage.startsWith('http') ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={post.coverImage}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <Image
+                          src={post.coverImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      )
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
                         <span className="text-4xl">📝</span>
