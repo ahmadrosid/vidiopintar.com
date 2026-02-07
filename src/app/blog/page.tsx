@@ -169,7 +169,7 @@ export default function BlogPage() {
                         </div>
 
                         {/* Content */}
-                        <div className="space-y-3">
+                        <div className="space-y-4 p-1">
                           {/* Tags */}
                           {post.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2">
@@ -177,7 +177,7 @@ export default function BlogPage() {
                                 <Badge
                                   key={tag}
                                   variant="secondary"
-                                  className="bg-muted hover:bg-muted/80 text-muted-foreground font-normal text-xs"
+                                  className="bg-muted hover:bg-muted/80 text-muted-foreground font-normal text-xs px-2.5 py-1"
                                 >
                                   {tag}
                                 </Badge>
@@ -194,15 +194,15 @@ export default function BlogPage() {
                           </p>
 
                           {/* Author */}
-                          <div className="flex items-center gap-3 pt-2">
-                            <Avatar className="w-8 h-8">
-                              <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                          <div className="flex items-center gap-3 pt-3">
+                            <Avatar className="w-9 h-9">
+                              <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
                                 {getAuthorInitials(post.author)}
                               </AvatarFallback>
                             </Avatar>
-                            <div className="text-xs">
+                            <div className="text-sm">
                               <p className="font-medium">{post.author}</p>
-                              <p className="text-muted-foreground">
+                              <p className="text-muted-foreground text-xs">
                                 Updated on {formatDate(post.updatedAt || post.publishedAt)}
                               </p>
                             </div>
