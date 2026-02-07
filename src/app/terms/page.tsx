@@ -1,5 +1,26 @@
 import Typography from "@/components/common/typography"
 import MainLayout from "@/components/layouts/main-layout"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Terms of Service | Vidiopintar",
+  description: "Read Vidiopintar's Terms of Service. Learn about acceptable use, account policies, payment terms, and your rights as a user of our AI-powered YouTube learning platform.",
+  openGraph: {
+    title: "Terms of Service | Vidiopintar",
+    description: "Read Vidiopintar's Terms of Service. Learn about acceptable use, account policies, and your rights as a user.",
+    images: ["/images/vidiopintar-og.jpeg"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Service | Vidiopintar",
+    description: "Read Vidiopintar's Terms of Service. Learn about acceptable use, account policies, and your rights as a user.",
+    images: ["/images/vidiopintar-og.jpeg"],
+  },
+  alternates: {
+    canonical: "/terms",
+  },
+}
 
 export default function TermsOfService() {
   const lastUpdated = new Date().toLocaleDateString("en-US", {

@@ -1,5 +1,26 @@
 import Typography from "@/components/common/typography"
 import MainLayout from "@/components/layouts/main-layout"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy | Vidiopintar",
+  description: "Learn how Vidiopintar collects, uses, and protects your personal information. Our privacy policy explains your data rights and our security practices.",
+  openGraph: {
+    title: "Privacy Policy | Vidiopintar",
+    description: "Learn how Vidiopintar collects, uses, and protects your personal information.",
+    images: ["/images/vidiopintar-og.jpeg"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | Vidiopintar",
+    description: "Learn how Vidiopintar collects, uses, and protects your personal information.",
+    images: ["/images/vidiopintar-og.jpeg"],
+  },
+  alternates: {
+    canonical: "/privacy",
+  },
+}
 
 export default function PrivacyPolicy() {
   const lastUpdated = new Date().toLocaleDateString("en-US", {
