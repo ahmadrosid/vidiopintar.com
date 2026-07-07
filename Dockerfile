@@ -11,29 +11,8 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ARG SQLITE_DATABASE_PATH=/data/vidiopintar.db
-ARG DEEPSEEK_API_KEY
-ARG NEXT_PUBLIC_SITE_URL
-ARG BETTER_AUTH_SECRET
-ARG BETTER_AUTH_URL
-ARG API_BASE_URL
-ARG API_X_HEADER_API_KEY
-ARG ADMIN_MASTER_EMAIL
-ARG SUPADATA_API_KEY
-ARG NODE_ENV=production
-
-RUN echo "SQLITE_DATABASE_PATH=${SQLITE_DATABASE_PATH}" > .env && \
-    echo "NODE_ENV=${NODE_ENV}" >> .env && \
-    echo "DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}" >> .env && \
-    echo "NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}" >> .env && \
-    echo "BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}" >> .env && \
-    echo "BETTER_AUTH_URL=${BETTER_AUTH_URL}" >> .env && \
-    echo "API_BASE_URL=${API_BASE_URL}" >> .env && \
-    echo "API_X_HEADER_API_KEY=${API_X_HEADER_API_KEY}" >> .env && \
-    echo "ADMIN_MASTER_EMAIL=${ADMIN_MASTER_EMAIL}" >> .env && \
-    echo "SUPADATA_API_KEY=${SUPADATA_API_KEY}" >> .env
-
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 RUN bun run build
 
 # 3. Runner
