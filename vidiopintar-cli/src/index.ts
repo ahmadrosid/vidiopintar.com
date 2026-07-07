@@ -23,7 +23,8 @@ function printUsage() {
   console.error('Usage: bun run youtube-cli/src/index.ts <youtube-url> [--transcript|-t|--no-chat]');
   console.error('');
   console.error('Environment variables:');
-  console.error('  DEEPSEEK_API_KEY (required) - Your DeepSeek API key');
+  console.error('  DEEPSEEK_API_KEY (required for chat) - Your DeepSeek API key');
+  console.error('  TRANSCRIPT_API_KEY (required) - Your TranscriptAPI key');
   process.exit(1);
 }
 
@@ -110,6 +111,14 @@ async function main() {
   if (!videoUrl) {
     printUsage();
     return;
+  }
+
+  if (!process.env.TRANSCRIPT_API_KEY) {
+    console.error('Error: TRANSCRIPT_API_KEY environment variable is required');
+    console.error('');
+    console.error('Either set it in your .env file or export it:');
+    console.error('  export TRANSCRIPT_API_KEY=your-api-key');
+    process.exit(1);
   }
 
   if (!DEEPSEEK_API_KEY && !transcriptOnly) {

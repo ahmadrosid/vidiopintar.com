@@ -8,16 +8,32 @@ export interface TranscriptApiSegment {
   duration: number;
 }
 
-interface TranscriptApiResponse {
-  video_id?: string;
-  language?: string;
-  transcript?: TranscriptApiSegment[];
+export interface TranscriptApiMetadata {
+  title?: string;
+  author_name?: string;
+  author_url?: string;
+  thumbnail_url?: string;
+}
+
+export interface TranscriptApiResponse {
+  video_id: string;
+  language: string;
+  transcript: TranscriptApiSegment[];
+  metadata?: TranscriptApiMetadata;
 }
 
 export async function fetchTranscriptFromApi(
   videoUrlOrId: string,
   apiKey: string = env.TRANSCRIPT_API_KEY,
 ): Promise<TranscriptApiSegment[]> {
+  const response = await fetchTranscriptResponse(videoUrlOrId, apiKey);
+  return response.transcript;
+}
+
+export async function fetchTranscriptResponse(
+  videoUrlOrId: string,
+  apiKey: string = env.TRANSCRIPT_API_KEY,
+): Promise<TranscriptApiResponse> {
   const url = new URL(TRANSCRIPT_API_URL);
   url.searchParams.set("video_url", videoUrlOrId);
   url.searchParams.set("format", "json");
@@ -35,12 +51,11 @@ export async function fetchTranscriptFromApi(
     );
   }
 
-  const data = (await response.json()) as TranscriptApiResponse | TranscriptApiSegment[];
-  const segments = Array.isArray(data) ? data : data.transcript;
+  const data = (await response.json()) as TranscriptApiResponse;
 
-  if (!segments || segments.length === 0) {
+  if (!data.transcript || data.transcript.length === 0) {
     throw new Error("No transcript content available");
   }
 
-  return segments;
+  return data;
 }

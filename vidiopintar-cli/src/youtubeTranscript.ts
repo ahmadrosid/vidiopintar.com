@@ -7,9 +7,12 @@ interface TranscriptApiSegment {
 }
 
 interface TranscriptApiResponse {
-  video_id?: string;
-  language?: string;
-  transcript?: TranscriptApiSegment[];
+  video_id: string;
+  language: string;
+  transcript: TranscriptApiSegment[];
+  metadata?: {
+    title?: string;
+  };
 }
 
 /**
@@ -87,14 +90,13 @@ async function fetchTranscriptFromApi(videoUrlOrId: string): Promise<TranscriptA
     );
   }
 
-  const data = (await response.json()) as TranscriptApiResponse | TranscriptApiSegment[];
-  const segments = Array.isArray(data) ? data : data.transcript;
+  const data = (await response.json()) as TranscriptApiResponse;
 
-  if (!segments || segments.length === 0) {
+  if (!data.transcript || data.transcript.length === 0) {
     throw new Error('No transcript available for this video. The video may not have captions enabled.');
   }
 
-  return segments;
+  return data.transcript;
 }
 
 /**
