@@ -10,7 +10,7 @@ export const env = createEnv({
     SQLITE_DATABASE_PATH: z.string().min(1),
     BETTER_AUTH_URL: z.string().min(1),
     ADMIN_MASTER_EMAIL: z.string().email(),
-    SUPADATA_API_KEY: z.string().min(1),
+    TRANSCRIPT_API_KEY: z.string().min(1),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: process.env,
