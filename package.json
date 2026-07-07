@@ -14,7 +14,6 @@
     "db:studio": "drizzle-kit studio",
     "db:migrate-from-pg": "bun scripts/migrate-pg-to-sqlite.ts",
     "db:verify": "bun scripts/verify-sqlite.ts",
-    "deploy": "bun deployment/deploy.ts",
     "cli": "bun run vidiopintar-cli/src/index.ts"
   },
   "dependencies": {

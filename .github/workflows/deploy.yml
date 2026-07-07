@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Push
 
 on:
   push:
@@ -40,24 +40,3 @@ jobs:
             tags: ghcr.io/${{ github.repository }}:latest
             cache-from: type=gha
             cache-to: type=gha,mode=max
-
-      - name: VPS install ssh keys
-        # check this thread to understand why its needed:
-        # https://stackoverflow.com/a/70447517
-        run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H vidiopintar.com > ~/.ssh/known_hosts
-      - name: Connect, pull and deploy
-        run: |
-          ssh root@vidiopintar.com << EOF
-            set -e
-            export PATH="\$HOME/.bun/bin:\$PATH"
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            cd /root/vidiopintar.com
-            git checkout main
-            git pull origin main || (sleep 15 && git pull origin main) || (sleep 30 && git pull origin main)
-            bun ./deployment/deploy.ts
-          EOF
-      - name: cleanup
-        run: rm -rf ~/.ssh

@@ -46,4 +46,4 @@ data/*.db-shm
 *.db
 *.db-wal
 *.db-shm
-deployment/postgres-data
+docs/
