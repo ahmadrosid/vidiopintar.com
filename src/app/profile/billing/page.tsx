@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { transactionsRepository } from "@/lib/db/repository/transactions";
-import { paymentSettingsRepository } from "@/lib/db/repository/payment-settings";
+import { getPaymentSettings } from "@/lib/validations/payment";
 import { UserPlanService } from "@/lib/user-plan-service";
 import { TransactionHistory } from "../transaction-history";
 import { PendingPaymentAlert } from "../pending-payment-alert";
@@ -42,20 +42,14 @@ export default async function BillingPage() {
     }
   }
 
-  // Get current payment settings for WhatsApp functionality
-  let currentPaymentSettings = null;
-  try {
-    currentPaymentSettings = await paymentSettingsRepository.getActive();
-  } catch (error) {
-    console.log('Could not get current payment settings:', error);
-  }
+  const currentPaymentSettings = getPaymentSettings();
 
   return (
     <div className="space-y-6">
       <BillingHeader />
 
       {/* Pending Payment Alert - Show above current plan */}
-      {pendingTransactions.length > 0 && currentPaymentSettings && (
+      {pendingTransactions.length > 0 && (
         <PendingPaymentAlert 
           transactions={pendingTransactions} 
           currentPaymentSettings={currentPaymentSettings}

@@ -1,20 +1,11 @@
 import { getTranslations } from 'next-intl/server'
 import { CopyButton } from '@/components/ui/copy-button'
 import { WhatsAppConfirmButton } from '@/components/payment/whatsapp-confirm-button'
-import { paymentSettingsRepository } from '@/lib/db/repository/payment-settings'
 import { transactionsRepository } from '@/lib/db/repository/transactions'
 import { getCurrentUser } from '@/lib/auth'
-import { PLAN_CONFIGS } from '@/lib/validations/payment'
+import { getPaymentSettings, PLAN_CONFIGS } from '@/lib/validations/payment'
 import { UserPlanService } from '@/lib/user-plan-service'
 import { ChevronLeft, AlertTriangle } from 'lucide-react'
-
-interface PaymentSettings {
-  bankName: string;
-  bankAccountNumber: string;
-  bankAccountName: string;
-  whatsappPhoneNumber: string;
-  whatsappMessageTemplate: string;
-}
 
 interface PaymentPageProps {
   searchParams: Promise<{ plan?: string }>
@@ -43,6 +34,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
     // Validate plan parameter
     const validPlan = plan && (plan === 'monthly' || plan === 'yearly') ? plan : 'monthly';
     const currentPlan = planDetails[validPlan];
+    const paymentSettings = getPaymentSettings();
 
     // Get current user and handle transaction
     let user;
@@ -73,7 +65,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                     amount: currentPlan.amount,
                     currency: 'IDR',
                     transactionReference: await transactionsRepository.generateUniqueReference(),
-                    paymentSettings: JSON.stringify(await paymentSettingsRepository.getActive()),
+                    paymentSettings: JSON.stringify(paymentSettings),
                 });
             }
         }
@@ -82,37 +74,22 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
         // Continue without transaction if user not authenticated
     }
 
-    // Fetch payment settings on the server
-    let paymentSettings: PaymentSettings | null = null;
-    try {
-        paymentSettings = await paymentSettingsRepository.getActive();
-    } catch (error) {
-        console.error('Error fetching payment settings:', error);
-    }
-
-    // Fallback to default values if settings not available
-    const bankDetails = paymentSettings ? {
+    const bankDetails = {
         bankName: paymentSettings.bankName,
         accountNumber: paymentSettings.bankAccountNumber,
-        accountName: paymentSettings.bankAccountName
-    } : {
-        bankName: 'Bank Central Asia (BCA)',
-        accountNumber: '1234567890',
-        accountName: 'Vidiopintar Indonesia'
+        accountName: paymentSettings.bankAccountName,
     }
 
-    let whatsappMessage = paymentSettings 
-        ? paymentSettings.whatsappMessageTemplate
-            .replace('{planName}', currentPlan.name)
-            .replace('{planPrice}', currentPlan.price)
-        : `Halo, saya sudah melakukan transfer untuk ${currentPlan.name} sebesar ${currentPlan.price}. Mohon konfirmasi pembayaran saya.`
+    let whatsappMessage = paymentSettings.whatsappMessageTemplate
+        .replace('{planName}', currentPlan.name)
+        .replace('{planPrice}', currentPlan.price)
 
     // Add transaction reference if available
     if (transaction?.transactionReference) {
         whatsappMessage += `\n\nReferensi Transaksi: ${transaction.transactionReference}`
     }
     
-    const whatsappPhone = paymentSettings?.whatsappPhoneNumber;
+    const whatsappPhone = paymentSettings.whatsappPhoneNumber;
     const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(whatsappMessage)}`
 
     return (

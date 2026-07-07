@@ -20,6 +20,26 @@ export const PLAN_CONFIGS = {
 
 export type PlanType = keyof typeof PLAN_CONFIGS;
 
+export const BANK_TRANSFER_DETAILS = {
+  bankName: 'BNI',
+  bankAccountNumber: '1229085831',
+  bankAccountName: 'Ahmad Rosid',
+} as const;
+
+export const PAYMENT_CONTACT_CONFIG = {
+  whatsappPhoneNumber: '6281234567890',
+  whatsappMessageTemplate:
+    'Halo, saya sudah melakukan transfer untuk {planName} sebesar {planPrice}. Mohon konfirmasi pembayaran saya.',
+} as const;
+
+export function getPaymentSettings() {
+  return {
+    id: 'hardcoded',
+    ...BANK_TRANSFER_DETAILS,
+    ...PAYMENT_CONTACT_CONFIG,
+  };
+}
+
 // Global payment limits
 export const PAYMENT_LIMITS = {
   MIN_AMOUNT: 1000, // IDR 1,000 minimum

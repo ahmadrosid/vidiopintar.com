@@ -12,9 +12,9 @@ async function seedPaymentSettings() {
 
     // Create default payment settings
     const defaultSettings = {
-      bankName: 'Bank Central Asia (BCA)',
-      bankAccountNumber: '1234567890',
-      bankAccountName: 'Vidiopintar Indonesia',
+      bankName: 'BNI',
+      bankAccountNumber: '1229085831',
+      bankAccountName: 'Ahmad Rosid',
       whatsappPhoneNumber: '6281234567890',
       whatsappMessageTemplate: 'Halo, saya sudah melakukan transfer untuk {planName} sebesar {planPrice}. Mohon konfirmasi pembayaran saya.'
     };
