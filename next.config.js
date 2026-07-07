@@ -10,9 +10,24 @@ const nextConfig = {
   },
   output: 'standalone',
   serverExternalPackages: ['better-sqlite3'],
-  webpack: (config, { isServer }) => {
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'motion/react',
+      '@clerk/ui',
+      'date-fns',
+    ],
+    webpackBuildWorker: true,
+  },
+  webpack: (config, { isServer, dev }) => {
     if (isServer) {
       config.externals.push('better-sqlite3');
+    }
+    // Avoid webpack filesystem cache warnings from large vendor chunks (e.g. @clerk/backend).
+    // Docker builds are cold anyway, so memory cache is sufficient.
+    if (!dev) {
+      config.cache = { type: 'memory' };
     }
     return config;
   },

@@ -11,6 +11,12 @@ import { trackGenerateTextUsage } from '@/lib/token-tracker';
 import { UserVideoRepository } from "@/lib/db/repository";
 import { getCurrentUser } from "./auth";
 
+function pickThumbnailUrl(
+  thumbnails?: { high?: { url: string } } | Record<string, never>,
+): string | null {
+  return thumbnails && "high" in thumbnails ? thumbnails.high?.url ?? null : null;
+}
+
 export async function generateUserVideoSummary(video: Video, segments: any[], userVideoId?: number) {
   const transcriptText = segments.map((seg: {text: string}) => seg.text);
   const textToSummarize = `${video.title}\n${video.description ?? ""}\n${transcriptText}`;
@@ -95,11 +101,7 @@ export async function fetchVideoDetails(videoId: string) {
           description: videoDetails.description,
           channelTitle: videoDetails.channelTitle,
           publishedAt: videoDetails.publishedAt ? new Date(videoDetails.publishedAt) : null,
-          thumbnailUrl:
-            videoDetails.thumbnails?.high?.url ||
-            videoDetails.thumbnails?.medium?.url ||
-            videoDetails.thumbnails?.default?.url ||
-            null,
+          thumbnailUrl: pickThumbnailUrl(videoDetails.thumbnails),
           createdAt: new Date(),
           updatedAt: new Date(),
         });
@@ -124,13 +126,7 @@ export async function fetchVideoDetails(videoId: string) {
       description: data.description,
       channelTitle: data.channelTitle,
       publishedAt: data.publishedAt ? new Date(data.publishedAt) : null,
-      thumbnailUrl:
-        data.thumbnails?.maxres?.url ||
-        data.thumbnails?.standard?.url ||
-        data.thumbnails?.high?.url ||
-        data.thumbnails?.medium?.url ||
-        data.thumbnails?.default?.url ||
-        '',
+      thumbnailUrl: pickThumbnailUrl(data.thumbnails) ?? '',
     });
     
     return {
