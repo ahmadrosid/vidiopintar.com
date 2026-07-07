@@ -17,6 +17,17 @@ export interface TranscriptApiMetadata {
   thumbnail_url?: string;
 }
 
+export interface TranscriptApiLanguage {
+  code: string;
+  name?: string;
+}
+
+export interface TranscriptApiVideoInfoResponse {
+  video_id: string;
+  metadata: TranscriptApiMetadata;
+  available_languages: TranscriptApiLanguage[];
+}
+
 export interface TranscriptApiResponse {
   video_id: string;
   language: string;
@@ -34,7 +45,26 @@ export interface FetchTranscriptOptions {
 interface TranscriptApiErrorBody {
   detail?: string;
   code?: string;
-  available_languages?: string[];
+  available_languages?: Array<string | TranscriptApiLanguage>;
+}
+
+export async function fetchVideoInfoFromApi(
+  videoUrlOrId: string,
+  apiKey: string = env.TRANSCRIPT_API_KEY,
+): Promise<TranscriptApiVideoInfoResponse> {
+  const url = new URL(`${TRANSCRIPT_API_BASE}/youtube/info`);
+  url.searchParams.set("video_url", videoUrlOrId);
+
+  const response = await fetchWithRetry(url.toString(), apiKey);
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => "");
+    throw new Error(
+      `Failed to fetch video info: ${response.status} ${response.statusText}${body ? ` - ${body}` : ""}`,
+    );
+  }
+
+  return (await response.json()) as TranscriptApiVideoInfoResponse;
 }
 
 export async function fetchTranscriptFromApi(
@@ -51,10 +81,15 @@ export async function fetchTranscriptResponse(
   options: FetchTranscriptOptions = {},
   apiKey: string = env.TRANSCRIPT_API_KEY,
 ): Promise<TranscriptApiResponse> {
-  const languageAttempts = buildLanguageAttempts(options.language);
+  const queue = buildLanguageAttempts(options.language);
+  const attempted = new Set<string>();
   let lastError = "No transcript content available";
 
-  for (const language of languageAttempts) {
+  while (queue.length > 0) {
+    const language = queue.shift()!;
+    if (attempted.has(language)) continue;
+    attempted.add(language);
+
     const url = buildTranscriptUrl(videoUrlOrId, options, language);
     const response = await fetchWithRetry(url.toString(), apiKey);
 
@@ -72,9 +107,9 @@ export async function fetchTranscriptResponse(
     if (response.status === 404) {
       const parsed = parseTranscriptErrorBody(body);
       if (parsed?.available_languages?.length) {
-        const availableAttempt = parsed.available_languages.join(",");
-        if (!languageAttempts.includes(availableAttempt)) {
-          languageAttempts.push(availableAttempt);
+        const availableAttempt = extractLanguageCodes(parsed.available_languages).join(",");
+        if (!attempted.has(availableAttempt)) {
+          queue.push(availableAttempt);
         }
       }
       continue;
@@ -128,6 +163,14 @@ function parseTranscriptErrorBody(body: string): TranscriptApiErrorBody | null {
   } catch {
     return null;
   }
+}
+
+function extractLanguageCodes(
+  languages: Array<string | TranscriptApiLanguage>,
+): string[] {
+  return languages.map((language) =>
+    typeof language === "string" ? language : language.code,
+  );
 }
 
 function parseTranscriptError(body: string, status: number, statusText: string): string {

@@ -1,8 +1,7 @@
-import { env } from "@/lib/env/server";
 import { VideoRepository, TranscriptRepository, Video, UserRepository } from "@/lib/db/repository";
 import { generateObject } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
-import { fetchTranscriptResponse } from '@/lib/transcript-api';
+import { fetchTranscriptResponse, fetchVideoInfoFromApi } from '@/lib/transcript-api';
 import { z } from 'zod';
 import { generateSummary } from "@/lib/ai/summary";
 import { getQuickStartPrompt } from "@/lib/ai/system-prompts";
@@ -33,20 +32,53 @@ export async function generateUserVideoSummary(video: Video, segments: any[], us
   return summary;
 }
 
-async function fetchVideoFromApi(videoId: string) {
+async function fetchVideoFromOEmbed(videoId: string) {
   const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-  const encodedUrl = encodeURIComponent(videoUrl);
-  const response = await fetch(`${env.API_BASE_URL}/youtube/video?videoUrl=${encodedUrl}`, {
-    headers: {
-      'X-API-Key': env.API_X_HEADER_API_KEY,
-    },
-  });
+  const response = await fetch(
+    `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`,
+  );
 
   if (!response.ok) {
     throw new Error(`Failed to fetch video details: ${response.status} ${response.statusText}`);
   }
 
-  return response.json();
+  const data = (await response.json()) as {
+    title?: string;
+    author_name?: string;
+    thumbnail_url?: string;
+  };
+
+  return {
+    title: data.title ?? `Video ${videoId}`,
+    description: "",
+    channelTitle: data.author_name ?? "Unknown Channel",
+    publishedAt: null,
+    thumbnails: data.thumbnail_url ? { high: { url: data.thumbnail_url } } : {},
+    tags: [] as string[],
+  };
+}
+
+async function fetchVideoFromApi(videoId: string) {
+  try {
+    const info = await fetchVideoInfoFromApi(videoId);
+    const metadata = info.metadata;
+
+    return {
+      title: metadata.title ?? `Video ${videoId}`,
+      description: "",
+      channelTitle: metadata.author_name ?? "Unknown Channel",
+      publishedAt: null,
+      thumbnails: metadata.thumbnail_url
+        ? { high: { url: metadata.thumbnail_url } }
+        : {},
+      tags: [] as string[],
+    };
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("404")) {
+      return fetchVideoFromOEmbed(videoId);
+    }
+    throw error;
+  }
 }
 
 export async function fetchVideoDetails(videoId: string) {

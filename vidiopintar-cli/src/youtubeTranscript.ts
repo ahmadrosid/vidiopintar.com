@@ -113,6 +113,67 @@ async function fetchTranscriptResponse(
     throw new Error('TRANSCRIPT_API_KEY environment variable is required');
   }
 
+  const queue = buildLanguageAttempts(options.language);
+  const attempted = new Set<string>();
+  let lastError = 'No transcript available for this video. The video may not have captions enabled.';
+
+  while (queue.length > 0) {
+    const language = queue.shift()!;
+    if (attempted.has(language)) continue;
+    attempted.add(language);
+
+    const url = buildTranscriptUrl(videoUrlOrId, options, language);
+    const response = await fetchWithRetry(url.toString(), apiKey);
+
+    if (response.ok) {
+      const data = (await response.json()) as TranscriptApiResponse;
+      if (data.transcript?.length) {
+        return data;
+      }
+      continue;
+    }
+
+    const body = await response.text().catch(() => '');
+    lastError = parseTranscriptError(body, response.status, response.statusText);
+
+    if (response.status === 404) {
+      const parsed = parseTranscriptErrorBody(body);
+      if (parsed?.available_languages?.length) {
+        const availableAttempt = parsed.available_languages
+          .map((language) => (typeof language === 'string' ? language : language.code))
+          .join(',');
+        if (!attempted.has(availableAttempt)) {
+          queue.push(availableAttempt);
+        }
+      }
+      continue;
+    }
+
+    throw new Error(lastError);
+  }
+
+  throw new Error(lastError);
+}
+
+function buildLanguageAttempts(preferred?: string): string[] {
+  const attempts: string[] = [];
+
+  if (preferred) {
+    attempts.push(`${preferred},en,id,asr`);
+    attempts.push(`${preferred},asr`);
+  } else {
+    attempts.push('en,id,asr');
+  }
+
+  attempts.push('asr');
+  return attempts;
+}
+
+function buildTranscriptUrl(
+  videoUrlOrId: string,
+  options: FetchTranscriptOptions,
+  language?: string,
+) {
   const url = new URL(`${TRANSCRIPT_API_BASE}/youtube/transcript`);
   url.searchParams.set('video_url', videoUrlOrId);
   url.searchParams.set('format', 'json');
@@ -122,26 +183,43 @@ async function fetchTranscriptResponse(
     url.searchParams.set('send_metadata', 'true');
   }
 
-  if (options.language) {
-    url.searchParams.set('language', options.language);
+  if (language) {
+    url.searchParams.set('language', language);
   }
 
-  const response = await fetchWithRetry(url.toString(), apiKey);
+  return url;
+}
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => '');
-    throw new Error(
-      `Failed to fetch transcript: ${response.status} ${response.statusText}${body ? ` - ${body}` : ''}`,
-    );
+interface TranscriptApiLanguage {
+  code: string;
+  name?: string;
+}
+
+interface TranscriptApiErrorBody {
+  detail?: string;
+  code?: string;
+  available_languages?: Array<string | TranscriptApiLanguage>;
+}
+
+function parseTranscriptErrorBody(body: string): TranscriptApiErrorBody | null {
+  try {
+    return JSON.parse(body) as TranscriptApiErrorBody;
+  } catch {
+    return null;
+  }
+}
+
+function parseTranscriptError(body: string, status: number, statusText: string): string {
+  const parsed = parseTranscriptErrorBody(body);
+
+  if (parsed?.code === 'no_transcript_for_requested_languages') {
+    if (!parsed.available_languages?.length) {
+      return 'No transcript available for this video. The video may not have captions enabled.';
+    }
+    return parsed.detail ?? 'No transcript available for the requested languages';
   }
 
-  const data = (await response.json()) as TranscriptApiResponse;
-
-  if (!data.transcript || data.transcript.length === 0) {
-    throw new Error('No transcript available for this video. The video may not have captions enabled.');
-  }
-
-  return data;
+  return `Failed to fetch transcript: ${status} ${statusText}${body ? ` - ${body}` : ''}`;
 }
 
 /**
