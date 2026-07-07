@@ -30,12 +30,10 @@ export const PAYMENT_LIMITS = {
 // Transaction creation schema
 export const createTransactionSchema = z.object({
   planType: z.enum(['monthly', 'yearly'], {
-    required_error: 'Plan type is required',
-    invalid_type_error: 'Plan type must be either monthly or yearly',
+    message: 'Plan type must be either monthly or yearly',
   }),
   amount: z.number({
-    required_error: 'Amount is required',
-    invalid_type_error: 'Amount must be a number',
+    message: 'Amount must be a number',
   })
     .int('Amount must be an integer')
     .min(PAYMENT_LIMITS.MIN_AMOUNT, `Amount must be at least IDR ${PAYMENT_LIMITS.MIN_AMOUNT.toLocaleString()}`)
@@ -85,8 +83,7 @@ export type UpdatePaymentSettingsInput = z.infer<typeof updatePaymentSettingsSch
 // Transaction status update schema
 export const updateTransactionStatusSchema = z.object({
   status: z.enum(['pending', 'confirmed', 'expired', 'cancelled'], {
-    required_error: 'Status is required',
-    invalid_type_error: 'Invalid transaction status',
+    message: 'Invalid transaction status',
   }),
 });
 

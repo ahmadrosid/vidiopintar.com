@@ -101,12 +101,12 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof ZodError) {
       paymentLogger.warn('Transaction validation failed', {
-        validationErrors: error.errors,
+        validationErrors: error.issues,
         requestMetadata,
       });
       return NextResponse.json({ 
         error: 'Validation failed',
-        details: error.errors.map(err => ({
+        details: error.issues.map(err => ({
           field: err.path.join('.'),
           message: err.message
         }))

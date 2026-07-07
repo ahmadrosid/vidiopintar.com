@@ -109,6 +109,10 @@ async function migrateTable(table: string) {
 }
 
 async function main() {
+  if (!pgUrl) {
+    return;
+  }
+
   console.log("Migrating PostgreSQL → SQLite");
   console.log(`  Source: ${pgUrl.replace(/:[^:@]+@/, ":***@")}`);
   console.log(`  Target: ${sqlitePath}`);

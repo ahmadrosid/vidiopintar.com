@@ -61,12 +61,12 @@ export async function POST(request: Request) {
     
     if (error instanceof ZodError) {
       paymentLogger.warn('Payment settings validation failed', {
-        validationErrors: error.errors,
+        validationErrors: error.issues,
         requestMetadata,
       });
       return NextResponse.json({ 
         error: 'Validation failed',
-        details: error.errors.map(err => ({
+        details: error.issues.map(err => ({
           field: err.path.join('.'),
           message: err.message
         }))
@@ -117,12 +117,12 @@ export async function PUT(request: Request) {
     
     if (error instanceof ZodError) {
       paymentLogger.warn('Payment settings update validation failed', {
-        validationErrors: error.errors,
+        validationErrors: error.issues,
         requestMetadata,
       });
       return NextResponse.json({ 
         error: 'Validation failed',
-        details: error.errors.map(err => ({
+        details: error.issues.map(err => ({
           field: err.path.join('.'),
           message: err.message
         }))

@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { executeQuery } from '@/lib/db/execute';
 import { sql } from 'drizzle-orm';
 
 export async function GET() {
   try {
-    // Add timeout to prevent hanging
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Database connection timeout')), 8000);
     });
-    
-    const dbQuery = db.execute(sql`SELECT 1`);
-    
+
+    const dbQuery = executeQuery(sql`SELECT 1`);
+
     await Promise.race([dbQuery, timeoutPromise]);
     
     return NextResponse.json({ status: 'ok', message: 'Application and database are healthy' });
