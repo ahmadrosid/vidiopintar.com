@@ -9,7 +9,7 @@ AI-powered YouTube video learning platform. Submit a YouTube link to get video s
 ## Tech Stack
 
 - **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: SQLite with Drizzle ORM (`better-sqlite3`)
 - **Auth**: Better Auth
 - **AI**: OpenAI & Google AI SDK
 
@@ -20,7 +20,8 @@ AI-powered YouTube video learning platform. Submit a YouTube link to get video s
 npm install
 
 # Setup database
-npm run db:push
+mkdir -p data
+npm run db:migrate
 
 # Start development server
 npm run dev
@@ -28,8 +29,8 @@ npm run dev
 
 ## Environment Variables
 
-Copy `.env.example` to `.env.local` and configure:
-- Database connection
+Copy `.env.example` to `.env` and configure:
+- `SQLITE_DATABASE_PATH` (default: `./data/vidiopintar.db`)
 - OpenAI API key
 - Google AI API key
 - Auth secrets
@@ -43,7 +44,10 @@ Copy `.env.example` to `.env.local` and configure:
 docker build -t vidiopintar-app .
 
 # Run the container (make sure to have .env file in the project root)
-docker run -d --name vidiopintar-dev -p 5000:3000 --env-file .env vidiopintar-app
+docker run -d --name vidiopintar-dev -p 5000:3000 \
+  -v "$(pwd)/data:/data" \
+  --env-file .env \
+  vidiopintar-app
 ```
 
 ### Option 2: Using Pre-built Image
@@ -62,7 +66,7 @@ docker stop vidiopintar-app && docker rm vidiopintar-app
 ### Docker Environment Notes
 
 - The app runs on port 3000 inside the container
-- If using a local PostgreSQL database, set `DB_HOST=host.docker.internal` in your `.env` file
+- Set `SQLITE_DATABASE_PATH=/data/vidiopintar.db` when mounting `./data:/data`
 - Make sure your `.env` file contains all required variables from `.env.example`
 - Access the app at `http://localhost:5000`
 

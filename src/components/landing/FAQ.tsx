@@ -17,28 +17,8 @@ export function FAQ() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  // Generate JSON-LD schema for FAQPage
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: filteredFaqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
-      },
-    })),
-  };
-
   return (
     <section className="flex flex-col gap-7 pt-28">
-      {/* Schema Markup */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-
       {/* Header */}
       <div className="flex justify-start items-center gap-2 w-full">
         <div className="w-4 h-1 bg-accent rounded-full"></div>

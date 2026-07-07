@@ -1,54 +1,46 @@
-import { Pool } from 'pg';
-import { env } from '../src/lib/env/server';
+#!/usr/bin/env bun
 
-const databaseUrl = `postgres://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`;
+import "dotenv/config";
+import Database from "better-sqlite3";
+import path from "node:path";
 
-const pool = new Pool({
-  connectionString: databaseUrl,
-  ssl: false,
-});
+const sqlitePath = path.resolve(
+  process.env.SQLITE_DATABASE_PATH ?? "./data/vidiopintar.db"
+);
 
-async function removeDuplicates() {
-  const client = await pool.connect();
+const db = new Database(sqlitePath);
 
-  try {
-    // Find duplicates
-    const duplicates = await client.query(`
-      SELECT user_id, youtube_id, COUNT(*), array_agg(id) as ids
-      FROM user_videos
-      GROUP BY user_id, youtube_id
-      HAVING COUNT(*) > 1
-    `);
+const duplicates = db
+  .prepare(
+    `SELECT user_id, youtube_id, COUNT(*) as count, group_concat(id) as ids
+     FROM user_videos
+     GROUP BY user_id, youtube_id
+     HAVING COUNT(*) > 1`
+  )
+  .all() as { user_id: string; youtube_id: string; count: number; ids: string }[];
 
-    console.log(`Found ${duplicates.rows.length} duplicate groups`);
+console.log(`Found ${duplicates.length} duplicate groups`);
 
-    if (duplicates.rows.length === 0) {
-      console.log('No duplicates to remove');
-      return;
-    }
-
-    // Delete duplicates, keeping the one with the lowest id
-    const result = await client.query(`
-      DELETE FROM user_videos a
-      USING user_videos b
-      WHERE a.id > b.id
-        AND a.user_id = b.user_id
-        AND a.youtube_id = b.youtube_id
-    `);
-
-    console.log(`Deleted ${result.rowCount} duplicate rows`);
-  } finally {
-    client.release();
-    await pool.end();
-  }
+if (duplicates.length === 0) {
+  console.log("No duplicates to remove");
+  db.close();
+  process.exit(0);
 }
 
-removeDuplicates()
-  .then(() => {
-    console.log('Done!');
-    process.exit(0);
-  })
-  .catch((err) => {
-    console.error('Error:', err);
-    process.exit(1);
-  });
+const result = db
+  .prepare(
+    `DELETE FROM user_videos
+     WHERE id IN (
+       SELECT a.id
+       FROM user_videos a
+       INNER JOIN user_videos b
+         ON a.user_id = b.user_id
+         AND a.youtube_id = b.youtube_id
+         AND a.id > b.id
+     )`
+  )
+  .run();
+
+console.log(`Deleted ${result.changes} duplicate rows`);
+db.close();
+console.log("Done!");

@@ -116,6 +116,7 @@ export default async function BlogPostPage({ params }: Props) {
     <>
       {/* JSON-LD Structured Data */}
       <script
+        async
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />

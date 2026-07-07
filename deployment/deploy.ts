@@ -20,7 +20,9 @@ const CONFIG = {
   internalPort: "3000",
   logFile: "/var/log/vidiopintar-deploy.log",
   maxHealthRetries: 5,
-  healthCheckInterval: 3000, // milliseconds
+  healthCheckInterval: 3000,
+  sqliteHostPath: process.env.SQLITE_VOLUME_HOST_PATH ?? "/var/lib/vidiopintar",
+  sqliteContainerPath: "/data",
 } as const;
 
 // Colors for output
@@ -225,12 +227,10 @@ async function deploy(): Promise<void> {
   const targetContainer =
     targetPort === CONFIG.portA ? containerA : containerB;
 
-  // Stop and remove any existing container on target port
-  const existingContainer = await getContainerByName(targetContainer);
-  if (existingContainer) {
-    log("Stopping existing container on target port...");
-    await removeContainer(targetContainer);
-  }
+  // SQLite allows only one writer — stop all app containers before starting the new one
+  log("Stopping all existing app containers for SQLite-safe deploy...");
+  await removeContainer(containerA);
+  await removeContainer(containerB);
 
   // Start new container on target port
   log(`Starting new container on port ${targetPort}...`);
@@ -240,6 +240,7 @@ async function deploy(): Promise<void> {
       --restart unless-stopped \
       --network host \
       -e PORT=${targetPort} \
+      -v ${CONFIG.sqliteHostPath}:${CONFIG.sqliteContainerPath} \
       --env-file .env \
       ${CONFIG.imageName}`;
   } catch (err) {
@@ -252,22 +253,6 @@ async function deploy(): Promise<void> {
     log(`New container is healthy on port ${targetPort}`);
     log("Deployment completed successfully!");
     log(`New version is running on port ${targetPort}`);
-
-    // Stop and remove old container if exists
-    if (activePort !== "none" && activePort !== targetPort) {
-      log(`Stopping previous container on port ${activePort}...`);
-
-      const oldContainer =
-        activePort === CONFIG.portA ? containerA : containerB;
-
-      // Give nginx time to switch traffic
-      log("Waiting 5 seconds for nginx to switch traffic...");
-      await sleep(5000);
-
-      // Stop and remove old container
-      await removeContainer(oldContainer);
-      log(`Previous container on port ${activePort} has been removed`);
-    }
 
     // Show container status
     log("Container status:");

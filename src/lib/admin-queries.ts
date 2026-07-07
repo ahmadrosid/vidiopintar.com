@@ -1,7 +1,8 @@
 import { db } from "@/lib/db";
+import { executeQuery } from "@/lib/db/execute";
 import { user, videos, userVideos, tokenUsage } from "@/lib/db/schema";
 import { messages } from "@/lib/db/schema/messages";
-import { sql, gte } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { TokenUsageRepository } from "@/lib/db/repository";
 
 export type TimeRange = "7d" | "1m" | "3m";
@@ -12,10 +13,10 @@ export async function getAdminMetrics() {
     db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(videos),
     db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(userVideos),
     db.select({ count: sql<number>`count(*)`.mapWith(Number) }).from(messages),
-    db.select({ 
+    db.select({
       totalTokens: sql<number>`sum(${tokenUsage.totalTokens})`,
       totalCost: sql<string>`sum(${tokenUsage.totalCost})`,
-      totalRequests: sql<number>`count(*)`
+      totalRequests: sql<number>`count(*)`,
     }).from(tokenUsage),
   ]);
 
@@ -25,7 +26,7 @@ export async function getAdminMetrics() {
     totalUserVideos: totalUserVideos[0]?.count ?? 0,
     totalMessages: totalMessages[0]?.count ?? 0,
     totalTokens: totalTokenUsage[0]?.totalTokens ?? 0,
-    totalTokenCost: parseFloat(totalTokenUsage[0]?.totalCost ?? '0'),
+    totalTokenCost: parseFloat(totalTokenUsage[0]?.totalCost ?? "0"),
     totalTokenRequests: totalTokenUsage[0]?.totalRequests ?? 0,
   };
 }
@@ -34,7 +35,7 @@ export async function getTokenUsageData(timeRange: TimeRange) {
   const days = timeRange === "7d" ? 7 : timeRange === "1m" ? 30 : 90;
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
-  
+
   return await TokenUsageRepository.getUsageByDateRange(startDate, new Date());
 }
 
@@ -52,18 +53,18 @@ export async function getTopTokenUsers(limit = 10) {
 
 export async function getUserGrowthData(timeRange: TimeRange) {
   const daysBack = timeRange === "7d" ? 7 : timeRange === "1m" ? 30 : 90;
-  
+
   const result = await db
     .select({
-      date: sql<string>`DATE("created_at")`,
+      date: sql<string>`date(${user.createdAt})`,
       count: sql<number>`count(*)`.mapWith(Number),
     })
     .from(user)
-    .where(sql`"created_at" >= NOW() - INTERVAL '${sql.raw(daysBack.toString())} days'`)
-    .groupBy(sql`DATE("created_at")`)
-    .orderBy(sql`DATE("created_at")`);
+    .where(sql`${user.createdAt} >= datetime('now', ${sql.raw(`'-${daysBack} days'`)})`)
+    .groupBy(sql`date(${user.createdAt})`)
+    .orderBy(sql`date(${user.createdAt})`);
 
-  return result.map(row => ({
+  return result.map((row) => ({
     date: row.date,
     users: row.count,
   }));
@@ -71,18 +72,18 @@ export async function getUserGrowthData(timeRange: TimeRange) {
 
 export async function getVideoAdditionsData(timeRange: TimeRange) {
   const daysBack = timeRange === "7d" ? 7 : timeRange === "1m" ? 30 : 90;
-  
+
   const result = await db
     .select({
-      date: sql<string>`DATE("created_at")`,
+      date: sql<string>`date(${videos.createdAt})`,
       count: sql<number>`count(*)`.mapWith(Number),
     })
     .from(videos)
-    .where(sql`"created_at" >= NOW() - INTERVAL '${sql.raw(daysBack.toString())} days'`)
-    .groupBy(sql`DATE("created_at")`)
-    .orderBy(sql`DATE("created_at")`);
+    .where(sql`${videos.createdAt} >= datetime('now', ${sql.raw(`'-${daysBack} days'`)})`)
+    .groupBy(sql`date(${videos.createdAt})`)
+    .orderBy(sql`date(${videos.createdAt})`);
 
-  return result.map(row => ({
+  return result.map((row) => ({
     date: row.date,
     videos: row.count,
   }));
@@ -106,7 +107,7 @@ export async function getLatestVideos(limit = 5) {
 }
 
 export async function getTopUsers(limit = 6) {
-  const result = await db.execute(sql`
+  const result = await executeQuery(sql`
     SELECT 
       u.id,
       u.name,
@@ -119,8 +120,8 @@ export async function getTopUsers(limit = 6) {
       COALESCE(SUM(tu.total_tokens), 0) as total_tokens
     FROM "user" u
     LEFT JOIN user_videos uv ON u.id = uv.user_id
-    LEFT JOIN messages m ON uv.id = m.user_video_id AND m.role = 'user' AND DATE(m.created_at) = CURRENT_DATE
-    LEFT JOIN token_usage tu ON uv.id = tu.user_video_id AND DATE(tu.created_at) = CURRENT_DATE
+    LEFT JOIN messages m ON uv.id = m.user_video_id AND m.role = 'user' AND date(m.created_at) = date('now')
+    LEFT JOIN token_usage tu ON uv.id = tu.user_video_id AND date(tu.created_at) = date('now')
     GROUP BY u.id, u.name, u.email, u.image, u.created_at
     ORDER BY 
       message_count DESC,
@@ -143,8 +144,7 @@ export async function getTopUsers(limit = 6) {
 }
 
 export async function getLatestMessages(limit = 6) {
-  // Using a CTE to get the latest 2 messages per user from the 3 most recent users
-  const result = await db.execute(sql`
+  const result = await executeQuery(sql`
     WITH recent_users AS (
       SELECT DISTINCT uv.user_id, MAX(m.created_at) as last_message_at
       FROM messages m

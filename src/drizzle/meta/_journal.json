@@ -1,110 +1,12 @@
 {
   "version": "7",
-  "dialect": "postgresql",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
-      "version": "7",
-      "when": 1742196194651,
-      "tag": "0000_friendly_imperial_guard",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1744740013991,
-      "tag": "0001_omniscient_blockbuster",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1745305436769,
-      "tag": "0002_hot_the_initiative",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1745571133831,
-      "tag": "0003_lean_mariko_yashida",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1750272497799,
-      "tag": "0004_confused_the_enforcers",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1750526519941,
-      "tag": "0005_fair_shiver_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1750572930538,
-      "tag": "0006_unique_the_enforcers",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1750572956694,
-      "tag": "0007_powerful_omega_red",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1750742035708,
-      "tag": "0008_true_sheva_callister",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1750953897300,
-      "tag": "0009_parallel_agent_zero",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1751256984771,
-      "tag": "0010_crazy_nemesis",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1751699701477,
-      "tag": "0011_easy_jubilee",
-      "breakpoints": true
-    },
-    {
-      "idx": 12,
-      "version": "7",
-      "when": 1753555748666,
-      "tag": "0012_shiny_thaddeus_ross",
-      "breakpoints": true
-    },
-    {
-      "idx": 13,
-      "version": "7",
-      "when": 1766056964791,
-      "tag": "0013_fair_adam_destine",
-      "breakpoints": true
-    },
-    {
-      "idx": 14,
-      "version": "7",
-      "when": 1766058826530,
-      "tag": "0014_absent_killer_shrike",
+      "version": "6",
+      "when": 1783419230166,
+      "tag": "0000_clever_mad_thinker",
       "breakpoints": true
     }
   ]

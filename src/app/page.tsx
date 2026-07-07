@@ -6,7 +6,21 @@ import { Testimonials2 } from "@/components/landing/Testimonial2"
 import { Topics } from "@/components/landing/Topic"
 import { FAQ } from "@/components/landing/FAQ"
 import MainLayout from "@/components/layouts/main-layout"
+import { faqData } from "@/data/faq"
 import type { Metadata } from "next"
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqData.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+}
 
 export const metadata: Metadata = {
   alternates: {
@@ -16,14 +30,21 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <MainLayout>
-      <Header />
-      <Testimonial />
-      <Features />
-      <Topics />
-      <Testimonials2 />
-      <NewPricing />
-      <FAQ />
-    </MainLayout>
+    <>
+      <script
+        async
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <MainLayout>
+        <Header />
+        <Testimonial />
+        <Features />
+        <Topics />
+        <Testimonials2 />
+        <NewPricing />
+        <FAQ />
+      </MainLayout>
+    </>
   )
 }
