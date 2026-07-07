@@ -1,9 +1,9 @@
-import { openai } from '@ai-sdk/openai';
-import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { convertToModelMessages, streamText } from 'ai';
 
+import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
+import { getMessageText } from '@/lib/ai/messages';
 import { fetchVideoTranscript, fetchVideoDetails } from '@/lib/youtube';
-import { MessageRepository, VideoRepository, UserRepository } from '@/lib/db/repository';
+import { MessageRepository, VideoRepository } from '@/lib/db/repository';
 import { createStreamTokenTracker } from '@/lib/token-tracker';
 import { getCurrentUser } from '@/lib/auth';
 import { getSystemPrompt } from '@/lib/ai/system-prompts';
@@ -13,7 +13,6 @@ export async function POST(req: Request) {
   try {
     const { messages, videoId, userVideoId, language } = await req.json();
     
-    // Get user for token tracking - required for chat functionality
     const user = await getCurrentUser();
     if (!user) {
       return new Response(
@@ -25,7 +24,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if user can add videos (daily limit check)
     const canAddVideo = await UserPlanService.canAddVideo(user.id);
     if (!canAddVideo.canAdd) {
       return new Response(
@@ -78,7 +76,7 @@ export async function POST(req: Request) {
       try {
         await MessageRepository.create({
           userVideoId,
-          content: lastUserMsg.content,
+          content: getMessageText(lastUserMsg),
           role: 'user',
           timestamp: Math.floor(Date.now() / 1000),
         });
@@ -88,7 +86,7 @@ export async function POST(req: Request) {
     }
   }
 
-  let enrichedMessages = messages;
+  let modelMessages = convertToModelMessages(messages);
   if (transcriptText || videoTitle) {
     const systemContent = getSystemPrompt(language || 'en', {
       videoTitle,
@@ -96,52 +94,48 @@ export async function POST(req: Request) {
       transcriptText,
     });
     
-    enrichedMessages = [
+    modelMessages = [
       {
         role: 'system',
         content: systemContent,
       },
-      ...messages,
+      ...modelMessages,
     ];
   }
 
     const tokenTracker = createStreamTokenTracker({
       userId: user.id,
-      model: 'gpt-4o-mini-2024-07-18',
-      provider: 'openai',
+      model: AI_MODEL_ID,
+      provider: AI_PROVIDER,
       operation: 'chat',
       videoId,
       userVideoId,
     });
 
     const result = streamText({
-      model: openai('gpt-4o-mini-2024-07-18'),
-      // model: google('gemini-2.0-flash-001'),
-      messages: enrichedMessages,
-      onFinish: async (data) => {
-        // Save assistant messages
-        data.steps.forEach(async (item) => {
-          try {
-            await MessageRepository.create({
-              userVideoId,
-              content: item.text,
-              role: 'assistant',
-              timestamp: Math.floor(Date.now() / 1000),
-            });
-          } catch (err) {
-            console.error('Failed to save assistant message:', err);
-          }
-        });
+      model: aiModel,
+      providerOptions: aiProviderOptions,
+      messages: modelMessages,
+      onFinish: async ({ text, totalUsage }) => {
+        try {
+          await MessageRepository.create({
+            userVideoId,
+            content: text,
+            role: 'assistant',
+            timestamp: Math.floor(Date.now() / 1000),
+          });
+        } catch (err) {
+          console.error('Failed to save assistant message:', err);
+        }
         
-        // Track token usage
-        await tokenTracker.onFinish(data);
+        await tokenTracker.onFinish({ usage: totalUsage });
       },
       onError: (error) => {
         console.error('Streaming error:', error);
       }
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error('Chat API error:', error);
     

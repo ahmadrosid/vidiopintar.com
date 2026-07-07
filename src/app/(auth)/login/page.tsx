@@ -1,4 +1,3 @@
-import { AuthForm } from '@/components/auth-form'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
@@ -26,7 +25,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                         <p>{t('loginSubtitle')}</p>
                     </div>
 
-                    <AuthForm returnTo={returnTo} />
+                    <Button asChild className="mt-6 w-full">
+                        <Link href={returnTo ? `/sign-in?redirect_url=${encodeURIComponent(returnTo)}` : '/sign-in'}>
+                            {t('signIn')}
+                        </Link>
+                    </Button>
 
                     {/* <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
                         <hr className="border-dashed" />

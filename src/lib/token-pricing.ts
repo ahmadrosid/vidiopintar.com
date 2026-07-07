@@ -1,23 +1,9 @@
-// Token pricing per 1M tokens in USD - Updated with official 2024/2025 rates
+// Token pricing per 1M tokens in USD
 export const TOKEN_PRICING = {
-  openai: {
-    'gpt-4o-mini-2024-07-18': {
-      input: 0.15,   // $0.15 per 1M input tokens (confirmed)
-      output: 0.60,  // $0.60 per 1M output tokens (confirmed)
-    },
-    'gpt-4.1-2025-04-14': {
-      input: 2.00,   // $2.00 per 1M input tokens (updated from official pricing)
-      output: 8.00,  // $8.00 per 1M output tokens (updated from official pricing)
-    },
-    'gpt-5-nano': {
-      input: 0.05,   // $0.05 per 1M input tokens
-      output: 0.40,  // $0.40 per 1M output tokens
-    },
-  },
-  google: {
-    'gemini-2.0-flash-001': {
-      input: 0.10,   // $0.10 per 1M input tokens (updated - simplified pricing)
-      output: 0.10,  // $0.10 per 1M output tokens (simplified pricing - same rate)
+  deepseek: {
+    'deepseek-v4-flash': {
+      input: 0.14,   // $0.14 per 1M input tokens (cache miss)
+      output: 0.28,  // $0.28 per 1M output tokens
     },
   },
 } as const;

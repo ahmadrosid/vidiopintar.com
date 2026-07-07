@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/ui/themes";
 import type React from "react"
 import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -117,17 +119,19 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}>
-        <Script
+        <ClerkProvider appearance={{ theme: shadcn }}>
+          <Script
           src="https://vince.ngooding.com/js/script.js"
           data-domain="vidiopintar.com"
           strategy="afterInteractive"
-        />
-        <NextIntlClientProvider messages={messages}>
+          />
+          <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem storageKey="vidiopintar-theme">
-            {children}
-            <Toaster />
+          {children}
+          <Toaster />
           </ThemeProvider>
-        </NextIntlClientProvider>
+          </NextIntlClientProvider>
+        </ClerkProvider>
       </body>
     </html>
   )

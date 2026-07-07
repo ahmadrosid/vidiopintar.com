@@ -12,19 +12,17 @@ A simple command-line tool to chat with YouTube video transcripts directly from 
 
 ## Setup
 
-Make sure you have `OPENAI_API_KEY` set in your environment:
+Make sure you have `DEEPSEEK_API_KEY` set in your environment:
 
 ```bash
 # Option 1: Export in your shell
-export OPENAI_API_KEY=your-api-key-here
+export DEEPSEEK_API_KEY=your-api-key-here
 
 # Option 2: Add to .env file in project root (already loaded automatically)
-OPENAI_API_KEY=your-api-key-here
+DEEPSEEK_API_KEY=your-api-key-here
 ```
 
-Optional environment variables:
-- `OPENAI_MODEL` - Model to use (default: `gpt-4o-mini`)
-- `OPENAI_BASE_URL` - Custom API base URL for OpenAI-compatible APIs
+The CLI uses `deepseek-v4-flash` for all chat responses.
 
 ## Usage
 
@@ -35,7 +33,7 @@ bun run youtube-chat <youtube-url>
 # Or directly with bun
 bun run vidiopintar-cli/src/index.ts <youtube-url>
 
-# Transcript only (no OpenAI API key required)
+# Transcript only (no DeepSeek API key required)
 bun run vidiopintar-cli/src/index.ts <youtube-url> --transcript
 ```
 
@@ -93,7 +91,7 @@ Goodbye!
 ## Requirements
 
 - Bun runtime
-- OpenAI API key (required only for chat mode)
+- DeepSeek API key (required only for chat mode)
 - YouTube video with captions/transcripts enabled
 
 ## Project Structure

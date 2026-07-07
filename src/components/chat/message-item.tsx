@@ -8,11 +8,12 @@ import { CopyButton } from "@/components/ui/copy-button";
 import { Ellipsis } from "@/components/ui/loader";
 import { ScrollButton } from "@/components/ui/scroll-button";
 import { FeedbackButtons } from "@/components/chat/feedback-buttons";
-import { Message as MessageType } from "@ai-sdk/react"
+import { getMessageText } from "@/lib/ai/messages";
+import type { UIMessage } from "ai";
 import { cn } from "@/lib/utils";
 
 interface MessageItemProps {
-    messages: MessageType[];
+    messages: UIMessage[];
     status: string;
     videoId?: string;
 }
@@ -35,6 +36,7 @@ export function MessageItem({ messages, status, videoId }: MessageItemProps) {
             }}>
             {messages.map((message) => {
                 const isAssistant = message.role === "assistant"
+                const messageText = getMessageText(message)
                 return (
                     <Message
                         key={message.id}
@@ -45,19 +47,19 @@ export function MessageItem({ messages, status, videoId }: MessageItemProps) {
                         {isAssistant ? (
                             <div className="w-full flex-1">
                                 <div className="prose dark:prose-invert prose-sm px-2 py-6 max-w-none">
-                                    <Markdown>{message.content}</Markdown>
+                                    <Markdown>{messageText}</Markdown>
                                     <div className="group-hover:visible invisible bg-background/80 backdrop-blur-sm rounded-md p-1">
                                         <div className="flex items-center gap-2">
                                             {videoId && (
                                                 <FeedbackButtons 
                                                     messageId={message.id} 
                                                     videoId={videoId} 
-                                                    messageContent={message.content}
+                                                    messageContent={messageText}
                                                     feedbackState={messageFeedback[message.id]}
                                                     onFeedbackSubmitted={handleFeedbackSubmitted}
                                                 />
                                             )}
-                                            <CopyButton content={message.content} copyMessage="Copied to clipboard" label="Copy" />
+                                            <CopyButton content={messageText} copyMessage="Copied to clipboard" label="Copy" />
                                         </div>
                                     </div>
                                 </div>
@@ -65,7 +67,7 @@ export function MessageItem({ messages, status, videoId }: MessageItemProps) {
                         ) : (
                             <div className="max-w-[85%] flex-1 sm:max-w-[75%]">
                                 <MessageContent className="bg-secondary text-white p-3" markdown={true}>
-                                    {message.content}
+                                    {messageText}
                                 </MessageContent>
                             </div>
                         )}

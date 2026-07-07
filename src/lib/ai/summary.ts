@@ -1,8 +1,8 @@
-import { openai } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { trackGenerateTextUsage } from '@/lib/token-tracker';
 import { getCurrentUser } from '@/lib/auth';
 import { getSummaryPrompt } from '@/lib/ai/system-prompts';
+import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
 
 export async function generateSummary(text: string, language: 'en' | 'id' = 'en', videoId?: string, userVideoId?: number): Promise<string> {
   // Limit the input to the first 4000 words to speedup the generation
@@ -17,8 +17,8 @@ export async function generateSummary(text: string, language: 'en' | 'id' = 'en'
 
     const startTime = Date.now();
     const result = await generateText({
-        model: openai('gpt-5-nano'),
-        temperature: 1, // gpt-5-nano only supports temperature=1
+        model: aiModel,
+        providerOptions: aiProviderOptions,
         messages: [
             {
                 role: 'system',
@@ -36,8 +36,8 @@ export async function generateSummary(text: string, language: 'en' | 'id' = 'en'
         const user = await getCurrentUser();
         await trackGenerateTextUsage(result, {
             userId: user.id,
-            model: 'gpt-5-nano',
-            provider: 'openai',
+            model: AI_MODEL_ID,
+            provider: AI_PROVIDER,
             operation: 'summary',
             videoId,
             userVideoId,

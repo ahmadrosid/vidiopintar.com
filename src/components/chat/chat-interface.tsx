@@ -1,8 +1,9 @@
 "use client"
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { ArrowUp, Square, MessageCircleMore } from "lucide-react"
-import { flushSync } from "react-dom"
+import { useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ChatContainerRoot, ChatContainerContent, ChatContainerScrollAnchor } from "@/components/ui/chat-container"
 import {
@@ -13,13 +14,14 @@ import {
 } from "@/components/ui/prompt-input"
 import { ChatHeader } from "@/components/chat/chat-header";
 import { MessageItem } from "@/components/chat/message-item";
+import { toUIMessages } from "@/lib/ai/messages";
 import { useLocale } from "next-intl";
 
 interface ChatInterfaceProps {
   videoId: string;
   userVideoId: number;
   quickStartQuestions: string[];
-  initialMessages: any[];
+  initialMessages: Array<{ id: string; content: string; role: 'user' | 'assistant' }>;
   isSharePage?: boolean;
   isLoggedIn?: boolean;
   shareChatUrl?: string;
@@ -34,19 +36,35 @@ export function ChatInterface({
   isSharePage = false,
   isLoggedIn = false }: ChatInterfaceProps) {
   const language = useLocale();
+  const [input, setInput] = useState('');
+  const transport = useMemo(
+    () => new DefaultChatTransport({
+      api: '/api/chat',
+      body: { videoId, userVideoId, language },
+    }),
+    [videoId, userVideoId, language]
+  );
   
   const {
     messages,
-    input,
-    setInput,
-    handleSubmit,
+    sendMessage,
     status,
     setMessages,
   } = useChat({
-    api: '/api/chat',
-    initialMessages,
-    body: { videoId, userVideoId, language },
+    transport,
+    messages: toUIMessages(initialMessages),
   });
+
+  const handleSubmit = (event?: { preventDefault?: () => void }) => {
+    event?.preventDefault?.();
+    const text = input.trim();
+    if (!text || status === 'streaming' || status === 'submitted') {
+      return;
+    }
+
+    sendMessage({ text });
+    setInput('');
+  };
 
   return (
     <div className="flex flex-col overflow-hidden h-full w-full border-l min-h-0 max-h-full">
@@ -74,18 +92,13 @@ export function ChatInterface({
                     {question}
                   </p>
                 ) : (
-                  <form
+                  <button
                     key={index}
-                    onSubmit={(e) => {
-                      handleSubmit(e as any);
-                    }}>
-                    <button
-                      type="submit"
-                      onClick={() => flushSync(() => setInput(question))}
-                      className="text-sm text-left p-2 rounded bg-secondary border border-border/25 text-foreground/85 cursor-pointer hover:border-accent-foreground/75">
-                      {question}
-                    </button>
-                  </form>
+                    type="button"
+                    onClick={() => sendMessage({ text: question })}
+                    className="text-sm text-left p-2 rounded bg-secondary border border-border/25 text-foreground/85 cursor-pointer hover:border-accent-foreground/75">
+                    {question}
+                  </button>
                 )
               ))}
             </div>

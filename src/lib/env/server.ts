@@ -8,8 +8,6 @@ export const env = createEnv({
     API_X_HEADER_API_KEY: z.string().min(1),
     NODE_ENV: z.string().min(1),
     SQLITE_DATABASE_PATH: z.string().min(1),
-    GOOGLE_CLIENT_ID: z.string().min(1),
-    GOOGLE_CLIENT_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.string().min(1),
     ADMIN_MASTER_EMAIL: z.string().email(),
     SUPADATA_API_KEY: z.string().min(1),

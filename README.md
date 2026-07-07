@@ -100,8 +100,8 @@ A simple command-line tool to chat with YouTube video transcripts. See [`youtube
 ### Quick Start
 
 ```bash
-# Set your OpenAI API key
-export OPENAI_API_KEY=your-api-key-here
+# Set your DeepSeek API key
+export DEEPSEEK_API_KEY=your-api-key-here
 
 # Run the CLI
 bun run youtube-chat <youtube-url>

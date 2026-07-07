@@ -35,19 +35,17 @@ bun install
 
 ### Environment Setup
 
-For the AI chat features, you'll need an OpenAI API key:
+For the AI chat features, you'll need a DeepSeek API key:
 
 ```bash
 # Option 1: Export in your shell
-export OPENAI_API_KEY=your-api-key-here
+export DEEPSEEK_API_KEY=your-api-key-here
 
 # Option 2: Create a .env file
-echo "OPENAI_API_KEY=your-api-key-here" > .env
+echo "DEEPSEEK_API_KEY=your-api-key-here" > .env
 ```
 
-Optional configuration:
-- `OPENAI_MODEL` — Choose your model (default: `gpt-4o-mini`)
-- `OPENAI_BASE_URL` — Use custom OpenAI-compatible APIs
+The CLI uses `deepseek-v4-flash` for all chat responses.
 
 ## Usage
 

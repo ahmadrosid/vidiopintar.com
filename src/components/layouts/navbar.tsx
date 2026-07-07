@@ -1,38 +1,11 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import Link from "next/link"
 import { useEffect, useState } from "react"
+import { AuthControls } from "@/components/auth-controls"
 import { Logo } from "../logo"
-import { Button } from "../ui/button"
 
-interface Session {
-  id: string
-  token: string
-  userId: string
-  expiresAt: Date
-  createdAt: Date
-  updatedAt: Date
-  ipAddress?: string | null | undefined | undefined
-  userAgent?: string | null | undefined | undefined
-}
-
-interface User {
-  id: string
-  name: string
-  email: string
-  createdAt: Date
-  updatedAt: Date
-}
-
-interface NavbarProps {
-  session: {
-    session: Session
-    user: User
-  } | null
-}
-
-export default function Navbar({ session }: NavbarProps) {
+export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
 
   useEffect(() => {
@@ -50,40 +23,6 @@ export default function Navbar({ session }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
-  const renderNavigation = () => {
-    if (session) {
-      return (
-        <>
-          <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
-            <Link href="/home">Home</Link>
-          </Button>
-          <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
-            <Link href="/blog">Blog</Link>
-          </Button>
-        </>
-      )
-    }
-
-    return (
-      <>
-        <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
-          <Link href="/blog">Blog</Link>
-        </Button>
-        <Button variant="ghost" className="cursor-pointer active:scale-[0.975]" asChild>
-          <Link href="/login">Login</Link>
-        </Button>
-
-        <Button
-          variant="outline"
-          className="rounded-full dark:border-accent cursor-pointer transition active:scale-[0.975]"
-          asChild
-        >
-          <Link href="/register">Get Started</Link>
-        </Button>
-      </>
-    )
-  }
-
   return (
     <nav className="relative w-full">
       <div
@@ -97,9 +36,8 @@ export default function Navbar({ session }: NavbarProps) {
             {/* brand logo */}
             <Logo />
 
-            <div className="flex gap-2">
-              {/* check navigation */}
-              {renderNavigation()}
+            <div className="flex items-center gap-2">
+              <AuthControls />
             </div>
           </div>
         </div>

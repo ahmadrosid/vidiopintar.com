@@ -1,7 +1,7 @@
 import { env } from "@/lib/env/server";
 import { VideoRepository, TranscriptRepository, Video, UserRepository } from "@/lib/db/repository";
-import { openai } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
+import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
 import { fetchTranscript } from 'youtube-transcript-plus';
 
 // Type for transcript config (not exported from library)
@@ -315,10 +315,9 @@ ${truncatedTranscript}
 `;
 
   const startTime = Date.now();
-  const modelName = 'gpt-5-nano';
   const result = await generateObject({
-    model: openai(modelName),
-    temperature: 1, // gpt-5-nano only supports temperature=1
+    model: aiModel,
+    providerOptions: aiProviderOptions,
     prompt: prompt,
     schema: z.object({
       questions: z.array(z.string()),
@@ -329,8 +328,8 @@ ${truncatedTranscript}
     const user = await getCurrentUser();
     await trackGenerateTextUsage(result, {
       userId: user.id,
-      model: modelName,
-      provider: 'openai',
+      model: AI_MODEL_ID,
+      provider: AI_PROVIDER,
       operation: 'quick_start_questions',
       videoId,
       userVideoId,

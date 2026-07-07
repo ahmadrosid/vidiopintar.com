@@ -1,3 +1,4 @@
+@import '@clerk/ui/themes/shadcn.css';
 @import 'tailwindcss';
 
 @plugin '@tailwindcss/typography';

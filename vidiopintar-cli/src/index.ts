@@ -17,14 +17,13 @@ async function configureMarkedForTerminal() {
 // Load environment variables from project root
 import 'dotenv/config';
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_MODEL = 'gpt-4o-mini';
+const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
 
 function printUsage() {
   console.error('Usage: bun run youtube-cli/src/index.ts <youtube-url> [--transcript|-t|--no-chat]');
   console.error('');
   console.error('Environment variables:');
-  console.error('  OPENAI_API_KEY (required) - Your OpenAI API key');
+  console.error('  DEEPSEEK_API_KEY (required) - Your DeepSeek API key');
   process.exit(1);
 }
 
@@ -76,7 +75,6 @@ async function runChatLoop(transcript: string, videoTitle?: string) {
         transcript,
         question,
         history,
-        model: OPENAI_MODEL,
         language,
       });
 
@@ -114,11 +112,11 @@ async function main() {
     return;
   }
 
-  if (!OPENAI_API_KEY && !transcriptOnly) {
-    console.error('Error: OPENAI_API_KEY environment variable is required for chat mode');
+  if (!DEEPSEEK_API_KEY && !transcriptOnly) {
+    console.error('Error: DEEPSEEK_API_KEY environment variable is required for chat mode');
     console.error('');
     console.error('Either set it in your .env file or export it:');
-    console.error('  export OPENAI_API_KEY=your-api-key');
+    console.error('  export DEEPSEEK_API_KEY=your-api-key');
     console.error('');
     console.error('Or run in transcript-only mode:');
     console.error('  bun run youtube-cli/src/index.ts <youtube-url> --transcript');
@@ -127,9 +125,9 @@ async function main() {
 
   await configureMarkedForTerminal();
 
-  // Set the API key for the OpenAI SDK when available
-  if (OPENAI_API_KEY) {
-    process.env.OPENAI_API_KEY = OPENAI_API_KEY;
+  // Set the API key for the DeepSeek SDK when available
+  if (DEEPSEEK_API_KEY) {
+    process.env.DEEPSEEK_API_KEY = DEEPSEEK_API_KEY;
   }
 
   console.log('Fetching transcript...');

@@ -1,4 +1,3 @@
-import { AuthForm } from '@/components/auth-form'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
@@ -26,7 +25,11 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
                         <p>{t('registerSubtitle')}</p>
                     </div>
 
-                    <AuthForm videoId={videoId} />
+                    <Button asChild className="mt-6 w-full">
+                        <Link href={videoId ? `/sign-up?redirect_url=${encodeURIComponent(`/video/${videoId}`)}` : '/sign-up'}>
+                            {t('createAccount')}
+                        </Link>
+                    </Button>
                     
                     {/* 
                     <div className="my-6 grid grid-cols-[1fr_auto_1fr] items-center gap-3">

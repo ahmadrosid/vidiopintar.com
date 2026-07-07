@@ -4,7 +4,7 @@ import { calculateTokenCost } from './token-pricing';
 export interface TokenUsageData {
   userId: string;
   model: string;
-  provider: 'openai' | 'google';
+  provider: 'deepseek';
   operation: 'chat' | 'summary' | 'quick_start_questions';
   inputTokens: number;
   outputTokens: number;
@@ -47,8 +47,8 @@ export function createStreamTokenTracker(baseData: Omit<TokenUsageData, 'inputTo
       if (result.usage) {
         await trackTokenUsage({
           ...baseData,
-          inputTokens: result.usage.promptTokens || 0,
-          outputTokens: result.usage.completionTokens || 0,
+          inputTokens: result.usage.inputTokens ?? result.usage.promptTokens ?? 0,
+          outputTokens: result.usage.outputTokens ?? result.usage.completionTokens ?? 0,
         });
       }
     }
@@ -63,8 +63,8 @@ export async function trackGenerateTextUsage(
   if (result.usage) {
     await trackTokenUsage({
       ...baseData,
-      inputTokens: result.usage.promptTokens || 0,
-      outputTokens: result.usage.completionTokens || 0,
+      inputTokens: result.usage.inputTokens ?? result.usage.promptTokens ?? 0,
+      outputTokens: result.usage.outputTokens ?? result.usage.completionTokens ?? 0,
     });
   }
 }

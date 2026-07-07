@@ -1,18 +1,21 @@
-import { getSessionCookie } from "better-auth/cookies";
-import { NextRequest, NextResponse } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export async function middleware(request: NextRequest) {
-    const sessionCookie = getSessionCookie(request);
-    if (!sessionCookie) {
-        if (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/register") {
-            return NextResponse.next();
-        }
-        return NextResponse.redirect(new URL("/", request.url));
-    }
+const isProtectedRoute = createRouteMatcher([
+  "/home(.*)",
+  "/profile(.*)",
+  "/admin(.*)",
+]);
 
-    return NextResponse.next();
-}
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
-    matcher: ["/home", "/login", "/register"],
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+    "/__clerk/:path*",
+  ],
 };

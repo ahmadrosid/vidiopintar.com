@@ -37,7 +37,7 @@ export const faqData: FAQItem[] = [
   },
   {
     question: "How accurate are AI video summaries?",
-    answer: "VidioPintar uses advanced AI models from OpenAI and Google AI to ensure high accuracy in video summaries. The AI analyzes complete video transcripts to extract key points, main arguments, and actionable insights. While highly accurate for educational and informational content, we recommend using the chat feature to clarify or dive deeper into specific topics.",
+    answer: "VidioPintar uses advanced AI to ensure high accuracy in video summaries. The AI analyzes complete video transcripts to extract key points, main arguments, and actionable insights. While highly accurate for educational and informational content, we recommend using the chat feature to clarify or dive deeper into specific topics.",
     category: "Features"
   },
   {

@@ -1,5 +1,7 @@
-import { openai } from '@ai-sdk/openai';
+import { deepseek } from '@ai-sdk/deepseek';
 import { generateText } from 'ai';
+
+export const AI_MODEL_ID = 'deepseek-v4-flash';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -10,18 +12,16 @@ export interface ChatWithTranscriptOptions {
   transcript: string;
   question: string;
   history?: ChatMessage[];
-  model?: string;
   language?: 'en' | 'id';
 }
 
 /**
- * Chats with a YouTube video transcript using OpenAI-compatible API
+ * Chats with a YouTube video transcript using DeepSeek.
  */
 export async function chatWithTranscript({
   transcript,
   question,
   history = [],
-  model = 'gpt-4o-mini',
   language = 'en',
 }: ChatWithTranscriptOptions): Promise<string> {
   // Truncate transcript if too long (keep last ~6000 words to manage token usage)
@@ -76,7 +76,12 @@ ${truncatedTranscript}
 
   try {
     const result = await generateText({
-      model: openai(model),
+      model: deepseek(AI_MODEL_ID),
+      providerOptions: {
+        deepseek: {
+          thinking: { type: 'disabled' },
+        },
+      },
       messages,
       temperature: 0.7,
     });
