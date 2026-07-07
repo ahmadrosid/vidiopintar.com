@@ -1,4 +1,6 @@
-const TRANSCRIPT_API_URL = "https://transcriptapi.com/api/v2/youtube/transcript";
+const TRANSCRIPT_API_BASE = "https://transcriptapi.com/api/v2";
+const RETRYABLE_STATUSES = new Set([408, 429, 503]);
+const MAX_RETRIES = 3;
 
 interface TranscriptApiSegment {
   text: string;
@@ -12,7 +14,16 @@ interface TranscriptApiResponse {
   transcript: TranscriptApiSegment[];
   metadata?: {
     title?: string;
+    author_name?: string;
+    author_url?: string;
+    thumbnail_url?: string;
   };
+}
+
+interface FetchTranscriptOptions {
+  language?: string;
+  sendMetadata?: boolean;
+  includeTimestamp?: boolean;
 }
 
 /**
@@ -67,21 +78,55 @@ export function extractVideoId(url: string): string | null {
   return null;
 }
 
-async function fetchTranscriptFromApi(videoUrlOrId: string): Promise<TranscriptApiSegment[]> {
+async function fetchWithRetry(url: string, apiKey: string): Promise<Response> {
+  let lastResponse: Response | null = null;
+
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    if (response.ok || !RETRYABLE_STATUSES.has(response.status)) {
+      return response;
+    }
+
+    lastResponse = response;
+
+    if (attempt < MAX_RETRIES - 1) {
+      const retryAfter = response.headers.get('Retry-After');
+      const delayMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : (attempt + 1) * 1000;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return lastResponse!;
+}
+
+async function fetchTranscriptResponse(
+  videoUrlOrId: string,
+  options: FetchTranscriptOptions = {},
+): Promise<TranscriptApiResponse> {
   const apiKey = process.env.TRANSCRIPT_API_KEY;
   if (!apiKey) {
     throw new Error('TRANSCRIPT_API_KEY environment variable is required');
   }
 
-  const url = new URL(TRANSCRIPT_API_URL);
+  const url = new URL(`${TRANSCRIPT_API_BASE}/youtube/transcript`);
   url.searchParams.set('video_url', videoUrlOrId);
   url.searchParams.set('format', 'json');
+  url.searchParams.set('include_timestamp', String(options.includeTimestamp ?? true));
 
-  const response = await fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
+  if (options.sendMetadata) {
+    url.searchParams.set('send_metadata', 'true');
+  }
+
+  if (options.language) {
+    url.searchParams.set('language', options.language);
+  }
+
+  const response = await fetchWithRetry(url.toString(), apiKey);
 
   if (!response.ok) {
     const body = await response.text().catch(() => '');
@@ -96,7 +141,7 @@ async function fetchTranscriptFromApi(videoUrlOrId: string): Promise<TranscriptA
     throw new Error('No transcript available for this video. The video may not have captions enabled.');
   }
 
-  return data.transcript;
+  return data;
 }
 
 /**
@@ -110,13 +155,11 @@ export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<stri
   }
 
   try {
-    const videoUrl = videoUrlOrId.includes('youtube.com') || videoUrlOrId.includes('youtu.be')
-      ? videoUrlOrId
-      : `https://www.youtube.com/watch?v=${videoId}`;
+    const transcriptResponse = await fetchTranscriptResponse(videoId, {
+      sendMetadata: true,
+    });
 
-    const transcriptResult = await fetchTranscriptFromApi(videoUrl);
-
-    const transcriptText = transcriptResult
+    const transcriptText = transcriptResponse.transcript
       .map((item) => decodeHtmlEntities(item.text))
       .filter((text) => text && text !== 'N/A')
       .join(' ');
@@ -132,4 +175,35 @@ export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<stri
     }
     throw new Error('Failed to fetch transcript: Unknown error');
   }
+}
+
+/**
+ * Returns video title from transcript metadata when available
+ */
+export async function fetchYoutubeTranscriptWithMetadata(videoUrlOrId: string): Promise<{
+  transcript: string;
+  title?: string;
+}> {
+  const videoId = extractVideoId(videoUrlOrId);
+  if (!videoId) {
+    throw new Error(`Invalid YouTube URL or video ID: ${videoUrlOrId}`);
+  }
+
+  const transcriptResponse = await fetchTranscriptResponse(videoId, {
+    sendMetadata: true,
+  });
+
+  const transcript = transcriptResponse.transcript
+    .map((item) => decodeHtmlEntities(item.text))
+    .filter((text) => text && text !== 'N/A')
+    .join(' ');
+
+  if (!transcript.trim()) {
+    throw new Error('Transcript is empty or contains no valid content.');
+  }
+
+  return {
+    transcript,
+    title: transcriptResponse.metadata?.title,
+  };
 }

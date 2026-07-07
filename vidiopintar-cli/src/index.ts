@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { fetchYoutubeTranscript, extractVideoId } from './youtubeTranscript';
+import { fetchYoutubeTranscript, extractVideoId, fetchYoutubeTranscriptWithMetadata } from './youtubeTranscript';
 import { chatWithTranscript, ChatMessage } from './chatWithTranscript';
 import * as readline from 'readline';
 import { marked } from 'marked';
@@ -142,7 +142,7 @@ async function main() {
   console.log('Fetching transcript...');
 
   try {
-    const transcript = await fetchYoutubeTranscript(videoUrl!);
+    const { transcript, title } = await fetchYoutubeTranscriptWithMetadata(videoUrl!);
     console.log(`✓ Transcript loaded (${transcript.split(/\s+/).length} words)\n`);
 
     if (transcriptOnly) {
@@ -150,18 +150,10 @@ async function main() {
       process.exit(0);
     }
 
-    // Try to extract video title (optional, can be enhanced later)
-    let videoTitle: string | undefined;
-    try {
-      const videoId = extractVideoId(videoUrl);
-      if (videoId) {
-        // For now, we'll just use the video ID as title
-        // In the future, we could fetch video metadata
-        videoTitle = `Video ID: ${videoId}`;
-      }
-    } catch {
-      // Ignore errors in title extraction
-    }
+    const videoTitle = title ?? (() => {
+      const videoId = extractVideoId(videoUrl!);
+      return videoId ? `Video ID: ${videoId}` : undefined;
+    })();
 
     await runChatLoop(transcript, videoTitle);
   } catch (error) {

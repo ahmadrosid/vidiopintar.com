@@ -2,7 +2,7 @@ import { env } from "@/lib/env/server";
 import { VideoRepository, TranscriptRepository, Video, UserRepository } from "@/lib/db/repository";
 import { generateObject } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
-import { fetchTranscriptFromApi } from '@/lib/transcript-api';
+import { fetchTranscriptResponse } from '@/lib/transcript-api';
 import { z } from 'zod';
 import { generateSummary } from "@/lib/ai/summary";
 import { getQuickStartPrompt } from "@/lib/ai/system-prompts";
@@ -150,8 +150,21 @@ export async function fetchVideoTranscript(videoId: string) {
       return { segments, userVideo };
     }
 
-    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-    const transcriptResult = await fetchTranscriptFromApi(videoUrl);
+    let transcriptLanguage = 'en';
+    try {
+      const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
+      if (savedLanguage === 'en' || savedLanguage === 'id') {
+        transcriptLanguage = savedLanguage;
+      }
+    } catch (error) {
+      console.log('Could not get user language preference for transcript, using default:', error);
+    }
+
+    const transcriptResponse = await fetchTranscriptResponse(videoId, {
+      language: transcriptLanguage,
+      sendMetadata: true,
+    });
+    const transcriptResult = transcriptResponse.transcript;
 
     if (!transcriptResult || transcriptResult.length === 0) {
       throw new Error('No transcript content available')

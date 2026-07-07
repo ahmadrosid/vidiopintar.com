@@ -1,4 +1,4 @@
-import { eq, desc, and, sql } from 'drizzle-orm';
+import { eq, desc, and, gte, lte } from 'drizzle-orm';
 import { db } from '../index';
 import { transactions, type Transaction, type NewTransaction, type TransactionStatus } from '../schema/transactions';
 import { user } from '../schema/auth';
@@ -70,8 +70,7 @@ export class TransactionsRepository {
       .where(
         and(
           eq(transactions.userId, userId),
-          // Use gte for timestamp comparison
-          sql`${transactions.createdAt} >= ${cutoffTime}`
+          gte(transactions.createdAt, cutoffTime)
         )
       )
       .orderBy(desc(transactions.createdAt));
@@ -112,8 +111,7 @@ export class TransactionsRepository {
       .where(
         and(
           eq(transactions.status, 'pending'),
-          // Use less than for expired transactions
-          eq(transactions.expiresAt, now)
+          lte(transactions.expiresAt, now)
         )
       );
   }
@@ -129,8 +127,7 @@ export class TransactionsRepository {
       .where(
         and(
           eq(transactions.status, 'pending'),
-          // Use less than for expired transactions
-          eq(transactions.expiresAt, now)
+          lte(transactions.expiresAt, now)
         )
       );
   }
