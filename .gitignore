@@ -47,3 +47,4 @@ data/*.db-shm
 *.db-wal
 *.db-shm
 docs/
+data/
