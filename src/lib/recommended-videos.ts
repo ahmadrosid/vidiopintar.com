@@ -25,9 +25,9 @@ export const RECOMMENDED_VIDEOS: RecommendedVideo[] = [
     thumbnailUrl: "https://img.youtube.com/vi/lxpaSlImFHk/mqdefault.jpg",
   },
   {
-    youtubeId: "0H4uouOn7lI",
-    title: "how to BEAT the new LinkedIn algorithm in 16 minutes",
+    youtubeId: "UNzCG3lw6O0",
+    title: "Building Great Agent Skills: The Missing Manual",
     channelTitle: "Matt Gray",
-    thumbnailUrl: "https://img.youtube.com/vi/0H4uouOn7lI/mqdefault.jpg",
+    thumbnailUrl: "https://img.youtube.com/vi/UNzCG3lw6O0/mqdefault.jpg",
   },
 ];
