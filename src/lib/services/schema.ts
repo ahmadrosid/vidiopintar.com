@@ -24,35 +24,3 @@ export const ClearMessagesResponseSchema = z.object({
 });
 
 export type ClearMessagesResponse = z.infer<typeof ClearMessagesResponseSchema>;
-
-export const VideoSearchRequestSchema = z.object({
-    q: z.string(),
-});
-
-export type VideoSearchRequest = z.infer<typeof VideoSearchRequestSchema>;
-
-export const VideoSearchItemSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    description: z.string(),
-    thumbnails: z.array(z.object({
-        url: z.string(),
-        width: z.number(),
-        height: z.number(),
-    })),
-    published: z.string().optional(),
-    view_count: z.string(),
-    duration: z.string().optional(),
-    author: z.object({
-        id: z.string(),
-        name: z.string(),
-    }),
-});
-
-export type VideoSearchItem = z.infer<typeof VideoSearchItemSchema>;
-
-export const VideoSearchResponseSchema = z.object({
-    data: z.array(VideoSearchItemSchema),
-});
-
-export type VideoSearchResponse = z.infer<typeof VideoSearchResponseSchema>;

@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { VideoList } from "@/components/video/video-list";
+import { RecommendedVideos } from "@/components/video/recommended-videos";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 
@@ -71,14 +72,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
   }, [videos, selectedChannel, searchQuery]);
 
   if (!videos || videos.length === 0) {
-    return (
-      <div className="w-full">
-        <h2 className="text-xl font-semibold tracking-tighter mb-6">
-          {t("videoList.title")}
-        </h2>
-        <VideoList videos={[]} />
-      </div>
-    );
+    return <RecommendedVideos />;
   }
 
   return (

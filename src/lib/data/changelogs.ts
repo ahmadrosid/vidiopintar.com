@@ -11,6 +11,31 @@ export interface ChangelogEntry {
 export const changelogs: ChangelogEntry[] = [
   {
     date: "2026-07-07",
+    version: "2.0.1",
+    type: "patch",
+    changes: [
+      {
+        category: "added",
+        items: [
+          "Recommended videos on home page for new users with no watch history — one-click try without leaving the app"
+        ]
+      },
+      {
+        category: "changed",
+        items: [
+          "Admin transaction confirm/reject buttons now use brand accent and destructive styles instead of hardcoded green/red"
+        ]
+      },
+      {
+        category: "fixed",
+        items: [
+          "Dark mode support for admin transaction confirm and reject dialogs"
+        ]
+      }
+    ]
+  },
+  {
+    date: "2026-07-07",
     version: "2.0.0",
     type: "major",
     changes: [

@@ -479,8 +479,8 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                             variant="ghost"
                             className={`h-8 w-8 p-0 transition-all duration-200 ${
                               transaction.status === 'waiting_confirmation'
-                                ? 'text-green-700 hover:text-green-800 hover:bg-green-100/90 ring-2 ring-green-200'
-                                : 'text-green-600 hover:text-green-700 hover:bg-green-50/85'
+                                ? 'text-accent hover:text-accent hover:bg-accent/15 ring-2 ring-accent/30'
+                                : 'text-accent hover:text-accent hover:bg-accent/10'
                             }`}
                             disabled={processingIds.has(transaction.id)}
                             title={transaction.status === 'waiting_confirmation' ? 'Payment confirmation received - Click to confirm' : 'Confirm transaction'}
@@ -494,29 +494,29 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                             <AlertDialogDescription>
                               Are you sure you want to confirm this transaction?
                             </AlertDialogDescription>
-                            <div className="bg-gray-50 rounded-lg p-4 space-y-3 border">
+                            <div className="bg-muted rounded-lg p-4 space-y-3 border">
                               {transaction.user && (
                                 <div>
-                                  <span className="text-sm text-gray-600">User:</span>
+                                  <span className="text-sm text-muted-foreground">User:</span>
                                   <div className="font-medium">{transaction.user.name}</div>
-                                  <div className="text-sm text-gray-600">{transaction.user.email}</div>
+                                  <div className="text-sm text-muted-foreground">{transaction.user.email}</div>
                                 </div>
                               )}
                               <div>
-                                <span className="text-sm text-gray-600">Amount:</span>
+                                <span className="text-sm text-muted-foreground">Amount:</span>
                                 <div className="font-semibold text-lg">{formatAmount(transaction.amount, transaction.currency)}</div>
                               </div>
                               <div>
-                                <span className="text-sm text-gray-600">Plan:</span>
+                                <span className="text-sm text-muted-foreground">Plan:</span>
                                 <div className="font-medium capitalize">{transaction.planType}</div>
                               </div>
                             </div>
                             {transaction.status === 'waiting_confirmation' && (
-                              <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
-                                <div className="text-blue-800 text-sm font-medium">
+                              <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md p-3">
+                                <div className="text-blue-800 dark:text-blue-200 text-sm font-medium">
                                   ⚡ Payment confirmation received from user
                                 </div>
-                                <div className="text-blue-700 text-xs mt-1">
+                                <div className="text-blue-700 dark:text-blue-300 text-xs mt-1">
                                   The user has indicated they have sent the payment and are waiting for admin verification.
                                 </div>
                               </div>
@@ -526,7 +526,6 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction 
                               onClick={() => handleConfirm(transaction.id)}
-                              className="bg-green-600 hover:bg-green-700"
                             >
                               Confirm Transaction
                             </AlertDialogAction>
@@ -539,7 +538,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50/85 transition-all duration-200"
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50/85 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/50 transition-all duration-200"
                             disabled={processingIds.has(transaction.id)}
                             title="Cancel transaction"
                           >
@@ -553,29 +552,29 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                               Are you sure you want to cancel this transaction?
                             </AlertDialogDescription>
                             
-                            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                            <div className="bg-muted rounded-lg p-4 space-y-3 border">
                               {transaction.user && (
                                 <div>
-                                  <span className="text-sm text-gray-600">User:</span>
+                                  <span className="text-sm text-muted-foreground">User:</span>
                                   <div className="font-medium">{transaction.user.name}</div>
-                                  <div className="text-sm text-gray-600">{transaction.user.email}</div>
+                                  <div className="text-sm text-muted-foreground">{transaction.user.email}</div>
                                 </div>
                               )}
                               <div>
-                                <span className="text-sm text-gray-600">Amount:</span>
+                                <span className="text-sm text-muted-foreground">Amount:</span>
                                 <div className="font-semibold text-lg">{formatAmount(transaction.amount, transaction.currency)}</div>
                               </div>
                               <div>
-                                <span className="text-sm text-gray-600">Plan:</span>
+                                <span className="text-sm text-muted-foreground">Plan:</span>
                                 <div className="font-medium capitalize">{transaction.planType}</div>
                               </div>
                             </div>
                             
-                            <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                              <div className="text-red-800 text-sm font-medium">
+                            <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-md p-3">
+                              <div className="text-red-800 dark:text-red-200 text-sm font-medium">
                                 ⚠️ Cancelling transaction
                               </div>
-                              <div className="text-red-700 text-xs mt-1">
+                              <div className="text-red-700 dark:text-red-300 text-xs mt-1">
                                 The transaction will be marked as cancelled and the user will not receive access to the plan.
                               </div>
                             </div>
@@ -584,7 +583,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction 
                               onClick={() => handleCancel(transaction.id)}
-                              className="bg-red-600 hover:bg-red-700"
+                              className="bg-destructive hover:bg-destructive/90 text-white"
                             >
                               Reject
                             </AlertDialogAction>

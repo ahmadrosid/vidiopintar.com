@@ -154,10 +154,10 @@
     "deleteTitle": "Hapus video?",
     "deleteDescription": "Aksi ini akan menghapus video ini secara permanen.",
     "deleteConfirm": "Ya, hapus!",
-    "submitUrl": "Paste URL",
-    "searchVideos": "Cari video",
-    "searchPlaceholder": "Cari video...",
-    "search": "Cari",
+    "recommended": {
+      "title": "Coba video rekomendasi",
+      "subtitle": "Pilih salah satu untuk melihat Vidiopintar beraksi — tanpa perlu cari video di YouTube dulu."
+    },
     "videoList": {
       "title": "Video terbaru kamu",
       "searchPlaceholder": "Cari...",

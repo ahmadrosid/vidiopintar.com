@@ -5,7 +5,6 @@ import { LastNotes } from "@/components/video/last-notes";
 import { HeroHeader } from "@/components/hero-header";
 import { FooterSection } from "@/components/footer";
 import { getCurrentUser } from "@/lib/auth";
-import { VideoSearchDisplay } from "@/components/video/video-search-display";
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from "next";
 
@@ -34,7 +33,6 @@ export default async function Home() {
             </div>
             <VideoInputSection userId={user.id} />
           </div>
-          <VideoSearchDisplay />
           <LastNotes limit={5} />
           <VideoListWithFilter videos={videos} />
         </div>

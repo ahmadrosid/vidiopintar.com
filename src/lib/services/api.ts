@@ -6,7 +6,6 @@ import {
     ClearMessagesRequest,
     ClearMessagesRequestSchema,
     ClearMessagesResponseSchema,
-    VideoSearchResponseSchema,
 } from "@/lib/services/schema";
 
 const API_BASE = "/api";
@@ -102,10 +101,4 @@ export async function clearChatMessages(
 ): Promise<z.infer<typeof ClearMessagesResponseSchema>> {
     ClearMessagesRequestSchema.parse(input);
     return postRequest("/clear-messages", input, ClearMessagesResponseSchema);
-}
-
-export async function searchVideos(
-    query: string
-): Promise<z.infer<typeof VideoSearchResponseSchema>> {
-    return postRequest("/youtube/search", { query }, VideoSearchResponseSchema);
 }

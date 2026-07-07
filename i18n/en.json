@@ -154,10 +154,10 @@
     "deleteTitle": "Delete video?",
     "deleteDescription": "This will permanently remove this video.",
     "deleteConfirm": "Yes, delete!",
-    "submitUrl": "Submit URL",
-    "searchVideos": "Search videos",
-    "searchPlaceholder": "Search for videos...",
-    "search": "Search",
+    "recommended": {
+      "title": "Try a recommended video",
+      "subtitle": "Pick one to see Vidiopintar in action — no need to find a video on YouTube first."
+    },
     "videoList": {
       "title": "Your recent videos",
       "searchPlaceholder": "Search...",
