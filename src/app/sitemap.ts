@@ -59,25 +59,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ]
 
-  // Topic/Category pages
-  const topicSlugs = [
-    'productivity',
-    'economics',
-    'marketing',
-    'mental-health',
-    'history',
-    'copywriting',
-    'anthropology',
-    'geography',
-  ]
-
-  const topicPages = topicSlugs.map((slug) => ({
-    url: `${baseUrl}/category/${slug}`,
-    lastModified: currentDate,
-    changeFrequency: 'daily' as const,
-    priority: 0.7,
-  }))
-
   // Blog pages
   const blogPages = [
     {
@@ -105,5 +86,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }))
 
   // Combine all pages
-  return [...staticPages, ...topicPages, ...blogPages, ...blogPosts, ...tagPages]
+  return [...staticPages, ...blogPages, ...blogPosts, ...tagPages]
 }

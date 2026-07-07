@@ -3,7 +3,6 @@ import { Header } from "@/components/landing/Header"
 import NewPricing from "@/components/landing/NewPricing"
 import { Testimonial } from "@/components/landing/Testimonial"
 import { Testimonials2 } from "@/components/landing/Testimonial2"
-import { Topics } from "@/components/landing/Topic"
 import { FAQ } from "@/components/landing/FAQ"
 import MainLayout from "@/components/layouts/main-layout"
 import { faqData } from "@/data/faq"
@@ -40,7 +39,6 @@ export default function Page() {
         <Header />
         <Testimonial />
         <Features />
-        <Topics />
         <Testimonials2 />
         <NewPricing />
         <FAQ />
