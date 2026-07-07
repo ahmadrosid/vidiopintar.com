@@ -4,7 +4,6 @@ import type React from "react"
 import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
-import Script from "next/script";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { Geist, Geist_Mono } from "next/font/google";
@@ -120,11 +119,6 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}>
         <ClerkProvider appearance={{ theme: shadcn }}>
-          <Script
-          src="https://vince.ngooding.com/js/script.js"
-          data-domain="vidiopintar.com"
-          strategy="afterInteractive"
-          />
           <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem storageKey="vidiopintar-theme">
           {children}
