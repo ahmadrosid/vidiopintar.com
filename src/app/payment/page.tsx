@@ -1,5 +1,5 @@
 import { getTranslations } from 'next-intl/server'
-import { CopyButton } from '@/components/payment/copy-button'
+import { CopyButton } from '@/components/ui/copy-button'
 import { WhatsAppConfirmButton } from '@/components/payment/whatsapp-confirm-button'
 import { paymentSettingsRepository } from '@/lib/db/repository/payment-settings'
 import { transactionsRepository } from '@/lib/db/repository/transactions'
@@ -159,100 +159,60 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                 )}
 
                 {existingTransaction && (
-                    <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md p-4 mb-6">
-                        <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 mt-0.5">
-                                <svg className="size-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                            <div className="text-sm">
-                                <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">Existing Payment Request</p>
-                                <p className="text-blue-800 dark:text-blue-200">
-                                    You already have a pending payment request for this plan. We're showing your existing transaction details below.
-                                </p>
-                                <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
-                                    Created: {existingTransaction.createdAt ? new Date(existingTransaction.createdAt).toLocaleDateString() : 'Unknown'} at {existingTransaction.createdAt ? new Date(existingTransaction.createdAt).toLocaleTimeString() : 'Unknown'}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                    <p className="text-sm text-muted-foreground text-center mb-6">
+                        {t('existingPayment')}
+                    </p>
                 )}
 
                 {(!canPurchaseCheck || canPurchaseCheck.canPurchase) && (
-                <>
-                    <div className="bg-card border rounded-md p-5 mb-5">
-                        <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-sm font-medium text-muted-foreground">{currentPlan.name}</h2>
-                            <div className="text-base font-medium">{currentPlan.price}</div>
-                        </div>
-                        
-                        <div className="border-t pt-5">
-                            <div className="space-y-3">
-                                <div className="py-2">
-                                    <p className="text-xs text-muted-foreground mb-1">{t('bankName')}</p>
-                                    <p className="text-sm">{bankDetails.bankName}</p>
-                                </div>
-
-                                <div className="py-2">
-                                    <p className="text-xs text-muted-foreground mb-1">{t('accountName')}</p>
-                                    <p className="text-sm">{bankDetails.accountName}</p>
-                                </div>
-
-                                <div className="flex items-center justify-between py-2">
-                                    <div>
-                                        <p className="text-xs text-muted-foreground mb-1">{t('accountNumber')}</p>
-                                        <p className="font-mono text-sm">{bankDetails.accountNumber}</p>
-                                    </div>
-                                    <CopyButton text={bankDetails.accountNumber} fieldId="account" />
-                                </div>
-
-                                <div className="flex items-center justify-between py-2 border-t pt-3">
-                                    <div>
-                                        <p className="text-xs text-muted-foreground mb-1">{t('amount')}</p>
-                                        <p className="text-sm font-medium">{currentPlan.price}</p>
-                                    </div>
-                                    <CopyButton text={currentPlan.price.split(' ')[1]} fieldId="amount" />
-                                </div>
-
-                                {transaction?.transactionReference && (
-                                    <div className="flex items-center justify-between py-2 border-t pt-3">
-                                        <div>
-                                            <p className="text-xs text-muted-foreground mb-1">Transaction Reference</p>
-                                            <p className="text-sm font-mono">{transaction.transactionReference}</p>
-                                        </div>
-                                        <CopyButton text={transaction.transactionReference} fieldId="reference" />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                <div className="bg-card border rounded-lg p-6 space-y-6">
+                    <div className="flex items-baseline justify-between">
+                        <h2 className="font-medium">{currentPlan.name}</h2>
+                        <p className="text-lg font-semibold">{currentPlan.price}</p>
                     </div>
 
-                    <div className="bg-card border rounded-md p-5 mb-6">
-                        <div className="space-y-2 text-sm">
-                            <div className="flex gap-2">
-                                <span className="text-muted-foreground">1.</span>
-                                <span className="text-muted-foreground">{t('step1')}</span>
+                    <p className="text-sm text-muted-foreground">
+                        {bankDetails.bankName} · {bankDetails.accountName}
+                    </p>
+
+                    <div className="space-y-3 text-sm">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="min-w-0">
+                                <p className="text-xs text-muted-foreground">{t('accountNumber')}</p>
+                                <p className="font-mono truncate">{bankDetails.accountNumber}</p>
                             </div>
-                            <div className="flex gap-2">
-                                <span className="text-muted-foreground">2.</span>
-                                <span className="text-muted-foreground">{t('step2')}</span>
-                            </div>
-                            <div className="flex gap-2">
-                                <span className="text-muted-foreground">3.</span>
-                                <span className="text-muted-foreground">{t('step3')}</span>
-                            </div>
+                            <CopyButton content={bankDetails.accountNumber} copyMessage={t('copied')} />
                         </div>
+
+                        <div className="flex items-center justify-between gap-4">
+                            <div>
+                                <p className="text-xs text-muted-foreground">{t('amount')}</p>
+                                <p className="font-medium">{currentPlan.price}</p>
+                            </div>
+                            <CopyButton content={currentPlan.price.split(' ')[1]} copyMessage={t('copied')} />
+                        </div>
+
+                        {transaction?.transactionReference && (
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="min-w-0">
+                                    <p className="text-xs text-muted-foreground">{t('transactionReference')}</p>
+                                    <p className="font-mono truncate">{transaction.transactionReference}</p>
+                                </div>
+                                <CopyButton content={transaction.transactionReference} copyMessage={t('copied')} />
+                            </div>
+                        )}
                     </div>
 
-                    <div className="text-center">
+                    <p className="text-sm text-muted-foreground">{t('instructionsShort')}</p>
+
+                    <div className="space-y-3 text-center">
                         <WhatsAppConfirmButton 
                             whatsappUrl={whatsappUrl}
                             transactionId={transaction?.id}
                         />
-                        <p className="text-xs text-muted-foreground mt-3">{t('confirmationNote')}</p>
+                        <p className="text-xs text-muted-foreground">{t('confirmationNote')}</p>
                     </div>
-                </>
+                </div>
                 )}
             </div>
         </div>

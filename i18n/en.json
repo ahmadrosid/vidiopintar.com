@@ -249,21 +249,24 @@
   },
   "payment": {
     "title": "Complete Your Payment",
-    "subtitle": "Follow the instructions below to complete your subscription",
+    "subtitle": "Transfer to the account below, then confirm on WhatsApp",
     "orderSummary": "Order Summary",
     "bankDetails": "Bank Transfer Details",
     "bankName": "Bank Name",
-    "accountNumber": "Account Number",
+    "accountNumber": "Account",
     "accountName": "Account Name",
     "amount": "Amount",
+    "transactionReference": "Reference",
     "copy": "Copy",
     "copied": "Copied!",
     "instructions": "Payment Instructions",
+    "instructionsShort": "Transfer the exact amount, then confirm your payment on WhatsApp.",
     "step1": "Transfer the exact amount to the bank account above",
     "step2": "Keep your transfer receipt for verification",
     "step3": "Click the WhatsApp button below to confirm your payment",
-    "confirmPayment": "Confirm Payment via WhatsApp",
-    "confirmationNote": "Our team will verify your payment and activate your subscription within 24 hours"
+    "confirmPayment": "Confirm on WhatsApp",
+    "confirmationNote": "We'll verify and activate your subscription within 24 hours",
+    "existingPayment": "Showing your pending payment for this plan."
   },
   "billing": {
     "title": "Billing & Transactions",

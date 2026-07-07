@@ -10,6 +10,57 @@ export interface ChangelogEntry {
 
 export const changelogs: ChangelogEntry[] = [
   {
+    date: "2026-07-07",
+    version: "2.0.0",
+    type: "major",
+    changes: [
+      {
+        category: "added",
+        items: [
+          "Clerk authentication with dedicated sign-in and sign-up pages",
+          "TranscriptAPI.com integration for reliable YouTube transcript fetching",
+          "PostgreSQL-to-SQLite migration scripts (`db:migrate-from-pg`, `db:verify`)",
+          "FAQ JSON-LD structured data on landing page for SEO",
+          "Blog index redesign with featured post and grid layout",
+          "Back to home link on blog index page"
+        ]
+      },
+      {
+        category: "changed",
+        items: [
+          "Migrated database from PostgreSQL to SQLite with Drizzle ORM",
+          "Replaced Better Auth and Google login with Clerk authentication",
+          "Migrated AI chat and summaries from OpenAI to DeepSeek v4 Flash",
+          "Switched transcript fetching from youtube-transcript-plus to TranscriptAPI.com",
+          "Video metadata now fetched via YouTube oEmbed instead of internal API",
+          "CLI updated to use DeepSeek and TranscriptAPI.com",
+          "Simplified CI/CD workflow to build-and-push only (removed VPS SSH deploy step)",
+          "Docker setup now uses SQLite with persistent volume at `/data`",
+          "Blog cards styled consistently with landing page design"
+        ]
+      },
+      {
+        category: "fixed",
+        items: [
+          "Clerk user sync with existing database users by email",
+          "Transcript caching and segment normalization across app and CLI",
+          "Build and deployment fixes for SQLite in Docker on Alpine"
+        ]
+      },
+      {
+        category: "removed",
+        items: [
+          "Category/topic browsing pages and home dashboard topic cards",
+          "YouTube comments tab and API endpoint",
+          "Landing page Topics section",
+          "PostgreSQL deployment infrastructure (deploy script, pg_hba.conf, local postgres scripts)",
+          "Better Auth API route and custom auth form",
+          "Supadata integration"
+        ]
+      }
+    ]
+  },
+  {
     date: "2026-02-07",
     version: "1.5.0",
     type: "minor",

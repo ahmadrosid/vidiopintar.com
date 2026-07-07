@@ -249,21 +249,24 @@
   },
   "payment": {
     "title": "Selesaikan Pembayaran",
-    "subtitle": "Ikuti instruksi di bawah untuk menyelesaikan langganan kamu",
+    "subtitle": "Transfer ke rekening di bawah, lalu konfirmasi via WhatsApp",
     "orderSummary": "Ringkasan Pesanan",
     "bankDetails": "Detail Transfer Bank",
     "bankName": "Nama Bank",
-    "accountNumber": "Nomor Rekening",
+    "accountNumber": "Rekening",
     "accountName": "Nama Pemilik Rekening",
     "amount": "Jumlah",
+    "transactionReference": "Referensi",
     "copy": "Salin",
     "copied": "Disalin!",
     "instructions": "Instruksi Pembayaran",
+    "instructionsShort": "Transfer jumlah yang tepat, lalu konfirmasi pembayaran via WhatsApp.",
     "step1": "Transfer jumlah yang tepat ke rekening bank di atas",
     "step2": "Simpan bukti transfer untuk verifikasi",
     "step3": "Klik tombol WhatsApp di bawah untuk konfirmasi pembayaran",
-    "confirmPayment": "Konfirmasi Pembayaran via WhatsApp",
-    "confirmationNote": "Tim kami akan memverifikasi pembayaran dan mengaktifkan langganan dalam 24 jam"
+    "confirmPayment": "Konfirmasi via WhatsApp",
+    "confirmationNote": "Kami akan verifikasi dan aktifkan langganan dalam 24 jam",
+    "existingPayment": "Menampilkan pembayaran tertunda untuk paket ini."
   },
   "billing": {
     "title": "Billing & Transaksi",
