@@ -1,4 +1,10 @@
 import { env } from "@/lib/env/server";
+import { TranscriptCacheRepository, TranscriptRepository } from "@/lib/db/repository";
+import {
+  storedSegmentsToTranscriptApi,
+  transcriptApiSegmentsToStored,
+} from "@/lib/transcript-segments";
+import { extractVideoId } from "@/lib/utils";
 
 const TRANSCRIPT_API_BASE = "https://transcriptapi.com/api/v2";
 const RETRYABLE_STATUSES = new Set([408, 429, 503]);
@@ -81,6 +87,12 @@ export async function fetchTranscriptResponse(
   options: FetchTranscriptOptions = {},
   apiKey: string = env.TRANSCRIPT_API_KEY,
 ): Promise<TranscriptApiResponse> {
+  const videoId = normalizeVideoId(videoUrlOrId);
+  const cached = await getCachedTranscriptResponse(videoId);
+  if (cached) {
+    return cached;
+  }
+
   const queue = buildLanguageAttempts(options.language);
   const attempted = new Set<string>();
   let lastError = "No transcript content available";
@@ -90,12 +102,13 @@ export async function fetchTranscriptResponse(
     if (attempted.has(language)) continue;
     attempted.add(language);
 
-    const url = buildTranscriptUrl(videoUrlOrId, options, language);
+    const url = buildTranscriptUrl(videoId, options, language);
     const response = await fetchWithRetry(url.toString(), apiKey);
 
     if (response.ok) {
       const data = (await response.json()) as TranscriptApiResponse;
       if (data.transcript?.length) {
+        await cacheTranscriptResponse(videoId, data);
         return data;
       }
       continue;
@@ -118,7 +131,52 @@ export async function fetchTranscriptResponse(
     throw new Error(lastError);
   }
 
+  await TranscriptCacheRepository.markUnavailable(videoId);
   throw new Error(lastError);
+}
+
+function normalizeVideoId(videoUrlOrId: string): string {
+  return extractVideoId(videoUrlOrId) ?? videoUrlOrId;
+}
+
+async function getCachedTranscriptResponse(
+  videoId: string,
+): Promise<TranscriptApiResponse | null> {
+  const cached = await TranscriptCacheRepository.get(videoId);
+  if (cached?.unavailable) {
+    throw new Error("No transcript available for this video");
+  }
+  if (cached?.response?.transcript?.length) {
+    return cached.response;
+  }
+
+  const storedSegments = await TranscriptRepository.getByVideoId(videoId);
+  if (storedSegments.length === 0) {
+    return null;
+  }
+
+  const response = storedSegmentsToTranscriptApi(
+    videoId,
+    storedSegments.map((segment) => ({
+      start: segment.start,
+      end: segment.end,
+      text: segment.text,
+      isChapterStart: segment.isChapterStart,
+    })),
+  );
+  await TranscriptCacheRepository.saveResponse(videoId, response);
+  return response;
+}
+
+async function cacheTranscriptResponse(
+  videoId: string,
+  response: TranscriptApiResponse,
+): Promise<void> {
+  await TranscriptCacheRepository.saveResponse(videoId, response);
+  await TranscriptRepository.upsertSegments(
+    videoId,
+    transcriptApiSegmentsToStored(response.transcript),
+  );
 }
 
 function buildLanguageAttempts(preferred?: string): string[] {

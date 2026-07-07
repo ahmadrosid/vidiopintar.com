@@ -50,6 +50,7 @@ function main() {
     "token_usage",
     "transactions",
     "transcript_segments",
+    "transcript_cache",
     "user",
     "user_videos",
     "verification",

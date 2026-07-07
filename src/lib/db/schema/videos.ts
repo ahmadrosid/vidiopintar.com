@@ -83,6 +83,28 @@ export const transcriptSegments = sqliteTable("transcript_segments", {
   isChapterStart: integer("is_chapter_start", { mode: "boolean" }).notNull(),
 });
 
+export const transcriptCache = sqliteTable("transcript_cache", {
+  videoId: text("video_id").primaryKey(),
+  response: text("response", { mode: "json" }).$type<{
+    video_id: string;
+    language: string;
+    transcript: Array<{ text: string; start: number; duration: number }>;
+    metadata?: {
+      title?: string;
+      author_name?: string;
+      author_url?: string;
+      thumbnail_url?: string;
+    };
+  }>(),
+  unavailable: integer("unavailable", { mode: "boolean" }).default(false).notNull(),
+  createdAt: timestampMs("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestampMs("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});
+
 export const feedback = sqliteTable("feedback", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: text("user_id")

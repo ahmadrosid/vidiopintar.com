@@ -1,16 +1,15 @@
-import { VideoRepository, TranscriptRepository, Video, UserRepository } from "@/lib/db/repository";
+import { VideoRepository, Video, UserRepository } from "@/lib/db/repository";
 import { generateObject } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
 import { fetchTranscriptResponse, fetchVideoInfoFromApi } from '@/lib/transcript-api';
+import { transcriptApiSegmentsToStored } from '@/lib/transcript-segments';
 import { z } from 'zod';
 import { generateSummary } from "@/lib/ai/summary";
 import { getQuickStartPrompt } from "@/lib/ai/system-prompts";
-import { formatTime } from "@/lib/utils";
 import { trackGenerateTextUsage } from '@/lib/token-tracker';
 
 import { UserVideoRepository } from "@/lib/db/repository";
 import { getCurrentUser } from "./auth";
-import { addSeconds, format } from "date-fns";
 
 export async function generateUserVideoSummary(video: Video, segments: any[], userVideoId?: number) {
   const transcriptText = segments.map((seg: {text: string}) => seg.text);
@@ -161,26 +160,6 @@ export async function fetchVideoDetails(videoId: string) {
 export async function fetchVideoTranscript(videoId: string) {
   try {
     const user = await getCurrentUser();
-    const dbSegments = await TranscriptRepository.getByVideoId(videoId);
-    if (dbSegments.length > 0) {
-      const segments = dbSegments
-        .map((item: any) => ({
-          start: item.start,
-          end: item.end,
-          text: item.text,
-          isChapterStart: item.isChapterStart,
-        }))
-        .sort((a, b) => a.start - b.start);
-      let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
-      if (!userVideo) {
-        userVideo = await UserVideoRepository.upsert({
-          userId: user.id,
-          youtubeId: videoId,
-          summary: '', // Empty initially, will be generated client-side
-        });
-      }
-      return { segments, userVideo };
-    }
 
     let transcriptLanguage = 'en';
     try {
@@ -196,36 +175,8 @@ export async function fetchVideoTranscript(videoId: string) {
       language: transcriptLanguage,
       sendMetadata: true,
     });
-    const transcriptResult = transcriptResponse.transcript;
 
-    if (!transcriptResult || transcriptResult.length === 0) {
-      throw new Error('No transcript content available')
-    }
-
-    const segments = transcriptResult.map((item, index) => {
-      const start = Number(item.start || 0);
-      const end = start + Number(item.duration || 0);
-
-      const baseDate = new Date(0)
-      baseDate.setHours(0, 0, 0, 0)
-
-      const startTime = addSeconds(baseDate, Number(start))
-      const endTime = addSeconds(baseDate, Number(end))
-
-      const isChapterStart = item.text.length < 30 &&
-                            !item.text.includes('segment') &&
-                            item.text !== 'N/A' &&
-                            (index === 0 || index % 10 === 0)
-
-      return {
-        start: format(startTime, 'HH:mm:ss'),
-        end: format(endTime, 'HH:mm:ss'),
-        text: item.text !== 'N/A' ? item.text : `Segment at ${formatTime(start)}`,
-        isChapterStart,
-      }
-    })
-
-    await TranscriptRepository.upsertSegments(videoId, segments);
+    const segments = transcriptApiSegmentsToStored(transcriptResponse.transcript);
 
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
     if (!userVideo) {

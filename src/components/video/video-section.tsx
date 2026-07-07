@@ -1,7 +1,6 @@
 import { fetchVideoDetails, fetchVideoTranscript } from "@/lib/youtube";
 import { VideoPlayer } from "@/components/video/video-player";
 import { TranscriptView } from "@/components/video/transcript-view";
-import { CommentsView } from "@/components/video/comments-view";
 import { NotesView } from "@/components/video/notes-view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight } from "lucide-react";
@@ -69,9 +68,6 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
             <TabsTrigger value="transcript">
               <span className="flex items-center gap-2">{t("transcript")}</span>
             </TabsTrigger>
-            <TabsTrigger value="comments">
-              <span className="flex items-center gap-2">{t("comments")}</span>
-            </TabsTrigger>
             {userVideoId && (
               <TabsTrigger value="notes">
                 <span className="flex items-center gap-2">{t("notesTab")}</span>
@@ -92,12 +88,6 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
             className="h-full overflow-y-auto p-0 m-0"
           >
             <TranscriptView transcript={transcript} />
-          </TabsContent>
-          <TabsContent
-            value="comments"
-            className="h-full overflow-y-auto p-0 m-0"
-          >
-            <CommentsView videoId={videoId} />
           </TabsContent>
           {userVideoId && (
             <TabsContent

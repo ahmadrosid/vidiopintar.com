@@ -1,6 +1,6 @@
 import { db } from "@/lib/db/index"
 import { and, desc, eq, InferInsertModel, InferSelectModel, sql } from "drizzle-orm"
-import { feedback, messages, notes, sharedVideos, transcriptSegments, userVideos, videos } from "./schema"
+import { feedback, messages, notes, sharedVideos, transcriptCache, transcriptSegments, userVideos, videos } from "./schema"
 import { user } from "./schema/auth"
 
 export { TokenUsageRepository } from "./repository/token-usage"
@@ -282,6 +282,59 @@ export const TranscriptRepository = {
         }))
       )
     }
+  },
+}
+
+export const TranscriptCacheRepository = {
+  async get(videoId: string) {
+    const result = await db
+      .select()
+      .from(transcriptCache)
+      .where(eq(transcriptCache.videoId, videoId))
+      .limit(1)
+    return result[0]
+  },
+
+  async saveResponse(videoId: string, response: NonNullable<typeof transcriptCache.$inferSelect.response>) {
+    const now = new Date()
+    await db
+      .insert(transcriptCache)
+      .values({
+        videoId,
+        response,
+        unavailable: false,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: transcriptCache.videoId,
+        set: {
+          response,
+          unavailable: false,
+          updatedAt: now,
+        },
+      })
+  },
+
+  async markUnavailable(videoId: string) {
+    const now = new Date()
+    await db
+      .insert(transcriptCache)
+      .values({
+        videoId,
+        response: null,
+        unavailable: true,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: transcriptCache.videoId,
+        set: {
+          response: null,
+          unavailable: true,
+          updatedAt: now,
+        },
+      })
   },
 }
 

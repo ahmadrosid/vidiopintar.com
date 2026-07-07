@@ -60,19 +60,6 @@ export default function Loading() {
                     ))}
                   </div>
                 </TabsContent>
-                <TabsContent
-                  value="comments"
-                  className="h-full overflow-y-auto p-0 m-0"
-                >
-                  <div className="p-4 space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="space-y-2">
-                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-1/4" />
-                        <div className="h-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                      </div>
-                    ))}
-                  </div>
-                </TabsContent>
               </Tabs>
             </div>
           </div>

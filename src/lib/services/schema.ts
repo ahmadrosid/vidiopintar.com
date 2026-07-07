@@ -56,20 +56,3 @@ export const VideoSearchResponseSchema = z.object({
 });
 
 export type VideoSearchResponse = z.infer<typeof VideoSearchResponseSchema>;
-
-export const VideoCommentSchema = z.object({
-    author: z.string(),
-    text: z.string(),
-    like_count: z.number(),
-    reply_count: z.number(),
-    published_time: z.string(),
-    comment_id: z.string(),
-});
-
-export type VideoComment = z.infer<typeof VideoCommentSchema>;
-
-export const VideoCommentsResponseSchema = z.object({
-    results: z.array(VideoCommentSchema),
-});
-
-export type VideoCommentsResponse = z.infer<typeof VideoCommentsResponseSchema>;

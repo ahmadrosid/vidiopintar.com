@@ -7,7 +7,6 @@ import {
     ClearMessagesRequestSchema,
     ClearMessagesResponseSchema,
     VideoSearchResponseSchema,
-    VideoCommentsResponseSchema,
 } from "@/lib/services/schema";
 
 const API_BASE = "/api";
@@ -109,15 +108,4 @@ export async function searchVideos(
     query: string
 ): Promise<z.infer<typeof VideoSearchResponseSchema>> {
     return postRequest("/youtube/search", { query }, VideoSearchResponseSchema);
-}
-
-export async function getComments(
-    videoId?: string,
-    videoUrl?: string
-): Promise<z.infer<typeof VideoCommentsResponseSchema>> {
-    return postRequest(
-        "/youtube/comments",
-        { videoId, videoUrl },
-        VideoCommentsResponseSchema
-    );
 }
