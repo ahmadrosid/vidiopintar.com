@@ -1,26 +1,19 @@
-import { fetchTranscript } from 'youtube-transcript-plus';
+const TRANSCRIPT_API_URL = "https://transcriptapi.com/api/v2/youtube/transcript";
 
-// Type for transcript config (not exported from library)
-type TranscriptConfig = Parameters<typeof fetchTranscript>[1];
+interface TranscriptApiSegment {
+  text: string;
+  start: number;
+  duration: number;
+}
 
-// Browser-like headers to bypass bot detection
-const BROWSER_HEADERS = {
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-  'Accept-Language': 'en-US,en;q=0.9',
-  'Accept-Encoding': 'gzip, deflate, br',
-  'DNT': '1',
-  'Connection': 'keep-alive',
-  'Upgrade-Insecure-Requests': '1',
-  'Sec-Fetch-Dest': 'document',
-  'Sec-Fetch-Mode': 'navigate',
-  'Sec-Fetch-Site': 'none',
-  'Sec-Fetch-User': '?1',
-  'Cache-Control': 'max-age=0',
-};
+interface TranscriptApiResponse {
+  video_id?: string;
+  language?: string;
+  transcript?: TranscriptApiSegment[];
+}
 
 /**
  * Decodes HTML entities in a string
- * Handles both named entities and numeric entities (decimal and hex)
  */
 function decodeHtmlEntities(text: string): string {
   const entities: Record<string, string> = {
@@ -33,15 +26,10 @@ function decodeHtmlEntities(text: string): string {
     '&nbsp;': ' ',
   };
 
-  // First pass: decode named entities
   let decoded = text.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
-
-  // Second pass: decode numeric entities (decimal &#123; and hex &#x1A;)
   decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
   decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
 
-  // Handle double-encoded entities (e.g., &amp;gt; -> &gt; -> >)
-  // Keep decoding until no more changes
   let prev = '';
   while (prev !== decoded) {
     prev = decoded;
@@ -69,7 +57,6 @@ export function extractVideoId(url: string): string | null {
     }
   }
 
-  // If no pattern matches, assume the input is already a video ID
   if (/^[a-zA-Z0-9_-]{11}$/.test(url)) {
     return url;
   }
@@ -77,25 +64,37 @@ export function extractVideoId(url: string): string | null {
   return null;
 }
 
-/**
- * Creates a browser-like fetch function
- */
-function createProxiedFetch(originalFetch: typeof fetch) {
-  return async (url: string, init?: RequestInit) => {
-    const headers = new Headers(init?.headers || {});
-    
-    // Add browser-like headers
-    Object.entries(BROWSER_HEADERS).forEach(([key, value]) => {
-      if (!headers.has(key)) {
-        headers.set(key, value);
-      }
-    });
+async function fetchTranscriptFromApi(videoUrlOrId: string): Promise<TranscriptApiSegment[]> {
+  const apiKey = process.env.TRANSCRIPT_API_KEY;
+  if (!apiKey) {
+    throw new Error('TRANSCRIPT_API_KEY environment variable is required');
+  }
 
-    return originalFetch(url, {
-      ...init,
-      headers,
-    });
-  };
+  const url = new URL(TRANSCRIPT_API_URL);
+  url.searchParams.set('video_url', videoUrlOrId);
+  url.searchParams.set('format', 'json');
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+    },
+  });
+
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    throw new Error(
+      `Failed to fetch transcript: ${response.status} ${response.statusText}${body ? ` - ${body}` : ''}`,
+    );
+  }
+
+  const data = (await response.json()) as TranscriptApiResponse | TranscriptApiSegment[];
+  const segments = Array.isArray(data) ? data : data.transcript;
+
+  if (!segments || segments.length === 0) {
+    throw new Error('No transcript available for this video. The video may not have captions enabled.');
+  }
+
+  return segments;
 }
 
 /**
@@ -103,43 +102,18 @@ function createProxiedFetch(originalFetch: typeof fetch) {
  */
 export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<string> {
   const videoId = extractVideoId(videoUrlOrId);
-  
+
   if (!videoId) {
     throw new Error(`Invalid YouTube URL or video ID: ${videoUrlOrId}`);
   }
 
   try {
-    const config: TranscriptConfig = {
-      videoFetch: async ({ url, lang, userAgent }) => {
-        const proxiedFetch = createProxiedFetch(fetch);
-        const headers: Record<string, string> = {};
-        if (lang) headers['Accept-Language'] = lang;
-        if (userAgent) headers['User-Agent'] = userAgent;
-        return proxiedFetch(url, { headers });
-      },
-      playerFetch: async ({ url, method, body, headers: baseHeaders, lang, userAgent }) => {
-        const proxiedFetch = createProxiedFetch(fetch);
-        const headers: Record<string, string> = { ...baseHeaders };
-        if (lang) headers['Accept-Language'] = lang;
-        if (userAgent) headers['User-Agent'] = userAgent;
-        return proxiedFetch(url, { method, headers, body });
-      },
-      transcriptFetch: async ({ url, lang, userAgent }) => {
-        const proxiedFetch = createProxiedFetch(fetch);
-        const headers: Record<string, string> = {};
-        if (lang) headers['Accept-Language'] = lang;
-        if (userAgent) headers['User-Agent'] = userAgent;
-        return proxiedFetch(url, { headers });
-      },
-    };
+    const videoUrl = videoUrlOrId.includes('youtube.com') || videoUrlOrId.includes('youtu.be')
+      ? videoUrlOrId
+      : `https://www.youtube.com/watch?v=${videoId}`;
 
-    const transcriptResult = await fetchTranscript(videoId, config);
+    const transcriptResult = await fetchTranscriptFromApi(videoUrl);
 
-    if (!transcriptResult || transcriptResult.length === 0) {
-      throw new Error('No transcript available for this video. The video may not have captions enabled.');
-    }
-
-    // Join all transcript segments into a single text, decoding HTML entities
     const transcriptText = transcriptResult
       .map((item) => decodeHtmlEntities(item.text))
       .filter((text) => text && text !== 'N/A')

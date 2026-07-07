@@ -2,46 +2,7 @@ import { env } from "@/lib/env/server";
 import { VideoRepository, TranscriptRepository, Video, UserRepository } from "@/lib/db/repository";
 import { generateObject } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
-import { fetchTranscript } from 'youtube-transcript-plus';
-
-// Type for transcript config (not exported from library)
-type TranscriptConfig = Parameters<typeof fetchTranscript>[1];
-
-// Browser-like headers to bypass bot detection
-const BROWSER_HEADERS = {
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-  'Accept-Language': 'en-US,en;q=0.9',
-  'Accept-Encoding': 'gzip, deflate, br',
-  'DNT': '1',
-  'Connection': 'keep-alive',
-  'Upgrade-Insecure-Requests': '1',
-  'Sec-Fetch-Dest': 'document',
-  'Sec-Fetch-Mode': 'navigate',
-  'Sec-Fetch-Site': 'none',
-  'Sec-Fetch-User': '?1',
-  'Cache-Control': 'max-age=0',
-};
-
-/**
- * Creates a browser-like fetch function
- */
-function createBrowserFetch(originalFetch: typeof fetch) {
-  return async (url: string, init?: RequestInit) => {
-    const headers = new Headers(init?.headers || {});
-    
-    // Add browser-like headers
-    Object.entries(BROWSER_HEADERS).forEach(([key, value]) => {
-      if (!headers.has(key)) {
-        headers.set(key, value);
-      }
-    });
-
-    return originalFetch(url, {
-      ...init,
-      headers,
-    });
-  };
-}
+import { fetchTranscriptFromApi } from '@/lib/transcript-api';
 import { z } from 'zod';
 import { generateSummary } from "@/lib/ai/summary";
 import { getQuickStartPrompt } from "@/lib/ai/system-prompts";
@@ -189,38 +150,15 @@ export async function fetchVideoTranscript(videoId: string) {
       return { segments, userVideo };
     }
 
-    const transcriptConfig: TranscriptConfig = {
-      videoFetch: async ({ url, lang, userAgent }) => {
-        const browserFetch = createBrowserFetch(fetch);
-        const headers: Record<string, string> = {};
-        if (lang) headers['Accept-Language'] = lang;
-        if (userAgent) headers['User-Agent'] = userAgent;
-        return browserFetch(url, { headers });
-      },
-      playerFetch: async ({ url, method, body, headers: baseHeaders, lang, userAgent }) => {
-        const browserFetch = createBrowserFetch(fetch);
-        const headers: Record<string, string> = { ...baseHeaders };
-        if (lang) headers['Accept-Language'] = lang;
-        if (userAgent) headers['User-Agent'] = userAgent;
-        return browserFetch(url, { method, headers, body });
-      },
-      transcriptFetch: async ({ url, lang, userAgent }) => {
-        const browserFetch = createBrowserFetch(fetch);
-        const headers: Record<string, string> = {};
-        if (lang) headers['Accept-Language'] = lang;
-        if (userAgent) headers['User-Agent'] = userAgent;
-        return browserFetch(url, { headers });
-      },
-    };
-
-    const transcriptResult = await fetchTranscript(videoId, transcriptConfig);
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    const transcriptResult = await fetchTranscriptFromApi(videoUrl);
 
     if (!transcriptResult || transcriptResult.length === 0) {
       throw new Error('No transcript content available')
     }
 
     const segments = transcriptResult.map((item, index) => {
-      const start = Number(item.offset || 0);
+      const start = Number(item.start || 0);
       const end = start + Number(item.duration || 0);
 
       const baseDate = new Date(0)
