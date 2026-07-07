@@ -178,12 +178,27 @@ export async function fetchVideoTranscript(videoId: string) {
 
     const segments = transcriptApiSegmentsToStored(transcriptResponse.transcript);
 
+    // user_videos.youtube_id references videos.youtube_id — ensure parent row exists
+    // before upserting (fetchVideoDetails may still be running in parallel).
+    const existingVideo = await VideoRepository.getByYoutubeId(videoId);
+    if (!existingVideo) {
+      const metadata = transcriptResponse.metadata;
+      await VideoRepository.upsert({
+        youtubeId: videoId,
+        title: metadata?.title ?? `Video ${videoId}`,
+        description: "",
+        channelTitle: metadata?.author_name ?? "Unknown Channel",
+        publishedAt: null,
+        thumbnailUrl: metadata?.thumbnail_url ?? null,
+      });
+    }
+
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
     if (!userVideo) {
       userVideo = await UserVideoRepository.upsert({
         userId: user.id,
         youtubeId: videoId,
-        summary: '',
+        summary: "",
       });
     }
 
