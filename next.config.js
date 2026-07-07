@@ -9,10 +9,10 @@ const nextConfig = {
     domains: ['i.ytimg.com','res.cloudinary.com', 'lh3.googleusercontent.com', 'media.licdn.com', 'scontent-sin2-1.cdninstagram.com'],
   },
   output: 'standalone',
-  serverExternalPackages: ['bun:sqlite'],
+  serverExternalPackages: ['better-sqlite3'],
   webpack: (config, { isServer }) => {
     if (isServer) {
-      config.externals.push('bun:sqlite');
+      config.externals.push('better-sqlite3');
     }
     return config;
   },
