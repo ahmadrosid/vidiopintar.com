@@ -401,7 +401,7 @@ export const FeedbackRepository = {
         and(
           eq(feedback.userId, userId),
           eq(feedback.type, 'chat_response'),
-          sql`${feedback.metadata}->>'messageId' = ${messageId}`
+          sql`json_extract(${feedback.metadata}, '$.messageId') = ${messageId}`
         )
       )
       .limit(1)
@@ -415,9 +415,12 @@ export const FeedbackRepository = {
   },
 
   async delete(id: number): Promise<void> {
-    const result = await db.delete(feedback).where(eq(feedback.id, id))
-    if (result.rowCount === 0) {
-      throw new Error("Feedback not found")
+    const result = await db
+      .delete(feedback)
+      .where(eq(feedback.id, id))
+      .returning({ id: feedback.id });
+    if (result.length === 0) {
+      throw new Error("Feedback not found");
     }
   },
 }

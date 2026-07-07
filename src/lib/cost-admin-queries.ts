@@ -1,10 +1,8 @@
-import { db } from "@/lib/db";
-import { user, userVideos, tokenUsage } from "@/lib/db/schema";
-import { messages } from "@/lib/db/schema/messages";
+import { executeQuery } from "@/lib/db/execute";
 import { sql } from "drizzle-orm";
 
 export async function getTopUsersByCost(limit = 10) {
-  const result = await db.execute(sql`
+  const result = await executeQuery(sql`
     SELECT 
       u.id,
       u.name,
@@ -41,7 +39,7 @@ export async function getTopUsersByCost(limit = 10) {
 }
 
 export async function getCostMetrics() {
-  const result = await db.execute(sql`
+  const result = await executeQuery(sql`
     SELECT 
       COUNT(DISTINCT u.id) as active_users,
       COALESCE(SUM(tu.total_cost), 0) as total_cost,
@@ -66,8 +64,7 @@ export async function getCostMetrics() {
 
 export async function getUserActivityDetails(userId: string) {
   const [userInfo, userVideos, userConversations] = await Promise.all([
-    // Get user basic info and total costs
-    db.execute(sql`
+    executeQuery(sql`
       SELECT 
         u.id,
         u.name,
@@ -85,9 +82,8 @@ export async function getUserActivityDetails(userId: string) {
       WHERE u.id = ${userId}
       GROUP BY u.id, u.name, u.email, u.image, u.created_at
     `),
-    
-    // Get user videos with costs
-    db.execute(sql`
+
+    executeQuery(sql`
       SELECT 
         v.id,
         v.youtube_id as "youtubeId",
@@ -106,9 +102,8 @@ export async function getUserActivityDetails(userId: string) {
       GROUP BY v.id, v.youtube_id, v.title, v.channel_title, v.thumbnail_url, uv.created_at
       ORDER BY uv.created_at DESC
     `),
-    
-    // Get recent conversations
-    db.execute(sql`
+
+    executeQuery(sql`
       SELECT DISTINCT
         m.id,
         m.content,
@@ -126,14 +121,14 @@ export async function getUserActivityDetails(userId: string) {
           user_video_id,
           SUM(total_tokens) as total_tokens,
           SUM(total_cost) as total_cost,
-          DATE(created_at) as usage_date
+          date(created_at) as usage_date
         FROM token_usage
-        GROUP BY user_video_id, DATE(created_at)
-      ) tu ON uv.id = tu.user_video_id AND DATE(m.created_at) = tu.usage_date
+        GROUP BY user_video_id, date(created_at)
+      ) tu ON uv.id = tu.user_video_id AND date(m.created_at) = tu.usage_date
       WHERE uv.user_id = ${userId}
       ORDER BY m.created_at DESC
       LIMIT 100
-    `)
+    `),
   ]);
 
   const user = userInfo.rows[0] as any;

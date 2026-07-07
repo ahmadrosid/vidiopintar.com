@@ -40,4 +40,10 @@ next-env.d.ts
 i18n.cache
 
 backup/data
+data/*.db
+data/*.db-wal
+data/*.db-shm
+*.db
+*.db-wal
+*.db-shm
 deployment/postgres-data

@@ -1,15 +1,10 @@
-import { env } from './src/lib/env/server';
+import "dotenv/config";
 
 export default {
-  schema: './src/lib/db/schema/*.ts',
-  out: './src/drizzle',
-  dialect: "postgresql",
+  schema: "./src/lib/db/schema/*.ts",
+  out: "./src/drizzle",
+  dialect: "sqlite",
   dbCredentials: {
-    host: env.DB_HOST,
-    port: parseInt(env.DB_PORT),
-    user: env.DB_USER,
-    password: env.DB_PASSWORD,
-    database: env.DB_NAME,
-    ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    url: process.env.SQLITE_DATABASE_PATH ?? "./data/vidiopintar.db",
   },
 };

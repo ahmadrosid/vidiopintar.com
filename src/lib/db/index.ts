@@ -1,43 +1,29 @@
-import { Pool } from 'pg';
-import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
-import { env } from '../env/server';
+import Database from "better-sqlite3";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import { mkdirSync } from "node:fs";
+import path from "node:path";
+import { env } from "../env/server";
+import * as schema from "./schema";
 
 declare global {
-  var pg: Pool | undefined;
+  var sqliteDb: Database.Database | undefined;
 }
 
-// For server components and API routes
-let pool: Pool;
+function createDatabase(): Database.Database {
+  const dbPath = path.resolve(env.SQLITE_DATABASE_PATH);
+  mkdirSync(path.dirname(dbPath), { recursive: true });
 
-const databaseUrl = `postgres://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}/${env.DB_NAME}`;
+  const sqlite = new Database(dbPath);
+  sqlite.pragma("journal_mode = WAL");
+  sqlite.pragma("busy_timeout = 5000");
+  sqlite.pragma("foreign_keys = ON");
 
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL environment variable is not set');
+  return sqlite;
 }
 
-if (env.NODE_ENV === 'production') {
-  pool = new Pool({
-    connectionString: databaseUrl,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-    connectionTimeoutMillis: 5000,
-    idleTimeoutMillis: 10000,
-    max: 10,
-  });
-} else {
-  // In development, we can reuse the same pool
-  if (!global.pg) {
-    global.pg = new Pool({
-      connectionString: databaseUrl,
-      ssl: false, // Disable SSL for local development
-      connectionTimeoutMillis: 5000,
-      idleTimeoutMillis: 10000,
-      max: 10,
-    });
-  }
-  pool = global.pg;
-}
+const sqlite =
+  env.NODE_ENV === "production"
+    ? createDatabase()
+    : (global.sqliteDb ??= createDatabase());
 
-// Create a SQL client for server components
-export const db = drizzlePg(pool);
+export const db = drizzle(sqlite, { schema });
