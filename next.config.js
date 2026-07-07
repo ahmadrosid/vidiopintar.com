@@ -8,7 +8,14 @@ const nextConfig = {
   images: {
     domains: ['i.ytimg.com','res.cloudinary.com', 'lh3.googleusercontent.com', 'media.licdn.com', 'scontent-sin2-1.cdninstagram.com'],
   },
-  output: 'standalone'
+  output: 'standalone',
+  serverExternalPackages: ['bun:sqlite'],
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('bun:sqlite');
+    }
+    return config;
+  },
 }
 
 module.exports = withNextIntl(nextConfig);

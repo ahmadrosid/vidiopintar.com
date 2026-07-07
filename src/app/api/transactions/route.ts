@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { transactionsRepository } from '@/lib/db/repository/transactions';
-import { auth } from '@/lib/auth';
+import { getOptionalUser } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { 
   createTransactionSchema, 
@@ -20,11 +20,9 @@ export async function POST(request: Request) {
   const requestMetadata = await getSanitizedRequestMetadata(request);
   
   try {
-    const session = await auth.api.getSession({
-      headers: await headers()
-    });
+    const user = await getOptionalUser();
     
-    if (!session?.user?.id) {
+    if (!user) {
       paymentLogger.warn('Unauthorized transaction creation attempt', requestMetadata);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -37,7 +35,7 @@ export async function POST(request: Request) {
     const amountValidation = validateAmountMatchesPlan(validatedData.planType as PlanType, validatedData.amount);
     if (!amountValidation.isValid) {
       paymentLogger.warn('Invalid amount for plan type', {
-        userId: session.user.id,
+        userId: user.id,
         planType: validatedData.planType,
         providedAmount: validatedData.amount,
         expectedAmount: amountValidation.expectedAmount,
@@ -52,13 +50,13 @@ export async function POST(request: Request) {
 
     // Check for recent transactions (rate limiting)
     const recentTransactions = await transactionsRepository.getRecentTransactionsByUserId(
-      session.user.id, 
+      user.id, 
       24 * 60 * 60 * 1000 // 24 hours in milliseconds
     );
     
     if (recentTransactions.length >= PAYMENT_LIMITS.MAX_TRANSACTIONS_PER_USER_PER_DAY) {
       paymentLogger.warn('User exceeded daily transaction limit', {
-        userId: session.user.id,
+        userId: user.id,
         recentTransactionCount: recentTransactions.length,
         limit: PAYMENT_LIMITS.MAX_TRANSACTIONS_PER_USER_PER_DAY,
       });
@@ -79,7 +77,7 @@ export async function POST(request: Request) {
                      undefined;
 
     const transaction = await transactionsRepository.create({
-      userId: session.user.id,
+      userId: user.id,
       planType: validatedData.planType,
       amount: validatedData.amount,
       currency: validatedData.currency,
@@ -90,7 +88,7 @@ export async function POST(request: Request) {
     });
 
     logPaymentSuccess('transaction_created', {
-      userId: session.user.id,
+      userId: user.id,
       transactionId: transaction.id,
       amount: validatedData.amount,
       planType: validatedData.planType,
@@ -124,10 +122,8 @@ export async function GET(request: Request) {
   const requestMetadata = await getSanitizedRequestMetadata(request);
   
   try {
-    const session = await auth.api.getSession({
-      headers: await headers()
-    });
-    if (!session?.user?.id) {
+    const user = await getOptionalUser();
+    if (!user) {
       paymentLogger.warn('Unauthorized transaction fetch attempt', requestMetadata);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -135,10 +131,10 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100); // Cap at 100
 
-    const transactions = await transactionsRepository.getByUserId(session.user.id, limit);
+    const transactions = await transactionsRepository.getByUserId(user.id, limit);
     
     paymentLogger.info('User transactions fetched', {
-      userId: session.user.id,
+      userId: user.id,
       transactionCount: transactions.length,
       requestedLimit: limit,
     });

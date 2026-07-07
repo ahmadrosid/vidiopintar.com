@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import "dotenv/config";
-import Database from "better-sqlite3";
+import { Database } from "bun:sqlite";
 import path from "node:path";
 
 const sqlitePath = path.resolve(

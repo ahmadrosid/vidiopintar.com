@@ -10,7 +10,7 @@
 
 import "dotenv/config";
 import { Pool } from "pg";
-import Database from "better-sqlite3";
+import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 
@@ -32,8 +32,8 @@ if (!pgUrl) {
 mkdirSync(path.dirname(sqlitePath), { recursive: true });
 
 const sqlite = new Database(sqlitePath);
-sqlite.pragma("journal_mode = WAL");
-sqlite.pragma("foreign_keys = OFF");
+sqlite.run("PRAGMA journal_mode = WAL");
+sqlite.run("PRAGMA foreign_keys = OFF");
 
 const existing = sqlite
   .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
@@ -65,12 +65,14 @@ const TABLES_IN_ORDER = [
   "feedback",
 ] as const;
 
-function toSqliteValue(value: unknown): unknown {
+function toSqliteValue(value: unknown): string | number | bigint | boolean | Uint8Array | null {
   if (value === null || value === undefined) return null;
   if (value instanceof Date) return value.getTime();
   if (typeof value === "object") return JSON.stringify(value);
   if (typeof value === "boolean") return value ? 1 : 0;
-  return value;
+  if (typeof value === "bigint") return value;
+  if (typeof value === "number") return value;
+  return String(value);
 }
 
 async function migrateTable(table: string) {
@@ -133,7 +135,7 @@ async function main() {
     }
   }
 
-  sqlite.pragma("foreign_keys = ON");
+  sqlite.run("PRAGMA foreign_keys = ON");
   await pool.end();
   sqlite.close();
   console.log("Migration completed successfully.");

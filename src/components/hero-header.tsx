@@ -5,8 +5,9 @@ import React from "react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { authClient, useSession } from "@/lib/auth-client";
-import { usePathname, useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
+import { useSession } from "@/lib/auth-client";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LanguageSelector } from "@/components/language-selector";
 
@@ -15,7 +16,7 @@ export const HeroHeader = () => {
   const [mounted, setMounted] = React.useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const router = useRouter();
+  const { signOut } = useClerk();
   const { data: session, isPending } = useSession();
   const isAuthenticated = !!session?.user && !isPending;
   const t = useTranslations("navigation");
@@ -25,8 +26,7 @@ export const HeroHeader = () => {
   }, []);
 
   const handleLogout = async () => {
-    await authClient.signOut();
-    router.push("/");
+    await signOut({ redirectUrl: "/" });
   };
 
   React.useEffect(() => {

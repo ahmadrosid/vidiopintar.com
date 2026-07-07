@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { transactionsRepository } from '@/lib/db/repository/transactions';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
+import { getOptionalUser } from '@/lib/auth';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -9,10 +8,8 @@ interface RouteParams {
 
 export async function GET(request: Request, { params }: RouteParams) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers()
-    });
-    if (!session?.user?.id) {
+    const user = await getOptionalUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -24,7 +21,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     }
 
     // Users can only view their own transactions
-    if (transaction.userId !== session.user.id) {
+    if (transaction.userId !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -37,10 +34,8 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers()
-    });
-    if (!session?.user?.id) {
+    const user = await getOptionalUser();
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -59,7 +54,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     // Users can only cancel their own pending transactions
-    if (transaction.userId !== session.user.id) {
+    if (transaction.userId !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

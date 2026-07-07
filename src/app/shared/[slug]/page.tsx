@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import { SharedVideoRepository } from "@/lib/db/repository";
 import { Metadata } from "next";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getOptionalUser } from "@/lib/auth";
 import { ChatInterface } from "@/components/chat/chat-interface";
 import { VideoPlayer } from "@/components/video/video-player";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,8 +45,8 @@ export default async function SharedVideoPage(props: SharedVideoPageProps) {
   const params = await props.params;
   const { slug } = params;
 
-  const session = await auth.api.getSession({ headers: await headers() });
-  const isLoggedIn = !!session?.user;
+  const user = await getOptionalUser();
+  const isLoggedIn = !!user;
   const shareChatUrl = `${env.BETTER_AUTH_URL}/shared/${slug}`;
   const sharedVideo = await SharedVideoRepository.getBySlugWithDetails(slug);
 

@@ -1,6 +1,5 @@
 # 1. Install dependencies
 FROM oven/bun:1-alpine AS deps
-RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
 COPY package.json bun.lock ./
