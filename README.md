@@ -67,7 +67,8 @@ docker stop vidiopintar-app && docker rm vidiopintar-app
 
 - The app runs on port 3000 inside the container
 - Mount persistent storage at `/data` (e.g. `-v "$(pwd)/data:/data"`)
-- `SQLITE_DATABASE_PATH` defaults to `/data/vidiopintar.db` in production; if your `.env` sets `./data/vidiopintar.db` for local dev, the app will still use `/data` inside the container
+- `SQLITE_DATABASE_PATH` defaults to `/data/vidiopintar.db` in production; if your `.env` sets `./data/vidiopintar.db` for local dev, both the app and Drizzle use `/data` inside the container
+- The container runs `drizzle-kit migrate` automatically on startup
 - Make sure your `.env` file contains all required variables from `.env.example`
 - Access the app at `http://localhost:5000`
 

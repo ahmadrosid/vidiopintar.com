@@ -44,6 +44,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/file-uri-to-path ./n
 
 # Drizzle migration tooling (docker exec <container> npm run db:migrate)
 COPY --from=builder /app/drizzle.config.js ./
+COPY --from=builder /app/src/lib/db/resolve-database-path.js ./src/lib/db/resolve-database-path.js
 COPY --from=builder /app/src/lib/db/schema ./src/lib/db/schema
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/drizzle-kit ./node_modules/drizzle-kit
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
@@ -63,6 +64,9 @@ COPY --from=deps --chown=nextjs:nodejs /app/node_modules/.bin/drizzle-kit ./node
 RUN printf '#!/bin/sh\nexec node /app/node_modules/drizzle-kit/bin.cjs "$@"\n' > /usr/local/bin/drizzle-kit && \
     chmod +x /usr/local/bin/drizzle-kit
 
+COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 USER nextjs
 EXPOSE 3000
 ENV PORT=3000
@@ -70,4 +74,4 @@ ENV HOSTNAME="0.0.0.0"
 
 VOLUME ["/data"]
 
-CMD ["node", "server.js"]
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
