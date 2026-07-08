@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type { InferInsertModel } from "drizzle-orm";
-import { userVideos } from "@/lib/db/schema/videos";
+import { userVideos } from "./videos";
 
 const timestampMs = (name: string) =>
   integer(name, { mode: "timestamp_ms" });
