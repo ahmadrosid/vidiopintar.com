@@ -26,12 +26,18 @@ export default async function Home() {
       <HeroHeader />
       <main className="relative min-h-screen overflow-hidden">
         <div className="relative z-10 max-w-[1328px] px-8 mx-auto">
-          <div className="mt-24 mb-16 max-w-xl mx-auto">
-            <div className="text-center mb-6 mt-8">
-              <h1 className="text-4xl font-bold tracking-tighter">{t('title')}</h1>
-              <p className="tracking-tight">{t('subtitle')}</p>
+          <div className="mt-24 mb-16 max-w-2xl mx-auto">
+            <div className="px-6 py-14 text-center">
+              <div className="mb-10 space-y-2">
+                <h1 className="text-4xl font-bold tracking-tight text-[#1E293B] dark:text-foreground">
+                  {t('title')}
+                </h1>
+                <p className="text-lg text-slate-500 dark:text-muted-foreground">
+                  {t('subtitle')}
+                </p>
+              </div>
+              <VideoInputSection userId={user.id} />
             </div>
-            <VideoInputSection userId={user.id} />
           </div>
           <LastNotes limit={5} />
           <VideoListWithFilter videos={videos} />

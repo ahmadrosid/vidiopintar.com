@@ -77,6 +77,9 @@ docker stop vidiopintar-app && docker rm vidiopintar-app
 If you need to run database migrations inside a running Docker container:
 
 ```bash
+# List tables (sqlite3 CLI is not available in the container)
+docker exec -it vidiopintar-dev node scripts/db-tables.js
+
 # Run database migration in the container
 docker exec -it vidiopintar-dev npm run db:migrate
 
