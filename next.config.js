@@ -1,3 +1,12 @@
+// Keep server action IDs stable across deploys/restarts when no explicit key is set.
+if (
+  !process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY &&
+  process.env.CLERK_SECRET_KEY
+) {
+  process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY =
+    process.env.CLERK_SECRET_KEY;
+}
+
 const withNextIntl = require('next-intl/plugin')(
   // This is the default (also the `src` folder is supported out of the box)
   './src/i18n.ts'

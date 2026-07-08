@@ -66,7 +66,8 @@ docker stop vidiopintar-app && docker rm vidiopintar-app
 ### Docker Environment Notes
 
 - The app runs on port 3000 inside the container
-- Set `SQLITE_DATABASE_PATH=/data/vidiopintar.db` when mounting `./data:/data`
+- Mount persistent storage at `/data` (e.g. `-v "$(pwd)/data:/data"`)
+- `SQLITE_DATABASE_PATH` defaults to `/data/vidiopintar.db` in production; if your `.env` sets `./data/vidiopintar.db` for local dev, the app will still use `/data` inside the container
 - Make sure your `.env` file contains all required variables from `.env.example`
 - Access the app at `http://localhost:5000`
 

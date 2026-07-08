@@ -16,6 +16,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV SQLITE_DATABASE_PATH=/data/vidiopintar.db
 RUN bun run build
 
 # 3. Runner
