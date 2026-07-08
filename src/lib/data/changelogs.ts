@@ -10,6 +10,19 @@ export interface ChangelogEntry {
 
 export const changelogs: ChangelogEntry[] = [
   {
+    date: "2026-07-08",
+    version: "2.0.2",
+    type: "patch",
+    changes: [
+      {
+        category: "removed",
+        items: [
+          "Tips alert on the video page that prompted users to replace YouTube URLs with Vidiopintar links"
+        ]
+      }
+    ]
+  },
+  {
     date: "2026-07-07",
     version: "2.0.1",
     type: "patch",

@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, X } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface FeedbackFiltersProps {
   onFilterChange: (filters: {
@@ -57,65 +58,49 @@ export function FeedbackFilters({ onFilterChange, totalCount, filteredCount }: F
   const hasActiveFilters = type || rating || search;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="flex items-center gap-2">
-          <Filter className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">Filters</span>
-          {hasActiveFilters && (
-            <Badge variant="secondary" className="ml-2">
-              {filteredCount} of {totalCount}
-            </Badge>
-          )}
-        </div>
-        {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
-            <X className="h-3 w-3 mr-1" />
-            Clear
-          </Button>
-        )}
-      </div>
-
-      <div className="flex items-center gap-4 flex-wrap">
-        {/* Quick Rating Filters */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Show:</span>
-          <button
+          <Button
+            type="button"
+            variant={rating === "bad" ? "default" : "outline"}
+            size="sm"
             onClick={() => updateFilters({ rating: rating === "bad" ? null : "bad" })}
-            className={`px-3 py-1 rounded-full text-sm ${
-              rating === "bad" 
-                ? "bg-red-100 text-red-800 border border-red-200" 
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className={cn(
+              "h-8 rounded-full px-3 text-xs",
+              rating === "bad"
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                : "dark:border-input dark:bg-input/30 dark:hover:bg-input/50"
+            )}
           >
             😞 Issues only
-          </button>
-          <button
+          </Button>
+          <Button
+            type="button"
+            variant={rating === "love_it" ? "default" : "outline"}
+            size="sm"
             onClick={() => updateFilters({ rating: rating === "love_it" ? null : "love_it" })}
-            className={`px-3 py-1 rounded-full text-sm ${
-              rating === "love_it" 
-                ? "bg-green-100 text-green-800 border border-green-200" 
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className={cn(
+              "h-8 rounded-full px-3 text-xs",
+              rating !== "love_it" && "dark:border-input dark:bg-input/30 dark:hover:bg-input/50"
+            )}
           >
             🧡 Positive only
-          </button>
+          </Button>
         </div>
 
-        {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="relative min-w-0 flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search comments..."
             value={search}
             onChange={(e) => updateFilters({ search: e.target.value })}
-            className="pl-9 text-sm"
+            className="h-9 rounded-xs border-border bg-background pl-9 text-sm text-foreground shadow-xs placeholder:text-muted-foreground dark:bg-input/30"
           />
         </div>
 
-        {/* Sort */}
         <Select value={sortBy} onValueChange={(value) => updateFilters({ sortBy: value })}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="h-9 w-full rounded-xs lg:w-[150px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -126,25 +111,44 @@ export function FeedbackFilters({ onFilterChange, totalCount, filteredCount }: F
         </Select>
       </div>
 
-      {/* Active Filter Pills */}
       {hasActiveFilters && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm text-muted-foreground">Active filters:</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">
+            {filteredCount} of {totalCount} shown
+          </span>
           {type && (
-            <Badge variant="secondary" className="cursor-pointer" onClick={() => updateFilters({ type: null })}>
-              Type: {type.replace('_', ' ')} <X className="h-3 w-3 ml-1" />
+            <Badge
+              variant="secondary"
+              className="cursor-pointer gap-1 rounded-xs"
+              onClick={() => updateFilters({ type: null })}
+            >
+              Type: {type.replace('_', ' ')}
+              <X className="h-3 w-3" />
             </Badge>
           )}
           {rating && (
-            <Badge variant="secondary" className="cursor-pointer" onClick={() => updateFilters({ rating: null })}>
-              Rating: {rating.replace('_', ' ')} <X className="h-3 w-3 ml-1" />
+            <Badge
+              variant="secondary"
+              className="cursor-pointer gap-1 rounded-xs"
+              onClick={() => updateFilters({ rating: null })}
+            >
+              Rating: {rating.replace('_', ' ')}
+              <X className="h-3 w-3" />
             </Badge>
           )}
           {search && (
-            <Badge variant="secondary" className="cursor-pointer" onClick={() => updateFilters({ search: "" })}>
-              Search: "{search}" <X className="h-3 w-3 ml-1" />
+            <Badge
+              variant="secondary"
+              className="cursor-pointer gap-1 rounded-xs"
+              onClick={() => updateFilters({ search: "" })}
+            >
+              Search: &quot;{search}&quot;
+              <X className="h-3 w-3" />
             </Badge>
           )}
+          <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 rounded-xs px-2 text-xs">
+            Clear all
+          </Button>
         </div>
       )}
     </div>

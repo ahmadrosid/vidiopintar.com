@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FeedbackCard } from "@/components/admin/feedback-card";
 import { FeedbackFilters } from "@/components/admin/feedback-filters";
 import { toast } from "sonner";
@@ -123,9 +123,16 @@ export function FeedbackList({ feedback, onFeedbackDeleted }: FeedbackListProps)
   }, [feedback, filters]);
 
   return (
-    <Card className="shadow-none">
-      <CardHeader>
-        <CardTitle className="text-lg">Recent Feedback</CardTitle>
+    <Card className="rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0px_4px_12px_rgba(0,0,0,0.25)]">
+      <CardHeader className="space-y-4">
+        <div>
+          <CardTitle className="text-lg">Recent Feedback</CardTitle>
+          <CardDescription>
+            {filteredAndSortedFeedback.length !== feedback.length
+              ? `Showing ${filteredAndSortedFeedback.length} of ${feedback.length} submissions`
+              : `${feedback.length} total submissions`}
+          </CardDescription>
+        </div>
         <FeedbackFilters
           onFilterChange={setFilters}
           totalCount={feedback.length}
@@ -169,7 +176,7 @@ export function FeedbackList({ feedback, onFeedbackDeleted }: FeedbackListProps)
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive"
             >
               Delete Feedback
             </AlertDialogAction>

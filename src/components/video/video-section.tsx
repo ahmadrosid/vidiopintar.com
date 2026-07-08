@@ -5,7 +5,6 @@ import { NotesView } from "@/components/video/notes-view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight } from "lucide-react";
 import { SummarySection } from "@/components/video/summary-section";
-import { TipsAlert } from "@/components/chat/tips-alert";
 import { LanguageSelector } from "@/components/language-selector";
 import { getTranslations } from "next-intl/server";
 
@@ -59,47 +58,44 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
 
       <VideoPlayer videoId={videoId} />
 
-      <div className="relative">
-        <Tabs defaultValue="summary" className="w-full p-3">
-          <TabsList>
-            <TabsTrigger value="summary">
-              <span className="flex items-center gap-2">{t("summary")}</span>
-            </TabsTrigger>
-            <TabsTrigger value="transcript">
-              <span className="flex items-center gap-2">{t("transcript")}</span>
-            </TabsTrigger>
-            {userVideoId && (
-              <TabsTrigger value="notes">
-                <span className="flex items-center gap-2">{t("notesTab")}</span>
-              </TabsTrigger>
-            )}
-          </TabsList>
-          <TabsContent
-            value="summary"
-            className="h-full overflow-y-auto p-0 m-0"
-          >
-            <SummarySection
-              videoId={videoId}
-              initialSummary={videoDetails.userVideo?.summary ?? ""}
-            />
-          </TabsContent>
-          <TabsContent
-            value="transcript"
-            className="h-full overflow-y-auto p-0 m-0"
-          >
-            <TranscriptView transcript={transcript} />
-          </TabsContent>
+      <Tabs defaultValue="summary" className="w-full p-3">
+        <TabsList>
+          <TabsTrigger value="summary">
+            <span className="flex items-center gap-2">{t("summary")}</span>
+          </TabsTrigger>
+          <TabsTrigger value="transcript">
+            <span className="flex items-center gap-2">{t("transcript")}</span>
+          </TabsTrigger>
           {userVideoId && (
-            <TabsContent
-              value="notes"
-              className="h-full overflow-y-auto p-0 m-0"
-            >
-              <NotesView userVideoId={userVideoId} />
-            </TabsContent>
+            <TabsTrigger value="notes">
+              <span className="flex items-center gap-2">{t("notesTab")}</span>
+            </TabsTrigger>
           )}
-        </Tabs>
-        <TipsAlert videoId={videoId} />
-      </div>
+        </TabsList>
+        <TabsContent
+          value="summary"
+          className="h-full overflow-y-auto p-0 m-0"
+        >
+          <SummarySection
+            videoId={videoId}
+            initialSummary={videoDetails.userVideo?.summary ?? ""}
+          />
+        </TabsContent>
+        <TabsContent
+          value="transcript"
+          className="h-full overflow-y-auto p-0 m-0"
+        >
+          <TranscriptView transcript={transcript} />
+        </TabsContent>
+        {userVideoId && (
+          <TabsContent
+            value="notes"
+            className="h-full overflow-y-auto p-0 m-0"
+          >
+            <NotesView userVideoId={userVideoId} />
+          </TabsContent>
+        )}
+      </Tabs>
     </>
   );
 }

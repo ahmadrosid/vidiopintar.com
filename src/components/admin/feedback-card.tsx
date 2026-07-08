@@ -58,24 +58,24 @@ function ChatResponseCard({ feedback, onDelete }: { feedback: FeedbackItem; onDe
   const responseLength = feedback.metadata?.responseLength || 0;
 
   return (
-    <div className="border-l-4 border-l-blue-200 bg-white p-4 space-y-3">
+    <div className="rounded-r-xs border border-border border-l-4 border-l-blue-200 bg-card p-4 space-y-3 dark:border-l-blue-800">
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-lg">{getRatingEmoji(feedback.rating)}</span>
             <span className="font-medium">{feedback.rating.replace('_', ' ')}</span>
-            <span className="text-xs text-gray-500">• Chat Response</span>
+            <span className="text-xs text-muted-foreground">• Chat Response</span>
           </div>
-          <div className="text-sm text-gray-600 mt-1">Video: {videoTitle}</div>
+          <div className="text-sm text-muted-foreground mt-1">Video: {videoTitle}</div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">{formatTimeAgo(feedback.createdAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatTimeAgo(feedback.createdAt)}</span>
           {onDelete && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(feedback.id)}
-              className="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+              className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="h-3 w-3" />
             </Button>
@@ -85,25 +85,24 @@ function ChatResponseCard({ feedback, onDelete }: { feedback: FeedbackItem; onDe
 
       {/* AI Response Content - The core message that was rated */}
       {messageContent && (
-        <div className="bg-blue-50 p-3 rounded border border-blue-100">
-          <div className="text-xs text-blue-600 font-medium mb-1">AI Response:</div>
-          <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+        <div className="bg-blue-50 dark:bg-blue-950/30 p-3 rounded-xs border border-blue-100 dark:border-blue-900">
+          <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">AI Response:</div>
+          <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
             {messageContent.length > 300 
               ? `${messageContent.substring(0, 300)}...` 
               : messageContent
             }
           </div>
           {responseLength > 0 && (
-            <div className="text-xs text-gray-500 mt-2">{responseLength} characters</div>
+            <div className="text-xs text-muted-foreground mt-2">{responseLength} characters</div>
           )}
         </div>
       )}
 
-      {/* User's feedback comment */}
       {feedback.comment && (
-        <div className="text-sm text-gray-800 bg-gray-50 p-2 rounded border-l-2 border-gray-200">
-          <div className="text-xs text-gray-600 font-medium mb-1">User feedback:</div>
-          "{feedback.comment}"
+        <div className="text-sm text-foreground bg-muted p-2 rounded-xs border-l-2 border-border">
+          <div className="text-xs text-muted-foreground font-medium mb-1">User feedback:</div>
+          &quot;{feedback.comment}&quot;
         </div>
       )}
 
@@ -113,7 +112,7 @@ function ChatResponseCard({ feedback, onDelete }: { feedback: FeedbackItem; onDe
             href={`/video/${videoId}`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-xs text-blue-600 hover:underline"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
           >
             View Video →
           </a>
@@ -128,24 +127,24 @@ function VideoCard({ feedback, onDelete }: { feedback: FeedbackItem; onDelete?: 
   const videoId = feedback.metadata?.videoId;
 
   return (
-    <div className="border-l-4 border-l-purple-200 bg-white p-4 space-y-2">
+    <div className="rounded-r-xs border border-border border-l-4 border-l-purple-200 bg-card p-4 space-y-2 dark:border-l-purple-800">
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-lg">{getRatingEmoji(feedback.rating)}</span>
             <span className="font-medium">{feedback.rating.replace('_', ' ')}</span>
-            <span className="text-xs text-gray-500">• Video</span>
+            <span className="text-xs text-muted-foreground">• Video</span>
           </div>
-          <div className="text-sm text-gray-600 mt-1">{videoTitle}</div>
+          <div className="text-sm text-muted-foreground mt-1">{videoTitle}</div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">{formatTimeAgo(feedback.createdAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatTimeAgo(feedback.createdAt)}</span>
           {onDelete && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(feedback.id)}
-              className="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+              className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="h-3 w-3" />
             </Button>
@@ -154,8 +153,8 @@ function VideoCard({ feedback, onDelete }: { feedback: FeedbackItem; onDelete?: 
       </div>
 
       {feedback.comment && (
-        <div className="text-sm text-gray-800 bg-gray-50 p-2 rounded border-l-2 border-gray-200">
-          "{feedback.comment}"
+        <div className="text-sm text-foreground bg-muted p-2 rounded-xs border-l-2 border-border">
+          &quot;{feedback.comment}&quot;
         </div>
       )}
 
@@ -165,7 +164,7 @@ function VideoCard({ feedback, onDelete }: { feedback: FeedbackItem; onDelete?: 
             href={`/video/${videoId}`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-xs text-blue-600 hover:underline"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
           >
             View Video →
           </a>
@@ -179,23 +178,23 @@ function PlatformCard({ feedback, onDelete }: { feedback: FeedbackItem; onDelete
   const page = feedback.metadata?.page || "Platform";
 
   return (
-    <div className="border-l-4 border-l-green-200 bg-white p-4 space-y-2">
+    <div className="rounded-r-xs border border-border border-l-4 border-l-green-200 bg-card p-4 space-y-2 dark:border-l-green-800">
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
             <span className="text-lg">{getRatingEmoji(feedback.rating)}</span>
             <span className="font-medium">{feedback.rating.replace('_', ' ')}</span>
-            <span className="text-xs text-gray-500">• {page}</span>
+            <span className="text-xs text-muted-foreground">• {page}</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">{formatTimeAgo(feedback.createdAt)}</span>
+          <span className="text-xs text-muted-foreground">{formatTimeAgo(feedback.createdAt)}</span>
           {onDelete && (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(feedback.id)}
-              className="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+              className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
             >
               <Trash2 className="h-3 w-3" />
             </Button>
@@ -204,8 +203,8 @@ function PlatformCard({ feedback, onDelete }: { feedback: FeedbackItem; onDelete
       </div>
 
       {feedback.comment && (
-        <div className="text-sm text-gray-800 bg-gray-50 p-2 rounded border-l-2 border-gray-200">
-          "{feedback.comment}"
+        <div className="text-sm text-foreground bg-muted p-2 rounded-xs border-l-2 border-border">
+          &quot;{feedback.comment}&quot;
         </div>
       )}
     </div>
@@ -223,7 +222,7 @@ export function FeedbackCard({ feedback, onDelete }: FeedbackCardProps) {
     default:
       // Fallback to original design for unknown types
       return (
-        <div className="border rounded-lg p-4 space-y-3">
+        <div className="rounded-xs border border-border bg-card p-4 space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <span className="text-xl">{getRatingEmoji(feedback.rating)}</span>
@@ -250,7 +249,7 @@ export function FeedbackCard({ feedback, onDelete }: FeedbackCardProps) {
                   variant="ghost"
                   size="sm"
                   onClick={() => onDelete(feedback.id)}
-                  className="h-6 w-6 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                  className="h-6 w-6 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
