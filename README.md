@@ -77,10 +77,10 @@ If you need to run database migrations inside a running Docker container:
 
 ```bash
 # Run database migration in the container
-docker exec -it vidiopintar-dev npx drizzle-kit migrate
+docker exec -it vidiopintar-dev npm run db:migrate
 
 # Or push schema changes
-docker exec -it vidiopintar-dev npx drizzle-kit push
+docker exec -it vidiopintar-dev npm run db:push
 
 # Seed payment settings data
 docker exec -it vidiopintar-dev npx tsx scripts/seed-payment-settings.ts
