@@ -65,7 +65,6 @@ RUN printf '#!/bin/sh\nexec node /app/node_modules/drizzle-kit/bin.cjs "$@"\n' >
     chmod +x /usr/local/bin/drizzle-kit
 
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY scripts/db-tables.js ./scripts/db-tables.js
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 USER nextjs

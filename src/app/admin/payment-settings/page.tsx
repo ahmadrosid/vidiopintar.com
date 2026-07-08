@@ -15,6 +15,8 @@ const adminFieldClassName =
 const adminTextareaClassName =
   'min-h-24 rounded-xs border-border bg-background text-foreground shadow-xs placeholder:text-muted-foreground dark:bg-input/30';
 
+const adminFieldGroupClassName = 'space-y-3';
+
 const adminCardClassName =
   'rounded-xs shadow-[0px_4px_12px_rgba(0,0,0,0.08)] dark:shadow-[0px_4px_12px_rgba(0,0,0,0.25)]';
 
@@ -178,7 +180,7 @@ export default function PaymentSettingsPage() {
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-muted-foreground">Bank Details</h3>
                   
-                  <div className="space-y-2">
+                  <div className={adminFieldGroupClassName}>
                     <Label htmlFor="bankName">Bank Name</Label>
                     <Input
                       id="bankName"
@@ -190,7 +192,7 @@ export default function PaymentSettingsPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className={adminFieldGroupClassName}>
                     <Label htmlFor="bankAccountNumber">Account Number</Label>
                     <Input
                       id="bankAccountNumber"
@@ -202,7 +204,7 @@ export default function PaymentSettingsPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className={adminFieldGroupClassName}>
                     <Label htmlFor="bankAccountName">Account Name</Label>
                     <Input
                       id="bankAccountName"
@@ -218,7 +220,7 @@ export default function PaymentSettingsPage() {
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-muted-foreground">Configuration</h3>
                   
-                  <div className="space-y-2">
+                  <div className={adminFieldGroupClassName}>
                     <Label htmlFor="whatsappPhoneNumber">Phone Number</Label>
                     <Input
                       id="whatsappPhoneNumber"
@@ -230,7 +232,7 @@ export default function PaymentSettingsPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className={adminFieldGroupClassName}>
                     <Label htmlFor="whatsappMessageTemplate">Message Template</Label>
                     <Textarea
                       id="whatsappMessageTemplate"
