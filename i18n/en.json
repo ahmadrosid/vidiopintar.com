@@ -182,7 +182,10 @@
       "updateError": "Failed to update note",
       "deleteError": "Failed to delete note",
       "emptyNoteError": "Note text cannot be empty",
-      "deleteConfirm": "Are you sure you want to delete this note?"
+      "deleteConfirm": "Are you sure you want to delete this note?",
+      "aiNoteSaving": "Saving note…",
+      "aiNoteSaved": "Saved to notes · {time}",
+      "aiNoteFailed": "Couldn't save note"
     }
   },
   "auth": {

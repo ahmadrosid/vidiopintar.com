@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Note } from '@/lib/db/repository';
 import { NoteColor } from '@/lib/constants';
+import { useNotesStore } from '@/stores/notes-store';
 
 interface UseNotesOptions {
   userVideoId: number;
@@ -24,6 +25,9 @@ export function useNotes({
   const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const notesRevision = useNotesStore(
+    (state) => state.revisionByVideo[userVideoId] ?? 0,
+  );
 
   const fetchNotes = useCallback(async () => {
     if (!enabled) return;
@@ -51,7 +55,7 @@ export function useNotes({
 
   useEffect(() => {
     fetchNotes();
-  }, [fetchNotes]);
+  }, [fetchNotes, notesRevision]);
 
   const createNote = useCallback(async (
     timestamp: number,
