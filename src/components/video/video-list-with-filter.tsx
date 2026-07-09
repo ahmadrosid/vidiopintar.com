@@ -2,10 +2,10 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { VideoList } from "@/components/video/video-list";
 import { RecommendedVideos } from "@/components/video/recommended-videos";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 type Video = {
@@ -81,44 +81,54 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
         {t("videoList.title")}
       </h2>
 
-      <div className="flex flex-wrap items-center gap-3 mb-8 overflow-x-auto py-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input
+      <div className="mb-8 flex flex-wrap items-center gap-2">
+        <div className="relative flex h-8 w-full max-w-64 items-center sm:w-64">
+          <Search className="pointer-events-none absolute left-2.5 size-3.5 text-muted-foreground" />
+          <input
+            type="search"
             placeholder={t("videoList.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 ml-0.5 w-64 rounded-full h-fit py-1 bg-white! text-black text-sm placeholder:text-sm placeholder:text-muted-foreground"
+            className="h-8 w-full rounded-md border border-border bg-card pl-8 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
           />
         </div>
+
         <Button
-          variant={selectedChannel === null ? "default" : "secondary"}
+          variant={selectedChannel === null ? "default" : "outline"}
           size="sm"
           onClick={() => setSelectedChannel(null)}
-          className="rounded-full px-4 py-2 text-sm whitespace-nowrap cursor-pointer"
+          className={cn(
+            "cursor-pointer",
+            selectedChannel !== null && "text-muted-foreground"
+          )}
         >
           {t("videoList.allChannels")}
         </Button>
-        {displayedChannels.map((channel) => (
-          <Button
-            key={channel}
-            variant={selectedChannel === channel ? "default" : "secondary"}
-            size="sm"
-            onClick={() =>
-              setSelectedChannel(selectedChannel === channel ? null : channel)
-            }
-            className="rounded-full px-4 py-2 text-sm whitespace-nowrap flex items-center gap-2 cursor-pointer"
-          >
-            {channel}
-          </Button>
-        ))}
+
+        {displayedChannels.map((channel) => {
+          const isSelected = selectedChannel === channel;
+          return (
+            <Button
+              key={channel}
+              variant={isSelected ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedChannel(isSelected ? null : channel)}
+              className={cn(
+                "max-w-48 cursor-pointer truncate",
+                !isSelected && "text-muted-foreground"
+              )}
+            >
+              {channel}
+            </Button>
+          );
+        })}
 
         {hasMoreChannels && (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => setShowAllChannels(!showAllChannels)}
-            className="rounded-full px-4 py-2 text-sm whitespace-nowrap cursor-pointer"
+            className="cursor-pointer text-muted-foreground"
           >
             {showAllChannels
               ? t("videoList.showLess")

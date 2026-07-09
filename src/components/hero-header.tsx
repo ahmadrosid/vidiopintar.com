@@ -47,7 +47,7 @@ export const HeroHeader = () => {
         )}
       >
         <div className="mx-auto max-w-[1328px] px-8">
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-4 lg:gap-0 lg:py-3">
+          <div className="relative flex flex-nowrap items-center justify-between gap-6 py-4 lg:gap-0 lg:py-3">
             <Link
               aria-label="home"
               className="flex items-center space-x-2"
@@ -56,16 +56,16 @@ export const HeroHeader = () => {
               <Logo />
             </Link>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-1">
               <LanguageSelector iconOnly />
               {mounted && isHome ? (
                 <>
                   {isAuthenticated ? (
                     <Link href="/home">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
-                        className="flex items-center gap-2 cursor-pointer"
+                        className="cursor-pointer"
                       >
                         <span>{t("home")}</span>
                       </Button>
@@ -78,7 +78,7 @@ export const HeroHeader = () => {
                 !isAuthenticated ? (
                   <GuestMenus isScrolled={isScrolled} t={t} />
                 ) : (
-                  <div className="flex gap-2">
+                  <>
                     <Link href="/profile/notes">
                       <Button
                         variant="ghost"
@@ -99,14 +99,14 @@ export const HeroHeader = () => {
                     </Link>
                     <Button
                       onClick={handleLogout}
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
-                      className="flex items-center gap-2 cursor-pointer"
+                      className="cursor-pointer"
                     >
                       <LogOut className="h-4 w-4" />
                       <span>{t("logout")}</span>
                     </Button>
-                  </div>
+                  </>
                 )
               ) : null}
             </div>
