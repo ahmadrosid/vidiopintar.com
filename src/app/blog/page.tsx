@@ -91,14 +91,6 @@ export default function BlogPage() {
               >
                 GitHub
               </a>
-              <a
-                href="https://platform.openai.com/docs"
-                className="text-primary hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                OpenAI Docs
-              </a>
             </nav>
           </div>
         </div>
