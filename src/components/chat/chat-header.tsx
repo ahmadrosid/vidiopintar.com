@@ -1,6 +1,6 @@
 "use client"
 
-import { Share2, Trash2, Loader, Link as LinkIcon } from "lucide-react"
+import { Share2, Trash2, Loader, Link as LinkIcon, ArrowLeft } from "lucide-react"
 import { buttonVariants } from "@/components/ui/button"
 import {
     Tooltip,
@@ -21,6 +21,8 @@ interface ChatHeaderProps {
     shareChatUrl?: string;
     setMessages: (messages: any[]) => void;
     title?: string;
+    onBack?: () => void;
+    backLabel?: string;
 }
 
 export function ChatHeader({
@@ -30,6 +32,8 @@ export function ChatHeader({
     setMessages,
     isSharePage = false,
     title,
+    onBack,
+    backLabel = "Back",
 }: ChatHeaderProps) {
     const [status, setStatus] = useState<"" | "deleting" | "sharing">("");
 
@@ -65,7 +69,22 @@ export function ChatHeader({
 
     return (
         <div className="px-4 py-2.5 border-b bg-white dark:bg-black sticky top-0 z-50 flex justify-between items-center">
-            <h2 className="font-semibold tracking-tight dark:text-foreground">{title ?? "Chat"}</h2>
+            <div className="flex items-center gap-1 min-w-0">
+                {onBack && (
+                    <Tooltip>
+                        <TooltipTrigger
+                            className={buttonVariants({ variant: "ghost", size: "icon" })}
+                            onClick={onBack}
+                        >
+                            <ArrowLeft className="size-4" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{backLabel}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                )}
+                <h2 className="font-semibold tracking-tight dark:text-foreground truncate">{title ?? "Chat"}</h2>
+            </div>
             <div className="flex gap-2">
                 <Popover onOpenChange={(open) => {
                     if (open && !shareUrl && status !== "sharing") {

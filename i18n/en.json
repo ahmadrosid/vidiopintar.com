@@ -349,6 +349,7 @@
     "panelTitle": "Quiz",
     "modeChat": "Chat",
     "modeQuiz": "Quiz",
+    "backToChat": "Back to chat",
     "emptyTitle": "Test what you learned",
     "emptyDescription": "Generate 5 multiple-choice questions from this video's transcript.",
     "generate": "Generate quiz",

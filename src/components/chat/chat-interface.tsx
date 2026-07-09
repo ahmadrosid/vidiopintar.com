@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { ArrowUp, Square, MessageCircleMore, AlertTriangle, Crown } from "lucide-react"
+import { ArrowUp, Square, MessageCircleMore, AlertTriangle, Crown, ListChecks } from "lucide-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -20,8 +20,9 @@ import type { CreateNoteToolResult } from "@/lib/ai/create-note-tool";
 import { useNotesStore } from "@/stores/notes-store";
 import { useVideoStore } from "@/stores/video-store";
 import { useLocale, useTranslations } from "next-intl";
-import { QuizModeToggle, type PanelMode } from "@/components/quiz/quiz-mode-toggle";
 import { QuizPanel } from "@/components/quiz/quiz-panel";
+
+type PanelMode = "chat" | "quiz";
 
 interface ChatInterfaceProps {
   videoId: string;
@@ -120,6 +121,8 @@ export function ChatInterface({
         setMessages={setMessages}
         isSharePage={isSharePage}
         title={panelMode === "quiz" ? tQuiz("panelTitle") : undefined}
+        onBack={panelMode === "quiz" && !isSharePage ? () => setPanelMode("chat") : undefined}
+        backLabel={tQuiz("backToChat")}
       />
       <ChatContainerRoot className="relative w-full flex-1 min-h-0">
         {panelMode === "quiz" && !isSharePage ? (
@@ -160,15 +163,8 @@ export function ChatInterface({
           />
         )}
       </ChatContainerRoot>
+      {(isSharePage || panelMode === "chat") && (
       <div className="p-4 flex-shrink-0">
-        {!isSharePage && (
-          <QuizModeToggle
-            mode={panelMode}
-            onModeChange={setPanelMode}
-            chatLabel={tQuiz("modeChat")}
-            quizLabel={tQuiz("modeQuiz")}
-          />
-        )}
         {isSharePage ? (
           <div className="text-center text-sm text-muted-foreground">
             {isLoggedIn ? (
@@ -187,25 +183,36 @@ export function ChatInterface({
               </a>
             )}
           </div>
-        ) : panelMode === "quiz" ? null : messageLimitReached ? (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-              <div className="space-y-3 flex-1">
-                <div>
-                  <p className="font-medium text-foreground">{tLimit("title")}</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {tLimit("description", { limit: messageLimit ?? 10 })}
-                  </p>
+        ) : messageLimitReached ? (
+          <div className="space-y-3">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                <div className="space-y-3 flex-1">
+                  <div>
+                    <p className="font-medium text-foreground">{tLimit("title")}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {tLimit("description", { limit: messageLimit ?? 10 })}
+                    </p>
+                  </div>
+                  <Link href="/profile/billing">
+                    <Button size="sm" className="w-full sm:w-auto">
+                      <Crown className="w-4 h-4 mr-2" />
+                      {tLimit("upgradeNow")}
+                    </Button>
+                  </Link>
                 </div>
-                <Link href="/profile/billing">
-                  <Button size="sm" className="w-full sm:w-auto">
-                    <Crown className="w-4 h-4 mr-2" />
-                    {tLimit("upgradeNow")}
-                  </Button>
-                </Link>
               </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-muted-foreground"
+              onClick={() => setPanelMode("quiz")}
+            >
+              <ListChecks className="mr-2 size-4" />
+              {tQuiz("modeQuiz")}
+            </Button>
           </div>
         ) : (
           <>
@@ -222,7 +229,17 @@ export function ChatInterface({
               className="w-full"
             >
               <PromptInputTextarea className="bg-transparent!" placeholder="Ask anything..." />
-              <PromptInputActions className="justify-end pt-2">
+              <PromptInputActions className="justify-end gap-1 pt-2">
+                <PromptInputAction tooltip={tQuiz("modeQuiz")}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full"
+                    onClick={() => setPanelMode("quiz")}
+                  >
+                    <ListChecks className="size-4" />
+                  </Button>
+                </PromptInputAction>
                 <PromptInputAction
                   tooltip={status === "streaming" ? "Stop generation" : "Send message"}
                 >
@@ -244,6 +261,7 @@ export function ChatInterface({
           </>
         )}
       </div>
+      )}
     </div>
   )
 }
