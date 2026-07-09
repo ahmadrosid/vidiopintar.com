@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Loader } from "lucide-react"
 import { useVideo } from "@/hooks/use-video"
+import { useVideoStore } from "@/stores/video-store"
 
 declare global {
   interface Window {
@@ -25,6 +26,13 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
 
   useEffect(() => {
     let isMounted = true
+
+    const releaseStoreIfOwned = () => {
+      if (useVideoStore.getState().player === playerInstanceRef.current) {
+        setReady(false)
+        setPlayer(null)
+      }
+    }
 
     const loadYouTubeAPI = () => {
       if (window.YT && window.YT.Player) {
@@ -100,7 +108,7 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
       }
 
       try {
-        const player = new window.YT.Player(playerRef.current, {
+        new window.YT.Player(playerRef.current, {
           videoId: videoId,
           playerVars: {
             enablejsapi: 1,
@@ -144,6 +152,7 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
 
       const updateTime = () => {
         if (!isMounted || !player || !player.getCurrentTime) return
+        if (useVideoStore.getState().player !== player) return
         try {
           setCurrentTime(player.getCurrentTime())
         } catch (e) {
@@ -174,6 +183,7 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
 
       // Destroy player instance
       if (playerInstanceRef.current) {
+        releaseStoreIfOwned()
         try {
           playerInstanceRef.current.destroy()
         } catch (e) {
@@ -181,10 +191,6 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
         }
         playerInstanceRef.current = null
       }
-
-      // Reset state
-      setReady(false)
-      setPlayer(null)
     }
   }, [videoId, setPlayer, setReady, setCurrentTime])
 
@@ -199,4 +205,3 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
     </div>
   )
 }
-
