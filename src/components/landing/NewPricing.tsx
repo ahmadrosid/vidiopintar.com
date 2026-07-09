@@ -22,6 +22,7 @@ export default function NewPricing() {
       discount: false,
       benefit: [
         t('plans.free.features.limited'),
+        t('plans.free.features.messages'),
         t('plans.free.features.basic'),
         t('plans.free.features.summaries'),
         t('plans.free.features.community')

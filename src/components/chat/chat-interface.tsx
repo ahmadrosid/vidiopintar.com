@@ -2,8 +2,9 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { ArrowUp, Square, MessageCircleMore } from "lucide-react"
+import { ArrowUp, Square, MessageCircleMore, AlertTriangle, Crown } from "lucide-react"
 import { useMemo, useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ChatContainerRoot, ChatContainerContent, ChatContainerScrollAnchor } from "@/components/ui/chat-container"
 import {
@@ -15,7 +16,7 @@ import {
 import { ChatHeader } from "@/components/chat/chat-header";
 import { MessageItem } from "@/components/chat/message-item";
 import { toUIMessages } from "@/lib/ai/messages";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface ChatInterfaceProps {
   videoId: string;
@@ -25,6 +26,9 @@ interface ChatInterfaceProps {
   isSharePage?: boolean;
   isLoggedIn?: boolean;
   shareChatUrl?: string;
+  messageLimitReached?: boolean;
+  messageLimit?: number;
+  messagesRemaining?: number;
 }
 
 export function ChatInterface({
@@ -34,8 +38,13 @@ export function ChatInterface({
   quickStartQuestions,
   shareChatUrl,
   isSharePage = false,
-  isLoggedIn = false }: ChatInterfaceProps) {
+  isLoggedIn = false,
+  messageLimitReached = false,
+  messageLimit,
+  messagesRemaining,
+}: ChatInterfaceProps) {
   const language = useLocale();
+  const tLimit = useTranslations("messageLimitDialog");
   const [input, setInput] = useState('');
   const transport = useMemo(
     () => new DefaultChatTransport({
@@ -58,7 +67,7 @@ export function ChatInterface({
   const handleSubmit = (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
     const text = input.trim();
-    if (!text || status === 'streaming' || status === 'submitted') {
+    if (!text || status === 'streaming' || status === 'submitted' || messageLimitReached) {
       return;
     }
 
@@ -131,34 +140,61 @@ export function ChatInterface({
               </a>
             )}
           </div>
+        ) : messageLimitReached ? (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+              <div className="space-y-3 flex-1">
+                <div>
+                  <p className="font-medium text-foreground">{tLimit("title")}</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {tLimit("description", { limit: messageLimit ?? 10 })}
+                  </p>
+                </div>
+                <Link href="/profile/billing">
+                  <Button size="sm" className="w-full sm:w-auto">
+                    <Crown className="w-4 h-4 mr-2" />
+                    {tLimit("upgradeNow")}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
         ) : (
-          <PromptInput
-            value={input}
-            onValueChange={(value) => setInput(value)}
-            isLoading={status === "streaming"}
-            onSubmit={handleSubmit}
-            className="w-full"
-          >
-            <PromptInputTextarea className="bg-transparent!" placeholder="Ask anything..." />
-            <PromptInputActions className="justify-end pt-2">
-              <PromptInputAction
-                tooltip={status === "streaming" ? "Stop generation" : "Send message"}
-              >
-                <Button
-                  variant="default"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                  onClick={handleSubmit}
+          <>
+            {messagesRemaining != null && messagesRemaining <= 3 && (
+              <p className="mb-2 text-xs text-muted-foreground text-center">
+                {tLimit("remaining", { count: messagesRemaining })}
+              </p>
+            )}
+            <PromptInput
+              value={input}
+              onValueChange={(value) => setInput(value)}
+              isLoading={status === "streaming"}
+              onSubmit={handleSubmit}
+              className="w-full"
+            >
+              <PromptInputTextarea className="bg-transparent!" placeholder="Ask anything..." />
+              <PromptInputActions className="justify-end pt-2">
+                <PromptInputAction
+                  tooltip={status === "streaming" ? "Stop generation" : "Send message"}
                 >
-                  {status === "streaming" ? (
-                    <Square className="size-5 fill-current" />
-                  ) : (
-                    <ArrowUp className="size-5" />
-                  )}
-                </Button>
-              </PromptInputAction>
-            </PromptInputActions>
-          </PromptInput>
+                  <Button
+                    variant="default"
+                    size="icon"
+                    className="h-8 w-8 rounded-full"
+                    onClick={handleSubmit}
+                  >
+                    {status === "streaming" ? (
+                      <Square className="size-5 fill-current" />
+                    ) : (
+                      <ArrowUp className="size-5" />
+                    )}
+                  </Button>
+                </PromptInputAction>
+              </PromptInputActions>
+            </PromptInput>
+          </>
         )}
       </div>
     </div>

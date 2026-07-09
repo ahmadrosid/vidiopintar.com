@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     if (!planCheck.canAdd) {
       if (planCheck.reason === 'daily_limit_reached') {
         const upgradeMessage = planCheck.currentPlan === 'free' 
-          ? "You've reached your daily limit of 1 video. Upgrade to unlimited plan or try again tomorrow."
+          ? "You've reached your daily limit of 2 videos. You can still chat with existing videos. Upgrade for unlimited access or try again tomorrow."
           : "You've reached your daily video limit. Please try again tomorrow.";
         return NextResponse.json(
           { errors: [upgradeMessage], planLimitReached: true },

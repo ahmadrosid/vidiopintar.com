@@ -264,9 +264,9 @@ ${truncatedTranscript}
     model: aiModel,
     providerOptions: aiProviderOptions,
     prompt: prompt,
-    schema: z.object({
-      questions: z.array(z.string()),
-    }),
+    output: 'array',
+    schema: z.string(),
+    schemaDescription: 'A first-person learning question about the video content',
   });
 
   try {
@@ -284,7 +284,7 @@ ${truncatedTranscript}
     console.error('Failed to track quick start questions token usage:', error);
   }
 
-  const questions = result.object?.questions || [];
+  const questions = result.object ?? [];
 
   if (userVideoId && questions.length > 0) {
     await UserVideoRepository.updateQuickStartQuestions(userVideoId, questions);

@@ -160,7 +160,7 @@ Your questions should:
 
 Write questions as if you're having an internal dialogue - sometimes excited ("Oh, so I could..."), sometimes puzzled ("Wait, does this mean I..."), sometimes connecting dots ("This reminds me... could I..."). Match the energy and tone to what's being discussed.
 
-Format: Present only the 4 questions as a numbered list (1-4), without any additional text, explanation, or preamble.
+Format: Return a JSON array of exactly 4 question strings, without any additional text, explanation, or preamble.
 
 OUTPUT THE QUESTIONS IN ENGLISH.`;
 }
@@ -179,7 +179,7 @@ Pertanyaan kamu harus:
 
 Tulis pertanyaan seolah kamu sedang berdialog internal - kadang excited ("Oh, jadi aku bisa..."), kadang bingung ("Tunggu, ini berarti aku..."), kadang menghubungkan titik-titik ("Ini mengingatkan aku... bisakah aku..."). Sesuaikan energi dan nada dengan apa yang sedang dibahas.
 
-Format: Sajikan hanya 4 pertanyaan sebagai daftar bernomor (1-4), tanpa teks tambahan, penjelasan, atau pembukaan.`;
+Format: Kembalikan array JSON berisi tepat 4 string pertanyaan, tanpa teks tambahan, penjelasan, atau pembukaan.`;
 }
 
 export function getSummaryPrompt(language: Language): string {

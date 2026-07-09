@@ -94,6 +94,14 @@ export const MessageRepository = {
     const result = await db.insert(messages).values(message).returning()
     return result[0]
   },
+
+  async countUserMessages(userVideoId: number): Promise<number> {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(messages)
+      .where(and(eq(messages.userVideoId, userVideoId), eq(messages.role, 'user')))
+    return result[0]?.count ?? 0
+  },
 }
 
 export const NoteRepository = {

@@ -21,6 +21,7 @@ const nextConfig = {
   serverExternalPackages: ['better-sqlite3'],
   experimental: {
     optimizePackageImports: [
+      '@phosphor-icons/react',
       'lucide-react',
       'recharts',
       'motion/react',

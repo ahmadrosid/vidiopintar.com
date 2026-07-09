@@ -1,5 +1,3 @@
-import { ThemeSwitcher } from './ui/theme-switcher'
-
 const links = [
     {
         title: 'Blog',
@@ -59,9 +57,6 @@ export function FooterSection() {
                             <span>{link.title}</span>
                         </a>
                     ))}
-                </div>
-                <div className="flex justify-center my-6">
-                    <ThemeSwitcher />
                 </div>
                 <span className="text-muted-foreground block text-center text-sm"> © {new Date().getFullYear()} Vidiopintar, All rights reserved</span>
             </div>

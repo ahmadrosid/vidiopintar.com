@@ -24,18 +24,38 @@ export async function POST(req: Request) {
       );
     }
 
-    const canAddVideo = await UserPlanService.canAddVideo(user.id);
-    if (!canAddVideo.canAdd) {
+    if (!userVideoId) {
       return new Response(
-        JSON.stringify({ 
-          error: 'Daily limit reached',
-          reason: canAddVideo.reason,
-          videosUsedToday: canAddVideo.videosUsedToday,
-          dailyLimit: canAddVideo.dailyLimit,
-          currentPlan: canAddVideo.currentPlan
-        }), 
-        { 
-          status: 429,
+        JSON.stringify({ error: 'Video context required' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    const canSendMessage = await UserPlanService.canSendMessage(user.id, userVideoId);
+    if (!canSendMessage.canSend) {
+      if (canSendMessage.reason === 'message_limit_reached') {
+        return new Response(
+          JSON.stringify({
+            error: 'Message limit reached',
+            reason: canSendMessage.reason,
+            messagesUsed: canSendMessage.messagesUsed,
+            messageLimit: canSendMessage.messageLimit,
+            currentPlan: canSendMessage.currentPlan,
+          }),
+          {
+            status: 429,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ error: 'Unable to send message' }),
+        {
+          status: 403,
           headers: { 'Content-Type': 'application/json' }
         }
       );

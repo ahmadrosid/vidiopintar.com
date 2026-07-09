@@ -1,24 +1,28 @@
 import { transactionsRepository } from '@/lib/db/repository/transactions';
-import { UserVideoRepository } from '@/lib/db/repository';
+import { MessageRepository, UserVideoRepository } from '@/lib/db/repository';
 
 export type UserPlan = 'free' | 'monthly' | 'yearly';
 
 export interface PlanLimits {
   videosPerDay: number;
+  messagesPerVideo: number;
   unlimited: boolean;
 }
 
 const PLAN_LIMITS: Record<UserPlan, PlanLimits> = {
   free: {
     videosPerDay: 2,
+    messagesPerVideo: 10,
     unlimited: false,
   },
   monthly: {
     videosPerDay: -1, // unlimited
+    messagesPerVideo: -1, // unlimited
     unlimited: true,
   },
   yearly: {
     videosPerDay: -1, // unlimited
+    messagesPerVideo: -1, // unlimited
     unlimited: true,
   },
 };
@@ -123,6 +127,49 @@ export class UserPlanService {
   }
 
   /**
+   * Check if user can send a chat message for a specific video
+   */
+  static async canSendMessage(userId: string, userVideoId: number): Promise<{
+    canSend: boolean;
+    currentPlan: UserPlan;
+    reason?: string;
+    messagesUsed?: number;
+    messageLimit?: number;
+  }> {
+    const currentPlan = await this.getCurrentPlan(userId);
+    const limits = this.getPlanLimits(currentPlan);
+
+    if (limits.unlimited) {
+      return { canSend: true, currentPlan };
+    }
+
+    const userVideo = await UserVideoRepository.getById(userVideoId);
+    if (!userVideo || userVideo.userId !== userId) {
+      return { canSend: false, currentPlan, reason: 'unauthorized' };
+    }
+
+    const messagesUsed = await MessageRepository.countUserMessages(userVideoId);
+    const messageLimit = limits.messagesPerVideo;
+
+    if (messagesUsed >= messageLimit) {
+      return {
+        canSend: false,
+        currentPlan,
+        reason: 'message_limit_reached',
+        messagesUsed,
+        messageLimit,
+      };
+    }
+
+    return {
+      canSend: true,
+      currentPlan,
+      messagesUsed,
+      messageLimit,
+    };
+  }
+
+  /**
    * Get user's current usage stats
    */
   static async getUserUsageStats(userId: string) {
@@ -155,6 +202,7 @@ export class UserPlanService {
       unlimited: false,
       videosUsedToday: videosToday.length,
       dailyLimit: limits.videosPerDay,
+      messagesPerVideo: limits.messagesPerVideo,
     };
   }
 

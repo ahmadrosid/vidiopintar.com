@@ -1,7 +1,13 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { User, MessageSquare, Share2, CreditCard, StickyNote } from "lucide-react";
+import {
+  UserIcon,
+  ChatCircleIcon,
+  NoteIcon,
+  ShareNetworkIcon,
+  CreditCardIcon,
+} from "@phosphor-icons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -10,27 +16,27 @@ const getSidebarItems = (t: ReturnType<typeof useTranslations<"profile">>) => [
   {
     href: "/profile",
     label: t("profileSidebar.profile"),
-    icon: User,
+    icon: UserIcon,
   },
   {
     href: "/profile/chat",
     label: t("profileSidebar.chats"),
-    icon: MessageSquare,
+    icon: ChatCircleIcon,
   },
   {
     href: "/profile/notes",
     label: t("profileSidebar.notes"),
-    icon: StickyNote,
+    icon: NoteIcon,
   },
   {
     href: "/profile/shared",
     label: t("profileSidebar.shared"),
-    icon: Share2,
+    icon: ShareNetworkIcon,
   },
   {
     href: "/profile/billing",
     label: t("profileSidebar.billing"),
-    icon: CreditCard,
+    icon: CreditCardIcon,
   },
 ];
 
@@ -74,7 +80,7 @@ export function ProfileSidebar({
                 "flex items-center gap-3 rounded-lg text-sm font-medium transition-colors",
                 isCollapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
                 isActive
-                  ? "bg-violet-600/25 text-white"
+                  ? "bg-accent/25 text-accent-foreground"
                   : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
               )}
               title={isCollapsed ? item.label : undefined}
@@ -82,7 +88,7 @@ export function ProfileSidebar({
               <item.icon
                 className={cn(
                   "h-[18px] w-[18px] shrink-0",
-                  isActive ? "text-white" : "text-zinc-500"
+                  isActive ? "text-accent" : "text-zinc-500"
                 )}
               />
               {!isCollapsed && <span>{item.label}</span>}

@@ -14,6 +14,9 @@ interface ChatInterfaceWrapperProps {
   isSharePage?: boolean;
   isLoggedIn?: boolean;
   shareChatUrl?: string;
+  messageLimitReached?: boolean;
+  messageLimit?: number;
+  messagesRemaining?: number;
 }
 
 export function ChatInterfaceWrapper({
@@ -24,6 +27,9 @@ export function ChatInterfaceWrapper({
   shareChatUrl,
   isSharePage = false,
   isLoggedIn = false,
+  messageLimitReached = false,
+  messageLimit,
+  messagesRemaining,
 }: ChatInterfaceWrapperProps) {
   const { questions, isLoading, error } = useQuickQuestions({
     videoId,
@@ -83,6 +89,9 @@ export function ChatInterfaceWrapper({
       shareChatUrl={shareChatUrl}
       isSharePage={isSharePage}
       isLoggedIn={isLoggedIn}
+      messageLimitReached={messageLimitReached}
+      messageLimit={messageLimit}
+      messagesRemaining={messagesRemaining}
     />
   );
 }

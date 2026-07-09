@@ -63,6 +63,7 @@
         "description": "Perfect for trying out",
         "features": {
           "limited": "2 videos per day",
+          "messages": "10 messages per video",
           "basic": "Basic AI insights",
           "summaries": "Simple summaries",
           "community": "Community support",
@@ -318,8 +319,8 @@
     "resetsDescription": "Resets tomorrow"
   },
   "limitDialog": {
-    "title": "Daily Limit Reached",
-    "description": "You've reached your daily limit of 2 videos. Upgrade to a premium plan for unlimited video processing, or wait until tomorrow for your daily limit to reset.",
+    "title": "Daily Video Limit Reached",
+    "description": "You've reached your daily limit of 2 new videos. You can still chat with videos you've already added. Upgrade to a premium plan for unlimited video processing, or wait until tomorrow for your daily limit to reset.",
     "premiumBenefits": "Premium Benefits",
     "benefits": {
       "unlimited": "Unlimited video processing",
@@ -331,5 +332,11 @@
     "upgradeNow": "Upgrade Now",
     "processing": "Processing...",
     "chatWithVideo": "Chat with video"
+  },
+  "messageLimitDialog": {
+    "title": "Message Limit Reached",
+    "description": "You've used all {limit} free messages for this video. Upgrade to a premium plan for unlimited chat.",
+    "remaining": "{count, plural, one {# message remaining for this video} other {# messages remaining for this video}}",
+    "upgradeNow": "Upgrade Now"
   }
 }

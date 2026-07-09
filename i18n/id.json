@@ -63,6 +63,7 @@
         "description": "Sempurna untuk mencoba",
         "features": {
           "limited": "2 video per hari",
+          "messages": "10 pesan per video",
           "basic": "Wawasan AI dasar",
           "summaries": "Ringkasan sederhana",
           "community": "Dukungan komunitas",
@@ -318,8 +319,8 @@
     "resetsDescription": "Reset besok"
   },
   "limitDialog": {
-    "title": "Batas Harian Tercapai",
-    "description": "Kamu telah mencapai batas harian 2 video. Upgrade ke paket premium untuk pemrosesan video tanpa batas, atau tunggu sampai besok untuk reset batas harian.",
+    "title": "Batas Video Harian Tercapai",
+    "description": "Kamu telah mencapai batas harian 2 video baru. Kamu masih bisa chat dengan video yang sudah ditambahkan. Upgrade ke paket premium untuk pemrosesan video tanpa batas, atau tunggu sampai besok untuk reset batas harian.",
     "premiumBenefits": "Manfaat Premium",
     "benefits": {
       "unlimited": "Pemrosesan video tanpa batas",
@@ -331,5 +332,11 @@
     "upgradeNow": "Upgrade Sekarang",
     "processing": "Memproses...",
     "chatWithVideo": "Chat dengan video"
+  },
+  "messageLimitDialog": {
+    "title": "Batas Pesan Tercapai",
+    "description": "Kamu telah menggunakan semua {limit} pesan gratis untuk video ini. Upgrade ke paket premium untuk chat tanpa batas.",
+    "remaining": "{count, plural, one {# pesan tersisa untuk video ini} other {# pesan tersisa untuk video ini}}",
+    "upgradeNow": "Upgrade Sekarang"
   }
 }
