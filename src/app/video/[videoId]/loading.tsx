@@ -3,11 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Loading() {
   return (
-    <main className="flex flex-col min-h-screen bg-melody-gradient relative">
-      <div className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-7 h-screen">
+    <main className="flex flex-col h-screen overflow-hidden bg-melody-gradient relative">
+      <div className="relative z-10 h-full min-h-0">
+        <div className="grid grid-cols-1 lg:grid-cols-7 h-full min-h-0">
           {/* Left side - Video player and content */}
-          <div className="lg:col-span-4 h-full overflow-y-auto scrollbar-none relative">
+          <div className="lg:col-span-4 h-full min-h-0 overflow-y-auto scrollbar-none relative">
             {/* Header */}
             <div className="sticky top-0 z-50 bg-white dark:bg-black border-b">
               <div className="flex items-center p-4 gap-2">
@@ -65,8 +65,8 @@ export default function Loading() {
           </div>
 
           {/* Right side - Chat Interface */}
-          <div className="lg:col-span-3 flex flex-col h-full md:h-auto relative">
-            <div className="border-l h-full">
+          <div className="lg:col-span-3 flex flex-col h-full min-h-0 overflow-hidden relative">
+            <div className="border-l h-full min-h-0 overflow-hidden flex flex-col">
               {/* Chat Header */}
               <div className="border-b p-4">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-32" />

@@ -28,8 +28,13 @@ export async function handleVideoSubmit(prevState: any, formData: FormData): Pro
     return { success: false, errors: ["You must be logged in to add videos"] };
   }
 
-  // Check user plan limits
-  const planCheck = await UserPlanService.canAddVideo(user.id);
+  const normalizedUrl = normalizeYouTubeUrl(videoUrl);
+  const youtubeVideoId = extractVideoId(normalizedUrl);
+  if (!youtubeVideoId) {
+    return { success: false, errors: ["Invalid YouTube URL. Please check the URL and try again."] };
+  }
+
+  const planCheck = await UserPlanService.canAddVideo(user.id, youtubeVideoId);
   if (!planCheck.canAdd) {
     if (planCheck.reason === 'daily_limit_reached') {
       const upgradeMessage = planCheck.currentPlan === 'free' 
@@ -38,12 +43,6 @@ export async function handleVideoSubmit(prevState: any, formData: FormData): Pro
       return { success: false, errors: [upgradeMessage] };
     }
     return { success: false, errors: ["Unable to add video due to plan restrictions"] };
-  }
-
-  const normalizedUrl = normalizeYouTubeUrl(videoUrl);
-  const youtubeVideoId = extractVideoId(normalizedUrl);
-  if (!youtubeVideoId) {
-    return { success: false, errors: ["Invalid YouTube URL. Please check the URL and try again."] };
   }
 
   redirect(`/video/${youtubeVideoId}`);

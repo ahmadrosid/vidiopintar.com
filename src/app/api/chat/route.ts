@@ -3,7 +3,8 @@ import { convertToModelMessages, streamText } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
 import { getMessageText } from '@/lib/ai/messages';
 import { fetchVideoTranscript, fetchVideoDetails } from '@/lib/youtube';
-import { MessageRepository, VideoRepository } from '@/lib/db/repository';
+import { MessageRepository, UserVideoRepository, VideoRepository } from '@/lib/db/repository';
+import { UsageEventRepository } from '@/lib/db/repository/usage-events';
 import { createStreamTokenTracker } from '@/lib/token-tracker';
 import { getCurrentUser } from '@/lib/auth';
 import { getSystemPrompt } from '@/lib/ai/system-prompts';
@@ -100,6 +101,13 @@ export async function POST(req: Request) {
           role: 'user',
           timestamp: Math.floor(Date.now() / 1000),
         });
+
+        const usageYoutubeId =
+          videoId ??
+          (await UserVideoRepository.getById(userVideoId))?.youtubeId;
+        if (usageYoutubeId) {
+          await UsageEventRepository.recordChatMessage(user.id, usageYoutubeId);
+        }
       } catch (err) {
         console.error('Failed to save user message:', err);
       }

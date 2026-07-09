@@ -1,5 +1,6 @@
 import { transactionsRepository } from '@/lib/db/repository/transactions';
-import { MessageRepository, UserVideoRepository } from '@/lib/db/repository';
+import { UserVideoRepository } from '@/lib/db/repository';
+import { UsageEventRepository } from '@/lib/db/repository/usage-events';
 
 export type UserPlan = 'free' | 'monthly' | 'yearly';
 
@@ -74,7 +75,7 @@ export class UserPlanService {
   /**
    * Check if user can add a new video based on their plan limits
    */
-  static async canAddVideo(userId: string): Promise<{
+  static async canAddVideo(userId: string, youtubeId?: string): Promise<{
     canAdd: boolean;
     currentPlan: UserPlan;
     reason?: string;
@@ -84,7 +85,6 @@ export class UserPlanService {
     const currentPlan = await this.getCurrentPlan(userId);
     const limits = this.getPlanLimits(currentPlan);
 
-    // If plan has unlimited videos, always allow
     if (limits.unlimited) {
       return {
         canAdd: true,
@@ -92,21 +92,20 @@ export class UserPlanService {
       };
     }
 
-    // For free plan, check daily limit
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    // Count videos added today
-    const userVideos = await UserVideoRepository.getAllByUser(userId);
-    const videosToday = userVideos.filter(video => {
-      const videoDate = new Date(video.createdAt);
-      return videoDate >= today && videoDate < tomorrow;
-    });
-
-    const videosUsedToday = videosToday.length;
+    const videosUsedToday = await UsageEventRepository.countVideosAddedToday(userId);
     const dailyLimit = limits.videosPerDay;
+
+    if (
+      youtubeId &&
+      (await UsageEventRepository.hasVideoAddedToday(userId, youtubeId))
+    ) {
+      return {
+        canAdd: true,
+        currentPlan,
+        videosUsedToday,
+        dailyLimit,
+      };
+    }
 
     if (videosUsedToday >= dailyLimit) {
       return {
@@ -148,7 +147,10 @@ export class UserPlanService {
       return { canSend: false, currentPlan, reason: 'unauthorized' };
     }
 
-    const messagesUsed = await MessageRepository.countUserMessages(userVideoId);
+    const messagesUsed = await UsageEventRepository.countChatMessages(
+      userId,
+      userVideo.youtubeId,
+    );
     const messageLimit = limits.messagesPerVideo;
 
     if (messagesUsed >= messageLimit) {
@@ -185,22 +187,12 @@ export class UserPlanService {
       };
     }
 
-    // Count videos added today
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const userVideos = await UserVideoRepository.getAllByUser(userId);
-    const videosToday = userVideos.filter(video => {
-      const videoDate = new Date(video.createdAt);
-      return videoDate >= today && videoDate < tomorrow;
-    });
+    const videosUsedToday = await UsageEventRepository.countVideosAddedToday(userId);
 
     return {
       currentPlan,
       unlimited: false,
-      videosUsedToday: videosToday.length,
+      videosUsedToday,
       dailyLimit: limits.videosPerDay,
       messagesPerVideo: limits.messagesPerVideo,
     };

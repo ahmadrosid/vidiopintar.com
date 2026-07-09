@@ -16,9 +16,9 @@ export default async function VideoPage(props: {
   const transcriptPromise = fetchVideoTranscript(videoId);
 
   return (
-    <main className="flex flex-col min-h-screen bg-melody-gradient relative">
-      <div className="relative z-10">
-        <div className="hidden lg:block">
+    <main className="flex flex-col h-screen overflow-hidden bg-melody-gradient relative">
+      <div className="relative z-10 h-full min-h-0">
+        <div className="hidden lg:block h-full min-h-0">
           <ResizableLayout
             videoSection={
               <Suspense fallback={<VideoSectionSkeleton />}>
@@ -41,8 +41,8 @@ export default async function VideoPage(props: {
           />
         </div>
         {/* Mobile layout - stacked vertically */}
-        <div className="lg:hidden flex flex-col h-screen">
-          <div className="h-full overflow-y-auto scrollbar-none relative">
+        <div className="lg:hidden flex flex-col h-full min-h-0">
+          <div className="h-full min-h-0 overflow-y-auto scrollbar-none relative">
             <Suspense fallback={<VideoSectionSkeleton />}>
               <VideoSection
                 videoId={videoId}
@@ -51,7 +51,7 @@ export default async function VideoPage(props: {
               />
             </Suspense>
           </div>
-          <div className="flex flex-col h-full relative border-t">
+          <div className="flex flex-col h-full min-h-0 relative border-t">
             <Suspense fallback={<ChatSectionSkeleton />}>
               <ChatSection
                 videoId={videoId}

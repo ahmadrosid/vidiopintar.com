@@ -53,7 +53,7 @@ export function ChatInterfaceWrapper({
 
   if (shouldShowSkeleton) {
     return (
-      <div className="flex flex-col overflow-hidden h-screen h-screen-dvh w-full border-l">
+      <div className="flex flex-col overflow-hidden h-full min-h-0 w-full border-l">
         <ChatHeader
           videoId={videoId}
           userVideoId={userVideoId}

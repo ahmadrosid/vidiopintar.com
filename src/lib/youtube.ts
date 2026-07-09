@@ -9,6 +9,8 @@ import { getQuickStartPrompt } from "@/lib/ai/system-prompts";
 import { trackGenerateTextUsage } from '@/lib/token-tracker';
 
 import { UserVideoRepository } from "@/lib/db/repository";
+import { UsageEventRepository } from "@/lib/db/repository/usage-events";
+import { UserPlanService } from "@/lib/user-plan-service";
 import { getCurrentUser } from "./auth";
 
 function pickThumbnailUrl(
@@ -191,11 +193,23 @@ export async function fetchVideoTranscript(videoId: string) {
 
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
     if (!userVideo) {
+      const planCheck = await UserPlanService.canAddVideo(user.id, videoId);
+      if (!planCheck.canAdd) {
+        return {
+          segments: [],
+          error: true,
+          errorMessage: "You've reached your daily limit for new videos. Upgrade for unlimited access or try again tomorrow.",
+          userVideo: null,
+          planLimitReached: true,
+        };
+      }
+
       userVideo = await UserVideoRepository.upsert({
         userId: user.id,
         youtubeId: videoId,
         summary: "",
       });
+      await UsageEventRepository.recordVideoAdded(user.id, videoId);
     }
 
     return {

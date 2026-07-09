@@ -26,7 +26,7 @@ export async function ChatSection({ videoId, videoDetailsPromise, transcriptProm
       : "Unable to load chat interface. Video details are incomplete.";
 
     return (
-      <div className="p-4 text-center h-screen h-screen-dvh w-full border-l">
+      <div className="p-4 text-center h-full min-h-0 w-full border-l">
         <div className="flex flex-col items-center justify-center h-full gap-4">
           <AlertTriangle className="h-12 w-12 text-muted-foreground" />
           <p className="text-muted-foreground max-w-md">

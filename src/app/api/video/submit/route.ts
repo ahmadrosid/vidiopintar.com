@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     }
 
     // Check user plan limits
-    const planCheck = await UserPlanService.canAddVideo(user.id);
+    const planCheck = await UserPlanService.canAddVideo(user.id, youtubeVideoId);
     if (!planCheck.canAdd) {
       if (planCheck.reason === 'daily_limit_reached') {
         const upgradeMessage = planCheck.currentPlan === 'free' 

@@ -13,14 +13,14 @@ export function ResizableLayout({
   chatSection,
 }: ResizableLayoutProps) {
   return (
-    <PanelGroup direction="horizontal" className="h-screen overflow-hidden">
+    <PanelGroup direction="horizontal" className="h-full overflow-hidden">
       <Panel
         defaultSize={57}
         minSize={30}
         maxSize={80}
         className="min-h-0 overflow-hidden flex flex-col"
       >
-        <div className="flex-1 overflow-y-auto scrollbar-none max-h-screen">
+        <div className="h-full min-h-0 overflow-y-auto scrollbar-none">
           {videoSection}
         </div>
       </Panel>
@@ -31,10 +31,10 @@ export function ResizableLayout({
         defaultSize={43}
         minSize={20}
         maxSize={70}
-        className="h-full max-h-full min-h-0 overflow-hidden flex flex-col"
+        className="h-full min-h-0 overflow-hidden flex flex-col"
       >
-        <div className="h-screen scrollbar-none">
-            {chatSection}
+        <div className="h-full min-h-0 overflow-hidden flex flex-col">
+          {chatSection}
         </div>
       </Panel>
     </PanelGroup>
