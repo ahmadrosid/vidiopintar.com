@@ -5,7 +5,7 @@ export interface TokenUsageData {
   userId: string;
   model: string;
   provider: 'deepseek';
-  operation: 'chat' | 'summary' | 'quick_start_questions';
+  operation: 'chat' | 'summary' | 'quick_start_questions' | 'quiz_generation';
   inputTokens: number;
   outputTokens: number;
   videoId?: string;

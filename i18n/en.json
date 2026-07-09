@@ -36,7 +36,7 @@
       },
       "progress": {
         "title": "Progress",
-        "description": "See your knowledge grow. Track real understanding, not just watch time."
+        "description": "Test yourself with quizzes and see what you actually understood."
       },
       "effortless": {
         "title": "Effortless",
@@ -66,6 +66,7 @@
           "messages": "10 messages per video",
           "basic": "Basic AI insights",
           "summaries": "Simple summaries",
+          "quiz": "1 quiz attempt (trial)",
           "community": "Community support",
           "branding": "Vidiopintar branding"
         }
@@ -78,6 +79,7 @@
           "unlimited": "Unlimited video processing",
           "ai": "AI-powered insights",
           "summaries": "Instant summaries",
+          "quiz": "Unlimited quizzes",
           "support": "Email support"
         }
       },
@@ -89,6 +91,7 @@
           "unlimited": "Unlimited video processing",
           "ai": "AI-powered insights",
           "summaries": "Instant summaries",
+          "quiz": "Unlimited quizzes",
           "support": "Email support",
           "priority": "Priority support"
         }
@@ -341,5 +344,25 @@
     "description": "You've used all {limit} free messages for this video. Upgrade to a premium plan for unlimited chat.",
     "remaining": "{count, plural, one {# message remaining for this video} other {# messages remaining for this video}}",
     "upgradeNow": "Upgrade Now"
+  },
+  "quiz": {
+    "panelTitle": "Quiz",
+    "modeChat": "Chat",
+    "modeQuiz": "Quiz",
+    "emptyTitle": "Test what you learned",
+    "emptyDescription": "Generate 5 multiple-choice questions from this video's transcript.",
+    "generate": "Generate quiz",
+    "generating": "Generating quiz...",
+    "generateNew": "Generate new quiz",
+    "nextQuestion": "Next question",
+    "seeResults": "See results",
+    "seekToMoment": "Jump to moment",
+    "resultsTitle": "Your score",
+    "reviewTitle": "Review missed questions",
+    "retry": "Retry quiz",
+    "retryWithPro": "Retry with Pro",
+    "upgradeTitle": "Unlock unlimited quizzes",
+    "upgradeDescription": "Your free quiz trial is used. Upgrade to keep testing yourself on every video.",
+    "upgradeCta": "Upgrade Now"
   }
 }

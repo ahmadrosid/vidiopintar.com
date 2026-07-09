@@ -20,6 +20,8 @@ import type { CreateNoteToolResult } from "@/lib/ai/create-note-tool";
 import { useNotesStore } from "@/stores/notes-store";
 import { useVideoStore } from "@/stores/video-store";
 import { useLocale, useTranslations } from "next-intl";
+import { QuizModeToggle, type PanelMode } from "@/components/quiz/quiz-mode-toggle";
+import { QuizPanel } from "@/components/quiz/quiz-panel";
 
 interface ChatInterfaceProps {
   videoId: string;
@@ -48,6 +50,8 @@ export function ChatInterface({
 }: ChatInterfaceProps) {
   const language = useLocale();
   const tLimit = useTranslations("messageLimitDialog");
+  const tQuiz = useTranslations("quiz");
+  const [panelMode, setPanelMode] = useState<PanelMode>("chat");
   const [input, setInput] = useState('');
   const transport = useMemo(
     () => new DefaultChatTransport({
@@ -115,9 +119,12 @@ export function ChatInterface({
         shareChatUrl={shareChatUrl}
         setMessages={setMessages}
         isSharePage={isSharePage}
+        title={panelMode === "quiz" ? tQuiz("panelTitle") : undefined}
       />
       <ChatContainerRoot className="relative w-full flex-1 min-h-0">
-        {messages.length === 0 && quickStartQuestions.length > 0 ? (
+        {panelMode === "quiz" && !isSharePage ? (
+          <QuizPanel videoId={videoId} enabled={panelMode === "quiz"} />
+        ) : messages.length === 0 && quickStartQuestions.length > 0 ? (
           <ChatContainerContent className="flex flex-col gap-4 p-4 h-full justify-center">
             <div>
               <p className="text-left py-2 text-foreground/75 font-semibold tracking-tight">
@@ -154,6 +161,14 @@ export function ChatInterface({
         )}
       </ChatContainerRoot>
       <div className="p-4 flex-shrink-0">
+        {!isSharePage && (
+          <QuizModeToggle
+            mode={panelMode}
+            onModeChange={setPanelMode}
+            chatLabel={tQuiz("modeChat")}
+            quizLabel={tQuiz("modeQuiz")}
+          />
+        )}
         {isSharePage ? (
           <div className="text-center text-sm text-muted-foreground">
             {isLoggedIn ? (
@@ -172,7 +187,7 @@ export function ChatInterface({
               </a>
             )}
           </div>
-        ) : messageLimitReached ? (
+        ) : panelMode === "quiz" ? null : messageLimitReached ? (
           <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />

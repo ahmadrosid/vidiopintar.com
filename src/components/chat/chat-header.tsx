@@ -20,6 +20,7 @@ interface ChatHeaderProps {
     isLoggedIn?: boolean;
     shareChatUrl?: string;
     setMessages: (messages: any[]) => void;
+    title?: string;
 }
 
 export function ChatHeader({
@@ -27,7 +28,9 @@ export function ChatHeader({
     userVideoId,
     shareChatUrl,
     setMessages,
-    isSharePage = false }: ChatHeaderProps) {
+    isSharePage = false,
+    title,
+}: ChatHeaderProps) {
     const [status, setStatus] = useState<"" | "deleting" | "sharing">("");
 
     const [shareUrl, setShareUrl] = useState(shareChatUrl);
@@ -62,7 +65,7 @@ export function ChatHeader({
 
     return (
         <div className="px-4 py-2.5 border-b bg-white dark:bg-black sticky top-0 z-50 flex justify-between items-center">
-            <h2 className="font-semibold tracking-tight dark:text-foreground">Chat</h2>
+            <h2 className="font-semibold tracking-tight dark:text-foreground">{title ?? "Chat"}</h2>
             <div className="flex gap-2">
                 <Popover onOpenChange={(open) => {
                     if (open && !shareUrl && status !== "sharing") {

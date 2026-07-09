@@ -17,6 +17,7 @@ export function Pricing() {
                 t('plans.free.features.limited'),
                 t('plans.free.features.basic'),
                 t('plans.free.features.summaries'),
+                t('plans.free.features.quiz'),
                 t('plans.free.features.community')
             ],
             popular: false,
@@ -32,6 +33,7 @@ export function Pricing() {
                 t('plans.monthly.features.unlimited'),
                 t('plans.monthly.features.ai'),
                 t('plans.monthly.features.summaries'),
+                t('plans.monthly.features.quiz'),
                 t('plans.monthly.features.support')
             ],
             popular: false
@@ -47,6 +49,7 @@ export function Pricing() {
                 t('plans.yearly.features.unlimited'),
                 t('plans.yearly.features.ai'),
                 t('plans.yearly.features.summaries'),
+                t('plans.yearly.features.quiz'),
                 t('plans.yearly.features.support'),
                 t('plans.yearly.features.priority')
             ],

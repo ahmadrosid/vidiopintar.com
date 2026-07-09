@@ -10,6 +10,21 @@ export interface ChangelogEntry {
 
 export const changelogs: ChangelogEntry[] = [
   {
+    date: "2026-07-09",
+    version: "2.1.0",
+    type: "minor",
+    changes: [
+      {
+        category: "added",
+        items: [
+          "Active recall quizzes in the chat panel — switch between Chat and Quiz, generate 5 multiple-choice questions, get immediate feedback with jump-to-timestamp, and review missed answers",
+          "Free plan includes one account-wide quiz trial; paid plans unlock unlimited quizzes and retries",
+          "Pricing and billing copy updated to mention quiz access"
+        ]
+      }
+    ]
+  },
+  {
     date: "2026-07-08",
     version: "2.0.2",
     type: "patch",
