@@ -96,6 +96,7 @@ export async function fetchTranscriptResponse(
   const queue = buildLanguageAttempts(options.language);
   const attempted = new Set<string>();
   let lastError = "No transcript content available";
+  let definitivelyUnavailable = false;
 
   while (queue.length > 0) {
     const language = queue.shift()!;
@@ -124,6 +125,8 @@ export async function fetchTranscriptResponse(
         if (!attempted.has(availableAttempt)) {
           queue.push(availableAttempt);
         }
+      } else {
+        definitivelyUnavailable = true;
       }
       continue;
     }
@@ -131,7 +134,9 @@ export async function fetchTranscriptResponse(
     throw new Error(lastError);
   }
 
-  await TranscriptCacheRepository.markUnavailable(videoId);
+  if (definitivelyUnavailable) {
+    await TranscriptCacheRepository.markUnavailable(videoId);
+  }
   throw new Error(lastError);
 }
 
@@ -143,9 +148,7 @@ async function getCachedTranscriptResponse(
   videoId: string,
 ): Promise<TranscriptApiResponse | null> {
   const cached = await TranscriptCacheRepository.get(videoId);
-  if (cached?.unavailable) {
-    throw new Error("No transcript available for this video");
-  }
+  // Ignore negative cache — it may be stale after transient API errors.
   if (cached?.response?.transcript?.length) {
     return cached.response;
   }

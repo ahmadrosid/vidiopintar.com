@@ -394,24 +394,24 @@ export function NotesView({ userVideoId }: NotesViewProps) {
             {notes.map((note) => (
               <div
                 key={note.id}
-                className={`p-3 mr-1 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50 relative group`}
+                className="p-3 mr-1 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50 relative"
                 onClick={() => handleJumpToTimestamp(note.timestamp)}
               >
-                <div className="flex">
-                  <div
-                    className={`w-1 h-full absolute left-0 top-0 bottom-0 rounded-l-xs ${
-                      NOTE_COLOR_BORDER_CLASSES[note.color as NoteColor]
-                    }`}
-                  />
-                  <span className="text-muted-foreground font-mono mr-3 whitespace-nowrap transition-colors">
+                <div
+                  className={`w-1 absolute left-0 top-0 bottom-0 rounded-l-xs ${
+                    NOTE_COLOR_BORDER_CLASSES[note.color as NoteColor]
+                  }`}
+                />
+                <div className="flex gap-3">
+                  <span className="text-muted-foreground font-mono whitespace-nowrap shrink-0">
                     {formatTime(note.timestamp)}
                   </span>
-                  <span className="flex-1 text-foreground whitespace-pre-wrap">
+                  <span className="flex-1 min-w-0 text-foreground whitespace-pre-wrap">
                     {note.text}
                   </span>
                 </div>
                 <div
-                  className="flex gap-1 shrink-0 absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="flex justify-end gap-1 mt-2 pt-2 border-t border-border/50"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Button
