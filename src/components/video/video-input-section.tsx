@@ -101,32 +101,23 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
       : `${remaining} of ${usage?.dailyLimit} daily video${usage && usage.dailyLimit > 1 ? "s" : ""} remaining`;
 
   return (
-    <div className="flex w-full flex-col items-center gap-5">
+    <div className="flex w-full flex-col items-center gap-3">
       {usage && !usage.unlimited && (
-        <div
-          className={`flex w-full max-w-md items-center justify-between gap-4 rounded-full px-5 py-2.5 ${
-            isAtLimit || isNearLimit
-              ? "bg-amber-50 dark:bg-amber-950/30"
-              : "bg-blue-50 dark:bg-accent/10"
-          }`}
-        >
-          <span className="flex items-center gap-2 text-sm text-slate-500 dark:text-muted-foreground">
-            {(isAtLimit || isNearLimit) && (
-              <AlertTriangle className="size-4 shrink-0 text-amber-500" />
-            )}
+        <p className="flex w-full items-center gap-2 text-sm text-slate-500 dark:text-muted-foreground">
+          {(isAtLimit || isNearLimit) && (
+            <AlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+          )}
+          <span>
             {usageMessage}
-          </span>
-          <Link href="/profile/billing">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-auto shrink-0 px-0 py-0 font-medium text-accent hover:bg-transparent hover:text-accent/80"
+            {" · "}
+            <Link
+              href="/profile/billing"
+              className="text-accent hover:text-accent/80 hover:underline"
             >
-              <Crown className="size-4" />
               Upgrade
-            </Button>
-          </Link>
-        </div>
+            </Link>
+          </span>
+        </p>
       )}
 
       <form onSubmit={handleSubmit} className="w-full space-y-2">
