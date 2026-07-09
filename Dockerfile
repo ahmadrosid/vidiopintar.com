@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # 1. Install dependencies
 FROM node:22-alpine AS deps
 WORKDIR /app
@@ -6,7 +8,8 @@ WORKDIR /app
 RUN apk add --no-cache python3 make g++
 
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --legacy-peer-deps
 
 # 2. Builder
 FROM node:22-alpine AS builder
@@ -17,7 +20,8 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV SQLITE_DATABASE_PATH=/data/vidiopintar.db
-RUN npm exec next build
+RUN --mount=type=cache,target=/app/.next/cache \
+    npm exec next build
 
 # 3. Runner
 FROM node:22-alpine AS runner

@@ -8,7 +8,11 @@ const timestampMs = (name: string) =>
 export const USAGE_EVENT_TYPES = {
   VIDEO_ADDED: "video_added",
   CHAT_MESSAGE: "chat_message",
+  QUIZ_GENERATED: "quiz_generated",
 } as const;
+
+/** Sentinel youtube_id for account-wide quiz trial usage events */
+export const QUIZ_ACCOUNT_YOUTUBE_ID = "__account__";
 
 export type UsageEventType =
   (typeof USAGE_EVENT_TYPES)[keyof typeof USAGE_EVENT_TYPES];

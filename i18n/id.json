@@ -36,7 +36,7 @@
       },
       "progress": {
         "title": "Kemajuan",
-        "description": "Lihat pengetahuan kamu berkembang. Lacak pemahaman nyata, bukan hanya waktu menonton."
+        "description": "Uji diri dengan kuis dan lihat apa yang benar-benar kamu pahami."
       },
       "effortless": {
         "title": "Mudah",
@@ -66,6 +66,7 @@
           "messages": "10 pesan per video",
           "basic": "Wawasan AI dasar",
           "summaries": "Ringkasan sederhana",
+          "quiz": "1 percobaan kuis (trial)",
           "community": "Dukungan komunitas",
           "branding": "Branding Vidiopintar"
         }
@@ -78,6 +79,7 @@
           "unlimited": "Pemrosesan video tanpa batas",
           "ai": "Wawasan bertenaga AI",
           "summaries": "Ringkasan instan",
+          "quiz": "Kuis tanpa batas",
           "support": "Dukungan email"
         }
       },
@@ -89,6 +91,7 @@
           "unlimited": "Pemrosesan video tanpa batas",
           "ai": "Wawasan bertenaga AI",
           "summaries": "Ringkasan instan",
+          "quiz": "Kuis tanpa batas",
           "support": "Dukungan email",
           "priority": "Dukungan prioritas"
         }
@@ -341,5 +344,26 @@
     "description": "Kamu telah menggunakan semua {limit} pesan gratis untuk video ini. Upgrade ke paket premium untuk chat tanpa batas.",
     "remaining": "{count, plural, one {# pesan tersisa untuk video ini} other {# pesan tersisa untuk video ini}}",
     "upgradeNow": "Upgrade Sekarang"
+  },
+  "quiz": {
+    "panelTitle": "Kuis",
+    "modeChat": "Chat",
+    "modeQuiz": "Kuis",
+    "backToChat": "Kembali ke chat",
+    "emptyTitle": "Uji apa yang kamu pelajari",
+    "emptyDescription": "Buat 5 pertanyaan pilihan ganda dari transkrip video ini.",
+    "generate": "Buat kuis",
+    "generating": "Membuat kuis...",
+    "generateNew": "Buat kuis baru",
+    "nextQuestion": "Pertanyaan berikutnya",
+    "seeResults": "Lihat hasil",
+    "seekToMoment": "Lompat ke momen",
+    "resultsTitle": "Skor kamu",
+    "reviewTitle": "Tinjau pertanyaan yang salah",
+    "retry": "Ulangi kuis",
+    "retryWithPro": "Ulangi dengan Pro",
+    "upgradeTitle": "Buka kuis tanpa batas",
+    "upgradeDescription": "Trial kuis gratismu sudah dipakai. Upgrade untuk terus menguji diri di setiap video.",
+    "upgradeCta": "Upgrade Sekarang"
   }
 }

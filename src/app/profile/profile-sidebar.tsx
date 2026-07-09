@@ -80,15 +80,15 @@ export function ProfileSidebar({
                 "flex items-center gap-3 rounded-lg text-sm font-medium transition-colors",
                 isCollapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
                 isActive
-                  ? "bg-accent/25 text-accent-foreground"
-                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
+                  ? "bg-primary/10 text-foreground"
+                  : "text-muted-foreground hover:bg-primary/10 hover:text-foreground"
               )}
               title={isCollapsed ? item.label : undefined}
             >
               <item.icon
                 className={cn(
                   "h-[18px] w-[18px] shrink-0",
-                  isActive ? "text-accent" : "text-zinc-500"
+                  isActive ? "text-foreground" : "text-muted-foreground"
                 )}
               />
               {!isCollapsed && <span>{item.label}</span>}

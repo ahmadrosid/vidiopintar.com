@@ -3,35 +3,30 @@ docker-compose*
 .dockerignore
 .git
 .gitignore
+.github
 README.md
+LICENSE
+*.md
 .env
 .env.*
+.env*.local
 .next
 .swc
+.vercel
 node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-
-# Vercel
-.vercel
-
-# typescript
+bun.lock
 *.tsbuildinfo
 next-env.d.ts
-
-# OS
 .DS_Store
 *.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-
-# testing
 /coverage
+
+# Not needed for the Next.js image build
+vidiopintar-cli
+data
+docs
+chrome-extension

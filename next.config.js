@@ -30,15 +30,11 @@ const nextConfig = {
     ],
     webpackBuildWorker: true,
   },
-  webpack: (config, { isServer, dev }) => {
+  webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals.push('better-sqlite3');
     }
-    // Avoid webpack filesystem cache warnings from large vendor chunks (e.g. @clerk/backend).
-    // Docker builds are cold anyway, so memory cache is sufficient.
-    if (!dev) {
-      config.cache = { type: 'memory' };
-    }
+    // Keep default filesystem cache so Docker BuildKit can reuse /.next/cache.
     return config;
   },
 }

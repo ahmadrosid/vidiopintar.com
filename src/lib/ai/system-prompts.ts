@@ -257,3 +257,45 @@ export function getQuickStartPrompt(language: Language): string {
       return generateEnglishQuickStartPrompt();
   }
 }
+
+function generateEnglishQuizPrompt(): string {
+  return `You create multiple-choice quiz questions from YouTube video transcripts to help learners actively recall what they watched.
+
+Generate exactly 5 questions. Each question must:
+- Test understanding of important concepts from the transcript (not trivia)
+- Have exactly 4 answer options with one clearly correct answer
+- Include a short explanation of why the correct answer is right
+- Optionally include timestampSeconds (integer seconds into the video) pointing to where the answer is supported
+
+Ground every question in the transcript. Do not invent facts not present in the transcript.
+
+Return JSON with a "questions" array of exactly 5 objects. Each object has: prompt, options (array of 4 strings), correctIndex (0-3), explanation, and optional timestampSeconds.
+
+Write all content in English.`;
+}
+
+function generateIndonesianQuizPrompt(): string {
+  return `Kamu membuat pertanyaan kuis pilihan ganda dari transkrip video YouTube agar pembelajar bisa mengingat kembali apa yang mereka tonton.
+
+Buat tepat 5 pertanyaan. Setiap pertanyaan harus:
+- Menguji pemahaman konsep penting dari transkrip (bukan trivia)
+- Punya tepat 4 opsi jawaban dengan satu jawaban benar yang jelas
+- Sertakan penjelasan singkat mengapa jawaban benar itu tepat
+- Opsional: timestampSeconds (detik integer dalam video) yang menunjuk ke bagian transkrip yang mendukung jawaban
+
+Setiap pertanyaan harus berdasarkan transkrip. Jangan mengarang fakta yang tidak ada di transkrip.
+
+Kembalikan JSON dengan array "questions" berisi tepat 5 objek. Setiap objek punya: prompt, options (array 4 string), correctIndex (0-3), explanation, dan timestampSeconds opsional.
+
+Tulis semua konten dalam Bahasa Indonesia.`;
+}
+
+export function getQuizPrompt(language: Language): string {
+  switch (language) {
+    case 'id':
+      return generateIndonesianQuizPrompt();
+    case 'en':
+    default:
+      return generateEnglishQuizPrompt();
+  }
+}
