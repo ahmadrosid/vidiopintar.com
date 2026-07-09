@@ -72,11 +72,13 @@ export default function NewPricing() {
           {t('title')}
         </div>
       </div>
-      <div className="text-4xl text-primary font-semibold tracking-tight">
-        {t('title')}
-        <div className="text-secondary-foreground text-base font-normal pt-3 tracking-normal">
+      <div>
+        <h2 className="text-4xl text-primary font-semibold tracking-tight">
+          {t('title')}
+        </h2>
+        <p className="text-secondary-foreground text-base font-normal pt-3 tracking-normal">
           {t('subtitle')}
-        </div>
+        </p>
       </div>
       <div className="flex gap-2.5 flex-wrap lg:flex-nowrap">
         {pricingData.map((data) => (

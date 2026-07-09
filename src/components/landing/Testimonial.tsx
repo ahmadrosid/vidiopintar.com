@@ -29,7 +29,8 @@ const socialPostsData = [
 
 export const Testimonial = () => {
   return (
-    <div className="flex gap-2 pt-9 select-none">
+    <section className="flex flex-col gap-4 pt-9 select-none">
+      <h2 className="sr-only">What early users say about Vidiopintar</h2>
       <div className="grid gap-2 md:grid-cols-1 lg:grid-cols-3">
         {socialPostsData.map((post) => (
           <div
@@ -45,9 +46,9 @@ export const Testimonial = () => {
 
               <div className="flex flex-col">
                 <div className="flex flex-col space-x-2 mb-1 gap-0.5">
-                  <h3 className="font-semibold text-primary text-sm">
+                  <p className="font-semibold text-primary text-sm">
                     {post.name}
-                  </h3>
+                  </p>
                   <p className="text-gray-400 text-sm mb-3">{post.title}</p>
                 </div>
 
@@ -60,7 +61,7 @@ export const Testimonial = () => {
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 

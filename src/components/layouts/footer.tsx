@@ -3,6 +3,16 @@ import CallToAction from "../common/call-to-action"
 
 const footers = [
   {
+    title: "Blog",
+    href: "/blog",
+    isExternal: false,
+  },
+  {
+    title: "FAQ",
+    href: "/faq",
+    isExternal: false,
+  },
+  {
     title: "Changelogs",
     href: "/changelogs",
     isExternal: false,
@@ -18,13 +28,18 @@ const footers = [
     isExternal: false,
   },
   {
-    title: "Github",
+    title: "GitHub",
     href: "https://github.com/ahmadrosid/vidiopintar.com",
     isExternal: true,
   },
   {
-    title: "Credits",
-    href: "https://github.com/ahmadrosid/vidiopintar.com",
+    title: "YouTube Help",
+    href: "https://support.google.com/youtube/",
+    isExternal: true,
+  },
+  {
+    title: "OpenAI Docs",
+    href: "https://platform.openai.com/docs",
     isExternal: true,
   },
 ]
@@ -32,19 +47,17 @@ const footers = [
 export function Footer({ cta }: { cta?: boolean }) {
   return (
     <div>
-      {/* call to action */}
       {cta && <CallToAction />}
 
-      {/* footer */}
       <div className="flex justify-between items-center w-full py-8 px-2 flex-col sm:flex-row gap-8">
-        <div className="flex gap-6 text-sm text-secondary-foreground">
+        <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-secondary-foreground">
           {footers.map((footer) => (
             <Link
               key={footer.title}
               href={footer.href}
               className="hover:text-white transition-colors cursor-pointer flex items-center gap-2"
               target={footer.isExternal ? "_blank" : "_self"}
-              rel={footer.isExternal ? "noopener noreferrer" : ""}
+              rel={footer.isExternal ? "noopener noreferrer" : undefined}
             >
               {footer.title}
             </Link>

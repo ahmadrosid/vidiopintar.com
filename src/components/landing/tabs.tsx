@@ -59,7 +59,10 @@ function TabsContent({
       forceMount
       data-slot="tabs-content"
       className={cn(
-        "flex-1 outline-none data-[state=inactive]:hidden",
+        // Keep inactive panels in the HTML for AI agents (override Radix [hidden])
+        "flex-1 outline-none",
+        "[&[hidden]]:block [&[hidden]]:absolute [&[hidden]]:sr-only",
+        "data-[state=inactive]:absolute data-[state=inactive]:sr-only",
         className
       )}
       {...props}

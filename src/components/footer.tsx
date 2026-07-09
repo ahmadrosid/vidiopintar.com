@@ -2,6 +2,14 @@ import { ThemeSwitcher } from './ui/theme-switcher'
 
 const links = [
     {
+        title: 'Blog',
+        href: '/blog',
+    },
+    {
+        title: 'FAQ',
+        href: '/faq',
+    },
+    {
         title: 'Changelog',
         href: '/changelogs',
     },
@@ -14,8 +22,16 @@ const links = [
         href: '/terms',
     },
     {
-        title: 'Github',
+        title: 'GitHub',
         href: 'https://github.com/ahmadrosid/vidiopintar.com',
+    },
+    {
+        title: 'YouTube Help',
+        href: 'https://support.google.com/youtube/',
+    },
+    {
+        title: 'OpenAI Docs',
+        href: 'https://platform.openai.com/docs',
     },
 ]
 
@@ -35,7 +51,11 @@ export function FooterSection() {
                         <a
                             key={index}
                             href={link.href}
-                            className="text-muted-foreground hover:text-primary block duration-150">
+                            className="text-muted-foreground hover:text-primary block duration-150"
+                            {...(link.href.startsWith('http')
+                                ? { target: '_blank', rel: 'noopener noreferrer' }
+                                : {})}
+                        >
                             <span>{link.title}</span>
                         </a>
                     ))}

@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { buildPageMetadata } from '@/lib/geo/metadata';
 
 interface Props {
   params: Promise<{ tag: string }>;
@@ -22,15 +23,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { tag } = await params;
   const decodedTag = decodeURIComponent(tag);
-  
-  return {
-    title: `Posts tagged "${decodedTag}" | Vidiopintar Blog`,
-    description: `Browse all articles tagged with "${decodedTag}" on the Vidiopintar blog.`,
-    robots: {
-      index: false,
-      follow: true,
-    },
-  };
+
+  return buildPageMetadata({
+    title: `Posts tagged “${decodedTag}”`,
+    description: `Browse Vidiopintar blog articles tagged with ${decodedTag}, covering AI learning and YouTube productivity.`,
+    path: `/blog/tag/${encodeURIComponent(decodedTag)}`,
+    noIndex: true,
+  });
 }
 
 export default async function TagPage({ params }: Props) {

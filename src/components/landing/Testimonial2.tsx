@@ -60,12 +60,16 @@ const Testimonials2 = () => {
           Testimonials
         </div>
       </div>
-      <div className="text-4xl text-primary font-semibold tracking-tight">
-        Built for busy people and curious minds
-        <div className="text-secondary-foreground text-base font-normal pt-3 tracking-normal">
+      <div>
+        <h2 className="text-4xl text-primary font-semibold tracking-tight">
+          Built for busy people and curious minds
+        </h2>
+        <p className="text-secondary-foreground text-base font-normal pt-3 tracking-normal">
           See how people are extracting real insights and building knowledge
-          from the videos they love.
-        </div>
+          from the videos they love. Learners use Vidiopintar to summarize long
+          podcasts, clarify tutorial steps, and keep reusable notes without
+          rewatching entire videos.
+        </p>
       </div>
       <div className="grid gap-2 md:grid-cols-1 lg:grid-cols-3">
         {testimonialsData.map((data) => (
@@ -82,9 +86,9 @@ const Testimonials2 = () => {
 
               <div className="flex flex-col">
                 <div className="flex flex-col space-x-2 mb-1 gap-0.5">
-                  <h3 className="font-semibold text-primary text-sm">
+                  <p className="font-semibold text-primary text-sm">
                     {data.name}
-                  </h3>
+                  </p>
                   <p className="text-gray-400 text-sm mb-3">{data.title}</p>
                 </div>
 

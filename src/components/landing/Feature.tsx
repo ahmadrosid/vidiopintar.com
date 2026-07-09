@@ -76,7 +76,18 @@ export function Features() {
         <div className="uppercase text-[0.8125rem] text-secondary-foreground font-medium">
           Features
         </div>
-        {/* <div className="border-t-2 border-dashed w-full"></div> */}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <h2 className="text-4xl text-primary font-semibold tracking-tight">
+          Learn faster from any YouTube video
+        </h2>
+        <p className="text-secondary-foreground text-base max-w-3xl">
+          Vidiopintar turns long videos into structured insights, conversational
+          Q&amp;A, and a reusable library. Explore each capability below — every
+          tab&apos;s content stays available in the page HTML for accessibility
+          and AI agents.
+        </p>
       </div>
 
       <Tabs defaultValue="insights" className="w-full">
@@ -170,13 +181,13 @@ export function Features() {
               </div>
               <div className="absolute flex flex-col gap-6 justify-center items-center top-0 w-full h-full bg-gradient-to-t from-black from-4% to-black/0 to-100%" />
               <div className="absolute flex flex-col right-8 bottom-30 gap-1.5">
-                <div className=" text-primary font-semibold text-3xl text-right">
+                <h3 className=" text-primary font-semibold text-3xl text-right">
                   Instant insights without the watch time
-                </div>
-                <div className="text-primary/80 text-base text-right">
+                </h3>
+                <p className="text-primary/80 text-base text-right">
                   AI instantly generate video’s summary, outline, key takeaways,
                   and next action steps for you.
-                </div>
+                </p>
               </div>
             </div>
           </div>
@@ -240,12 +251,12 @@ export function Features() {
               </div>
               <div className="absolute flex flex-col gap-6 justify-center items-center top-0 w-full h-full bg-gradient-to-t from-black from-4% to-black/0 to-100%" />
               <div className="absolute flex flex-col left-10 bottom-30 gap-1.5">
-                <div className=" text-primary font-semibold text-3xl text-left">
+                <h3 className=" text-primary font-semibold text-3xl text-left">
                   Study smarter with AI Chat
-                </div>
-                <div className="text-primary/80 text-base">
+                </h3>
+                <p className="text-primary/80 text-base">
                   Ask anything and dive deeper what’s in the video with AI.
-                </div>
+                </p>
               </div>
             </div>
           </div>
@@ -276,13 +287,13 @@ export function Features() {
               </div>
               <div className="absolute flex flex-col gap-6 justify-center items-center top-0 w-full h-full bg-gradient-to-t from-black from-10% to-black/0 to-100%" />
               <div className="absolute flex flex-col right-10 bottom-24 gap-1.5">
-                <div className="text-3xl font-semibold text-primary text-right">
+                <h3 className="text-3xl font-semibold text-primary text-right">
                   Grow your library of knowledge
-                </div>
-                <div className="text-primary/80 text-base text-right">
+                </h3>
+                <p className="text-primary/80 text-base text-right">
                   Your insights, your way. Build a personal knowledge base from
                   videos you love.
-                </div>
+                </p>
               </div>
             </div>
           </div>

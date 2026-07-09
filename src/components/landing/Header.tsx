@@ -18,13 +18,19 @@ export function Header() {
   return (
     <header className="flex flex-col justify-between items-center pt-20 h-fit">
       <div className="flex w-full justify-between">
-        <h1 className="text-5xl font-semibold tracking-tight max-w-lg leading-[3.75rem] text-primary mb-9">
-          Stay Focused. Stay Ahead.{" "}
-          <i className="hover:animate-[pulse_200ms_linear_infinite] cursor-default">
-            Own Your Future
-          </i>
-          .
-        </h1>
+        <div className="max-w-lg mb-9">
+          <h1 className="text-5xl font-semibold tracking-tight leading-[3.75rem] text-primary">
+            Stay Focused. Stay Ahead.{" "}
+            <i className="hover:animate-[pulse_200ms_linear_infinite] cursor-default">
+              Own Your Future
+            </i>
+            .
+          </h1>
+          <p className="mt-4 text-secondary-foreground text-base leading-relaxed">
+            Vidiopintar turns YouTube videos into instant AI summaries, interactive
+            chat, and a personal knowledge library so you learn more in less time.
+          </p>
+        </div>
         <div className="hidden md:flex gap-2.5 justify-end w-fit mb-9">
           <div className="flex flex-col px-5 pb-2.5 min-w-[168px] max-w-[236px] border-dashed border-r-2">
             <div className="flex flex-col gap-1.5 pb-4">

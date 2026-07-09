@@ -1,29 +1,18 @@
 import Typography from "@/components/common/typography"
 import MainLayout from "@/components/layouts/main-layout"
-import type { Metadata } from "next"
+import { buildPageMetadata } from "@/lib/geo/metadata"
+import { SITE_LAST_MODIFIED } from "@/lib/geo/site"
+import Link from "next/link"
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | Vidiopintar",
-  description: "Learn how Vidiopintar collects, uses, and protects your personal information. Our privacy policy explains your data rights and our security practices.",
-  openGraph: {
-    title: "Privacy Policy | Vidiopintar",
-    description: "Learn how Vidiopintar collects, uses, and protects your personal information.",
-    images: ["/images/vidiopintar-og.jpeg"],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Privacy Policy | Vidiopintar",
-    description: "Learn how Vidiopintar collects, uses, and protects your personal information.",
-    images: ["/images/vidiopintar-og.jpeg"],
-  },
-  alternates: {
-    canonical: "/privacy",
-  },
-}
+export const metadata = buildPageMetadata({
+  title: "Privacy Policy",
+  description:
+    "How Vidiopintar collects, uses, and protects personal information, including your data rights and security practices.",
+  path: "/privacy",
+})
 
 export default function PrivacyPolicy() {
-  const lastUpdated = new Date().toLocaleDateString("en-US", {
+  const lastUpdated = SITE_LAST_MODIFIED.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -35,14 +24,14 @@ export default function PrivacyPolicy() {
 
   <h2>Information We Collect</h2>
   <p>We collect the following types of information:</p>
-  <h4>Personal Information</h4>
+  <h3>Personal Information</h3>
   <ul>
     <li>Email address when you create an account</li>
     <li>Name (optional) for account personalization</li>
     <li>Payment information for premium features</li>
   </ul>
 
-  <h4>Usage Data</h4>
+  <h3>Usage Data</h3>
   <ul>
     <li>Video processing preferences and settings</li>
     <li>Service usage patterns and frequency</li>
@@ -50,7 +39,7 @@ export default function PrivacyPolicy() {
     <li>IP address and general location data</li>
   </ul>
 
-  <h4>Content Data</h4>
+  <h3>Content Data</h3>
   <ul>
     <li>Videos you upload for processing</li>
     <li>Generated transcriptions and translations</li>
@@ -129,7 +118,38 @@ export default function PrivacyPolicy() {
               <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl mb-8">
                 Privacy Policy
               </h1>
-              <p className="text-muted-foreground mb-12">Last updated: {lastUpdated}</p>
+              <p className="text-muted-foreground mb-12">
+                Last updated:{" "}
+                <time dateTime={SITE_LAST_MODIFIED.toISOString()}>{lastUpdated}</time>
+              </p>
+
+              <nav className="mb-10 flex flex-wrap gap-4 text-sm">
+                <Link href="/terms" className="text-primary hover:underline">
+                  Terms of Service
+                </Link>
+                <Link href="/faq" className="text-primary hover:underline">
+                  FAQ
+                </Link>
+                <Link href="/blog" className="text-primary hover:underline">
+                  Blog
+                </Link>
+                <a
+                  href="https://support.google.com/youtube/"
+                  className="text-primary hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  YouTube Help
+                </a>
+                <a
+                  href="https://schema.org/PrivacyPolicy"
+                  className="text-primary hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Schema.org PrivacyPolicy
+                </a>
+              </nav>
 
               <Typography html={htmlContent} />
             </div>

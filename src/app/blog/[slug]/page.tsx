@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Calendar, Clock, ArrowLeft, Share2, Twitter, Linkedin } from 'lucide-react';
+import { buildPageMetadata } from '@/lib/geo/metadata';
+import { OG_IMAGE, SITE_URL } from '@/lib/geo/site';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -30,38 +32,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const ogImage = post.coverImage || 'https://vidiopintar.com/og-image.png';
+  const ogImage = post.coverImage || OG_IMAGE;
+  const path = `/blog/${post.slug}`;
 
   return {
-    title: `${post.title} | Vidiopintar Blog`,
-    description: post.description,
-    keywords: post.tags,
-    alternates: {
-      canonical: post.canonicalUrl || `https://vidiopintar.com/blog/${post.slug}`,
-    },
-    openGraph: {
+    ...buildPageMetadata({
       title: post.title,
       description: post.description,
+      path,
       type: 'article',
+      image: ogImage,
       publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
-      authors: [post.author],
-      tags: post.tags,
-      url: `https://vidiopintar.com/blog/${post.slug}`,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: post.title,
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.title,
-      description: post.description,
-      images: [ogImage],
+      modifiedTime: post.updatedAt || post.publishedAt,
+      keywords: post.tags,
+    }),
+    alternates: {
+      canonical: post.canonicalUrl || `${SITE_URL}${path}`,
+      types: {
+        'text/markdown': `${SITE_URL}${path}.md`,
+      },
     },
   };
 }
@@ -238,6 +227,38 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </div>
             </Card>
+
+            {/* Related pages */}
+            <nav className="mt-12 flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <Link href="/blog" className="hover:text-primary">
+                Blog
+              </Link>
+              <Link href="/faq" className="hover:text-primary">
+                FAQ
+              </Link>
+              <Link href="/changelogs" className="hover:text-primary">
+                Changelogs
+              </Link>
+              <Link href="/" className="hover:text-primary">
+                Home
+              </Link>
+              <a
+                href="https://support.google.com/youtube/"
+                className="hover:text-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                YouTube Help
+              </a>
+              <a
+                href="https://platform.openai.com/docs"
+                className="hover:text-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                OpenAI Docs
+              </a>
+            </nav>
 
             {/* Back to Blog */}
             <div className="mt-12 text-center">

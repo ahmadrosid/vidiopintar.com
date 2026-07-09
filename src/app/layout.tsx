@@ -1,12 +1,13 @@
+import type { Metadata } from "next"
 import { ClerkProvider } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
 import type React from "react"
-import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { Geist, Geist_Mono } from "next/font/google";
+import { OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/geo/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,27 +21,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vidiopintar - Learn anything from YouTube with AI!",
-  description: "Transform YouTube videos into instant AI-powered summaries, interactive chat, and organized knowledge. Learn faster from educational content, podcasts, and tutorials with VidioPintar's intelligent video analysis.",
+  title: {
+    default: "Vidiopintar - Learn from YouTube with AI",
+    template: "%s | Vidiopintar",
+  },
+  description:
+    "Turn YouTube videos into AI summaries, interactive chat, and organized notes. Learn faster from tutorials, podcasts, and lectures.",
   openGraph: {
-    title: "Vidiopintar - Learn anything from YouTube with AI!",
-    description: "Transform YouTube videos into instant AI-powered summaries, interactive chat, and organized knowledge. Learn faster from educational content, podcasts, and tutorials.",
+    title: "Vidiopintar - Learn from YouTube with AI",
+    description:
+      "Turn YouTube videos into AI summaries, interactive chat, and organized notes.",
+    url: SITE_URL,
     images: [
       {
-        url: "/images/vidiopintar-og.jpeg",
+        url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Vidiopintar - Learn anything from YouTube with AI",
+        alt: "Vidiopintar - Learn from YouTube with AI",
       },
     ],
     type: "website",
-    siteName: "Vidiopintar",
+    siteName: SITE_NAME,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vidiopintar - Learn anything from YouTube with AI!",
-    description: "Transform YouTube videos into instant AI-powered summaries, interactive chat, and organized knowledge.",
-    images: ["/images/vidiopintar-og.jpeg"],
+    title: "Vidiopintar - Learn from YouTube with AI",
+    description:
+      "Turn YouTube videos into AI summaries, interactive chat, and organized notes.",
+    images: [OG_IMAGE],
   },
   keywords: [
     "AI YouTube summarizer",
@@ -54,8 +62,13 @@ export const metadata: Metadata = {
     "video notes AI",
     "YouTube knowledge base",
   ],
-  authors: [{ name: "Vidiopintar" }],
-  metadataBase: new URL("https://vidiopintar.com"),
+  authors: [{ name: SITE_NAME }],
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    types: {
+      "text/markdown": `${SITE_URL}/index.html.md`,
+    },
+  },
 }
 
 export default async function RootLayout({
@@ -63,23 +76,19 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Get the locale from the configuration (which reads from cookies)
   const locale = await getLocale();
-  
-  // Providing all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
 
-  // Organization Schema
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Vidiopintar",
-    url: "https://vidiopintar.com",
-    logo: "https://vidiopintar.com/images/vidiopintar-og.jpeg",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: OG_IMAGE,
     description: "AI-powered YouTube learning platform that transforms videos into instant summaries and interactive chat experiences",
     sameAs: [
-      "https://github.com/ahmadrosid/vidiopintar",
+      "https://github.com/ahmadrosid/vidiopintar.com",
+      "https://twitter.com/ahmadrosid",
     ],
     contactPoint: {
       "@type": "ContactPoint",
@@ -88,18 +97,17 @@ export default async function RootLayout({
     },
   };
 
-  // WebSite Schema with Search Action
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Vidiopintar",
-    url: "https://vidiopintar.com",
+    name: SITE_NAME,
+    url: SITE_URL,
     description: "Learn anything from YouTube with AI-powered video summaries and chat",
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://vidiopintar.com/home?q={search_term_string}"
+        urlTemplate: `${SITE_URL}/home?q={search_term_string}`
       },
       "query-input": "required name=search_term_string"
     }

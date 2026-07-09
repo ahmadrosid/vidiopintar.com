@@ -6,15 +6,15 @@ import { HeroHeader } from "@/components/hero-header";
 import { FooterSection } from "@/components/footer";
 import { getCurrentUser } from "@/lib/auth";
 import { getTranslations } from 'next-intl/server';
-import type { Metadata } from "next";
+import { buildPageMetadata } from "@/lib/geo/metadata";
 
-export const metadata: Metadata = {
-  title: "Dashboard | Vidiopintar",
-  description: "Your AI-powered YouTube learning dashboard. Summarize videos, chat with content, and organize your knowledge.",
-  alternates: {
-    canonical: "/home",
-  },
-}
+export const metadata = buildPageMetadata({
+  title: "Dashboard",
+  description:
+    "Your AI YouTube learning dashboard — summarize videos, chat with content, and organize knowledge.",
+  path: "/home",
+  noIndex: true,
+})
 
 export default async function Home() {
   const user = await getCurrentUser()

@@ -1,29 +1,18 @@
 import Typography from "@/components/common/typography"
 import MainLayout from "@/components/layouts/main-layout"
-import type { Metadata } from "next"
+import { buildPageMetadata } from "@/lib/geo/metadata"
+import { SITE_LAST_MODIFIED } from "@/lib/geo/site"
+import Link from "next/link"
 
-export const metadata: Metadata = {
-  title: "Terms of Service | Vidiopintar",
-  description: "Read Vidiopintar's Terms of Service. Learn about acceptable use, account policies, payment terms, and your rights as a user of our AI-powered YouTube learning platform.",
-  openGraph: {
-    title: "Terms of Service | Vidiopintar",
-    description: "Read Vidiopintar's Terms of Service. Learn about acceptable use, account policies, and your rights as a user.",
-    images: ["/images/vidiopintar-og.jpeg"],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Terms of Service | Vidiopintar",
-    description: "Read Vidiopintar's Terms of Service. Learn about acceptable use, account policies, and your rights as a user.",
-    images: ["/images/vidiopintar-og.jpeg"],
-  },
-  alternates: {
-    canonical: "/terms",
-  },
-}
+export const metadata = buildPageMetadata({
+  title: "Terms of Service",
+  description:
+    "Vidiopintar terms covering acceptable use, accounts, payments, and user rights for our AI YouTube learning platform.",
+  path: "/terms",
+})
 
 export default function TermsOfService() {
-  const lastUpdated = new Date().toLocaleDateString("en-US", {
+  const lastUpdated = SITE_LAST_MODIFIED.toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -68,7 +57,7 @@ export default function TermsOfService() {
     </ul>
 
     <h2>5. Content Ownership and License</h2>
-    <h4>Your Content</h4>
+    <h3>Your Content</h3>
     <p>You retain all ownership rights to the videos and content you upload. By using our Service, you grant us a limited, non-exclusive license to:</p>
     <ul>
       <li>Process your content to provide the requested services</li>
@@ -76,7 +65,7 @@ export default function TermsOfService() {
       <li>Display your content back to you through the Service</li>
       <li>Create backups for service reliability</li>
     </ul>
-    <h4>Our Content</h4>
+    <h3>Our Content</h3>
     <p>The Service, including its design, features, and content (excluding user content), is owned by VidioPintar and protected by intellectual property laws. You may not copy, modify, or reverse engineer any part of our Service.</p>
 
     <h2>6. Payment and Billing</h2>
@@ -87,7 +76,7 @@ export default function TermsOfService() {
       <li>Authorize us to charge your payment method</li>
       <li>Be responsible for all taxes applicable to your use</li>
     </ul>
-    <h4>Refund Policy</h4>
+    <h3>Refund Policy</h3>
     <p>We offer a 7-day money-back guarantee for first-time subscribers. Refunds are not available for:</p>
     <ul>
       <li>Accounts terminated for Terms violations</li>
@@ -187,7 +176,38 @@ export default function TermsOfService() {
               <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl mb-8">
                 Terms of Service
               </h1>
-              <p className="text-muted-foreground mb-12">Last updated: {lastUpdated}</p>
+              <p className="text-muted-foreground mb-12">
+                Last updated:{" "}
+                <time dateTime={SITE_LAST_MODIFIED.toISOString()}>{lastUpdated}</time>
+              </p>
+
+              <nav className="mb-10 flex flex-wrap gap-4 text-sm">
+                <Link href="/privacy" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
+                <Link href="/faq" className="text-primary hover:underline">
+                  FAQ
+                </Link>
+                <Link href="/changelogs" className="text-primary hover:underline">
+                  Changelogs
+                </Link>
+                <a
+                  href="https://github.com/ahmadrosid/vidiopintar.com"
+                  className="text-primary hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+                <a
+                  href="https://platform.openai.com/docs"
+                  className="text-primary hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  OpenAI Docs
+                </a>
+              </nav>
 
               <Typography html={htmlContent} />
             </div>
