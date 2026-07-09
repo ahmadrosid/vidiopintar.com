@@ -4,14 +4,62 @@ interface SystemPromptParams {
   videoTitle?: string;
   videoDescription?: string;
   transcriptText?: string;
+  currentTime?: number;
 }
 
-function generateEnglishPrompt({ videoTitle, videoDescription, transcriptText }: SystemPromptParams): string {
+function formatNotesToolSection(language: Language, currentTime?: number): string {
+  const playbackLine =
+    currentTime != null && currentTime >= 0
+      ? language === "id"
+        ? `Posisi pemutaran saat ini: ${Math.floor(currentTime)} detik`
+        : `Current playback time: ${Math.floor(currentTime)} seconds`
+      : language === "id"
+        ? "Posisi pemutaran saat ini: tidak tersedia"
+        : "Current playback time: not available";
+
+  if (language === "id") {
+    return `# Alat Catatan (createNote)
+Kamu bisa menyimpan catatan bertimestamp untuk pengguna dengan alat createNote.
+
+**Kapan dipakai:** Hanya saat pengguna secara eksplisit minta disimpan/dicatat/diingat (mis. "simpan sebagai catatan", "catat ini").
+**Jangan dipakai:** Ringkasan, penjelasan, atau frasa kasual tanpa permintaan simpan.
+**Aturan timestamp:**
+- Untuk momen spesifik di video, ambil detik dari baris transkrip bertimestamp \`[detik] teks\`.
+- Saat pengguna maksudnya "sekarang" / "momen ini", gunakan posisi pemutaran saat ini di bawah sebagai timestamp pada input alat.
+- Jika timing transkrip tidak ada dan pengguna minta "sekarang" tapi posisi pemutaran tidak tersedia, jangan panggil alat — jelaskan bahwa kamu butuh referensi momen.
+**Default:** warna kuning jika tidak disebut. Hanya buat — tidak edit/hapus lewat chat.
+
+${playbackLine}`;
+  }
+
+  return `# Notes Tool (createNote)
+You can save timestamped notes for the user with the createNote tool.
+
+**When to use:** Only when the user explicitly asks to save, note, or remember something (e.g. "save that as a note").
+**When NOT to use:** Summaries, explanations, or casual phrasing without a save request.
+**Timestamp rules:**
+- For a specific moment, pick seconds from timed transcript lines \`[seconds] text\`.
+- When the user means "now" or "this moment", use the current playback time below as the timestamp in the tool input.
+- If transcript timing is unavailable and the user wants "now" but playback time is unavailable, do not call the tool — explain you need a moment reference.
+**Defaults:** color yellow if unspecified. Create-only — no edit or delete via chat.
+
+${playbackLine}`;
+}
+
+function generateEnglishPrompt({
+  videoTitle,
+  videoDescription,
+  transcriptText,
+  currentTime,
+}: SystemPromptParams): string {
   return [
     `You are an AI assistant helping with a YouTube video.`,
     videoTitle ? `Video Title: ${videoTitle}` : '',
     videoDescription ? `Video Description: ${videoDescription}` : '',
-    transcriptText ? `Video Transcript (partial): ${transcriptText}` : '',
+    transcriptText
+      ? `Video Transcript (timed — each line is [seconds] text):\n${transcriptText}`
+      : '',
+    formatNotesToolSection('en', currentTime),
     `# Communication Guidelines
 - Use markdown formatting throughout responses
 - Respond in English
@@ -42,12 +90,20 @@ Remember: Each paragraph should make them want to read the next one. Think TikTo
   ].filter(Boolean).join('\n\n');
 }
 
-function generateIndonesianPrompt({ videoTitle, videoDescription, transcriptText }: SystemPromptParams): string {
+function generateIndonesianPrompt({
+  videoTitle,
+  videoDescription,
+  transcriptText,
+  currentTime,
+}: SystemPromptParams): string {
   return [
     `Kamu adalah asisten AI yang membantu dengan video YouTube.`,
     videoTitle ? `Judul Video: ${videoTitle}` : '',
     videoDescription ? `Deskripsi Video: ${videoDescription}` : '',
-    transcriptText ? `Transkrip Video (sebagian): ${transcriptText}` : '',
+    transcriptText
+      ? `Transkrip Video (bertimestamp — setiap baris [detik] teks):\n${transcriptText}`
+      : '',
+    formatNotesToolSection('id', currentTime),
     `# Panduan Komunikasi
 - Gunakan format markdown dalam semua respons
 - Respon dalam Bahasa Indonesia

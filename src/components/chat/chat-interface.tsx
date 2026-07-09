@@ -3,7 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { ArrowUp, Square, MessageCircleMore, AlertTriangle, Crown } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ChatContainerRoot, ChatContainerContent, ChatContainerScrollAnchor } from "@/components/ui/chat-container"
@@ -16,6 +16,9 @@ import {
 import { ChatHeader } from "@/components/chat/chat-header";
 import { MessageItem } from "@/components/chat/message-item";
 import { toUIMessages } from "@/lib/ai/messages";
+import type { CreateNoteToolResult } from "@/lib/ai/create-note-tool";
+import { useNotesStore } from "@/stores/notes-store";
+import { useVideoStore } from "@/stores/video-store";
 import { useLocale, useTranslations } from "next-intl";
 
 interface ChatInterfaceProps {
@@ -64,6 +67,35 @@ export function ChatInterface({
     messages: toUIMessages(initialMessages),
   });
 
+  const bumpedNoteTools = useRef(new Set<string>());
+
+  const sendChatMessage = (text: string) => {
+    sendMessage(
+      { text },
+      { body: { currentTime: useVideoStore.getState().currentTime } },
+    );
+  };
+
+  useEffect(() => {
+    for (const message of messages) {
+      if (message.role !== "assistant") continue;
+
+      for (const part of message.parts) {
+        if (part.type !== "tool-createNote") continue;
+        if (part.state !== "output-available") continue;
+
+        const output = part.output as CreateNoteToolResult | undefined;
+        if (!output?.success) continue;
+
+        const key = `${message.id}-${part.toolCallId}`;
+        if (bumpedNoteTools.current.has(key)) continue;
+
+        bumpedNoteTools.current.add(key);
+        useNotesStore.getState().bumpNotes(userVideoId);
+      }
+    }
+  }, [messages, userVideoId]);
+
   const handleSubmit = (event?: { preventDefault?: () => void }) => {
     event?.preventDefault?.();
     const text = input.trim();
@@ -71,7 +103,7 @@ export function ChatInterface({
       return;
     }
 
-    sendMessage({ text });
+    sendChatMessage(text);
     setInput('');
   };
 
@@ -104,7 +136,7 @@ export function ChatInterface({
                   <button
                     key={index}
                     type="button"
-                    onClick={() => sendMessage({ text: question })}
+                    onClick={() => sendChatMessage(question)}
                     className="text-sm text-left p-2 rounded bg-secondary border border-border/25 text-foreground/85 cursor-pointer hover:border-accent-foreground/75">
                     {question}
                   </button>

@@ -1,18 +1,21 @@
-import { convertToModelMessages, streamText } from 'ai';
+import { convertToModelMessages, stepCountIs, streamText } from 'ai';
 
+import { buildCreateNoteTool } from '@/lib/ai/create-note-tool';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
 import { getMessageText } from '@/lib/ai/messages';
+import { getSystemPrompt } from '@/lib/ai/system-prompts';
 import { fetchVideoTranscript, fetchVideoDetails } from '@/lib/youtube';
 import { MessageRepository, UserVideoRepository, VideoRepository } from '@/lib/db/repository';
 import { UsageEventRepository } from '@/lib/db/repository/usage-events';
 import { createStreamTokenTracker } from '@/lib/token-tracker';
 import { getCurrentUser } from '@/lib/auth';
-import { getSystemPrompt } from '@/lib/ai/system-prompts';
 import { UserPlanService } from '@/lib/user-plan-service';
+import { formatTimedTranscriptForChat } from '@/lib/transcript-segments';
+import type { StoredTranscriptSegment } from '@/lib/transcript-segments';
 
 export async function POST(req: Request) {
   try {
-    const { messages, videoId, userVideoId, language } = await req.json();
+    const { messages, videoId, userVideoId, language, currentTime } = await req.json();
     
     const user = await getCurrentUser();
     if (!user) {
@@ -30,6 +33,17 @@ export async function POST(req: Request) {
         JSON.stringify({ error: 'Video context required' }),
         {
           status: 400,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    const userVideo = await UserVideoRepository.getById(userVideoId);
+    if (!userVideo || userVideo.userId !== user.id) {
+      return new Response(
+        JSON.stringify({ error: 'User video not found or unauthorized' }),
+        {
+          status: 404,
           headers: { 'Content-Type': 'application/json' }
         }
       );
@@ -65,12 +79,18 @@ export async function POST(req: Request) {
   let transcriptText = '';
   let videoTitle = '';
   let videoDescription = '';
+  const playbackTime =
+    typeof currentTime === 'number' && Number.isFinite(currentTime) && currentTime >= 0
+      ? currentTime
+      : undefined;
 
   if (videoId) {
     try {
       const transcriptResult = await fetchVideoTranscript(videoId);
       if (transcriptResult?.segments?.length > 0) {
-        transcriptText = transcriptResult.segments.map((seg: any) => seg.text).join('\n');
+        transcriptText = formatTimedTranscriptForChat(
+          transcriptResult.segments as StoredTranscriptSegment[],
+        );
       }
 
       let dbVideo = await VideoRepository.getByYoutubeId(videoId);
@@ -115,11 +135,12 @@ export async function POST(req: Request) {
   }
 
   let modelMessages = convertToModelMessages(messages);
-  if (transcriptText || videoTitle) {
+  if (transcriptText || videoTitle || playbackTime != null) {
     const systemContent = getSystemPrompt(language || 'en', {
       videoTitle,
       videoDescription,
       transcriptText,
+      currentTime: playbackTime,
     });
     
     modelMessages = [
@@ -144,6 +165,13 @@ export async function POST(req: Request) {
       model: aiModel,
       providerOptions: aiProviderOptions,
       messages: modelMessages,
+      tools: {
+        createNote: buildCreateNoteTool({
+          userId: user.id,
+          userVideoId,
+        }),
+      },
+      stopWhen: stepCountIs(5),
       onFinish: async ({ text, totalUsage }) => {
         try {
           await MessageRepository.create({

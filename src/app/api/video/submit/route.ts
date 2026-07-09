@@ -32,7 +32,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check user plan limits
+    const normalizedUrl = normalizeYouTubeUrl(videoUrl);
+    const youtubeVideoId = extractVideoId(normalizedUrl);
+    if (!youtubeVideoId) {
+      return NextResponse.json(
+        { errors: ["Invalid YouTube URL. Please check the URL and try again."] },
+        { status: 400 }
+      );
+    }
+
     const planCheck = await UserPlanService.canAddVideo(user.id, youtubeVideoId);
     if (!planCheck.canAdd) {
       if (planCheck.reason === 'daily_limit_reached') {
@@ -47,15 +55,6 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { errors: ["Unable to add video due to plan restrictions"] },
         { status: 403 }
-      );
-    }
-
-    const normalizedUrl = normalizeYouTubeUrl(videoUrl);
-    const youtubeVideoId = extractVideoId(normalizedUrl);
-    if (!youtubeVideoId) {
-      return NextResponse.json(
-        { errors: ["Invalid YouTube URL. Please check the URL and try again."] },
-        { status: 400 }
       );
     }
 
