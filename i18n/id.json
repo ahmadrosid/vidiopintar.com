@@ -202,9 +202,18 @@
   },
   "profile": {
     "title": "Profil",
+    "subtitle": "Kelola akun, preferensi, dan pengaturan kamu",
+    "accountTab": "Akun",
+    "preferencesTab": "Preferensi",
+    "editProfile": "Edit profil",
+    "memberSince": "Bergabung sejak {date}",
+    "activityChats": "{count, plural, =0 {Belum ada chat} one {1 chat} other {# chat}}",
+    "activityNotes": "{count, plural, =0 {Belum ada catatan} one {1 catatan} other {# catatan}}",
     "preferences": "Preferensi",
-    "selectLanguage": "Pilih Bahasa",
-    "selectTheme": "Pilih Tema",
+    "selectLanguage": "Bahasa",
+    "selectTheme": "Tema",
+    "languageDesc": "Pilih bahasa yang kamu inginkan",
+    "themeDesc": "Pilih tema yang kamu inginkan",
     "light": "Terang",
     "dark": "Gelap",
     "system": "Sistem",
@@ -227,6 +236,7 @@
       "chats": "Chat",
       "notes": "Catatan",
       "shared": "Dibagikan",
+      "billing": "Billing",
       "usage": "Penggunaan"
     },
     "notes": {

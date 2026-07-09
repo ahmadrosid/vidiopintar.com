@@ -8,24 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React, { useEffect, useState } from "react";
 import { LanguageSelector } from "@/components/language-selector";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { Globe, Moon } from "lucide-react";
 
 type Theme = "light" | "dark" | "system";
 
-interface UserPreferencesProps {
-  defaultLanguage?: 'en' | 'id';
-}
-
-export function UserPreferences({ defaultLanguage }: UserPreferencesProps) {
+export function UserPreferences() {
   const { theme, setTheme } = useTheme();
-  const t = useTranslations('profile');
-
-  const handleThemeChange = (theme: Theme) => {
-    setTheme(theme);
-  };
-
+  const t = useTranslations("profile");
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -34,51 +26,61 @@ export function UserPreferences({ defaultLanguage }: UserPreferencesProps) {
 
   if (!isMounted) {
     return (
-      <div className="space-y-6">
-        <div className="p-4 rounded-xs transition-all duration-200 bg-card hover:bg-card/50">
-          <div className="animate-pulse">
-            <div className="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
-            <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-4" />
-            <div className="h-10 w-[200px] bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-4 w-36 bg-gray-200 dark:bg-gray-700 rounded my-4" />
-            <div className="h-10 w-[200px] bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="mt-4 space-y-2">
-              <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded" />
-              <div className="h-3 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
-            </div>
-          </div>
+      <section className="space-y-4">
+        <div className="h-6 w-32 bg-muted rounded animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-36 bg-muted rounded-xl animate-pulse" />
+          <div className="h-36 bg-muted rounded-xl animate-pulse" />
         </div>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="p-4 rounded-xs transition-all duration-200 bg-card hover:bg-card/50">
-        <h3 className="text-lg font-semibold mb-4">{t('preferences')}</h3>
-        <div className="space-y-6">
-          <div>
-            <h4 className="text-sm md:text-base mb-3">{t('selectLanguage')}</h4>
-            <LanguageSelector className="w-full" />
+    <section className="space-y-4">
+      <h2 className="text-lg font-semibold">{t("preferences")}</h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="rounded-xl border bg-card p-4 md:p-5 space-y-4">
+          <div className="flex items-start gap-3">
+            <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium">{t("selectLanguage")}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {t("languageDesc")}
+              </p>
+            </div>
           </div>
-          <div>
-            <h4 className="text-sm md:text-base mb-3">{t('selectTheme')}</h4>
-            <Select value={theme} onValueChange={handleThemeChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={t('selectThemePlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">{t('light')}</SelectItem>
-                <SelectItem value="dark">{t('dark')}</SelectItem>
-                <SelectItem value="system">{t('system')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <LanguageSelector className="w-full" />
         </div>
-        <div className="text-xs md:text-sm text-gray-500 mt-6">
-          <p>{t('preferencesNote')}</p>
+
+        <div className="rounded-xl border bg-card p-4 md:p-5 space-y-4">
+          <div className="flex items-start gap-3">
+            <Moon className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium">{t("selectTheme")}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {t("themeDesc")}
+              </p>
+            </div>
+          </div>
+          <Select
+            value={theme}
+            onValueChange={(value: Theme) => setTheme(value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("selectThemePlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="light">{t("light")}</SelectItem>
+              <SelectItem value="dark">{t("dark")}</SelectItem>
+              <SelectItem value="system">{t("system")}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
-    </div>
+
+      <p className="text-xs text-muted-foreground">{t("preferencesNote")}</p>
+    </section>
   );
 }

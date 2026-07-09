@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ProfileSettings } from "./profile-settings";
-import { UserRepository } from "@/lib/db/repository";
+import { UserPlanService } from "@/lib/user-plan-service";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -10,16 +10,7 @@ export default async function ProfilePage() {
     redirect("/");
   }
 
-  // Get user's language preference from database
-  let userLanguage: 'en' | 'id' = 'en';
-  try {
-    const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
-    if (savedLanguage === 'en' || savedLanguage === 'id') {
-      userLanguage = savedLanguage;
-    }
-  } catch (error) {
-    console.log('Could not get user language preference, using default:', error);
-  }
+  const currentPlan = await UserPlanService.getCurrentPlan(user.id);
 
-  return <ProfileSettings user={user} userLanguage={userLanguage} />;
+  return <ProfileSettings user={user} currentPlan={currentPlan} />;
 }

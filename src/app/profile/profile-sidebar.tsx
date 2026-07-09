@@ -1,44 +1,35 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { 
-  User, 
-  Settings, 
-  MessageSquare, 
-  Share2, 
-  Palette, 
-  Bell,
-  CreditCard,
-  StickyNote
-} from "lucide-react";
+import { User, MessageSquare, Share2, CreditCard, StickyNote } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useTranslations } from 'next-intl';
+import { useTranslations } from "next-intl";
 
-const getSidebarItems = (t: any) => [
+const getSidebarItems = (t: ReturnType<typeof useTranslations<"profile">>) => [
   {
     href: "/profile",
-    label: t('profileSidebar.profile'),
+    label: t("profileSidebar.profile"),
     icon: User,
   },
   {
     href: "/profile/chat",
-    label: t('profileSidebar.chats'),
+    label: t("profileSidebar.chats"),
     icon: MessageSquare,
   },
   {
     href: "/profile/notes",
-    label: t('profileSidebar.notes'),
+    label: t("profileSidebar.notes"),
     icon: StickyNote,
   },
   {
     href: "/profile/shared",
-    label: t('profileSidebar.shared'),
+    label: t("profileSidebar.shared"),
     icon: Share2,
   },
   {
     href: "/profile/billing",
-    label: "Billing",
+    label: t("profileSidebar.billing"),
     icon: CreditCard,
   },
 ];
@@ -48,34 +39,52 @@ interface ProfileSidebarProps {
   isCollapsed?: boolean;
 }
 
-export function ProfileSidebar({ onItemClick, isCollapsed = false }: ProfileSidebarProps) {
+export function ProfileSidebar({
+  onItemClick,
+  isCollapsed = false,
+}: ProfileSidebarProps) {
   const pathname = usePathname();
-  const t = useTranslations('profile');
+  const t = useTranslations("profile");
   const sidebarItems = getSidebarItems(t);
 
   return (
-    <aside className="w-full lg:w-64 p-4 lg:p-0 lg:pr-8">
-      {!isCollapsed && (
-        <h2 className="text-lg font-semibold mb-4 px-3 lg:hidden">{t('profileSidebar.menu')}</h2>
+    <aside
+      className={cn(
+        "flex h-full w-full flex-col",
+        isCollapsed ? "lg:w-14" : "lg:w-full"
       )}
-      <nav className="space-y-1">
+    >
+      {!isCollapsed && (
+        <h2 className="text-lg font-semibold mb-4 px-1 lg:hidden">
+          {t("profileSidebar.menu")}
+        </h2>
+      )}
+      <nav className="flex flex-col gap-1">
         {sidebarItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== "/profile" && pathname?.startsWith(item.href));
+          const isActive =
+            pathname === item.href ||
+            (item.href !== "/profile" && pathname?.startsWith(item.href));
+
           return (
             <Link
               key={item.href}
               href={item.href}
               onClick={onItemClick}
               className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                isCollapsed && "justify-center",
+                "flex items-center gap-3 rounded-lg text-sm font-medium transition-colors",
+                isCollapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
                 isActive
-                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-100"
+                  ? "bg-violet-600/25 text-white"
+                  : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"
               )}
               title={isCollapsed ? item.label : undefined}
             >
-              <item.icon className="h-5 w-5 shrink-0" />
+              <item.icon
+                className={cn(
+                  "h-[18px] w-[18px] shrink-0",
+                  isActive ? "text-white" : "text-zinc-500"
+                )}
+              />
               {!isCollapsed && <span>{item.label}</span>}
             </Link>
           );

@@ -202,9 +202,18 @@
   },
   "profile": {
     "title": "Profile",
+    "subtitle": "Manage your account, preferences, and settings",
+    "accountTab": "Account",
+    "preferencesTab": "Preferences",
+    "editProfile": "Edit profile",
+    "memberSince": "Member since {date}",
+    "activityChats": "{count, plural, =0 {No chats} one {1 chat} other {# chats}}",
+    "activityNotes": "{count, plural, =0 {No notes} one {1 note} other {# notes}}",
     "preferences": "Preferences",
-    "selectLanguage": "Select Language",
-    "selectTheme": "Select Theme",
+    "selectLanguage": "Language",
+    "selectTheme": "Theme",
+    "languageDesc": "Select your preferred language",
+    "themeDesc": "Select your preferred theme",
     "light": "Light",
     "dark": "Dark",
     "system": "System",
@@ -227,6 +236,7 @@
       "chats": "Chats",
       "notes": "Notes",
       "shared": "Shared",
+      "billing": "Billing",
       "usage": "Usage"
     },
     "notes": {
