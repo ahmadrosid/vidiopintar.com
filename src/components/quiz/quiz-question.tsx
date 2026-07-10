@@ -41,7 +41,7 @@ export function QuizQuestionView({
   const revealed = showFeedback && isRevealed(question);
 
   return (
-    <div className="flex h-full flex-col gap-4 p-4">
+    <div className="flex h-full w-full flex-col gap-4 p-4">
       <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         Question {questionNumber} of {totalQuestions}
       </div>

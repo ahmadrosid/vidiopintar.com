@@ -51,7 +51,7 @@ export function QuizResultsView({
   };
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
+    <div className="flex h-full w-full flex-col gap-4 overflow-y-auto p-4">
       <div className="rounded-xl border bg-muted/30 p-5 text-center">
         <p className="text-sm text-muted-foreground">{title}</p>
         <p className="mt-2 text-4xl font-bold tracking-tight">

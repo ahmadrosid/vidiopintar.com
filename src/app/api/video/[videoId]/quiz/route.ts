@@ -164,7 +164,10 @@ export async function POST(
 
     const video = await VideoRepository.getByYoutubeId(videoId);
     const generated = await generateQuizFromTranscript({
-      transcriptSegments: dbSegments.map((seg) => ({ text: seg.text })),
+      transcriptSegments: dbSegments.map((seg) => ({
+        start: seg.start,
+        text: seg.text,
+      })),
       videoTitle: video?.title,
       videoDescription: video?.description || undefined,
       videoId,

@@ -10,9 +10,8 @@ import { useTranslations } from "next-intl";
 import type { Components } from "react-markdown";
 import { useVideoSummary } from "@/hooks/use-video-summary";
 import {
-  isSummaryCitationHref,
+  citationSeekSeconds,
   linkifySummaryCitations,
-  secondsFromCitationHref,
 } from "@/lib/summary-citations";
 import { cn } from "@/lib/utils";
 import { useVideoStore } from "@/stores/video-store";
@@ -40,12 +39,17 @@ export function SummarySection({
   const markdownComponents = useMemo<Partial<Components>>(
     () => ({
       a: ({ href, children, className, ...props }) => {
-        if (href && isSummaryCitationHref(href)) {
-          const seconds = secondsFromCitationHref(href);
-          if (seconds == null) {
-            return <span className={className}>{children}</span>;
-          }
+        const label =
+          typeof children === "string"
+            ? children
+            : Array.isArray(children)
+              ? children
+                  .map((child) => (typeof child === "string" ? child : ""))
+                  .join("")
+              : String(children ?? "");
 
+        const seconds = citationSeekSeconds(href, label);
+        if (seconds != null) {
           return (
             <button
               type="button"
@@ -53,7 +57,7 @@ export function SummarySection({
                 "mx-0.5 inline-flex items-center rounded-md border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-mono text-xs text-primary transition-colors hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
                 className,
               )}
-              aria-label={`${tQuiz("seekToMoment")} ${children}`}
+              aria-label={`${tQuiz("seekToMoment")} ${label}`}
               onClick={() => seekAndPlay(seconds)}
             >
               {children}
