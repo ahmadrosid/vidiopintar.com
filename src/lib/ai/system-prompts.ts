@@ -138,6 +138,14 @@ function generateEnglishSummaryPrompt(): string {
   return `
 Please provide a detailed, well-structured summary of this YouTube video transcript.
 
+The INPUT transcript uses timed lines in the format \`[Ns] text\` where N is seconds into the video. Use only those timestamps for citations.
+
+Citation rules:
+- In **Outline** and **Key Takeaways**, append a citation marker \`[Ns]\` after each grounded bullet when you can tie it to a transcript line (e.g. \`- Main idea [120s]\`).
+- Only use second values that appear in the INPUT transcript lines. Never invent timestamps.
+- If you cannot ground a bullet, omit the marker — still include the bullet (best-effort).
+- Do not fabricate quotes or facts not supported by the transcript.
+
 Your summary should:
 
 1. Identify the main topic and key themes discussed in the content
@@ -166,6 +174,14 @@ Format your output with this markdown structure:
 function generateIndonesianSummaryPrompt(): string {
   return `
 Berikan ringkasan yang detail dan terstruktur dengan baik dari transkrip video YouTube ini.
+
+INPUT transkrip memakai baris bertimestamp \`[Ns] teks\` di mana N adalah detik dalam video. Gunakan hanya timestamp itu untuk sitasi.
+
+Aturan sitasi:
+- Di **Outline** dan **Key Takeaways**, tambahkan marker sitasi \`[Ns]\` setelah setiap bullet yang bisa kamu dasarkan pada baris transkrip (mis. \`- Ide utama [120s]\`).
+- Hanya gunakan nilai detik yang muncul di baris INPUT. Jangan mengarang timestamp.
+- Jika bullet tidak bisa didasarkan, lewati marker — tetap sertakan bullet-nya (best-effort).
+- Jangan mengarang kutipan atau fakta yang tidak didukung transkrip.
 
 Ringkasan kamu harus:
 

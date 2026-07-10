@@ -149,6 +149,15 @@
   "video": {
     "title": "Video",
     "summary": "Summary",
+    "summarySection": {
+      "generate": "Generate",
+      "retry": "Retry",
+      "regenerate": "Regenerate",
+      "notAvailable": "Summary not available",
+      "generationFailed": "Summary generation failed",
+      "copy": "Copy",
+      "copied": "Summary copied to clipboard!"
+    },
     "transcript": "Transcript",
     "notesTab": "Notes",
     "chat": "Chat with Video",

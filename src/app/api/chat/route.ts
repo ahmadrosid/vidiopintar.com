@@ -134,23 +134,16 @@ export async function POST(req: Request) {
     }
   }
 
-  let modelMessages = convertToModelMessages(messages);
-  if (transcriptText || videoTitle || playbackTime != null) {
-    const systemContent = getSystemPrompt(language || 'en', {
-      videoTitle,
-      videoDescription,
-      transcriptText,
-      currentTime: playbackTime,
-    });
-    
-    modelMessages = [
-      {
-        role: 'system',
-        content: systemContent,
-      },
-      ...modelMessages,
-    ];
-  }
+  const modelMessages = convertToModelMessages(messages);
+  const systemContent =
+    transcriptText || videoTitle || playbackTime != null
+      ? getSystemPrompt(language || 'en', {
+          videoTitle,
+          videoDescription,
+          transcriptText,
+          currentTime: playbackTime,
+        })
+      : undefined;
 
     const tokenTracker = createStreamTokenTracker({
       userId: user.id,
@@ -164,6 +157,7 @@ export async function POST(req: Request) {
     const result = streamText({
       model: aiModel,
       providerOptions: aiProviderOptions,
+      ...(systemContent ? { system: systemContent } : {}),
       messages: modelMessages,
       tools: {
         createNote: buildCreateNoteTool({

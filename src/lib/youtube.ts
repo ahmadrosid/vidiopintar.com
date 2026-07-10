@@ -2,7 +2,11 @@ import { VideoRepository, Video, UserRepository } from "@/lib/db/repository";
 import { generateObject } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
 import { fetchTranscriptResponse, fetchVideoInfoFromApi } from '@/lib/transcript-api';
-import { transcriptApiSegmentsToStored } from '@/lib/transcript-segments';
+import {
+  formatTimedTranscriptForChat,
+  type StoredTranscriptSegment,
+  transcriptApiSegmentsToStored,
+} from '@/lib/transcript-segments';
 import { z } from 'zod';
 import { generateSummary } from "@/lib/ai/summary";
 import { getQuickStartPrompt } from "@/lib/ai/system-prompts";
@@ -19,9 +23,13 @@ function pickThumbnailUrl(
   return thumbnails && "high" in thumbnails ? thumbnails.high?.url ?? null : null;
 }
 
-export async function generateUserVideoSummary(video: Video, segments: any[], userVideoId?: number) {
-  const transcriptText = segments.map((seg: {text: string}) => seg.text);
-  const textToSummarize = `${video.title}\n${video.description ?? ""}\n${transcriptText}`;
+export async function generateUserVideoSummary(
+  video: Video,
+  segments: StoredTranscriptSegment[],
+  userVideoId?: number,
+) {
+  const timedTranscript = formatTimedTranscriptForChat(segments);
+  const textToSummarize = `${video.title}\n${video.description ?? ""}\n\n${timedTranscript}`;
 
   let userLanguage: 'en' | 'id' = 'en';
   try {

@@ -5,28 +5,17 @@ import { getSummaryPrompt } from '@/lib/ai/system-prompts';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
 
 export async function generateSummary(text: string, language: 'en' | 'id' = 'en', videoId?: string, userVideoId?: number): Promise<string> {
-  // Limit the input to the first 4000 words to speedup the generation
-  const MAX_WORDS = 4000;
-  let truncatedText = text;
-  const words = text.split(/\s+/);
-  if (words.length > MAX_WORDS) {
-    truncatedText = words.slice(0, MAX_WORDS).join(' ');
-  }
-
   const systemPrompt = getSummaryPrompt(language);
 
     const startTime = Date.now();
     const result = await generateText({
         model: aiModel,
         providerOptions: aiProviderOptions,
+        system: systemPrompt,
         messages: [
             {
-                role: 'system',
-                content: systemPrompt
-            },
-            {
                 role: 'user',
-                content: `INPUT:\n${truncatedText}`
+                content: `INPUT:\n${text}`
             }
         ]
     });

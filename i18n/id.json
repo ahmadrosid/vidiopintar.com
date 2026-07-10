@@ -149,6 +149,15 @@
   "video": {
     "title": "Video",
     "summary": "Ringkasan",
+    "summarySection": {
+      "generate": "Buat Ringkasan",
+      "retry": "Coba Lagi",
+      "regenerate": "Buat Ulang",
+      "notAvailable": "Ringkasan tidak tersedia",
+      "generationFailed": "Gagal membuat ringkasan",
+      "copy": "Salin",
+      "copied": "Ringkasan disalin ke clipboard!"
+    },
     "transcript": "Transkrip",
     "notesTab": "Catatan",
     "chat": "Chat dengan Video",
