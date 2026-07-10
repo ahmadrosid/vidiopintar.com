@@ -5,7 +5,8 @@ export const quizQuestionSchema = z.object({
   options: z.array(z.string()).length(4),
   correctIndex: z.number().int().min(0).max(3),
   explanation: z.string(),
-  timestampSeconds: z.number().optional(),
+  /** Seconds into the video; must match a transcript \`[Ns]\` line when present. */
+  timestampSeconds: z.number().int().nonnegative().optional(),
 });
 
 export const quizGenerationSchema = z.object({

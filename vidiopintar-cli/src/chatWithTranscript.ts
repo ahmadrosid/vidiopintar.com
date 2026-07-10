@@ -61,9 +61,7 @@ ${truncatedTranscript}
 - Use bullet points for lists`;
 
   // Build conversation history
-  const messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = [
-    { role: 'system', content: systemPrompt },
-  ];
+  const messages: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
   // Add recent history (last 5 exchanges to avoid token limits)
   const recentHistory = history.slice(-10); // Keep last 10 messages (5 exchanges)
@@ -82,6 +80,7 @@ ${truncatedTranscript}
           thinking: { type: 'disabled' },
         },
       },
+      system: systemPrompt,
       messages,
       temperature: 0.7,
     });

@@ -86,7 +86,11 @@ export default async function SharedVideoPage(props: SharedVideoPageProps) {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="summary" className="h-full overflow-y-auto p-0 m-0">
-                  <SummarySection videoId={sharedVideo.youtubeId} initialSummary={sharedVideo.summary ?? ""} />
+                  <SummarySection
+                    videoId={sharedVideo.youtubeId}
+                    initialSummary={sharedVideo.summary ?? ""}
+                    allowRegenerate={false}
+                  />
                 </TabsContent>
                 <TabsContent value="transcript" className="h-full overflow-y-auto p-0 m-0">
                   <TranscriptView transcript={transcript} />

@@ -5,9 +5,44 @@ import { getQuizPrompt } from "@/lib/ai/system-prompts";
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from "@/lib/ai/model";
 import { trackGenerateTextUsage } from "@/lib/token-tracker";
 import { quizGenerationSchema } from "@/lib/quiz/types";
+import {
+  formatTimedTranscriptForChat,
+  timeStringToSeconds,
+  type StoredTranscriptSegment,
+} from "@/lib/transcript-segments";
+
+/** Snap a model timestamp to the nearest transcript line start (within maxDeltaSeconds). */
+export function snapTimestampToTranscript(
+  timestampSeconds: number | undefined,
+  transcriptSeconds: number[],
+  maxDeltaSeconds = 15,
+): number | undefined {
+  if (
+    timestampSeconds == null ||
+    !Number.isFinite(timestampSeconds) ||
+    transcriptSeconds.length === 0
+  ) {
+    return undefined;
+  }
+
+  let best: number | undefined;
+  let bestDelta = Infinity;
+  for (const candidate of transcriptSeconds) {
+    const delta = Math.abs(candidate - timestampSeconds);
+    if (delta < bestDelta) {
+      bestDelta = delta;
+      best = candidate;
+    }
+  }
+
+  if (best == null || bestDelta > maxDeltaSeconds) {
+    return undefined;
+  }
+  return best;
+}
 
 export async function generateQuizFromTranscript(input: {
-  transcriptSegments: Array<{ text: string }>;
+  transcriptSegments: Array<Pick<StoredTranscriptSegment, "start" | "text">>;
   videoTitle?: string;
   videoDescription?: string;
   videoId?: string;
@@ -27,9 +62,21 @@ export async function generateQuizFromTranscript(input: {
     );
   }
 
-  const fullTranscript = input.transcriptSegments.map((seg) => seg.text).join(" ");
-  const words = fullTranscript.split(/\s+/);
-  const truncatedTranscript = words.slice(0, 6000).join(" ");
+  const segments: StoredTranscriptSegment[] = input.transcriptSegments.map(
+    (seg) => ({
+      start: seg.start,
+      end: seg.start,
+      text: seg.text,
+      isChapterStart: false,
+    }),
+  );
+
+  const timedTranscript = formatTimedTranscriptForChat(segments);
+  const transcriptSeconds = [
+    ...new Set(
+      segments.map((seg) => timeStringToSeconds(seg.start)).filter((s) => s >= 0),
+    ),
+  ].sort((a, b) => a - b);
 
   let contextSection = "";
   if (input.videoTitle) {
@@ -42,10 +89,10 @@ export async function generateQuizFromTranscript(input: {
   const promptText = getQuizPrompt(userLanguage);
   const prompt = `${promptText}
 
-${contextSection ? `${contextSection}\n` : ""}Here is the video transcript:
+${contextSection ? `${contextSection}\n` : ""}Here is the video transcript (timed — each line is [seconds] text):
 
 <transcript>
-${truncatedTranscript}
+${timedTranscript}
 </transcript>
 `;
 
@@ -72,8 +119,16 @@ ${truncatedTranscript}
     console.error("Failed to track quiz generation token usage:", error);
   }
 
+  const questions = result.object.questions.map((question) => ({
+    ...question,
+    timestampSeconds: snapTimestampToTranscript(
+      question.timestampSeconds,
+      transcriptSeconds,
+    ),
+  }));
+
   return {
-    questions: result.object.questions,
+    questions,
     language: userLanguage,
   };
 }

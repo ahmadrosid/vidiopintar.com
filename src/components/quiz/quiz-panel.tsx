@@ -199,7 +199,7 @@ export function QuizPanel({ videoId, enabled }: QuizPanelProps) {
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center p-6">
+      <div className="flex h-full w-full items-center justify-center p-6">
         <Loader2 className="size-6 animate-spin text-muted-foreground" />
       </div>
     );
@@ -212,7 +212,7 @@ export function QuizPanel({ videoId, enabled }: QuizPanelProps) {
 
   if (showUpgrade && !quiz) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6 text-center">
         <AlertTriangle className="size-10 text-amber-500" />
         <div className="space-y-2">
           <p className="font-semibold">{t("upgradeTitle")}</p>
@@ -230,7 +230,7 @@ export function QuizPanel({ videoId, enabled }: QuizPanelProps) {
 
   if (!quiz) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 p-6 text-center">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6 text-center">
         <div className="space-y-2">
           <p className="font-semibold">{t("emptyTitle")}</p>
           <p className="text-sm text-muted-foreground">{t("emptyDescription")}</p>
