@@ -15,11 +15,15 @@ export const env = createEnv({
           ? "/data/vidiopintar.db"
           : "./data/vidiopintar.db",
       ),
-    NEXT_PUBLIC_SITE_URL: z.string().min(1).default("http://localhost:3000"),
     ADMIN_MASTER_EMAIL: z.string().email(),
     TRANSCRIPT_API_KEY: z.string().min(1),
   },
+  client: {
+    NEXT_PUBLIC_SITE_URL: z.string().min(1).default("http://localhost:3000"),
+  },
   emptyStringAsUndefined: true,
-  experimental__runtimeEnv: process.env,
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  },
   skipValidation: true,
 });
