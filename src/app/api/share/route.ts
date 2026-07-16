@@ -53,5 +53,5 @@ async function createSharedVideo(youtubeId: string, userVideoId: number): Promis
 export async function POST(req: Request) {
     const { youtubeId, userVideoId } = await req.json();
     const slug = await createSharedVideo(youtubeId, userVideoId);
-    return Response.json({ url: `${env.BETTER_AUTH_URL}/shared/${slug}` });
+    return Response.json({ url: `${env.NEXT_PUBLIC_SITE_URL}/shared/${slug}` });
 }

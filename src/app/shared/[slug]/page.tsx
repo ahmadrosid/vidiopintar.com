@@ -47,7 +47,7 @@ export default async function SharedVideoPage(props: SharedVideoPageProps) {
 
   const user = await getOptionalUser();
   const isLoggedIn = !!user;
-  const shareChatUrl = `${env.BETTER_AUTH_URL}/shared/${slug}`;
+  const shareChatUrl = `${env.NEXT_PUBLIC_SITE_URL}/shared/${slug}`;
   const sharedVideo = await SharedVideoRepository.getBySlugWithDetails(slug);
 
   if (!sharedVideo || !sharedVideo.userVideoId) {

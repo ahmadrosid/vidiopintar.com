@@ -15,7 +15,7 @@ export const env = createEnv({
           ? "/data/vidiopintar.db"
           : "./data/vidiopintar.db",
       ),
-    BETTER_AUTH_URL: z.string().min(1),
+    NEXT_PUBLIC_SITE_URL: z.string().min(1).default("http://localhost:3000"),
     ADMIN_MASTER_EMAIL: z.string().email(),
     TRANSCRIPT_API_KEY: z.string().min(1),
   },

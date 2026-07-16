@@ -162,17 +162,17 @@ export async function getRetentionCohorts(): Promise<RetentionCohort[]> {
         cu.id,
         cu.cohort_period,
         cu.signup_date,
-        MIN(s.created_at) as first_return,
-        MAX(CASE WHEN date(s.created_at) > date(cu.signup_date) 
-                  AND s.created_at <= datetime(cu.signup_date, '+1 day') THEN s.created_at END) as day1_activity,
-        MAX(CASE WHEN date(s.created_at) > date(cu.signup_date) 
-                  AND s.created_at <= datetime(cu.signup_date, '+3 days') THEN s.created_at END) as day3_activity,
-        MAX(CASE WHEN date(s.created_at) > date(cu.signup_date) 
-                  AND s.created_at <= datetime(cu.signup_date, '+5 days') THEN s.created_at END) as day5_activity,
-        MAX(CASE WHEN date(s.created_at) > date(cu.signup_date) 
-                  AND s.created_at <= datetime(cu.signup_date, '+7 days') THEN s.created_at END) as day7_activity
+        MIN(uv.created_at) as first_return,
+        MAX(CASE WHEN date(uv.created_at) > date(cu.signup_date) 
+                  AND uv.created_at <= datetime(cu.signup_date, '+1 day') THEN uv.created_at END) as day1_activity,
+        MAX(CASE WHEN date(uv.created_at) > date(cu.signup_date) 
+                  AND uv.created_at <= datetime(cu.signup_date, '+3 days') THEN uv.created_at END) as day3_activity,
+        MAX(CASE WHEN date(uv.created_at) > date(cu.signup_date) 
+                  AND uv.created_at <= datetime(cu.signup_date, '+5 days') THEN uv.created_at END) as day5_activity,
+        MAX(CASE WHEN date(uv.created_at) > date(cu.signup_date) 
+                  AND uv.created_at <= datetime(cu.signup_date, '+7 days') THEN uv.created_at END) as day7_activity
       FROM cohort_users cu
-      LEFT JOIN session s ON cu.id = s.user_id 
+      LEFT JOIN user_videos uv ON cu.id = uv.user_id 
       GROUP BY cu.id, cu.cohort_period, cu.signup_date
     )
     SELECT 

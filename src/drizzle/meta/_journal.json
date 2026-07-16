@@ -29,6 +29,13 @@
       "when": 1783431600000,
       "tag": "0003_quizzes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1783435200000,
+      "tag": "0004_drop_better_auth_tables",
+      "breakpoints": true
     }
   ]
 }

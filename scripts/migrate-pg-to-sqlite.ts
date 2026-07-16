@@ -50,9 +50,6 @@ const pool = new Pool({ connectionString: pgUrl, ssl: { rejectUnauthorized: fals
 
 const TABLES_IN_ORDER = [
   "user",
-  "account",
-  "session",
-  "verification",
   "videos",
   "user_videos",
   "messages",

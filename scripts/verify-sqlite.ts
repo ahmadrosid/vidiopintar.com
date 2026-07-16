@@ -40,20 +40,20 @@ function main() {
 
   const tableNames = tables.map((r) => r.name);
   const expectedTables = [
-    "account",
     "feedback",
     "messages",
     "notes",
     "payment_settings",
-    "session",
+    "quiz_attempts",
     "shared_videos",
     "token_usage",
     "transactions",
     "transcript_segments",
     "transcript_cache",
     "user",
+    "user_usage_events",
     "user_videos",
-    "verification",
+    "video_quizzes",
     "videos",
   ];
 

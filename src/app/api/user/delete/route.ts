@@ -3,7 +3,6 @@ import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema/auth";
 import { eq } from "drizzle-orm";
-import { cookies } from "next/headers";
 
 export async function DELETE() {
   try {
@@ -12,11 +11,7 @@ export async function DELETE() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Delete user from database
     await db.delete(user).where(eq(user.id, currentUser.id));
-
-    // Clear session cookies
-    (await cookies()).delete("session");
 
     return NextResponse.json({ success: true });
   } catch (error) {
