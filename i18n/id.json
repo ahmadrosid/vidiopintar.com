@@ -1,6 +1,9 @@
 {
   "navigation": {
     "home": "Beranda",
+    "explore": "Jelajahi",
+    "library": "Perpustakaan Saya",
+    "history": "Riwayat",
     "profile": "Profil",
     "notes": "Catatan",
     "admin": "Admin",
@@ -8,7 +11,8 @@
     "register": "Daftar",
     "logout": "Keluar",
     "signUp": "Daftar",
-    "getStarted": "Mulai Sekarang"
+    "getStarted": "Mulai Sekarang",
+    "searchPlaceholder": "Cari apa saja..."
   },
   "hero": {
     "title": "Jangan Hanya Menonton YouTube — Belajarlah Darinya",
@@ -123,9 +127,24 @@
     "success": "Berhasil"
   },
   "home": {
+    "welcome": "Selamat datang kembali! 👋",
     "title": "Vidiopintar",
     "subtitle": "Apa yang ingin kamu pelajari hari ini?",
     "lastNotes": "Catatan terakhir"
+  },
+  "emptyPages": {
+    "explore": {
+      "title": "Jelajahi",
+      "description": "Segera hadir — temukan video dan topik baru untuk dipelajari."
+    },
+    "library": {
+      "title": "Perpustakaan Saya",
+      "description": "Segera hadir — koleksi tersimpanmu akan berada di sini."
+    },
+    "history": {
+      "title": "Riwayat",
+      "description": "Segera hadir — riwayat tontonanmu akan muncul di sini."
+    }
   },
   "topicMarquee": {
     "title": "Pelajari topik apa pun dari YouTube",

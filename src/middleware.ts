@@ -4,6 +4,10 @@ import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/geo/site";
 
 const isProtectedRoute = createRouteMatcher([
   "/home(.*)",
+  "/explore(.*)",
+  "/library(.*)",
+  "/history(.*)",
+  "/notes(.*)",
   "/profile(.*)",
   "/admin(.*)",
 ]);

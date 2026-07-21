@@ -35,33 +35,33 @@ export function VideoList({ videos }: VideoListProps) {
   return (
     <>
       <DeleteVideoDialog />
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {videos.map((video) => (
-          <div key={video.userVideoId} className="relative group">
+          <div key={video.userVideoId} className="group relative">
             <a href={`/video/${video.youtubeId}`}>
-              <Card className="overflow-hidden rounded-xs shadow-none border-none bg-card hover:bg-card/50 transition-all duration-200">
-                <CardContent className="p-0 relative">
+              <Card className="overflow-hidden rounded-xl border-none bg-transparent shadow-none transition-all duration-200 hover:opacity-95">
+                <CardContent className="relative p-0">
                   <img
                     src={video.thumbnailUrl!}
                     alt={video.title}
-                    className="object-cover w-full h-40"
+                    className="h-40 w-full rounded-xl object-cover"
                   />
                   <button
-                    className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white dark:text-black p-1 rounded-lg z-10 cursor-pointer hover:text-red-500/80"
+                    className="absolute bottom-2 right-2 z-10 cursor-pointer rounded-lg bg-black/80 p-1.5 text-white opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
                       openDialog(video.userVideoId);
                     }}
                   >
-                    <Trash2 className="size-4 text-foreground" />
+                    <Trash2 className="size-4" />
                   </button>
                 </CardContent>
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg truncate">
+                <CardHeader className="space-y-1 px-0 pt-3 pb-0">
+                  <CardTitle className="line-clamp-2 text-base leading-snug">
                     {video.title}
                   </CardTitle>
-                  <CardDescription className="text-sm text-muted-foreground truncate">
+                  <CardDescription className="truncate text-sm text-muted-foreground">
                     {video.channelTitle}
                   </CardDescription>
                 </CardHeader>
