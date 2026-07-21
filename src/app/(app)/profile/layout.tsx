@@ -1,6 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { ProfileContent } from "./profile-content";
 
 export default async function ProfileLayout({
   children,
@@ -13,5 +12,7 @@ export default async function ProfileLayout({
     redirect("/");
   }
 
-  return <ProfileContent user={user}>{children}</ProfileContent>;
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8">{children}</div>
+  );
 }

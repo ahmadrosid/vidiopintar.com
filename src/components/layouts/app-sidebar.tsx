@@ -9,7 +9,9 @@ import {
   Books,
   Note,
   ClockCounterClockwise,
-  CaretDown,
+  ChatCircle,
+  ShareNetwork,
+  CreditCard,
 } from "@phosphor-icons/react";
 import { Logo } from "@/components/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,10 +24,21 @@ const navItems = [
   { href: "/library", key: "library" as const, icon: Books },
   { href: "/notes", key: "notes" as const, icon: Note },
   { href: "/history", key: "history" as const, icon: ClockCounterClockwise },
+  { href: "/profile/chat", key: "chats" as const, icon: ChatCircle },
+  { href: "/profile/shared", key: "shared" as const, icon: ShareNetwork },
+  { href: "/profile/billing", key: "billing" as const, icon: CreditCard },
 ];
 
 interface AppSidebarProps {
   onNavigate?: () => void;
+}
+
+function isNavActive(pathname: string | null, href: string) {
+  if (!pathname) return false;
+  if (href === "/profile") {
+    return pathname === "/profile";
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function AppSidebar({ onNavigate }: AppSidebarProps) {
@@ -33,7 +46,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const t = useTranslations("navigation");
   const { data: session } = useSession();
   const user = session?.user;
-  const isProfileActive = pathname === "/profile" || pathname?.startsWith("/profile/");
+  const isProfileActive = pathname === "/profile";
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
@@ -43,10 +56,9 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
         </Link>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 px-3 py-2">
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-2">
         {navItems.map((item) => {
-          const isActive =
-            pathname === item.href || pathname?.startsWith(`${item.href}/`);
+          const isActive = isNavActive(pathname, item.href);
 
           return (
             <Link
@@ -91,7 +103,6 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
             </AvatarFallback>
           </Avatar>
           <span className="flex-1 truncate">{t("profile")}</span>
-          <CaretDown className="size-4 shrink-0 opacity-60" />
         </Link>
       </div>
     </aside>
