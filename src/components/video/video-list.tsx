@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import {
   Card,
@@ -29,7 +30,7 @@ export function VideoList({ videos }: VideoListProps) {
 
   if (!videos || videos.length === 0)
     return (
-      <p className="text-center text-muted-foreground mt-10">No videos yet.</p>
+      <p className="mt-10 text-center text-muted-foreground">No videos yet.</p>
     );
 
   return (
@@ -39,14 +40,21 @@ export function VideoList({ videos }: VideoListProps) {
         {videos.map((video) => (
           <div key={video.userVideoId} className="group relative">
             <a href={`/video/${video.youtubeId}`}>
-              <Card className="overflow-hidden rounded-xl border-none bg-transparent shadow-none transition-all duration-200 hover:opacity-95">
+              <Card className="overflow-hidden rounded-xl border-none bg-transparent shadow-none transition-opacity duration-200 hover:opacity-95">
                 <CardContent className="relative p-0">
-                  <img
-                    src={video.thumbnailUrl!}
-                    alt={video.title}
-                    className="h-40 w-full rounded-xl object-cover"
-                  />
+                  <div className="relative h-40 w-full overflow-hidden rounded-xl">
+                    {video.thumbnailUrl ? (
+                      <Image
+                        src={video.thumbnailUrl}
+                        alt={video.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      />
+                    ) : null}
+                  </div>
                   <button
+                    type="button"
                     className="absolute bottom-2 right-2 z-10 cursor-pointer rounded-lg bg-black/80 p-1.5 text-white opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation();
