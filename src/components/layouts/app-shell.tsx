@@ -7,11 +7,25 @@ import { cn } from "@/lib/utils";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
     <div className="flex h-dvh overflow-hidden bg-background text-foreground">
-      <div className="hidden md:flex">
-        <AppSidebar />
+      <div
+        className={cn(
+          "hidden overflow-hidden transition-[width] duration-300 ease-in-out md:block",
+          sidebarCollapsed ? "w-0 pointer-events-none" : "w-64"
+        )}
+        aria-hidden={sidebarCollapsed}
+      >
+        <div
+          className={cn(
+            "h-full w-64 transition-transform duration-300 ease-in-out",
+            sidebarCollapsed ? "-translate-x-full" : "translate-x-0"
+          )}
+        >
+          <AppSidebar onCollapse={() => setSidebarCollapsed(true)} />
+        </div>
       </div>
 
       {mobileOpen && (
@@ -33,7 +47,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <AppTopbar onMenuClick={() => setMobileOpen(true)} />
+        <AppTopbar
+          onMenuClick={() => setMobileOpen(true)}
+          sidebarCollapsed={sidebarCollapsed}
+          onExpandSidebar={() => setSidebarCollapsed(false)}
+        />
         <main className="min-h-0 flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>

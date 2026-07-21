@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Menu, Search } from "lucide-react";
+import { LogOut, Menu, PanelLeft, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useClerk } from "@clerk/nextjs";
 import { LanguageSelector } from "@/components/language-selector";
@@ -8,9 +8,15 @@ import { Button } from "@/components/ui/button";
 
 interface AppTopbarProps {
   onMenuClick?: () => void;
+  sidebarCollapsed?: boolean;
+  onExpandSidebar?: () => void;
 }
 
-export function AppTopbar({ onMenuClick }: AppTopbarProps) {
+export function AppTopbar({
+  onMenuClick,
+  sidebarCollapsed,
+  onExpandSidebar,
+}: AppTopbarProps) {
   const t = useTranslations("navigation");
   const { signOut } = useClerk();
 
@@ -30,6 +36,19 @@ export function AppTopbar({ onMenuClick }: AppTopbarProps) {
       >
         <Menu className="size-5" />
       </Button>
+
+      {sidebarCollapsed && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="hidden size-8 shrink-0 cursor-pointer text-muted-foreground hover:text-foreground md:inline-flex"
+          onClick={onExpandSidebar}
+          aria-label="Expand sidebar"
+        >
+          <PanelLeft className="size-4" />
+        </Button>
+      )}
 
       <div className="relative mr-auto flex h-9 w-full max-w-xs items-center">
         <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />

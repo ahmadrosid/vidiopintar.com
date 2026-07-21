@@ -11,8 +11,10 @@ import {
   ShareNetwork,
   CreditCard,
 } from "@phosphor-icons/react";
+import { PanelLeftClose } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/auth-client";
 
@@ -28,6 +30,7 @@ const navItems = [
 
 interface AppSidebarProps {
   onNavigate?: () => void;
+  onCollapse?: () => void;
 }
 
 function isNavActive(pathname: string | null, href: string) {
@@ -38,7 +41,7 @@ function isNavActive(pathname: string | null, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AppSidebar({ onNavigate }: AppSidebarProps) {
+export function AppSidebar({ onNavigate, onCollapse }: AppSidebarProps) {
   const pathname = usePathname();
   const t = useTranslations("navigation");
   const { data: session } = useSession();
@@ -47,10 +50,22 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
-      <div className="flex h-14 items-center px-5">
-        <Link href="/home" onClick={onNavigate} className="text-foreground">
+      <div className="flex h-14 items-center gap-2 px-3 pl-5">
+        <Link href="/home" onClick={onNavigate} className="mr-auto text-foreground">
           <Logo />
         </Link>
+        {onCollapse && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-8 shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
+            onClick={onCollapse}
+            aria-label="Collapse sidebar"
+          >
+            <PanelLeftClose className="size-4" />
+          </Button>
+        )}
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-2">
