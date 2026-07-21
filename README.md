@@ -2,9 +2,9 @@
 
 AI-powered YouTube video learning platform. Submit a YouTube link to get video summaries and chat with the content using AI.
 
-![Demo 1](http://res.cloudinary.com/dr15yjl8w/image/upload/v1750910596/public/gtvf4kejtuxr3fvethqe.png)
+![Demo 1](./vidiopintar.png)
 
-![Demo 2](http://res.cloudinary.com/dr15yjl8w/image/upload/v1750910570/public/jke8sblctm6hmqnbpfnp.png)
+![Demo 2](./vidiopintar-player.png)
 
 ## Tech Stack
 
