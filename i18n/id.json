@@ -151,6 +151,7 @@
     "searchPlaceholder": "Cari di perpustakaan...",
     "all": "Semua",
     "addedAgo": "Ditambahkan {time} lalu",
+    "empty": "Belum ada video di perpustakaanmu.",
     "emptyCategory": "Belum ada {category}.",
     "categories": {
       "all": "Semua",

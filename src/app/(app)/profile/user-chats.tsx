@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Markdown } from "@/components/ui/markdown";
 import { getTranslations } from 'next-intl/server';
 import { MessageSquare } from "lucide-react";
+import { ClockCounterClockwise } from "@phosphor-icons/react/ssr";
 
 interface UserChatsProps {
   userId: string;
@@ -56,7 +57,7 @@ export async function UserChats({ userId }: UserChatsProps) {
   if (chats.length === 0) {
     return (
       <div className="p-12 text-center">
-        <MessageSquare className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+        <ClockCounterClockwise className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
         <p className="text-muted-foreground">{t('userChats.empty')}</p>
       </div>
     );

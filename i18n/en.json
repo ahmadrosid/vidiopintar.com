@@ -33,6 +33,7 @@
     "searchPlaceholder": "Search in your library...",
     "all": "All",
     "addedAgo": "Added {time} ago",
+    "empty": "No videos in your library yet.",
     "emptyCategory": "No {category} yet.",
     "categories": {
       "all": "All",

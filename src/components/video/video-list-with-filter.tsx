@@ -110,6 +110,13 @@ export function VideoListWithFilter({
   }, [videos, selectedChannel, searchQuery, sortBy, tLibrary]);
 
   if (!videos || videos.length === 0) {
+    if (variant === "library") {
+      return (
+        <p className="py-16 text-center text-sm text-muted-foreground">
+          {tLibrary("empty")}
+        </p>
+      );
+    }
     return <RecommendedVideos />;
   }
 

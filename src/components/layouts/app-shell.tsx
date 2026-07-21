@@ -1,9 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { AppTopbar } from "@/components/layouts/app-topbar";
 import { cn } from "@/lib/utils";
+
+const mobileSidebarTransition = {
+  type: "tween" as const,
+  duration: 0.28,
+  ease: [0.32, 0.72, 0, 1] as const,
+};
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -28,23 +35,33 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/60"
-            aria-label="Close menu"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div
-            className={cn(
-              "absolute inset-y-0 left-0 z-50 shadow-xl transition-transform"
-            )}
-          >
-            <AppSidebar onNavigate={() => setMobileOpen(false)} />
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileOpen ? (
+          <>
+            <motion.button
+              key="mobile-backdrop"
+              type="button"
+              className="fixed inset-0 z-40 bg-black/60 md:hidden"
+              aria-label="Close menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              key="mobile-sidebar"
+              className="fixed inset-y-0 left-0 z-50 shadow-xl md:hidden"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={mobileSidebarTransition}
+            >
+              <AppSidebar onNavigate={() => setMobileOpen(false)} />
+            </motion.div>
+          </>
+        ) : null}
+      </AnimatePresence>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <AppTopbar

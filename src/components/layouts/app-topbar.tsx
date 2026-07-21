@@ -30,7 +30,7 @@ export function AppTopbar({
         type="button"
         variant="ghost"
         size="icon"
-        className="shrink-0 md:hidden"
+        className="shrink-0 cursor-pointer md:hidden"
         onClick={onMenuClick}
         aria-label="Open menu"
       >
