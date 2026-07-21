@@ -35,14 +35,19 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
   }, [videoId])
 
   useEffect(() => {
-    if (!isReady || tParam == null) return
+    if (!isReady) {
+      lastAppliedTRef.current = null
+      return
+    }
+    if (tParam == null) return
 
     const seconds = Number.parseInt(tParam, 10)
     if (!Number.isFinite(seconds) || seconds < 0) return
     if (lastAppliedTRef.current === tParam) return
 
-    lastAppliedTRef.current = tParam
-    seekAndPlay(seconds)
+    if (seekAndPlay(seconds)) {
+      lastAppliedTRef.current = tParam
+    }
   }, [isReady, tParam, seekAndPlay])
 
   useEffect(() => {

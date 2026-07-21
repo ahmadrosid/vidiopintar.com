@@ -126,13 +126,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   }, [filteredDestinations, notes, query, videos]);
 
   useEffect(() => {
-    if (!open) return;
-    setQuery("");
-    setVideos([]);
-    setNotes([]);
-    setError(null);
-    setLoading(false);
-    setActiveIndex(0);
+    if (!open) {
+      setQuery("");
+      setVideos([]);
+      setNotes([]);
+      setError(null);
+      setLoading(false);
+      setActiveIndex(0);
+      return;
+    }
     const frame = requestAnimationFrame(() => inputRef.current?.focus());
     return () => cancelAnimationFrame(frame);
   }, [open]);
@@ -226,6 +228,11 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const isEmpty = flatItems.length === 0 && !loading;
   const activeId = flatItems[activeIndex]?.id;
 
+  useEffect(() => {
+    if (!open || !activeId) return;
+    document.getElementById(activeId)?.scrollIntoView({ block: "nearest" });
+  }, [activeId, open]);
+
   const videoOffset = filteredDestinations.length;
   const noteOffset = videoOffset + (showVideos ? videos.length : 0);
 
@@ -250,6 +257,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={onKeyDown}
             placeholder={tNav("searchPlaceholder")}
+            aria-label={t("title")}
             className="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             role="combobox"
             aria-expanded={open}
@@ -295,6 +303,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                         type="button"
                         id={item?.id}
                         role="option"
+                        tabIndex={-1}
                         aria-selected={isActive}
                         className={cn(
                           "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm",
@@ -331,6 +340,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                         type="button"
                         id={item?.id}
                         role="option"
+                        tabIndex={-1}
                         aria-selected={isActive}
                         className={cn(
                           "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm",
@@ -376,6 +386,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
                         type="button"
                         id={item?.id}
                         role="option"
+                        tabIndex={-1}
                         aria-selected={isActive}
                         className={cn(
                           "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm",
