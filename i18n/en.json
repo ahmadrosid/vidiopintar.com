@@ -27,6 +27,29 @@
       "description": "Your saved library will live here. Coming soon."
     }
   },
+  "library": {
+    "title": "My Library",
+    "subtitle": "Your saved videos and learning materials",
+    "searchPlaceholder": "Search in your library...",
+    "all": "All",
+    "addedAgo": "Added {time} ago",
+    "emptyCategory": "No {category} yet.",
+    "categories": {
+      "all": "All",
+      "videos": "Videos",
+      "notes": "Notes",
+      "quizzes": "Quizzes"
+    },
+    "sort": {
+      "recent": "Sort by: Recent",
+      "title": "Sort by: Title",
+      "channel": "Sort by: Channel"
+    },
+    "view": {
+      "grid": "Grid view",
+      "list": "List view"
+    }
+  },
   "hero": {
     "title": "Don't Just Watch YouTube — Learn From It",
     "subtitle": "Get instant \"aha moments\" from any YouTube video. Get key insights, connects the dots, and helps you build real knowledge — not just watch time."

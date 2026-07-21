@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   House,
-  Compass,
   Books,
   Note,
   ClockCounterClockwise,
@@ -19,7 +18,7 @@ import { useSession } from "@/lib/auth-client";
 
 const navItems = [
   { href: "/home", key: "home" as const, icon: House },
-  { href: "/explore", key: "explore" as const, icon: Compass },
+  // Explore hidden from sidebar for now — page still available at /explore
   { href: "/library", key: "library" as const, icon: Books },
   { href: "/notes", key: "notes" as const, icon: Note },
   { href: "/profile/chat", key: "chats" as const, icon: ClockCounterClockwise },

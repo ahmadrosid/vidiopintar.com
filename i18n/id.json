@@ -145,6 +145,29 @@
       "description": "Segera hadir — koleksi tersimpanmu akan berada di sini."
     }
   },
+  "library": {
+    "title": "Perpustakaan Saya",
+    "subtitle": "Video tersimpan dan materi belajarmu",
+    "searchPlaceholder": "Cari di perpustakaan...",
+    "all": "Semua",
+    "addedAgo": "Ditambahkan {time} lalu",
+    "emptyCategory": "Belum ada {category}.",
+    "categories": {
+      "all": "Semua",
+      "videos": "Video",
+      "notes": "Catatan",
+      "quizzes": "Kuis"
+    },
+    "sort": {
+      "recent": "Urutkan: Terbaru",
+      "title": "Urutkan: Judul",
+      "channel": "Urutkan: Channel"
+    },
+    "view": {
+      "grid": "Tampilan kisi",
+      "list": "Tampilan daftar"
+    }
+  },
   "topicMarquee": {
     "title": "Pelajari topik apa pun dari YouTube",
     "topics": {
