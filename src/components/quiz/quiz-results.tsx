@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import type { RevealedQuizQuestion } from "@/lib/quiz/types";
-import { Play } from "lucide-react";
+import { Loader2, Play } from "lucide-react";
 import { useVideoStore } from "@/stores/video-store";
 
 type QuizResultsProps = {
@@ -14,12 +14,14 @@ type QuizResultsProps = {
   retryLabel: string;
   retryWithProLabel: string;
   generateNewLabel: string;
+  generatingLabel: string;
   title: string;
   reviewTitle: string;
   seekLabel: string;
   upgradeRequired: boolean;
   canRetry: boolean;
   canGenerate: boolean;
+  isGenerating?: boolean;
   onUpgrade: () => void;
 };
 
@@ -32,12 +34,14 @@ export function QuizResultsView({
   retryLabel,
   retryWithProLabel,
   generateNewLabel,
+  generatingLabel,
   title,
   reviewTitle,
   seekLabel,
   upgradeRequired,
   canRetry,
   canGenerate,
+  isGenerating = false,
   onUpgrade,
 }: QuizResultsProps) {
   const seekAndPlay = useVideoStore((state) => state.seekAndPlay);
@@ -89,13 +93,25 @@ export function QuizResultsView({
         </p>
       )}
 
-      <div className="mt-auto flex flex-col gap-2 pt-2">
-        <Button className="w-full" onClick={handleRetry}>
+      <div className="flex flex-col gap-2 pt-2">
+        <Button className="w-full" onClick={handleRetry} disabled={isGenerating}>
           {!canRetry || upgradeRequired ? retryWithProLabel : retryLabel}
         </Button>
         {onGenerateNew && canGenerate && (
-          <Button variant="outline" className="w-full" onClick={onGenerateNew}>
-            {generateNewLabel}
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={onGenerateNew}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                {generatingLabel}
+              </>
+            ) : (
+              generateNewLabel
+            )}
           </Button>
         )}
       </div>

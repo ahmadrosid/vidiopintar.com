@@ -272,12 +272,14 @@ export function QuizPanel({ videoId, enabled }: QuizPanelProps) {
         retryLabel={t("retry")}
         retryWithProLabel={t("retryWithPro")}
         generateNewLabel={t("generateNew")}
+        generatingLabel={t("generating")}
         title={t("resultsTitle")}
         reviewTitle={t("reviewTitle")}
         seekLabel={t("seekToMoment")}
         upgradeRequired={Boolean(entitlements?.upgradeRequired)}
         canRetry={Boolean(entitlements?.canRetry)}
         canGenerate={Boolean(entitlements?.canGenerate)}
+        isGenerating={isGenerating}
         onUpgrade={() => {
           window.location.href = "/profile/billing";
         }}

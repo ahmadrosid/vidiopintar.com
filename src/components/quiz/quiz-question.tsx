@@ -114,7 +114,7 @@ export function QuizQuestionView({
       )}
 
       {showFeedback && onNext && (
-        <div className="mt-auto pt-2">
+        <div className="pt-2">
           <Button className="w-full" onClick={onNext}>
             {nextLabel}
           </Button>
