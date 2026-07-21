@@ -1,8 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { ProfileContent } from "./profile-content";
-import { FooterSection } from "@/components/footer";
-import { HeroHeader } from "@/components/hero-header";
 
 export default async function ProfileLayout({
   children,
@@ -15,13 +13,5 @@ export default async function ProfileLayout({
     redirect("/");
   }
 
-  return (
-    <>
-      <HeroHeader />
-      <ProfileContent user={user}>
-        {children}
-      </ProfileContent>
-      <FooterSection />
-    </>
-  );
+  return <ProfileContent user={user}>{children}</ProfileContent>;
 }

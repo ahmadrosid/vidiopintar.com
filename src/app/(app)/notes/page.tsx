@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { NotesList } from "@/app/profile/notes/notes-list";
+import { NotesList } from "@/app/(app)/profile/notes/notes-list";
 import { getTranslations } from "next-intl/server";
 import { buildPageMetadata } from "@/lib/geo/metadata";
 
