@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Loader, StickyNote } from "lucide-react";
+import { Loader } from "lucide-react";
+import { Note } from "@phosphor-icons/react";
 import { formatTime } from "@/lib/utils";
 import { NOTE_COLOR_BORDER_CLASSES, NoteColor } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -96,7 +97,7 @@ export function NotesList({ userId }: NotesListProps) {
   if (notes.length === 0) {
     return (
       <div className="p-12 text-center">
-        <StickyNote className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
+        <Note className="mx-auto mb-4 size-16 text-muted-foreground" />
         <p className="text-muted-foreground">{t("notes.noNotes")}</p>
       </div>
     );

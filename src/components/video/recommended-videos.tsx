@@ -1,14 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { RECOMMENDED_VIDEOS } from "@/lib/recommended-videos";
+import { VideoCard } from "@/components/video/video-card";
 import { useTranslations } from "next-intl";
 
 export function RecommendedVideos() {
@@ -16,31 +9,19 @@ export function RecommendedVideos() {
 
   return (
     <div className="w-full">
-      <h2 className="text-xl font-semibold tracking-tighter mb-6">
+      <h2 className="text-xl font-semibold tracking-tight text-foreground mb-2">
         {t("title")}
       </h2>
-      <p className="text-sm text-muted-foreground -mt-4 mb-6">{t("subtitle")}</p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+      <p className="text-sm text-muted-foreground mb-6">{t("subtitle")}</p>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {RECOMMENDED_VIDEOS.map((video) => (
-          <Link key={video.youtubeId} href={`/video/${video.youtubeId}`}>
-            <Card className="overflow-hidden rounded-xs shadow-none border-none bg-card hover:bg-card/50 transition-all duration-200">
-              <CardContent className="p-0">
-                <img
-                  src={video.thumbnailUrl}
-                  alt={video.title}
-                  className="object-cover w-full h-40"
-                />
-              </CardContent>
-              <CardHeader className="p-4">
-                <CardTitle className="text-lg truncate">
-                  {video.title}
-                </CardTitle>
-                <CardDescription className="text-sm text-muted-foreground truncate">
-                  {video.channelTitle}
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          </Link>
+          <VideoCard
+            key={video.youtubeId}
+            youtubeId={video.youtubeId}
+            title={video.title}
+            channelTitle={video.channelTitle}
+            thumbnailUrl={video.thumbnailUrl}
+          />
         ))}
       </div>
     </div>

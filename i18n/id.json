@@ -1,6 +1,11 @@
 {
   "navigation": {
     "home": "Beranda",
+    "explore": "Jelajahi",
+    "library": "Perpustakaan Saya",
+    "chats": "Chat",
+    "shared": "Dibagikan",
+    "billing": "Tagihan",
     "profile": "Profil",
     "notes": "Catatan",
     "admin": "Admin",
@@ -8,7 +13,8 @@
     "register": "Daftar",
     "logout": "Keluar",
     "signUp": "Daftar",
-    "getStarted": "Mulai Sekarang"
+    "getStarted": "Mulai Sekarang",
+    "searchPlaceholder": "Cari apa saja..."
   },
   "hero": {
     "title": "Jangan Hanya Menonton YouTube — Belajarlah Darinya",
@@ -123,9 +129,44 @@
     "success": "Berhasil"
   },
   "home": {
+    "welcome": "Selamat datang kembali! 👋",
     "title": "Vidiopintar",
     "subtitle": "Apa yang ingin kamu pelajari hari ini?",
     "lastNotes": "Catatan terakhir"
+  },
+  "emptyPages": {
+    "explore": {
+      "title": "Jelajahi",
+      "description": "Temukan video rekomendasi untuk dipelajari."
+    },
+
+    "library": {
+      "title": "Perpustakaan Saya",
+      "description": "Segera hadir — koleksi tersimpanmu akan berada di sini."
+    }
+  },
+  "library": {
+    "title": "Perpustakaan Saya",
+    "subtitle": "Video tersimpan dan materi belajarmu",
+    "searchPlaceholder": "Cari di perpustakaan...",
+    "all": "Semua",
+    "addedAgo": "Ditambahkan {time} lalu",
+    "emptyCategory": "Belum ada {category}.",
+    "categories": {
+      "all": "Semua",
+      "videos": "Video",
+      "notes": "Catatan",
+      "quizzes": "Kuis"
+    },
+    "sort": {
+      "recent": "Urutkan: Terbaru",
+      "title": "Urutkan: Judul",
+      "channel": "Urutkan: Channel"
+    },
+    "view": {
+      "grid": "Tampilan kisi",
+      "list": "Tampilan daftar"
+    }
   },
   "topicMarquee": {
     "title": "Pelajari topik apa pun dari YouTube",
@@ -173,7 +214,8 @@
     },
     "videoList": {
       "title": "Video terbaru kamu",
-      "searchPlaceholder": "Cari...",
+      "viewAll": "Lihat semua",
+      "searchPlaceholder": "Cari video...",
       "allChannels": "Semua Channel",
       "showLess": "Tampilkan Lebih Sedikit",
       "more": "Lainnya"

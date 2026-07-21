@@ -1,6 +1,11 @@
 {
   "navigation": {
     "home": "Home",
+    "explore": "Explore",
+    "library": "My Library",
+    "chats": "Chats",
+    "shared": "Shared",
+    "billing": "Billing",
     "profile": "Profile",
     "notes": "Notes",
     "admin": "Admin",
@@ -8,7 +13,42 @@
     "register": "Register",
     "logout": "Logout",
     "signUp": "Sign Up",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "searchPlaceholder": "Search anything..."
+  },
+  "emptyPages": {
+    "explore": {
+      "title": "Explore",
+      "description": "Discover recommended videos to learn from."
+    },
+
+    "library": {
+      "title": "My Library",
+      "description": "Your saved library will live here. Coming soon."
+    }
+  },
+  "library": {
+    "title": "My Library",
+    "subtitle": "Your saved videos and learning materials",
+    "searchPlaceholder": "Search in your library...",
+    "all": "All",
+    "addedAgo": "Added {time} ago",
+    "emptyCategory": "No {category} yet.",
+    "categories": {
+      "all": "All",
+      "videos": "Videos",
+      "notes": "Notes",
+      "quizzes": "Quizzes"
+    },
+    "sort": {
+      "recent": "Sort by: Recent",
+      "title": "Sort by: Title",
+      "channel": "Sort by: Channel"
+    },
+    "view": {
+      "grid": "Grid view",
+      "list": "List view"
+    }
   },
   "hero": {
     "title": "Don't Just Watch YouTube — Learn From It",
@@ -123,6 +163,7 @@
     "success": "Success"
   },
   "home": {
+    "welcome": "Welcome back! 👋",
     "title": "Vidiopintar",
     "subtitle": "What do you want to learn today?",
     "lastNotes": "Last notes"
@@ -173,7 +214,8 @@
     },
     "videoList": {
       "title": "Your recent videos",
-      "searchPlaceholder": "Search...",
+      "viewAll": "View all",
+      "searchPlaceholder": "Search videos...",
       "allChannels": "All Channels",
       "showLess": "Show Less",
       "more": "More"

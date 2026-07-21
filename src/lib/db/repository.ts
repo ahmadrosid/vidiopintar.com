@@ -37,6 +37,8 @@ export const VideoRepository = {
         channelTitle: videos.channelTitle,
         publishedAt: videos.publishedAt,
         thumbnailUrl: videos.thumbnailUrl,
+        createdAt: userVideos.createdAt,
+        updatedAt: userVideos.updatedAt,
       })
       .from(userVideos)
       .innerJoin(videos, eq(userVideos.youtubeId, videos.youtubeId))
