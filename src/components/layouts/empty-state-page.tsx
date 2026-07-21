@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 
-type EmptyPageKey = "explore" | "library" | "history";
+type EmptyPageKey = "explore" | "library";
 
 export async function EmptyStatePage({ page }: { page: EmptyPageKey }) {
   const t = await getTranslations(`emptyPages.${page}`);

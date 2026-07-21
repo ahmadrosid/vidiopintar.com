@@ -9,7 +9,6 @@ import {
   Books,
   Note,
   ClockCounterClockwise,
-  ChatCircle,
   ShareNetwork,
   CreditCard,
 } from "@phosphor-icons/react";
@@ -23,8 +22,7 @@ const navItems = [
   { href: "/explore", key: "explore" as const, icon: Compass },
   { href: "/library", key: "library" as const, icon: Books },
   { href: "/notes", key: "notes" as const, icon: Note },
-  { href: "/history", key: "history" as const, icon: ClockCounterClockwise },
-  { href: "/profile/chat", key: "chats" as const, icon: ChatCircle },
+  { href: "/profile/chat", key: "chats" as const, icon: ClockCounterClockwise },
   { href: "/profile/shared", key: "shared" as const, icon: ShareNetwork },
   { href: "/profile/billing", key: "billing" as const, icon: CreditCard },
 ];

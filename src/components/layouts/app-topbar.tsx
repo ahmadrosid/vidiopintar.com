@@ -19,7 +19,7 @@ export function AppTopbar({ onMenuClick }: AppTopbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-md md:px-6">
+    <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-3 bg-background/90 px-4 backdrop-blur-md md:px-8">
       <Button
         type="button"
         variant="ghost"
@@ -31,7 +31,7 @@ export function AppTopbar({ onMenuClick }: AppTopbarProps) {
         <Menu className="size-5" />
       </Button>
 
-      <div className="relative mx-auto flex h-9 w-full max-w-xl items-center">
+      <div className="relative mr-auto flex h-9 w-full max-w-xs items-center">
         <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
         <input
           type="search"
@@ -39,7 +39,7 @@ export function AppTopbar({ onMenuClick }: AppTopbarProps) {
           tabIndex={-1}
           placeholder={t("searchPlaceholder")}
           aria-label={t("searchPlaceholder")}
-          className="h-9 w-full cursor-default rounded-full border border-border bg-card px-9 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          className="h-9 w-full cursor-default rounded-lg border border-border bg-card px-9 text-sm text-foreground outline-none placeholder:text-muted-foreground"
         />
       </div>
 

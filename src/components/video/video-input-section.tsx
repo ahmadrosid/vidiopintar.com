@@ -103,7 +103,7 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
   return (
     <div className="flex w-full flex-col items-stretch gap-3">
       {usage && !usage.unlimited && (
-        <p className="flex w-full items-center justify-center gap-2 text-sm text-zinc-400">
+        <p className="flex w-full items-center justify-start gap-2 text-sm text-zinc-400">
           {(isAtLimit || isNearLimit) && (
             <AlertTriangle className="size-4 shrink-0 text-amber-400" />
           )}
@@ -131,7 +131,7 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
           </div>
         )}
 
-        <div className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-[#0b0f14] px-3 py-2 pl-4">
+        <div className="flex w-full items-center gap-3 rounded-lg border border-white/10 bg-[#0b0f14] py-2 pl-4 pr-2">
           <Link2 className="size-5 shrink-0 text-accent" />
           <input
             type="text"
@@ -146,7 +146,7 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="shrink-0 cursor-pointer rounded-xl bg-accent px-6 font-medium text-black hover:bg-accent/90"
+            className="shrink-0 cursor-pointer rounded-lg bg-accent px-6 font-medium text-black hover:bg-accent/90"
           >
             {isSubmitting ? <Loader className="size-4 animate-spin" /> : "Submit"}
           </Button>

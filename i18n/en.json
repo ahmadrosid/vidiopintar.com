@@ -191,7 +191,7 @@
     "videoList": {
       "title": "Your recent videos",
       "viewAll": "View all",
-      "searchPlaceholder": "Search...",
+      "searchPlaceholder": "Search videos...",
       "allChannels": "All Channels",
       "showLess": "Show Less",
       "more": "More"
