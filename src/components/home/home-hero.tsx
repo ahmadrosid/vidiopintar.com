@@ -5,7 +5,7 @@ export async function HomeHero({ userId }: { userId: string }) {
   const t = await getTranslations("home");
 
   return (
-    <section className="rounded-2xl border border-white/5 bg-gradient-to-b from-[#1a2332] to-[#0f1419] px-5 py-8 shadow-sm md:px-10 md:py-12">
+    <section className="rounded-2xl border border-white/5 bg-linear-to-b from-[#1a2332] to-[#0f1419] px-5 py-8 shadow-sm md:px-10 md:py-12">
       <div className="flex w-full flex-col items-start text-left">
         <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
           {t("title")}

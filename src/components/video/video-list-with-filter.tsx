@@ -28,7 +28,6 @@ type Video = {
   updatedAt?: Date | null;
 };
 
-type LibraryCategory = "all" | "videos" | "notes" | "quizzes";
 type SortOption = "recent" | "title" | "channel";
 type ViewLayout = "grid" | "list";
 
@@ -49,7 +48,6 @@ export function VideoListWithFilter({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
   const [showAllChannels, setShowAllChannels] = useState(false);
-  const [category, setCategory] = useState<LibraryCategory>("all");
   const [sortBy, setSortBy] = useState<SortOption>("recent");
   const [layout, setLayout] = useState<ViewLayout>("grid");
 
@@ -116,14 +114,6 @@ export function VideoListWithFilter({
   }
 
   if (variant === "library") {
-    const showVideos = category === "all" || category === "videos";
-    const categories: { id: LibraryCategory; label: string }[] = [
-      { id: "all", label: tLibrary("categories.all") },
-      { id: "videos", label: tLibrary("categories.videos") },
-      { id: "notes", label: tLibrary("categories.notes") },
-      { id: "quizzes", label: tLibrary("categories.quizzes") },
-    ];
-
     return (
       <div className="w-full">
         <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center">
@@ -210,36 +200,7 @@ export function VideoListWithFilter({
           </div>
         </div>
 
-        <div className="mb-8 flex flex-wrap items-center gap-2">
-          {categories.map((item) => {
-            const isActive = category === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setCategory(item.id)}
-                className={cn(
-                  "h-9 cursor-pointer rounded-full px-4 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-accent text-black hover:bg-accent/90"
-                    : "border border-white/10 bg-card text-foreground hover:bg-white/5"
-                )}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {showVideos ? (
-          <VideoList videos={filteredVideos} layout={layout} />
-        ) : (
-          <p className="mt-10 text-center text-muted-foreground">
-            {tLibrary("emptyCategory", {
-              category: tLibrary(`categories.${category}`),
-            })}
-          </p>
-        )}
+        <VideoList videos={filteredVideos} layout={layout} />
       </div>
     );
   }

@@ -65,7 +65,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "bg-accent/15 text-accent"
+                  ? "bg-sidebar-accent text-foreground"
                   : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
               )}
             >
@@ -73,7 +73,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
                 weight={isActive ? "fill" : "regular"}
                 className={cn(
                   "size-[18px] shrink-0",
-                  isActive ? "text-accent" : "text-muted-foreground"
+                  isActive ? "text-foreground" : "text-muted-foreground"
                 )}
               />
               <span>{t(item.key)}</span>
@@ -89,7 +89,7 @@ export function AppSidebar({ onNavigate }: AppSidebarProps) {
           className={cn(
             "flex items-center gap-3 rounded-lg px-2 py-2 text-sm font-medium transition-colors",
             isProfileActive
-              ? "bg-accent/15 text-accent"
+              ? "bg-sidebar-accent text-foreground"
               : "text-muted-foreground hover:bg-sidebar-accent hover:text-foreground"
           )}
         >
