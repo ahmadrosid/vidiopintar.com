@@ -3,7 +3,6 @@
     "home": "Beranda",
     "explore": "Jelajahi",
     "library": "Perpustakaan Saya",
-    "history": "Riwayat",
     "chats": "Chat",
     "shared": "Dibagikan",
     "billing": "Tagihan",
@@ -143,10 +142,6 @@
     "library": {
       "title": "Perpustakaan Saya",
       "description": "Segera hadir — koleksi tersimpanmu akan berada di sini."
-    },
-    "history": {
-      "title": "Riwayat",
-      "description": "Segera hadir — riwayat tontonanmu akan muncul di sini."
     }
   },
   "topicMarquee": {
@@ -195,6 +190,7 @@
     },
     "videoList": {
       "title": "Video terbaru kamu",
+      "viewAll": "Lihat semua",
       "searchPlaceholder": "Cari...",
       "allChannels": "Semua Channel",
       "showLess": "Tampilkan Lebih Sedikit",

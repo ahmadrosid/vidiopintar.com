@@ -42,7 +42,7 @@ export function VideoList({ videos }: VideoListProps) {
             <a href={`/video/${video.youtubeId}`}>
               <Card className="overflow-hidden rounded-xl border-none bg-transparent shadow-none transition-opacity duration-200 hover:opacity-95">
                 <CardContent className="relative p-0">
-                  <div className="relative h-40 w-full overflow-hidden rounded-xl">
+                  <div className="relative aspect-video w-full overflow-hidden rounded-xl">
                     {video.thumbnailUrl ? (
                       <Image
                         src={video.thumbnailUrl}

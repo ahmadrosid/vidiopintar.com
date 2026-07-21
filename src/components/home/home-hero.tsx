@@ -5,21 +5,18 @@ export async function HomeHero({ userId }: { userId: string }) {
   const t = await getTranslations("home");
 
   return (
-    <section className="pb-4 pt-6 md:pt-10">
-      <div className="max-w-2xl space-y-2">
-        <p className="text-sm text-muted-foreground md:text-base">
-          {t("welcome")}
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+    <section className="rounded-2xl border border-white/5 bg-gradient-to-b from-[#1a2332] to-[#0f1419] px-5 py-8 shadow-sm md:px-10 md:py-12">
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
           {t("title")}
         </h1>
-        <p className="text-base text-muted-foreground md:text-lg">
+        <p className="mt-2 text-base text-zinc-400 md:text-lg">
           {t("subtitle")}
         </p>
-      </div>
 
-      <div className="mt-8 max-w-3xl">
-        <VideoInputSection userId={userId} />
+        <div className="mt-8 w-full">
+          <VideoInputSection userId={userId} />
+        </div>
       </div>
     </section>
   );

@@ -17,11 +17,9 @@ export default async function Home() {
   const videos = await VideoRepository.getAllForUserWithDetails(user.id);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-2 md:px-8">
+    <div className="mx-auto w-full max-w-6xl space-y-8 px-4 pb-12 pt-4 md:px-8 md:pt-6">
       <HomeHero userId={user.id} />
-      <div className="mt-10">
-        <VideoListWithFilter videos={videos} />
-      </div>
+      <VideoListWithFilter videos={videos} />
     </div>
   );
 }

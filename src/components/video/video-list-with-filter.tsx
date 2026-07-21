@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Search } from "lucide-react";
+import Link from "next/link";
 import { VideoList } from "@/components/video/video-list";
 import { RecommendedVideos } from "@/components/video/recommended-videos";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
   const t = useTranslations("video");
   const maxChannels = 7;
   const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
   const [showAllChannels, setShowAllChannels] = useState(false);
 
   const uniqueChannels = useMemo(() => {
@@ -43,7 +42,6 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
 
   const hasMoreChannels = uniqueChannels.length > maxChannels;
 
-  // Reset selected channel if it no longer exists after video deletion
   useEffect(() => {
     if (selectedChannel && !uniqueChannels.includes(selectedChannel)) {
       setSelectedChannel(null);
@@ -51,25 +49,9 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
   }, [selectedChannel, uniqueChannels]);
 
   const filteredVideos = useMemo(() => {
-    let filtered = videos;
-
-    if (selectedChannel) {
-      filtered = filtered.filter(
-        (video) => video.channelTitle === selectedChannel
-      );
-    }
-
-    // Filter by search query (title or channel name)
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(
-        (video) =>
-          video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          video.channelTitle?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    return filtered;
-  }, [videos, selectedChannel, searchQuery]);
+    if (!selectedChannel) return videos;
+    return videos.filter((video) => video.channelTitle === selectedChannel);
+  }, [videos, selectedChannel]);
 
   if (!videos || videos.length === 0) {
     return <RecommendedVideos />;
@@ -77,16 +59,29 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
 
   return (
     <div className="w-full">
+      <div className="mb-5 flex items-center justify-between gap-4">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          {t("videoList.title")}
+        </h2>
+        <Link
+          href="/library"
+          className="shrink-0 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {t("videoList.viewAll")}
+        </Link>
+      </div>
+
       <div className="mb-8 flex flex-wrap items-center gap-2">
         <Button
+          type="button"
           variant={selectedChannel === null ? "default" : "outline"}
           size="sm"
           onClick={() => setSelectedChannel(null)}
           className={cn(
             "cursor-pointer rounded-full",
             selectedChannel === null
-              ? "bg-accent text-accent-foreground hover:bg-accent/90"
-              : "border-border bg-card text-muted-foreground hover:bg-card/80"
+              ? "bg-accent text-black hover:bg-accent/90"
+              : "border-white/10 bg-transparent text-foreground hover:bg-white/5"
           )}
         >
           {t("videoList.allChannels")}
@@ -97,14 +92,15 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
           return (
             <Button
               key={channel}
+              type="button"
               variant={isSelected ? "default" : "outline"}
               size="sm"
               onClick={() => setSelectedChannel(isSelected ? null : channel)}
               className={cn(
                 "max-w-48 cursor-pointer truncate rounded-full",
                 isSelected
-                  ? "bg-accent text-accent-foreground hover:bg-accent/90"
-                  : "border-border bg-card text-muted-foreground hover:bg-card/80"
+                  ? "bg-accent text-black hover:bg-accent/90"
+                  : "border-white/10 bg-transparent text-foreground hover:bg-white/5"
               )}
             >
               {channel}
@@ -114,6 +110,7 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
 
         {hasMoreChannels && (
           <Button
+            type="button"
             variant="ghost"
             size="sm"
             onClick={() => setShowAllChannels(!showAllChannels)}
@@ -126,25 +123,6 @@ export function VideoListWithFilter({ videos }: VideoListWithFilterProps) {
                 )}`}
           </Button>
         )}
-      </div>
-
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <h2 className="text-xl font-semibold tracking-tight">
-          {t("videoList.title")}
-        </h2>
-      </div>
-
-      <div className="mb-6">
-        <div className="relative flex h-9 w-full max-w-sm items-center">
-          <Search className="pointer-events-none absolute left-3 size-3.5 text-muted-foreground" />
-          <input
-            type="search"
-            placeholder={t("videoList.searchPlaceholder")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-9 w-full rounded-full border border-border bg-card pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          />
-        </div>
       </div>
 
       <VideoList videos={filteredVideos} />

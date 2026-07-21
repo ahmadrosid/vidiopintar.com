@@ -3,7 +3,6 @@
     "home": "Home",
     "explore": "Explore",
     "library": "My Library",
-    "history": "History",
     "chats": "Chats",
     "shared": "Shared",
     "billing": "Billing",
@@ -25,10 +24,6 @@
     "library": {
       "title": "My Library",
       "description": "Your saved library will live here. Coming soon."
-    },
-    "history": {
-      "title": "History",
-      "description": "Your watch history will appear here. Coming soon."
     }
   },
   "hero": {
@@ -195,6 +190,7 @@
     },
     "videoList": {
       "title": "Your recent videos",
+      "viewAll": "View all",
       "searchPlaceholder": "Search...",
       "allChannels": "All Channels",
       "showLess": "Show Less",
