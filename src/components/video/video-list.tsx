@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Trash } from "@phosphor-icons/react";
 import { useDeleteVideoDialogStore } from "@/lib/store/dialog-store";
 import { DeleteVideoDialog } from "@/components/video/delete-video-dialog";
+import { VideoCard } from "@/components/video/video-card";
 
 type Video = {
   userVideoId: number;
@@ -32,33 +32,12 @@ export function VideoList({ videos }: VideoListProps) {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {videos.map((video) => (
           <div key={video.userVideoId} className="group relative">
-            <a
-              href={`/video/${video.youtubeId}`}
-              className="block overflow-hidden rounded-xl border border-white/10 bg-card/40 transition-colors hover:border-white/20 hover:bg-card/60"
-            >
-              <div className="relative aspect-video w-full overflow-hidden bg-muted">
-                {video.thumbnailUrl ? (
-                  <Image
-                    src={video.thumbnailUrl}
-                    alt={video.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  />
-                ) : null}
-              </div>
-
-              <div className="space-y-1 px-3 py-3">
-                <h3 className="line-clamp-2 text-sm font-medium leading-snug text-foreground">
-                  {video.title}
-                </h3>
-                {video.channelTitle ? (
-                  <p className="truncate text-xs text-muted-foreground">
-                    {video.channelTitle}
-                  </p>
-                ) : null}
-              </div>
-            </a>
+            <VideoCard
+              youtubeId={video.youtubeId}
+              title={video.title}
+              channelTitle={video.channelTitle}
+              thumbnailUrl={video.thumbnailUrl}
+            />
 
             <button
               type="button"

@@ -137,8 +137,9 @@
   "emptyPages": {
     "explore": {
       "title": "Jelajahi",
-      "description": "Segera hadir — temukan video dan topik baru untuk dipelajari."
+      "description": "Temukan video rekomendasi untuk dipelajari."
     },
+
     "library": {
       "title": "Perpustakaan Saya",
       "description": "Segera hadir — koleksi tersimpanmu akan berada di sini."

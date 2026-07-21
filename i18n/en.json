@@ -19,8 +19,9 @@
   "emptyPages": {
     "explore": {
       "title": "Explore",
-      "description": "Discover new videos to learn from. Coming soon."
+      "description": "Discover recommended videos to learn from."
     },
+
     "library": {
       "title": "My Library",
       "description": "Your saved library will live here. Coming soon."
