@@ -10,12 +10,16 @@ interface AppTopbarProps {
   onMenuClick?: () => void;
   sidebarCollapsed?: boolean;
   onExpandSidebar?: () => void;
+  onOpenSearch?: () => void;
+  searchOpen?: boolean;
 }
 
 export function AppTopbar({
   onMenuClick,
   sidebarCollapsed,
   onExpandSidebar,
+  onOpenSearch,
+  searchOpen = false,
 }: AppTopbarProps) {
   const t = useTranslations("navigation");
   const { signOut } = useClerk();
@@ -52,14 +56,19 @@ export function AppTopbar({
 
       <div className="relative mr-auto flex h-9 w-full max-w-xs items-center">
         <Search className="pointer-events-none absolute left-3 size-4 text-muted-foreground" />
-        <input
-          type="search"
-          readOnly
-          tabIndex={-1}
-          placeholder={t("searchPlaceholder")}
+        <button
+          type="button"
+          onClick={onOpenSearch}
+          aria-haspopup="dialog"
+          aria-expanded={searchOpen}
           aria-label={t("searchPlaceholder")}
-          className="h-9 w-full cursor-default rounded-lg border border-border bg-card px-9 text-sm text-foreground outline-none placeholder:text-muted-foreground"
-        />
+          className="flex h-9 w-full cursor-pointer items-center rounded-lg border border-border bg-card px-9 text-left text-sm text-muted-foreground outline-none transition-colors hover:bg-muted/40"
+        >
+          <span className="truncate">{t("searchPlaceholder")}</span>
+          <kbd className="pointer-events-none absolute right-2 hidden rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">
+            ⌘K
+          </kbd>
+        </button>
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
