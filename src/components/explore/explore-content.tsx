@@ -23,6 +23,7 @@ import type { YoutubeSearchChannel } from "@/lib/youtube/search";
 
 const TRENDING_PREVIEW_COUNT = 8;
 const RECOMMENDED_PREVIEW_COUNT = 8;
+const CHANNELS_PREVIEW_COUNT = 8;
 const SEARCH_DEBOUNCE_MS = 300;
 const MIN_SEARCH_LENGTH = 2;
 
@@ -81,10 +82,8 @@ function ChannelResultCard({
   subscriberLabel: string;
 }) {
   return (
-    <a
-      href={`https://www.youtube.com/channel/${channel.channelId}`}
-      target="_blank"
-      rel="noopener noreferrer"
+    <Link
+      href={`/explore/channels/${channel.channelId}`}
       className="flex items-center gap-3 rounded-xl border border-white/10 bg-card p-3 transition-colors hover:border-white/20 hover:bg-card/80"
     >
       <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-muted">
@@ -106,7 +105,7 @@ function ChannelResultCard({
           {subscriberLabel}
         </p>
       </div>
-    </a>
+    </Link>
   );
 }
 
@@ -114,6 +113,7 @@ type ExploreContentProps = {
   categories?: ExploreCategory[];
   trendingVideos?: ExploreTrendingVideo[];
   recommendedVideos?: RecommendedVideo[];
+  channels?: YoutubeSearchChannel[];
   defaultFilterId?: ExploreFilterId;
 };
 
@@ -121,6 +121,7 @@ export function ExploreContent({
   categories = EXPLORE_CATEGORIES,
   trendingVideos = EXPLORE_TRENDING_VIDEOS,
   recommendedVideos = RECOMMENDED_VIDEOS,
+  channels = [],
   defaultFilterId = DEFAULT_EXPLORE_FILTER_ID,
 }: ExploreContentProps) {
   const t = useTranslations("explore");
@@ -218,8 +219,14 @@ export function ExploreContent({
     [recommendedVideos],
   );
 
+  const channelsPreview = useMemo(
+    () => channels.slice(0, CHANNELS_PREVIEW_COUNT),
+    [channels],
+  );
+
   const showEmptyTrending = filteredTrending.length === 0;
   const showEmptyRecommended = recommendedVideos.length === 0;
+  const showEmptyChannels = channelsPreview.length === 0;
   const showEmptySearch =
     searchVideos.length === 0 && searchChannels.length === 0;
 
@@ -416,6 +423,31 @@ export function ExploreContent({
               </div>
             )}
           </section>
+
+          {!showEmptyChannels ? (
+            <section>
+              <SectionHeader
+                title={t("channels")}
+                actionLabel={t("viewAll")}
+                href="/explore/channels"
+              />
+              <div className="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {channelsPreview.map((channel) => (
+                  <div
+                    key={channel.channelId}
+                    className="w-[17rem] shrink-0 sm:w-[18.5rem]"
+                  >
+                    <ChannelResultCard
+                      channel={channel}
+                      subscriberLabel={t("subscriberCount", {
+                        count: formatSubscriberCount(channel.subscriberCount),
+                      })}
+                    />
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </>
       )}
     </div>
