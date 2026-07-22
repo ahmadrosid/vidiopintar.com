@@ -25,11 +25,11 @@ import {
   DestinationResults,
   NoteResults,
   VideoResults,
-  noteSnippet,
   type FlatItem,
   type SearchNoteHit,
   type SearchVideoHit,
 } from "@/components/search/command-palette-results";
+import { noteSnippet } from "@/components/search/note-snippet";
 
 interface CommandPaletteProps {
   open: boolean;

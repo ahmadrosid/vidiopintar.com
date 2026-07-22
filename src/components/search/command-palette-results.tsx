@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import type { SearchDestination } from "@/components/search/search-destinations";
+import { noteSnippet } from "@/components/search/note-snippet";
 
 export type SearchVideoHit = {
   youtubeId: string;
@@ -52,12 +53,6 @@ const DESTINATION_ICONS: Record<SearchDestination["labelKey"], Icon> = {
   chats: ClockCounterClockwise,
   shared: ShareNetwork,
 };
-
-export function noteSnippet(text: string, max = 80) {
-  const trimmed = text.trim().replace(/\s+/g, " ");
-  if (trimmed.length <= max) return trimmed;
-  return `${trimmed.slice(0, max - 1)}…`;
-}
 
 function ResultOption({
   id,
