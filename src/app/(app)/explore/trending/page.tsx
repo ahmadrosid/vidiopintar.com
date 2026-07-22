@@ -14,10 +14,11 @@ export const metadata = buildPageMetadata({
   noIndex: true,
 });
 
-const VALID_FILTER_IDS = new Set<string>([
-  "all",
-  ...EXPLORE_CATEGORIES.map((category) => category.id),
-]);
+function parseFilterId(value: string | undefined): ExploreFilterId {
+  if (value === "all") return "all";
+  const category = EXPLORE_CATEGORIES.find((item) => item.id === value);
+  return category?.id ?? DEFAULT_EXPLORE_FILTER_ID;
+}
 
 type ExploreTrendingPageProps = {
   searchParams: Promise<{ category?: string }>;
@@ -31,16 +32,11 @@ export default async function ExploreTrendingPage({
     getExplorePageData(),
   ]);
 
-  const defaultFilterId: ExploreFilterId =
-    category && VALID_FILTER_IDS.has(category)
-      ? (category as ExploreFilterId)
-      : DEFAULT_EXPLORE_FILTER_ID;
-
   return (
     <div className="w-full space-y-8 px-4 pb-12 pt-4 md:px-8 md:pt-6">
       <ExploreTrendingContent
         trendingVideos={explore.trendingVideos}
-        defaultFilterId={defaultFilterId}
+        defaultFilterId={parseFilterId(category)}
       />
     </div>
   );

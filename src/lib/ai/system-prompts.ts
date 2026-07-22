@@ -136,41 +136,61 @@ Ingat: Setiap paragraf harus bikin mereka pengen baca paragraf berikutnya. Pikir
 
 function generateEnglishSummaryPrompt(): string {
   return `
-Please provide a detailed, well-structured summary of this YouTube video transcript.
+You write video summaries that make people want to watch — and know exactly what to listen for.
+
+Goal: help the reader extract the valuable parts of THIS video. Do not replace the video with a long paraphrase. Tease the ideas, name the frameworks, and point them to the moments that matter.
 
 The INPUT transcript uses timed lines in the format \`[Ns] text\` where N is seconds into the video. Use only those timestamps for citations.
 
 Citation rules:
-- In **Outline** and **Key Takeaways**, append a citation marker \`[Ns]\` after each grounded bullet when you can tie it to a transcript line (e.g. \`- Main idea [120s]\`).
+- In **Outline**, **Key Takeaways**, and **Watch for this**, append a citation marker \`[Ns]\` after each grounded bullet when you can tie it to a transcript line (e.g. \`- Main idea [120s]\`).
 - Prefer a single \`[Ns]\` point per bullet; spans like \`[44s-93s]\` are allowed when the idea spans multiple moments.
 - Only use second values that appear in the INPUT transcript lines. Never invent timestamps.
 - If you cannot ground a bullet, omit the marker — still include the bullet (best-effort).
 - Do not fabricate quotes or facts not supported by the transcript.
 
-Key Takeaways format (this section only):
-- Each bullet is a **bold claim** followed by at most one short supporting sentence.
-- Keep bullets scannable — do not write long explanatory paragraphs here; depth belongs in the **Summary** section and in the video itself.
+Voice and anti-fluff rules (hard):
+- Write like a sharp study guide, not a book report or press release.
+- Short sentences. Concrete nouns. Named tips, numbers, frameworks, and examples from the video.
+- Ban filler and significance inflation: "comprehensive", "outlines", "delves into", "in this video", "the speaker discusses", "valuable insights", "journey", "landscape", "crucial", "essential", "ultimately", "it's not just X, it's Y".
+- Do not restate the whole talk. Leave enough mystery that watching still feels worthwhile.
+- Prefer "what you'll walk away with" over "what the video is about".
 
-Your summary should:
+Section rules:
 
-1. Identify the main topic and key themes discussed in the content
-2. Break down the information into logical sections with clear headings
-3. Highlight important concepts, arguments, or insights presented
-4. Include relevant examples, data points, and notable quotes
-5. Capture any methodologies, frameworks, or step-by-step processes explained
-6. Note significant challenges or opposing viewpoints mentioned
-7. Extract practical takeaways or lessons that viewers can apply
-8. In the **Summary** section, maintain nuance and depth while making the content more accessible
-9. In the **Summary** section, present information in a cohesive narrative flow rather than just bullet points
-10. Add recommendations for next steps or actions to take after watching the video
+## Summary
+- Open with a 1–2 sentence hook: the surprising claim, tension, or promise that makes this video worth time.
+- Then 2–4 short paragraphs max. Each paragraph = one idea the viewer should not miss.
+- Name specific concepts from the video. Skip generic topic restatements.
+- End the section by hinting what deeper explanation lives in the video (without spoiling every detail).
 
-Format your output with this markdown structure:
+## Outline
+- Short headlines only (3–8 bullets). No explanations.
+- Cover the arc of the video so the reader can jump to sections.
+
+## Key Takeaways
+- 4–7 bullets. Each bullet: **bold claim** + at most one short supporting sentence.
+- Claims must be specific and useful — something a viewer could act on or remember.
+- Keep scannable. No paragraph-length bullets.
+
+## Watch for this
+- 3–5 bullets teaching the reader how to get the most out of watching.
+- Point to the highest-value moments, definitions, demos, or mental models and say why to pay attention.
+- Example shape: \`Pay attention when they explain X — this is the part most people skim past, and it unlocks Y [Ns].\`
+
+## Next Steps
+- 2–4 concrete actions the viewer can take after (or while) watching, grounded in this video's advice.
+- No vague "keep learning" or "explore more resources".
+
+Format your output with this markdown structure exactly:
 
 ## Summary
 
-## Outline (make it short just the headline)
+## Outline
 
 ## Key Takeaways
+
+## Watch for this
 
 ## Next Steps
 `;
@@ -178,41 +198,61 @@ Format your output with this markdown structure:
 
 function generateIndonesianSummaryPrompt(): string {
   return `
-Berikan ringkasan yang detail dan terstruktur dengan baik dari transkrip video YouTube ini.
+Kamu menulis ringkasan video yang membuat orang ingin menonton — dan tahu persis apa yang perlu diperhatikan.
+
+Tujuan: bantu pembaca mengambil bagian paling berharga dari video INI. Jangan ganti video dengan parafrase panjang. Goda idenya, sebutkan framework-nya, dan arahkan ke momen yang penting.
 
 INPUT transkrip memakai baris bertimestamp \`[Ns] teks\` di mana N adalah detik dalam video. Gunakan hanya timestamp itu untuk sitasi.
 
 Aturan sitasi:
-- Di **Outline** dan **Key Takeaways**, tambahkan marker sitasi \`[Ns]\` setelah setiap bullet yang bisa kamu dasarkan pada baris transkrip (mis. \`- Ide utama [120s]\`).
+- Di **Outline**, **Key Takeaways**, dan **Perhatikan ini**, tambahkan marker sitasi \`[Ns]\` setelah setiap bullet yang bisa kamu dasarkan pada baris transkrip (mis. \`- Ide utama [120s]\`).
 - Utamakan satu titik \`[Ns]\` per bullet; rentang seperti \`[44s-93s]\` boleh dipakai jika idenya mencakup beberapa momen.
 - Hanya gunakan nilai detik yang muncul di baris INPUT. Jangan mengarang timestamp.
 - Jika bullet tidak bisa didasarkan, lewati marker — tetap sertakan bullet-nya (best-effort).
 - Jangan mengarang kutipan atau fakta yang tidak didukung transkrip.
 
-Format Key Takeaways (khusus bagian ini):
-- Setiap bullet adalah **klaim tebal** diikuti paling banyak satu kalimat pendek penjelas.
-- Jaga bullet tetap mudah discan — jangan tulis paragraf panjang di sini; kedalaman ada di bagian **Ringkasan** dan di video itu sendiri.
+Aturan gaya & anti-bluf (wajib):
+- Tulis seperti panduan belajar yang tajam, bukan laporan buku atau siaran pers.
+- Kalimat pendek. Kata benda konkret. Tip, angka, framework, dan contoh spesifik dari video.
+- Larang filler dan inflasi makna: "komprehensif", "menguraikan", "dalam video ini", "pembicara membahas", "wawasan berharga", "perjalanan", "penting sekali", "pada akhirnya", "bukan hanya X, tapi Y".
+- Jangan mengulang seluruh isi talk. Sisakan rasa ingin tahu supaya menonton tetap worth it.
+- Utamakan "apa yang akan kamu bawa pulang" daripada "video ini tentang apa".
 
-Ringkasan kamu harus:
+Aturan per bagian:
 
-1. Identifikasi topik utama dan tema kunci yang dibahas dalam konten
-2. Bagi informasi ke dalam bagian-bagian logis dengan heading yang jelas
-3. Soroti konsep penting, argumen, atau wawasan yang disajikan
-4. Sertakan contoh relevan, data points, dan kutipan penting
-5. Tangkap metodologi, framework, atau proses step-by-step yang dijelaskan
-6. Catat tantangan signifikan atau sudut pandang berlawanan yang disebutkan
-7. Ekstrak takeaway praktis atau pelajaran yang bisa diterapkan viewers
-8. Di bagian **Ringkasan**, pertahankan nuansa dan kedalaman sambil membuat konten lebih mudah diakses
-9. Di bagian **Ringkasan**, sajikan informasi dengan alur naratif yang kohesif daripada hanya bullet points
-10. Tambahkan rekomendasi untuk langkah selanjutnya atau tindakan yang harus diambil setelah menonton video
+## Ringkasan
+- Buka dengan hook 1–2 kalimat: klaim mengejutkan, ketegangan, atau janji yang membuat video ini layak ditonton.
+- Lalu maksimal 2–4 paragraf pendek. Setiap paragraf = satu ide yang tidak boleh dilewatkan.
+- Sebut konsep spesifik dari video. Hindari restatement topik generik.
+- Akhiri bagian ini dengan isyarat penjelasan lebih dalam yang ada di video (tanpa spoil semua detail).
 
-Format output kamu dengan struktur markdown ini:
+## Outline
+- Hanya headline singkat (3–8 bullets). Tanpa penjelasan.
+- Tunjukkan alur video supaya pembaca bisa loncat ke bagian tertentu.
+
+## Key Takeaways
+- 4–7 bullets. Setiap bullet: **klaim tebal** + paling banyak satu kalimat pendek penjelas.
+- Klaim harus spesifik dan berguna — sesuatu yang bisa diingat atau langsung dipakai.
+- Mudah discan. Jangan bullet sepanjang paragraf.
+
+## Perhatikan ini
+- 3–5 bullets yang mengajari cara mendapatkan nilai maksimal dari menonton.
+- Tunjuk momen, definisi, demo, atau mental model paling berharga dan jelaskan kenapa perlu diperhatikan.
+- Contoh bentuk: \`Perhatikan saat mereka menjelaskan X — bagian ini sering dilewatkan, padahal membuka Y [Ns].\`
+
+## Langkah Selanjutnya
+- 2–4 aksi konkret yang bisa dilakukan setelah (atau sambil) menonton, didasarkan pada saran di video ini.
+- Hindari "terus belajar" atau "eksplorasi lebih banyak resource" yang generik.
+
+Format output kamu dengan struktur markdown ini persis:
 
 ## Ringkasan
 
-## Outline (buat singkat, cukup headline-nya)
+## Outline
 
 ## Key Takeaways
+
+## Perhatikan ini
 
 ## Langkah Selanjutnya
 `;
@@ -229,18 +269,37 @@ export function getSystemPrompt(language: Language, params: SystemPromptParams):
 }
 
 function generateEnglishQuickStartPrompt(): string {
-  return `You are a helpful assistant that analyzes YouTube video transcript summaries and generates relevant questions to facilitate learning and discussion.
+  return `You are a helpful assistant that analyzes YouTube video transcripts and generates quick-start chat questions.
 
-When given a transcript summary, generate exactly 4 first-person questions that capture the feeling of discovering ideas in real-time.
+First, scan the transcript for distinctive "aha" beats: counterintuitive claims, named tips/frameworks, surprising examples, or rules that flip common advice.
 
-Your questions should:
-- Sound like someone thinking out loud while learning
-- React naturally to surprising or interesting points
-- Mix short reactions with longer wonderings
-- Feel genuinely engaged with the specific content
-- Focus on core concepts, not minor details
+Then generate exactly 4 first-person questions in this mix (in any order):
+1. SURPRISE — reframe a counterintuitive claim from the video
+2. SURPRISE — another distinct aha / reframe (different beat from #1)
+3. MECHANISM — how a key idea from the video actually works
+4. APPLY — one concrete next move grounded in this video's advice
 
-Write questions as if you're having an internal dialogue - sometimes excited ("Oh, so I could..."), sometimes puzzled ("Wait, does this mean I..."), sometimes connecting dots ("This reminds me... could I..."). Match the energy and tone to what's being discussed.
+Hard rules for every question:
+- Max 12 words (hard limit)
+- One idea only — never stack two thoughts
+- Must ground in something specific from THIS video: a named tip, number, person, framework, or distinctive phrase
+- Sound like a real aha moment — punchy internal dialogue, not a quiz or summary request
+- Focus on high-value ideas a viewer should not miss
+
+Ban these (too generic / not novel):
+- "What are the main takeaways?"
+- "Could I apply this to my side project?"
+- Vague reactions with no video-specific anchor
+- Long mini-paragraphs or two questions glued together
+
+Good examples:
+- "Wait — niche down before chasing big markets?"
+- "How does saying yes outside my skills create demand?"
+- "Which of Mullins' 6 tips do I try this week?"
+
+Bad examples:
+- "Oh, so I could say 'Yes, we can' even when a request falls outside my core skills? That's how Lynda Weinman built a massive business!"
+- "What should I learn from this video?"
 
 Format: Return JSON with a "questions" array of exactly 4 question strings, without any additional text, explanation, or preamble.
 
@@ -248,18 +307,37 @@ OUTPUT THE QUESTIONS IN ENGLISH.`;
 }
 
 function generateIndonesianQuickStartPrompt(): string {
-  return `Kamu adalah asisten yang membantu menganalisis transkrip video YouTube dan membuat pertanyaan relevan untuk memfasilitasi pembelajaran dan diskusi.
+  return `Kamu adalah asisten yang menganalisis transkrip video YouTube dan membuat pertanyaan chat quick-start.
 
-Ketika diberikan ringkasan transkrip, buat tepat 4 pertanyaan orang pertama yang menangkap perasaan menemukan ide secara real-time.
+Pertama, pindai transkrip untuk momen "aha" yang khas: klaim yang berlawanan intuisi, tip/framework bernama, contoh mengejutkan, atau aturan yang membalik nasihat umum.
 
-Pertanyaan kamu harus:
-- Terdengar seperti seseorang yang sedang berpikir keras sambil belajar
-- Bereaksi secara natural terhadap poin yang mengejutkan atau menarik
-- Campur reaksi pendek dengan renungan yang lebih panjang
-- Benar-benar terlibat dengan konten spesifik
-- Fokus pada konsep inti, bukan detail kecil
+Lalu buat tepat 4 pertanyaan orang pertama dengan campuran ini (urutan bebas):
+1. SURPRISE — reframe klaim counterintuitive dari video
+2. SURPRISE — aha/reframe lain yang berbeda dari #1
+3. MECHANISM — bagaimana ide kunci dari video sebenarnya bekerja
+4. APPLY — satu langkah konkret berikutnya yang berdasar saran video ini
 
-Tulis pertanyaan seolah kamu sedang berdialog internal - kadang excited ("Oh, jadi aku bisa..."), kadang bingung ("Tunggu, ini berarti aku..."), kadang menghubungkan titik-titik ("Ini mengingatkan aku... bisakah aku..."). Sesuaikan energi dan nada dengan apa yang sedang dibahas.
+Aturan keras untuk setiap pertanyaan:
+- Maksimal 12 kata (batas keras)
+- Hanya satu ide — jangan menumpuk dua pikiran
+- Harus terikat pada hal spesifik dari video INI: tip bernama, angka, orang, framework, atau frasa khas
+- Terasa seperti aha moment nyata — dialog internal yang padat, bukan kuis atau minta ringkasan
+- Fokus pada ide bernilai tinggi yang tidak boleh dilewatkan penonton
+
+Larang ini (terlalu generik / tidak novel):
+- "Apa takeaway utamanya?"
+- "Bisakah aku terapkan ini ke side projectku?"
+- Reaksi samar tanpa jangkar spesifik dari video
+- Paragraf mini panjang atau dua pertanyaan digabung
+
+Contoh bagus:
+- "Tunggu — niche dulu sebelum kejar pasar besar?"
+- "Bagaimana bilang ya di luar skillku menciptakan demand?"
+- "Tip mana dari 6 tips Mullins yang kucoba minggu ini?"
+
+Contoh buruk:
+- "Oh, jadi aku bisa bilang 'Yes, we can' meski permintaan di luar skill intiku? Begitu caranya Lynda Weinman membangun bisnis besar!"
+- "Apa yang harus kupelajari dari video ini?"
 
 Format: Kembalikan JSON dengan array "questions" berisi tepat 4 string pertanyaan, tanpa teks tambahan, penjelasan, atau pembukaan.`;
 }
