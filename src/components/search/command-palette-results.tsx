@@ -1,8 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { House, Note, VideoCamera } from "@phosphor-icons/react";
+import {
+  Books,
+  ClockCounterClockwise,
+  House,
+  Note,
+  ShareNetwork,
+  VideoCamera,
+  type Icon,
+} from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import type { SearchDestination } from "@/components/search/search-destinations";
 
 export type SearchVideoHit = {
   youtubeId: string;
@@ -33,6 +42,15 @@ export type FlatItem =
 type LabeledDestination = {
   href: string;
   label: string;
+  labelKey: SearchDestination["labelKey"];
+};
+
+const DESTINATION_ICONS: Record<SearchDestination["labelKey"], Icon> = {
+  home: House,
+  library: Books,
+  notes: Note,
+  chats: ClockCounterClockwise,
+  shared: ShareNetwork,
 };
 
 export function noteSnippet(text: string, max = 80) {
@@ -107,6 +125,7 @@ export function DestinationResults({
         {destinations.map((dest, index) => {
           const item = flatItems[index];
           if (!item) return null;
+          const Icon = DESTINATION_ICONS[dest.labelKey];
           return (
             <ResultOption
               key={dest.href}
@@ -115,7 +134,7 @@ export function DestinationResults({
               onHighlight={() => onHighlight(index)}
               onActivate={() => onActivate(item)}
             >
-              <House className={optionIconClass} />
+              <Icon className={optionIconClass} />
               <span className="truncate font-medium">{dest.label}</span>
             </ResultOption>
           );

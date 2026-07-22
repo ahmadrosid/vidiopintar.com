@@ -28,11 +28,11 @@ export const AppTopbar = forwardRef<HTMLButtonElement, AppTopbarProps>(
   ) {
     const t = useTranslations("navigation");
     const { signOut } = useClerk();
-    const [shortcutLabel, setShortcutLabel] = useState("Ctrl+K");
+    const [shortcutLabel, setShortcutLabel] = useState("Ctrl + K");
 
     useEffect(() => {
       const isApple = /Mac|iPhone|iPad|iPod/i.test(navigator.platform);
-      setShortcutLabel(isApple ? "⌘K" : "Ctrl+K");
+      setShortcutLabel(isApple ? "⌘ K" : "Ctrl+K");
     }, []);
 
     const handleLogout = async () => {
