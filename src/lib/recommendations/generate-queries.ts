@@ -74,8 +74,12 @@ export async function generateRecommendationSearchQueries(input: {
     console.error("Failed to track recommendation token usage:", error);
   }
 
-  return result.object.queries
-    .map((query) => query.trim())
-    .filter((query) => query.length > 0)
-    .slice(0, MAX_QUERIES);
+  const queries: string[] = [];
+  for (const query of result.object.queries) {
+    const trimmed = query.trim();
+    if (trimmed.length === 0) continue;
+    queries.push(trimmed);
+    if (queries.length >= MAX_QUERIES) break;
+  }
+  return queries;
 }

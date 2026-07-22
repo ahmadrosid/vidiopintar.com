@@ -3,21 +3,11 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ChannelAvatar } from "@/components/explore/channel-result-card";
+import { formatSubscriberCount } from "@/components/explore/format-subscriber-count";
 import { VideoCard } from "@/components/video/video-card";
 import type { RecommendedVideo } from "@/lib/recommended-videos";
 import type { YoutubeSearchChannel } from "@/lib/youtube/search";
-
-function formatSubscriberCount(count: number): string {
-  if (count >= 1_000_000) {
-    const value = count / 1_000_000;
-    return `${value >= 10 ? Math.round(value) : value.toFixed(1).replace(/\.0$/, "")}M`;
-  }
-  if (count >= 1_000) {
-    const value = count / 1_000;
-    return `${value >= 10 ? Math.round(value) : value.toFixed(1).replace(/\.0$/, "")}K`;
-  }
-  return String(count);
-}
 
 type ExploreChannelVideosContentProps = {
   channel: YoutubeSearchChannel;
@@ -42,17 +32,7 @@ export function ExploreChannelVideosContent({
         </Link>
 
         <header className="flex items-center gap-4">
-          <div className="relative size-16 shrink-0 overflow-hidden rounded-full bg-muted sm:size-20">
-            {channel.thumbnailUrl ? (
-              // Channel avatars are hosted on ggpht CDN domains not in next/image config.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={channel.thumbnailUrl}
-                alt={channel.title}
-                className="size-full object-cover"
-              />
-            ) : null}
-          </div>
+          <ChannelAvatar channel={channel} size="md" />
           <div className="min-w-0 space-y-1">
             <h1 className="truncate text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
               {channel.title}

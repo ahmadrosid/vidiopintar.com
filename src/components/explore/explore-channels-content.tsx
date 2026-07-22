@@ -3,19 +3,9 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ChannelResultCard } from "@/components/explore/channel-result-card";
+import { formatSubscriberCount } from "@/components/explore/format-subscriber-count";
 import type { YoutubeSearchChannel } from "@/lib/youtube/search";
-
-function formatSubscriberCount(count: number): string {
-  if (count >= 1_000_000) {
-    const value = count / 1_000_000;
-    return `${value >= 10 ? Math.round(value) : value.toFixed(1).replace(/\.0$/, "")}M`;
-  }
-  if (count >= 1_000) {
-    const value = count / 1_000;
-    return `${value >= 10 ? Math.round(value) : value.toFixed(1).replace(/\.0$/, "")}K`;
-  }
-  return String(count);
-}
 
 type ExploreChannelsContentProps = {
   channels: YoutubeSearchChannel[];
@@ -52,33 +42,13 @@ export function ExploreChannelsContent({
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {channels.map((channel) => (
-            <Link
+            <ChannelResultCard
               key={channel.channelId}
-              href={`/explore/channels/${channel.channelId}`}
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-card p-3 transition-colors hover:border-white/20 hover:bg-card/80"
-            >
-              <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-muted">
-                {channel.thumbnailUrl ? (
-                  // Channel avatars are hosted on ggpht CDN domains not in next/image config.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={channel.thumbnailUrl}
-                    alt={channel.title}
-                    className="size-full object-cover"
-                  />
-                ) : null}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {channel.title}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {t("subscriberCount", {
-                    count: formatSubscriberCount(channel.subscriberCount),
-                  })}
-                </p>
-              </div>
-            </Link>
+              channel={channel}
+              subscriberLabel={t("subscriberCount", {
+                count: formatSubscriberCount(channel.subscriberCount),
+              })}
+            />
           ))}
         </div>
       )}
