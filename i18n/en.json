@@ -93,7 +93,8 @@
       "design": "Design"
     },
     "scrollCategories": "Scroll categories",
-    "scrollChannels": "Scroll channels"
+    "scrollChannelsLeft": "Scroll channels left",
+    "scrollChannelsRight": "Scroll channels right"
   },
   "hero": {
     "title": "Don't Just Watch YouTube — Learn From It",

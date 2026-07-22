@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { VideoCard } from "@/components/video/video-card";
 import { ChannelResultCard } from "@/components/explore/channel-result-card";
 import { formatSubscriberCount } from "@/components/explore/format-subscriber-count";
@@ -24,7 +24,8 @@ type ExploreBrowseSectionsProps = {
     browseByCategory: string;
     categoryLabel: (filterId: ExploreFilterId) => string;
     scrollCategories: string;
-    scrollChannels: string;
+    scrollChannelsLeft: string;
+    scrollChannelsRight: string;
     trending: string;
     recommended: string;
     channels: string;
@@ -33,6 +34,8 @@ type ExploreBrowseSectionsProps = {
     subscriberCount: (count: string) => string;
   };
 };
+
+const CHANNEL_SCROLL_STEP = 320;
 
 export function ExploreBrowseSections({
   filterOptions,
@@ -46,16 +49,50 @@ export function ExploreBrowseSections({
 }: ExploreBrowseSectionsProps) {
   const categoryScrollRef = useRef<HTMLDivElement>(null);
   const channelsScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollChannelsLeft, setCanScrollChannelsLeft] = useState(false);
+  const [canScrollChannelsRight, setCanScrollChannelsRight] = useState(false);
   const showEmptyTrending = trendingVideos.length === 0;
   const showEmptyRecommended = recommendedVideos.length === 0;
   const showEmptyChannels = channels.length === 0;
+
+  function updateChannelsScrollState() {
+    const el = channelsScrollRef.current;
+    if (!el) return;
+
+    const maxScrollLeft = el.scrollWidth - el.clientWidth;
+    setCanScrollChannelsLeft(el.scrollLeft > 1);
+    setCanScrollChannelsRight(el.scrollLeft < maxScrollLeft - 1);
+  }
+
+  useEffect(() => {
+    const el = channelsScrollRef.current;
+    if (!el || showEmptyChannels) {
+      setCanScrollChannelsLeft(false);
+      setCanScrollChannelsRight(false);
+      return;
+    }
+
+    updateChannelsScrollState();
+
+    const onScroll = () => updateChannelsScrollState();
+    el.addEventListener("scroll", onScroll, { passive: true });
+
+    const resizeObserver = new ResizeObserver(() => updateChannelsScrollState());
+    resizeObserver.observe(el);
+
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      resizeObserver.disconnect();
+    };
+  }, [channels, showEmptyChannels]);
 
   function scrollCategories() {
     categoryScrollRef.current?.scrollBy({ left: 200, behavior: "smooth" });
   }
 
-  function scrollChannels() {
-    channelsScrollRef.current?.scrollBy({ left: 320, behavior: "smooth" });
+  function scrollChannels(direction: "left" | "right") {
+    const delta = direction === "left" ? -CHANNEL_SCROLL_STEP : CHANNEL_SCROLL_STEP;
+    channelsScrollRef.current?.scrollBy({ left: delta, behavior: "smooth" });
   }
 
   return (
@@ -172,10 +209,14 @@ export function ExploreBrowseSections({
             actionLabel={labels.viewAll}
             href="/explore/channels"
           />
-          <div className="flex items-center gap-2">
+          <div className="relative">
             <div
               ref={channelsScrollRef}
-              className="flex min-w-0 flex-1 gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className={cn(
+                "flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                canScrollChannelsLeft && "ps-12",
+                canScrollChannelsRight && "pe-12",
+              )}
             >
               {channels.map((channel) => (
                 <div
@@ -192,17 +233,31 @@ export function ExploreBrowseSections({
               ))}
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 self-start pt-0.5">
-              <div className="h-6 w-px bg-white/10" aria-hidden="true" />
-              <button
-                type="button"
-                onClick={scrollChannels}
-                aria-label={labels.scrollChannels}
-                className="flex size-9 items-center justify-center rounded-xl border border-white/10 text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
-              >
-                <ChevronRight className="size-4" />
-              </button>
-            </div>
+            {canScrollChannelsLeft ? (
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center bg-gradient-to-r from-background via-background/90 to-transparent pr-8">
+                <button
+                  type="button"
+                  onClick={() => scrollChannels("left")}
+                  aria-label={labels.scrollChannelsLeft}
+                  className="pointer-events-auto flex size-9 items-center justify-center rounded-xl border border-white/10 bg-background text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+                >
+                  <ChevronLeft className="size-4" />
+                </button>
+              </div>
+            ) : null}
+
+            {canScrollChannelsRight ? (
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center bg-gradient-to-l from-background via-background/90 to-transparent pl-8">
+                <button
+                  type="button"
+                  onClick={() => scrollChannels("right")}
+                  aria-label={labels.scrollChannelsRight}
+                  className="pointer-events-auto flex size-9 items-center justify-center rounded-xl border border-white/10 bg-background text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+                >
+                  <ChevronRight className="size-4" />
+                </button>
+              </div>
+            ) : null}
           </div>
         </section>
       ) : null}

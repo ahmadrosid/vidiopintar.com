@@ -211,7 +211,8 @@
       "design": "Desain"
     },
     "scrollCategories": "Geser kategori",
-    "scrollChannels": "Geser channel"
+    "scrollChannelsLeft": "Geser channel ke kiri",
+    "scrollChannelsRight": "Geser channel ke kanan"
   },
   "topicMarquee": {
     "title": "Pelajari topik apa pun dari YouTube",
