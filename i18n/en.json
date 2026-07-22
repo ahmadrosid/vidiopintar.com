@@ -59,6 +59,30 @@
       "list": "List view"
     }
   },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Discover new videos and learn something new today.",
+    "searchPlaceholder": "Search topics, channels or keywords...",
+    "browseByCategory": "Browse by category",
+    "trending": "Trending videos",
+    "recommended": "Recommended for you",
+    "viewAll": "View all",
+    "emptyFilter": "No categories or trending videos match your search.",
+    "categories": {
+      "technology": "Technology",
+      "business": "Business",
+      "programming": "Programming",
+      "ai-ml": "AI & ML",
+      "design": "Design"
+    },
+    "categoryCounts": {
+      "technology": "2.1K videos",
+      "business": "1.8K videos",
+      "programming": "3.2K videos",
+      "ai-ml": "1.6K videos",
+      "design": "1.2K videos"
+    }
+  },
   "hero": {
     "title": "Don't Just Watch YouTube — Learn From It",
     "subtitle": "Get instant \"aha moments\" from any YouTube video. Get key insights, connects the dots, and helps you build real knowledge — not just watch time."

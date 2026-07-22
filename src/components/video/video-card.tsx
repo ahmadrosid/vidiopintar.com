@@ -7,8 +7,17 @@ type VideoCardProps = {
   channelTitle?: string | null;
   thumbnailUrl?: string | null;
   meta?: string | null;
+  duration?: string | null;
   layout?: "grid" | "list";
 };
+
+function DurationBadge({ duration }: { duration: string }) {
+  return (
+    <span className="absolute bottom-2 right-2 rounded bg-black/80 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-white">
+      {duration}
+    </span>
+  );
+}
 
 export function VideoCard({
   youtubeId,
@@ -16,6 +25,7 @@ export function VideoCard({
   channelTitle,
   thumbnailUrl,
   meta,
+  duration,
   layout = "grid",
 }: VideoCardProps) {
   if (layout === "list") {
@@ -34,6 +44,7 @@ export function VideoCard({
               sizes="192px"
             />
           ) : null}
+          {duration ? <DurationBadge duration={duration} /> : null}
         </div>
 
         <div className="min-w-0 flex-1 space-y-1 py-0.5">
@@ -66,6 +77,7 @@ export function VideoCard({
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             />
           ) : null}
+          {duration ? <DurationBadge duration={duration} /> : null}
         </div>
 
         <div className="space-y-1 px-3 py-3">
