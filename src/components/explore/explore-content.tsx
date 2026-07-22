@@ -42,18 +42,18 @@ function SectionHeader({
 type ExploreContentProps = {
   categories?: ExploreCategory[];
   trendingVideos?: ExploreTrendingVideo[];
-  defaultCategoryId?: ExploreFilterId;
+  defaultFilterId?: ExploreFilterId;
 };
 
 export function ExploreContent({
   categories = EXPLORE_CATEGORIES,
   trendingVideos = EXPLORE_TRENDING_VIDEOS,
-  defaultCategoryId = DEFAULT_EXPLORE_FILTER_ID,
+  defaultFilterId = DEFAULT_EXPLORE_FILTER_ID,
 }: ExploreContentProps) {
   const t = useTranslations("explore");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilterId, setSelectedFilterId] =
-    useState<ExploreFilterId>(defaultCategoryId);
+    useState<ExploreFilterId>(defaultFilterId);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   const filterOptions = useMemo<ExploreFilterId[]>(

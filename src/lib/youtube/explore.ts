@@ -22,6 +22,10 @@ const CATEGORY_FETCH: Record<ExploreCategoryId, CategoryFetchConfig> = {
 };
 
 const MAX_PER_CATEGORY = 8;
+/** Fetch extra candidates so Shorts filtering still leaves a full row. */
+const FETCH_PER_CATEGORY = 20;
+/** YouTube Shorts max length — exclude these from Trending. */
+const MIN_TRENDING_DURATION_SECONDS = 180;
 const REGION_CODE = "US";
 
 export type ExplorePageData = {
@@ -30,17 +34,37 @@ export type ExplorePageData = {
   source: "youtube" | "static";
 };
 
-function formatIso8601Duration(iso?: string | null): string | undefined {
+function parseIso8601DurationSeconds(iso?: string | null): number | undefined {
   if (!iso) return undefined;
   const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
   if (!match) return undefined;
   const hours = Number(match[1] ?? 0);
   const minutes = Number(match[2] ?? 0);
   const seconds = Number(match[3] ?? 0);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+function formatDurationSeconds(totalSeconds: number): string {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
   if (hours > 0) {
     return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+function formatIso8601Duration(iso?: string | null): string | undefined {
+  const totalSeconds = parseIso8601DurationSeconds(iso);
+  if (totalSeconds === undefined) return undefined;
+  return formatDurationSeconds(totalSeconds);
+}
+
+function isLongFormVideo(isoDuration?: string | null): boolean {
+  const seconds = parseIso8601DurationSeconds(isoDuration);
+  // Keep videos with unknown duration; drop known Shorts-length clips.
+  if (seconds === undefined) return true;
+  return seconds >= MIN_TRENDING_DURATION_SECONDS;
 }
 
 function pickThumbnail(
@@ -92,11 +116,16 @@ async function fetchPopularForCategory(
     chart: "mostPopular",
     regionCode: REGION_CODE,
     videoCategoryId,
-    maxResults: MAX_PER_CATEGORY,
+    maxResults: FETCH_PER_CATEGORY,
   });
 
   return (response.data.items ?? [])
-    .filter((item) => Boolean(item.id && item.snippet?.title))
+    .filter(
+      (item) =>
+        Boolean(item.id && item.snippet?.title) &&
+        isLongFormVideo(item.contentDetails?.duration),
+    )
+    .slice(0, MAX_PER_CATEGORY)
     .map((item) => ({
       youtubeId: item.id as string,
       title: item.snippet?.title ?? "Untitled",
@@ -119,7 +148,9 @@ async function fetchSearchForCategory(
     order: "relevance",
     relevanceLanguage: "en",
     safeSearch: "moderate",
-    maxResults: MAX_PER_CATEGORY,
+    // YouTube API: "short" = <4 min (includes Shorts). Prefer medium+.
+    videoDuration: "medium",
+    maxResults: FETCH_PER_CATEGORY,
   });
 
   const items = (search.data.items ?? []).filter(
@@ -128,18 +159,20 @@ async function fetchSearchForCategory(
   const ids = items.map((item) => item.id!.videoId!);
   const details = await fetchVideoDetailsByIds(client, ids);
 
-  return items.map((item) => {
-    const youtubeId = item.id!.videoId!;
-    const detail = details.get(youtubeId);
-    return {
-      youtubeId,
-      title: item.snippet?.title ?? "Untitled",
-      channelTitle: item.snippet?.channelTitle ?? "Unknown Channel",
-      thumbnailUrl: pickThumbnail(item.snippet?.thumbnails),
-      categoryId,
-      duration: detail?.duration,
-    };
-  });
+  return items
+    .slice(0, MAX_PER_CATEGORY)
+    .map((item) => {
+      const youtubeId = item.id!.videoId!;
+      const detail = details.get(youtubeId);
+      return {
+        youtubeId,
+        title: item.snippet?.title ?? "Untitled",
+        channelTitle: item.snippet?.channelTitle ?? "Unknown Channel",
+        thumbnailUrl: pickThumbnail(item.snippet?.thumbnails),
+        categoryId,
+        duration: detail?.duration,
+      };
+    });
 }
 
 async function fetchAllCategories(
@@ -200,7 +233,7 @@ async function fetchExploreFromYoutube(): Promise<ExplorePageData> {
 
 const getCachedExploreFromYoutube = unstable_cache(
   fetchExploreFromYoutube,
-  ["explore-page-youtube-v1"],
+  ["explore-page-youtube-v2"],
   { revalidate: 3600 },
 );
 

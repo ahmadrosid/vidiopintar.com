@@ -67,6 +67,7 @@
     "trending": "Trending videos",
     "recommended": "Recommended for you",
     "viewAll": "View all",
+    "backToExplore": "Back to Explore",
     "emptyFilter": "No categories or trending videos match your search.",
     "videoCount": "{count} videos",
     "categories": {

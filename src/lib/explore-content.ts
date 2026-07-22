@@ -104,6 +104,3 @@ export const EXPLORE_TRENDING_VIDEOS: ExploreTrendingVideo[] = [
 ];
 
 export const DEFAULT_EXPLORE_FILTER_ID: ExploreFilterId = "all";
-
-/** @deprecated Prefer DEFAULT_EXPLORE_FILTER_ID ("all"). Kept for YouTube data fallbacks. */
-export const DEFAULT_EXPLORE_CATEGORY_ID: ExploreCategoryId = "technology";
