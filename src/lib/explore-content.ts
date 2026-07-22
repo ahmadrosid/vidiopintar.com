@@ -5,6 +5,8 @@ export type ExploreCategoryId =
   | "ai-ml"
   | "design";
 
+export type ExploreFilterId = "all" | ExploreCategoryId;
+
 export type ExploreCategoryIcon =
   | "cpu"
   | "briefcase"
@@ -15,7 +17,6 @@ export type ExploreCategoryIcon =
 export type ExploreCategory = {
   id: ExploreCategoryId;
   icon: ExploreCategoryIcon;
-  defaultSelected?: boolean;
 };
 
 export type ExploreTrendingVideo = {
@@ -28,7 +29,7 @@ export type ExploreTrendingVideo = {
 };
 
 export const EXPLORE_CATEGORIES: ExploreCategory[] = [
-  { id: "technology", icon: "cpu", defaultSelected: true },
+  { id: "technology", icon: "cpu" },
   { id: "business", icon: "briefcase" },
   { id: "programming", icon: "code" },
   { id: "ai-ml", icon: "brain" },
@@ -102,6 +103,7 @@ export const EXPLORE_TRENDING_VIDEOS: ExploreTrendingVideo[] = [
   },
 ];
 
-export const DEFAULT_EXPLORE_CATEGORY_ID: ExploreCategoryId =
-  EXPLORE_CATEGORIES.find((category) => category.defaultSelected)?.id ??
-  EXPLORE_CATEGORIES[0].id;
+export const DEFAULT_EXPLORE_FILTER_ID: ExploreFilterId = "all";
+
+/** @deprecated Prefer DEFAULT_EXPLORE_FILTER_ID ("all"). Kept for YouTube data fallbacks. */
+export const DEFAULT_EXPLORE_CATEGORY_ID: ExploreCategoryId = "technology";

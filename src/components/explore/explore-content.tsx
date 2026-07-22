@@ -1,34 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
-import {
-  Brain,
-  Briefcase,
-  Code,
-  Cpu,
-  Palette,
-  type Icon,
-} from "@phosphor-icons/react";
+import { useMemo, useRef, useState } from "react";
+import { ChevronRight, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { VideoCard } from "@/components/video/video-card";
 import { cn } from "@/lib/utils";
 import { RECOMMENDED_VIDEOS } from "@/lib/recommended-videos";
 import {
-  DEFAULT_EXPLORE_CATEGORY_ID,
+  DEFAULT_EXPLORE_FILTER_ID,
   EXPLORE_CATEGORIES,
   EXPLORE_TRENDING_VIDEOS,
-  type ExploreCategoryIcon,
-  type ExploreCategoryId,
+  type ExploreCategory,
+  type ExploreFilterId,
+  type ExploreTrendingVideo,
 } from "@/lib/explore-content";
-
-const CATEGORY_ICONS: Record<ExploreCategoryIcon, Icon> = {
-  cpu: Cpu,
-  briefcase: Briefcase,
-  code: Code,
-  brain: Brain,
-  palette: Palette,
-};
 
 function SectionHeader({
   title,
@@ -54,29 +39,44 @@ function SectionHeader({
   );
 }
 
-export function ExploreContent() {
+type ExploreContentProps = {
+  categories?: ExploreCategory[];
+  trendingVideos?: ExploreTrendingVideo[];
+  defaultCategoryId?: ExploreFilterId;
+};
+
+export function ExploreContent({
+  categories = EXPLORE_CATEGORIES,
+  trendingVideos = EXPLORE_TRENDING_VIDEOS,
+  defaultCategoryId = DEFAULT_EXPLORE_FILTER_ID,
+}: ExploreContentProps) {
   const t = useTranslations("explore");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategoryId, setSelectedCategoryId] =
-    useState<ExploreCategoryId>(DEFAULT_EXPLORE_CATEGORY_ID);
+  const [selectedFilterId, setSelectedFilterId] =
+    useState<ExploreFilterId>(defaultCategoryId);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  const filterOptions = useMemo<ExploreFilterId[]>(
+    () => ["all", ...categories.map((category) => category.id)],
+    [categories]
+  );
 
   const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  const filteredCategories = useMemo(() => {
-    if (!normalizedQuery) return EXPLORE_CATEGORIES;
-    return EXPLORE_CATEGORIES.filter((category) => {
-      const name = t(`categories.${category.id}`).toLowerCase();
-      const count = t(`categoryCounts.${category.id}`).toLowerCase();
-      return name.includes(normalizedQuery) || count.includes(normalizedQuery);
+  const filteredOptions = useMemo(() => {
+    if (!normalizedQuery) return filterOptions;
+    return filterOptions.filter((filterId) => {
+      const name = t(`categories.${filterId}`).toLowerCase();
+      return name.includes(normalizedQuery);
     });
-  }, [normalizedQuery, t]);
+  }, [filterOptions, normalizedQuery, t]);
 
-  const categoryStillVisible = filteredCategories.some(
-    (category) => category.id === selectedCategoryId
+  const filterStillVisible = filteredOptions.some(
+    (filterId) => filterId === selectedFilterId
   );
 
   const filteredTrending = useMemo(() => {
-    return EXPLORE_TRENDING_VIDEOS.filter((video) => {
+    return trendingVideos.filter((video) => {
       const categoryName = t(`categories.${video.categoryId}`).toLowerCase();
       const haystack =
         `${video.title} ${video.channelTitle} ${categoryName}`.toLowerCase();
@@ -86,15 +86,26 @@ export function ExploreContent() {
 
       // With an active search that cleared category chips, show all text matches.
       // Otherwise keep the selected category filter.
-      if (!normalizedQuery || categoryStillVisible) {
-        return video.categoryId === selectedCategoryId;
+      if (!normalizedQuery || filterStillVisible) {
+        if (selectedFilterId === "all") return true;
+        return video.categoryId === selectedFilterId;
       }
       return true;
     });
-  }, [categoryStillVisible, normalizedQuery, selectedCategoryId, t]);
+  }, [
+    filterStillVisible,
+    normalizedQuery,
+    selectedFilterId,
+    t,
+    trendingVideos,
+  ]);
 
-  const showEmptyCategories = filteredCategories.length === 0;
+  const showEmptyCategories = filteredOptions.length === 0;
   const showEmptyTrending = filteredTrending.length === 0;
+
+  function scrollCategories() {
+    categoryScrollRef.current?.scrollBy({ left: 200, behavior: "smooth" });
+  }
 
   return (
     <div className="w-full space-y-8">
@@ -126,46 +137,44 @@ export function ExploreContent() {
         {showEmptyCategories ? (
           <p className="text-sm text-muted-foreground">{t("emptyFilter")}</p>
         ) : (
-          <div className="flex gap-3 overflow-x-auto pb-1">
-            {filteredCategories.map((category) => {
-              const Icon = CATEGORY_ICONS[category.icon];
-              const isSelected = selectedCategoryId === category.id;
+          <div className="flex items-center gap-2">
+            <div
+              ref={categoryScrollRef}
+              className="flex min-w-0 flex-1 gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {filteredOptions.map((filterId) => {
+                const isSelected = selectedFilterId === filterId;
 
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  aria-pressed={isSelected}
-                  onClick={() => setSelectedCategoryId(category.id)}
-                  className={cn(
-                    "flex min-w-[11.5rem] shrink-0 items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-                    isSelected
-                      ? "border-accent bg-accent text-accent-foreground"
-                      : "border-white/10 bg-card text-foreground hover:border-white/20 hover:bg-card/80"
-                  )}
-                >
-                  <Icon
-                    weight={isSelected ? "fill" : "regular"}
-                    className="size-5 shrink-0"
-                  />
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium">
-                      {t(`categories.${category.id}`)}
-                    </span>
-                    <span
-                      className={cn(
-                        "block truncate text-xs",
-                        isSelected
-                          ? "text-accent-foreground/80"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      {t(`categoryCounts.${category.id}`)}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={filterId}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => setSelectedFilterId(filterId)}
+                    className={cn(
+                      "shrink-0 rounded-xl border px-4 py-2 text-sm font-medium transition-colors",
+                      isSelected
+                        ? "border-transparent bg-accent text-black"
+                        : "border-white/10 bg-transparent text-muted-foreground hover:border-white/20 hover:text-foreground"
+                    )}
+                  >
+                    {t(`categories.${filterId}`)}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 self-start pt-0.5">
+              <div className="h-6 w-px bg-white/10" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={scrollCategories}
+                aria-label={t("scrollCategories")}
+                className="flex size-9 items-center justify-center rounded-xl border border-white/10 text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+              >
+                <ChevronRight className="size-4" />
+              </button>
+            </div>
           </div>
         )}
       </section>

@@ -1,5 +1,6 @@
 import { ExploreContent } from "@/components/explore/explore-content";
 import { buildPageMetadata } from "@/lib/geo/metadata";
+import { getExplorePageData } from "@/lib/youtube/explore";
 
 export const metadata = buildPageMetadata({
   title: "Explore",
@@ -8,10 +9,15 @@ export const metadata = buildPageMetadata({
   noIndex: true,
 });
 
-export default function ExplorePage() {
+export default async function ExplorePage() {
+  const explore = await getExplorePageData();
+
   return (
     <div className="w-full space-y-8 px-4 pb-12 pt-4 md:px-8 md:pt-6">
-      <ExploreContent />
+      <ExploreContent
+        trendingVideos={explore.trendingVideos}
+        defaultFilterId={explore.defaultFilterId}
+      />
     </div>
   );
 }

@@ -186,20 +186,16 @@
     "recommended": "Direkomendasikan untukmu",
     "viewAll": "Lihat semua",
     "emptyFilter": "Tidak ada kategori atau video tren yang cocok dengan pencarianmu.",
+    "videoCount": "{count} video",
     "categories": {
+      "all": "Semua",
       "technology": "Teknologi",
       "business": "Bisnis",
       "programming": "Pemrograman",
       "ai-ml": "AI & ML",
       "design": "Desain"
     },
-    "categoryCounts": {
-      "technology": "2,1K video",
-      "business": "1,8K video",
-      "programming": "3,2K video",
-      "ai-ml": "1,6K video",
-      "design": "1,2K video"
-    }
+    "scrollCategories": "Geser kategori"
   },
   "topicMarquee": {
     "title": "Pelajari topik apa pun dari YouTube",
