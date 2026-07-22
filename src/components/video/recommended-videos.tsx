@@ -1,10 +1,19 @@
 "use client";
 
-import { RECOMMENDED_VIDEOS } from "@/lib/recommended-videos";
+import {
+  RECOMMENDED_VIDEOS,
+  type RecommendedVideo,
+} from "@/lib/recommended-videos";
 import { VideoCard } from "@/components/video/video-card";
 import { useTranslations } from "next-intl";
 
-export function RecommendedVideos() {
+type RecommendedVideosProps = {
+  videos?: RecommendedVideo[];
+};
+
+export function RecommendedVideos({
+  videos = RECOMMENDED_VIDEOS,
+}: RecommendedVideosProps) {
   const t = useTranslations("video.recommended");
 
   return (
@@ -14,13 +23,14 @@ export function RecommendedVideos() {
       </h2>
       <p className="text-sm text-muted-foreground mb-6">{t("subtitle")}</p>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {RECOMMENDED_VIDEOS.map((video) => (
+        {videos.map((video) => (
           <VideoCard
             key={video.youtubeId}
             youtubeId={video.youtubeId}
             title={video.title}
             channelTitle={video.channelTitle}
             thumbnailUrl={video.thumbnailUrl}
+            duration={video.duration}
           />
         ))}
       </div>

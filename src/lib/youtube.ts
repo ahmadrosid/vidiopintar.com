@@ -288,7 +288,7 @@ ${truncatedTranscript}
     prompt: prompt,
     schema: z.object({
       questions: z.array(z.string()).describe(
-        'First-person learning questions about the video content',
+        'Exactly 4 concise questions: 2 surprise/aha, 1 mechanism, 1 apply; each max 12 words and grounded in a specific video detail',
       ),
     }),
   });

@@ -3,6 +3,7 @@ export type RecommendedVideo = {
   title: string;
   channelTitle: string;
   thumbnailUrl: string;
+  duration?: string;
 };
 
 export const RECOMMENDED_VIDEOS: RecommendedVideo[] = [

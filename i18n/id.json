@@ -177,6 +177,43 @@
       "list": "Tampilan daftar"
     }
   },
+  "explore": {
+    "title": "Jelajahi",
+    "subtitle": "Temukan video baru dan pelajari sesuatu hari ini.",
+    "searchPlaceholder": "Cari topik, channel, atau kata kunci...",
+    "browseByCategory": "Jelajahi berdasarkan kategori",
+    "trending": "Video tren",
+    "recommended": "Direkomendasikan untukmu",
+    "channels": "Channel untukmu",
+    "channelCount": "{count} channel",
+    "backToChannels": "Kembali ke Channel",
+    "emptyChannels": "Belum ada channel. Tonton beberapa video untuk memulai.",
+    "emptyChannelVideos": "Tidak ada video terbaru dari channel ini.",
+    "viewAll": "Lihat semua",
+    "backToExplore": "Kembali ke Jelajahi",
+    "emptyFilter": "Tidak ada kategori atau video tren yang cocok dengan pencarianmu.",
+    "searchResults": "Hasil pencarian",
+    "searchVideos": "Video",
+    "searchChannels": "Channel",
+    "searching": "Mencari di YouTube...",
+    "emptySearch": "Tidak ada video atau channel YouTube untuk pencarian itu.",
+    "emptySearchVideos": "Tidak ada video ditemukan.",
+    "emptySearchChannels": "Tidak ada channel dengan 1K+ subscriber.",
+    "subscriberCount": "{count} subscriber",
+    "searchError": "Pencarian gagal. Coba lagi.",
+    "videoCount": "{count} video",
+    "categories": {
+      "all": "Semua",
+      "technology": "Teknologi",
+      "business": "Bisnis",
+      "programming": "Pemrograman",
+      "ai-ml": "AI & ML",
+      "design": "Desain"
+    },
+    "scrollCategories": "Geser kategori",
+    "scrollChannelsLeft": "Geser channel ke kiri",
+    "scrollChannelsRight": "Geser channel ke kanan"
+  },
   "topicMarquee": {
     "title": "Pelajari topik apa pun dari YouTube",
     "topics": {

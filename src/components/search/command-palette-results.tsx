@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   Books,
   ClockCounterClockwise,
+  Compass,
   House,
   Note,
   ShareNetwork,
@@ -48,6 +49,7 @@ type LabeledDestination = {
 
 const DESTINATION_ICONS: Record<SearchDestination["labelKey"], Icon> = {
   home: House,
+  explore: Compass,
   library: Books,
   notes: Note,
   chats: ClockCounterClockwise,

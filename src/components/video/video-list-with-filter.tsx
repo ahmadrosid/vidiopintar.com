@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import type { RecommendedVideo } from "@/lib/recommended-videos";
 import { useTranslations } from "next-intl";
 
 type Video = {
@@ -35,12 +36,14 @@ interface VideoListWithFilterProps {
   videos: Video[];
   showViewAll?: boolean;
   variant?: "default" | "library";
+  recommendedVideos?: RecommendedVideo[];
 }
 
 export function VideoListWithFilter({
   videos,
   showViewAll = true,
   variant = "default",
+  recommendedVideos,
 }: VideoListWithFilterProps) {
   const t = useTranslations("video");
   const tLibrary = useTranslations("library");
@@ -117,7 +120,7 @@ export function VideoListWithFilter({
         </p>
       );
     }
-    return <RecommendedVideos />;
+    return <RecommendedVideos videos={recommendedVideos} />;
   }
 
   if (variant === "library") {

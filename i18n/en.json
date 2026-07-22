@@ -59,6 +59,43 @@
       "list": "List view"
     }
   },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Discover new videos and learn something new today.",
+    "searchPlaceholder": "Search topics, channels or keywords...",
+    "browseByCategory": "Browse by category",
+    "trending": "Trending videos",
+    "recommended": "Recommended for you",
+    "channels": "Channels for you",
+    "channelCount": "{count} channels",
+    "backToChannels": "Back to Channels",
+    "emptyChannels": "No channels to show yet. Watch a few videos to get started.",
+    "emptyChannelVideos": "No recent videos found for this channel.",
+    "viewAll": "View all",
+    "backToExplore": "Back to Explore",
+    "emptyFilter": "No categories or trending videos match your search.",
+    "searchResults": "Search results",
+    "searchVideos": "Videos",
+    "searchChannels": "Channels",
+    "searching": "Searching YouTube...",
+    "emptySearch": "No YouTube videos or channels found for that search.",
+    "emptySearchVideos": "No videos found.",
+    "emptySearchChannels": "No channels found with 1K+ subscribers.",
+    "subscriberCount": "{count} subscribers",
+    "searchError": "Search failed. Try again.",
+    "videoCount": "{count} videos",
+    "categories": {
+      "all": "All",
+      "technology": "Technology",
+      "business": "Business",
+      "programming": "Programming",
+      "ai-ml": "AI & ML",
+      "design": "Design"
+    },
+    "scrollCategories": "Scroll categories",
+    "scrollChannelsLeft": "Scroll channels left",
+    "scrollChannelsRight": "Scroll channels right"
+  },
   "hero": {
     "title": "Don't Just Watch YouTube — Learn From It",
     "subtitle": "Get instant \"aha moments\" from any YouTube video. Get key insights, connects the dots, and helps you build real knowledge — not just watch time."

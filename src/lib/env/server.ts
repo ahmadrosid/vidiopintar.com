@@ -17,6 +17,7 @@ export const env = createEnv({
       ),
     ADMIN_MASTER_EMAIL: z.string().email(),
     TRANSCRIPT_API_KEY: z.string().min(1),
+    YOUTUBE_API_KEY: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().min(1).default("http://localhost:3000"),
