@@ -16,6 +16,14 @@
     "getStarted": "Get started",
     "searchPlaceholder": "Search anything..."
   },
+  "search": {
+    "title": "Search",
+    "destinations": "Go to",
+    "videos": "Videos",
+    "notes": "Notes",
+    "empty": "No results found.",
+    "error": "Search failed. Try again."
+  },
   "emptyPages": {
     "explore": {
       "title": "Explore",

@@ -1,7 +1,16 @@
 import { db } from "@/lib/db/index"
-import { and, desc, eq, InferInsertModel, InferSelectModel, sql } from "drizzle-orm"
-import { feedback, messages, notes, sharedVideos, transcriptCache, transcriptSegments, userVideos, videos } from "./schema"
+import { and, desc, eq, InferInsertModel, InferSelectModel, or, sql } from "drizzle-orm"
+import { messages } from "./schema/messages"
+import { notes } from "./schema/notes"
 import { user } from "./schema/auth"
+import {
+  feedback,
+  sharedVideos,
+  transcriptCache,
+  transcriptSegments,
+  userVideos,
+  videos,
+} from "./schema/videos"
 
 export { TokenUsageRepository } from "./repository/token-usage"
 
@@ -27,6 +36,17 @@ export type NewNote = InferInsertModel<typeof notes>
 export type Feedback = InferSelectModel<typeof feedback>
 export type NewFeedback = InferInsertModel<typeof feedback>
 
+const SEARCH_RESULT_LIMIT = 8
+
+/** Escape `\`, `%`, and `_` so user input is matched literally in SQL LIKE. */
+function escapeLikePattern(value: string): string {
+  return value.replace(/[\\%_]/g, (ch) => `\\${ch}`)
+}
+
+function containsPattern(query: string): string {
+  return `%${escapeLikePattern(query.toLowerCase())}%`
+}
+
 export const VideoRepository = {
   async getAllForUserWithDetails(userId: string) {
     return await db
@@ -44,6 +64,35 @@ export const VideoRepository = {
       .innerJoin(videos, eq(userVideos.youtubeId, videos.youtubeId))
       .where(eq(userVideos.userId, userId))
       .orderBy(desc(userVideos.createdAt))
+  },
+
+  async searchForUser(userId: string, query: string) {
+    const q = query.trim()
+    if (q.length < 2) return []
+
+    const pattern = containsPattern(q)
+
+    return await db
+      .select({
+        userVideoId: userVideos.id,
+        youtubeId: userVideos.youtubeId,
+        title: videos.title,
+        channelTitle: videos.channelTitle,
+        thumbnailUrl: videos.thumbnailUrl,
+      })
+      .from(userVideos)
+      .innerJoin(videos, eq(userVideos.youtubeId, videos.youtubeId))
+      .where(
+        and(
+          eq(userVideos.userId, userId),
+          or(
+            sql`LOWER(${videos.title}) LIKE ${pattern} ESCAPE '\\'`,
+            sql`LOWER(COALESCE(${videos.channelTitle}, '')) LIKE ${pattern} ESCAPE '\\'`
+          )
+        )
+      )
+      .orderBy(desc(userVideos.createdAt))
+      .limit(SEARCH_RESULT_LIMIT)
   },
   async getByYoutubeId(youtubeId: string): Promise<Video | undefined> {
     const result = await db.select().from(videos).where(eq(videos.youtubeId, youtubeId))
@@ -135,6 +184,35 @@ export const NoteRepository = {
       .innerJoin(videos, eq(userVideos.youtubeId, videos.youtubeId))
       .where(eq(notes.userId, userId))
       .orderBy(desc(notes.createdAt))
+  },
+
+  async searchByUserId(userId: string, query: string) {
+    const q = query.trim()
+    if (q.length < 2) return []
+
+    const pattern = containsPattern(q)
+
+    return await db
+      .select({
+        id: notes.id,
+        userVideoId: notes.userVideoId,
+        timestamp: notes.timestamp,
+        text: notes.text,
+        youtubeId: userVideos.youtubeId,
+        videoTitle: videos.title,
+        channelTitle: videos.channelTitle,
+      })
+      .from(notes)
+      .innerJoin(userVideos, eq(notes.userVideoId, userVideos.id))
+      .innerJoin(videos, eq(userVideos.youtubeId, videos.youtubeId))
+      .where(
+        and(
+          eq(notes.userId, userId),
+          sql`LOWER(${notes.text}) LIKE ${pattern} ESCAPE '\\'`
+        )
+      )
+      .orderBy(desc(notes.createdAt))
+      .limit(SEARCH_RESULT_LIMIT)
   },
 
   async create(note: NewNote): Promise<Note> {

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useSearchParams } from "next/navigation"
 import { Loader } from "lucide-react"
 import { useVideo } from "@/hooks/use-video"
 import { useVideoStore } from "@/stores/video-store"
@@ -22,7 +23,32 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
   const playerInstanceRef = useRef<any>(null)
   const timeTrackingIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const lastAppliedTRef = useRef<string | null>(null)
   const { setPlayer, setReady, setCurrentTime } = useVideo()
+  const searchParams = useSearchParams()
+  const tParam = searchParams.get("t")
+  const isReady = useVideoStore((state) => state.isReady)
+  const seekAndPlay = useVideoStore((state) => state.seekAndPlay)
+
+  useEffect(() => {
+    lastAppliedTRef.current = null
+  }, [videoId])
+
+  useEffect(() => {
+    if (!isReady) {
+      lastAppliedTRef.current = null
+      return
+    }
+    if (tParam == null) return
+
+    const seconds = Number.parseInt(tParam, 10)
+    if (!Number.isFinite(seconds) || seconds < 0) return
+    if (lastAppliedTRef.current === tParam) return
+
+    if (seekAndPlay(seconds)) {
+      lastAppliedTRef.current = tParam
+    }
+  }, [isReady, tParam, seekAndPlay])
 
   useEffect(() => {
     let isMounted = true
@@ -40,10 +66,8 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
         return
       }
 
-      // Check if script is already being loaded
       const existingScript = document.querySelector('script[src="https://www.youtube.com/iframe_api"]')
       if (existingScript) {
-        // Script is loading, wait for it
         checkIntervalRef.current = setInterval(() => {
           if (window.YT && window.YT.Player) {
             if (checkIntervalRef.current) {
@@ -54,10 +78,8 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
           }
         }, 100)
 
-        // Store the original callback if it exists
         const originalCallback = window.onYouTubeIframeAPIReady
 
-        // Chain callbacks to avoid overwriting
         window.onYouTubeIframeAPIReady = () => {
           if (checkIntervalRef.current) {
             clearInterval(checkIntervalRef.current)
@@ -71,7 +93,6 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
         return
       }
 
-      // Store the original callback if it exists
       const originalCallback = window.onYouTubeIframeAPIReady
 
       const tag = document.createElement('script')
@@ -79,7 +100,6 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
       const firstScriptTag = document.getElementsByTagName('script')[0]
       firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag)
 
-      // Chain callbacks to avoid overwriting
       window.onYouTubeIframeAPIReady = () => {
         if (originalCallback) {
           originalCallback()
@@ -91,17 +111,15 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
     const initializePlayer = () => {
       if (!playerRef.current || !isMounted) return
 
-      // Destroy existing player if it exists
       if (playerInstanceRef.current) {
         try {
           playerInstanceRef.current.destroy()
-        } catch (e) {
+        } catch {
           // Ignore errors during cleanup
         }
         playerInstanceRef.current = null
       }
 
-      // Clear any existing time tracking interval
       if (timeTrackingIntervalRef.current) {
         clearInterval(timeTrackingIntervalRef.current)
         timeTrackingIntervalRef.current = null
@@ -126,12 +144,9 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
               if (!isMounted) return
               if (event.data === window.YT.PlayerState.PLAYING) {
                 startTimeTracking(event.target)
-              } else {
-                // Clear interval when not playing
-                if (timeTrackingIntervalRef.current) {
-                  clearInterval(timeTrackingIntervalRef.current)
-                  timeTrackingIntervalRef.current = null
-                }
+              } else if (timeTrackingIntervalRef.current) {
+                clearInterval(timeTrackingIntervalRef.current)
+                timeTrackingIntervalRef.current = null
               }
             },
           },
@@ -145,7 +160,6 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
     }
 
     const startTimeTracking = (player: any) => {
-      // Clear any existing interval
       if (timeTrackingIntervalRef.current) {
         clearInterval(timeTrackingIntervalRef.current)
       }
@@ -155,7 +169,7 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
         if (useVideoStore.getState().player !== player) return
         try {
           setCurrentTime(player.getCurrentTime())
-        } catch (e) {
+        } catch {
           // Ignore errors
         }
       }
@@ -165,28 +179,24 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
 
     loadYouTubeAPI()
 
-    // Cleanup function
     return () => {
       isMounted = false
 
-      // Clear check interval
       if (checkIntervalRef.current) {
         clearInterval(checkIntervalRef.current)
         checkIntervalRef.current = null
       }
 
-      // Clear time tracking interval
       if (timeTrackingIntervalRef.current) {
         clearInterval(timeTrackingIntervalRef.current)
         timeTrackingIntervalRef.current = null
       }
 
-      // Destroy player instance
       if (playerInstanceRef.current) {
         releaseStoreIfOwned()
         try {
           playerInstanceRef.current.destroy()
-        } catch (e) {
+        } catch {
           // Ignore errors during cleanup
         }
         playerInstanceRef.current = null

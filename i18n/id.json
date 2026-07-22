@@ -16,6 +16,14 @@
     "getStarted": "Mulai Sekarang",
     "searchPlaceholder": "Cari apa saja..."
   },
+  "search": {
+    "title": "Cari",
+    "destinations": "Pergi ke",
+    "videos": "Video",
+    "notes": "Catatan",
+    "empty": "Tidak ada hasil.",
+    "error": "Pencarian gagal. Coba lagi."
+  },
   "hero": {
     "title": "Jangan Hanya Menonton YouTube — Belajarlah Darinya",
     "subtitle": "Dapatkan momen \"aha\" instan dari video YouTube apa pun. Dapatkan wawasan kunci, hubungkan titik-titik, dan bantu kamu membangun pengetahuan nyata — bukan hanya waktu menonton."
