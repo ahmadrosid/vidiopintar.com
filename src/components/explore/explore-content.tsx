@@ -71,26 +71,30 @@ export function ExploreContent() {
     });
   }, [normalizedQuery, t]);
 
-  const activeCategoryId = useMemo(() => {
-    if (filteredCategories.some((category) => category.id === selectedCategoryId)) {
-      return selectedCategoryId;
-    }
-    return filteredCategories[0]?.id ?? selectedCategoryId;
-  }, [filteredCategories, selectedCategoryId]);
+  const categoryStillVisible = filteredCategories.some(
+    (category) => category.id === selectedCategoryId
+  );
 
   const filteredTrending = useMemo(() => {
     return EXPLORE_TRENDING_VIDEOS.filter((video) => {
-      const matchesCategory = video.categoryId === activeCategoryId;
-      if (!matchesCategory) return false;
-      if (!normalizedQuery) return true;
       const categoryName = t(`categories.${video.categoryId}`).toLowerCase();
-      const haystack = `${video.title} ${video.channelTitle} ${categoryName}`;
-      return haystack.includes(normalizedQuery);
-    });
-  }, [activeCategoryId, normalizedQuery, t]);
+      const haystack =
+        `${video.title} ${video.channelTitle} ${categoryName}`.toLowerCase();
+      const matchesSearch =
+        !normalizedQuery || haystack.includes(normalizedQuery);
+      if (!matchesSearch) return false;
 
-  const showEmptyFilter =
-    filteredCategories.length === 0 && filteredTrending.length === 0;
+      // With an active search that cleared category chips, show all text matches.
+      // Otherwise keep the selected category filter.
+      if (!normalizedQuery || categoryStillVisible) {
+        return video.categoryId === selectedCategoryId;
+      }
+      return true;
+    });
+  }, [categoryStillVisible, normalizedQuery, selectedCategoryId, t]);
+
+  const showEmptyCategories = filteredCategories.length === 0;
+  const showEmptyTrending = filteredTrending.length === 0;
 
   return (
     <div className="w-full space-y-8">
@@ -119,55 +123,58 @@ export function ExploreContent() {
         <h2 className="text-xl font-semibold tracking-tight text-foreground">
           {t("browseByCategory")}
         </h2>
-        <div className="flex gap-3 overflow-x-auto pb-1">
-          {filteredCategories.map((category) => {
-            const Icon = CATEGORY_ICONS[category.icon];
-            const isSelected = activeCategoryId === category.id;
+        {showEmptyCategories ? (
+          <p className="text-sm text-muted-foreground">{t("emptyFilter")}</p>
+        ) : (
+          <div className="flex gap-3 overflow-x-auto pb-1">
+            {filteredCategories.map((category) => {
+              const Icon = CATEGORY_ICONS[category.icon];
+              const isSelected = selectedCategoryId === category.id;
 
-            return (
-              <button
-                key={category.id}
-                type="button"
-                onClick={() => setSelectedCategoryId(category.id)}
-                className={cn(
-                  "flex min-w-[11.5rem] shrink-0 items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-                  isSelected
-                    ? "border-accent bg-accent text-accent-foreground"
-                    : "border-white/10 bg-card text-foreground hover:border-white/20 hover:bg-card/80"
-                )}
-              >
-                <Icon
-                  weight={isSelected ? "fill" : "regular"}
-                  className="size-5 shrink-0"
-                />
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium">
-                    {t(`categories.${category.id}`)}
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => setSelectedCategoryId(category.id)}
+                  className={cn(
+                    "flex min-w-[11.5rem] shrink-0 items-center gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+                    isSelected
+                      ? "border-accent bg-accent text-accent-foreground"
+                      : "border-white/10 bg-card text-foreground hover:border-white/20 hover:bg-card/80"
+                  )}
+                >
+                  <Icon
+                    weight={isSelected ? "fill" : "regular"}
+                    className="size-5 shrink-0"
+                  />
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium">
+                      {t(`categories.${category.id}`)}
+                    </span>
+                    <span
+                      className={cn(
+                        "block truncate text-xs",
+                        isSelected
+                          ? "text-accent-foreground/80"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      {t(`categoryCounts.${category.id}`)}
+                    </span>
                   </span>
-                  <span
-                    className={cn(
-                      "block truncate text-xs",
-                      isSelected
-                        ? "text-accent-foreground/80"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {t(`categoryCounts.${category.id}`)}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </section>
 
-      {showEmptyFilter ? (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          {t("emptyFilter")}
-        </p>
-      ) : (
-        <section>
-          <SectionHeader title={t("trending")} actionLabel={t("viewAll")} />
+      <section>
+        <SectionHeader title={t("trending")} actionLabel={t("viewAll")} />
+        {showEmptyTrending ? (
+          <p className="py-6 text-sm text-muted-foreground">{t("emptyFilter")}</p>
+        ) : (
           <div className="flex gap-4 overflow-x-auto pb-1">
             {filteredTrending.map((video) => (
               <div
@@ -184,8 +191,8 @@ export function ExploreContent() {
               </div>
             ))}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <section>
         <SectionHeader title={t("recommended")} actionLabel={t("viewAll")} />
