@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Loader2, Search } from "lucide-react";
+import { CircleNotch, MagnifyingGlass } from "@phosphor-icons/react";
 import {
   Dialog,
   DialogContent,
@@ -226,7 +226,7 @@ function CommandPalettePanel({
       <DialogTitle className="sr-only">{t("title")}</DialogTitle>
 
       <div className="flex items-center gap-2 border-b border-border px-3">
-        <Search className="size-4 shrink-0 text-muted-foreground" />
+        <MagnifyingGlass className="size-4 shrink-0 text-muted-foreground" />
         <input
           ref={inputRef}
           type="search"
@@ -244,7 +244,7 @@ function CommandPalettePanel({
           autoComplete="off"
         />
         {loading ? (
-          <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
+          <CircleNotch className="size-4 shrink-0 animate-spin text-muted-foreground" />
         ) : null}
       </div>
 

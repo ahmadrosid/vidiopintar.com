@@ -1,6 +1,7 @@
 "use client";
 
-import { BookOpen, FileText, House } from "lucide-react";
+import Image from "next/image";
+import { House, Note, VideoCamera } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 export type SearchVideoHit = {
@@ -62,8 +63,8 @@ function ResultOption({
         tabIndex={-1}
         aria-selected={isActive}
         className={cn(
-          "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm",
-          isActive ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+          "group/option flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-foreground",
+          isActive ? "bg-muted" : "hover:bg-muted/70"
         )}
         onMouseEnter={onHighlight}
         onClick={onActivate}
@@ -73,6 +74,12 @@ function ResultOption({
     </li>
   );
 }
+
+const optionIconClass =
+  "size-4 shrink-0 text-muted-foreground group-aria-selected/option:text-foreground/70";
+
+const optionSubtitleClass =
+  "block truncate text-xs text-muted-foreground group-aria-selected/option:text-foreground/70";
 
 export function DestinationResults({
   destinations,
@@ -93,7 +100,7 @@ export function DestinationResults({
 
   return (
     <section className="mb-2">
-      <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
+      <h3 className="px-2 py-1 text-xs font-medium text-foreground/70">
         {heading}
       </h3>
       <ul className="space-y-0.5">
@@ -108,8 +115,8 @@ export function DestinationResults({
               onHighlight={() => onHighlight(index)}
               onActivate={() => onActivate(item)}
             >
-              <House className="size-4 shrink-0 text-muted-foreground" />
-              <span className="truncate">{dest.label}</span>
+              <House className={optionIconClass} />
+              <span className="truncate font-medium">{dest.label}</span>
             </ResultOption>
           );
         })}
@@ -139,7 +146,7 @@ export function VideoResults({
 
   return (
     <section className="mb-2">
-      <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
+      <h3 className="px-2 py-1 text-xs font-medium text-foreground/70">
         {heading}
       </h3>
       <ul className="space-y-0.5">
@@ -155,13 +162,23 @@ export function VideoResults({
               onHighlight={() => onHighlight(itemIndex)}
               onActivate={() => onActivate(item)}
             >
-              <BookOpen className="size-4 shrink-0 text-muted-foreground" />
+              <span className="relative aspect-video w-12 shrink-0 overflow-hidden rounded-sm bg-muted">
+                {video.thumbnailUrl ? (
+                  <Image
+                    src={video.thumbnailUrl}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="48px"
+                  />
+                ) : (
+                  <VideoCamera className="absolute inset-0 m-auto size-4 text-muted-foreground" />
+                )}
+              </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">{video.title}</span>
                 {video.channelTitle ? (
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {video.channelTitle}
-                  </span>
+                  <span className={optionSubtitleClass}>{video.channelTitle}</span>
                 ) : null}
               </span>
             </ResultOption>
@@ -193,7 +210,7 @@ export function NoteResults({
 
   return (
     <section>
-      <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
+      <h3 className="px-2 py-1 text-xs font-medium text-foreground/70">
         {heading}
       </h3>
       <ul className="space-y-0.5">
@@ -209,15 +226,13 @@ export function NoteResults({
               onHighlight={() => onHighlight(itemIndex)}
               onActivate={() => onActivate(item)}
             >
-              <FileText className="size-4 shrink-0 text-muted-foreground" />
+              <Note className={optionIconClass} />
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-medium">
                   {noteSnippet(note.text)}
                 </span>
                 {note.videoTitle ? (
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {note.videoTitle}
-                  </span>
+                  <span className={optionSubtitleClass}>{note.videoTitle}</span>
                 ) : null}
               </span>
             </ResultOption>
