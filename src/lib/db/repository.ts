@@ -1,7 +1,16 @@
 import { db } from "@/lib/db/index"
 import { and, desc, eq, InferInsertModel, InferSelectModel, or, sql } from "drizzle-orm"
-import { feedback, messages, notes, sharedVideos, transcriptCache, transcriptSegments, userVideos, videos } from "./schema"
+import { messages } from "./schema/messages"
+import { notes } from "./schema/notes"
 import { user } from "./schema/auth"
+import {
+  feedback,
+  sharedVideos,
+  transcriptCache,
+  transcriptSegments,
+  userVideos,
+  videos,
+} from "./schema/videos"
 
 export { TokenUsageRepository } from "./repository/token-usage"
 

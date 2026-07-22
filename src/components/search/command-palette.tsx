@@ -11,43 +11,25 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BookOpen, FileText, House, Loader2, Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import {
   SEARCH_DESTINATIONS,
   type SearchDestination,
 } from "@/components/search/search-destinations";
-
-type SearchVideoHit = {
-  youtubeId: string;
-  title: string;
-  channelTitle: string | null;
-  thumbnailUrl: string | null;
-};
-
-type SearchNoteHit = {
-  id: number;
-  youtubeId: string;
-  text: string;
-  timestamp: number;
-  videoTitle: string | null;
-};
-
-type FlatItem =
-  | { kind: "destination"; id: string; href: string; label: string }
-  | { kind: "video"; id: string; href: string; title: string; subtitle: string }
-  | {
-      kind: "note";
-      id: string;
-      href: string;
-      title: string;
-      subtitle: string;
-    };
+import {
+  DestinationResults,
+  NoteResults,
+  VideoResults,
+  noteSnippet,
+  type FlatItem,
+  type SearchNoteHit,
+  type SearchVideoHit,
+} from "@/components/search/command-palette-results";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -60,13 +42,19 @@ function matchesQuery(label: string, query: string) {
   return label.toLowerCase().includes(q);
 }
 
-function noteSnippet(text: string, max = 80) {
-  const trimmed = text.trim().replace(/\s+/g, " ");
-  if (trimmed.length <= max) return trimmed;
-  return `${trimmed.slice(0, max - 1)}…`;
+export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {open ? <CommandPalettePanel onOpenChange={onOpenChange} /> : null}
+    </Dialog>
+  );
 }
 
-export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+function CommandPalettePanel({
+  onOpenChange,
+}: {
+  onOpenChange: (open: boolean) => void;
+}) {
   const tNav = useTranslations("navigation");
   const t = useTranslations("search");
   const router = useRouter();
@@ -126,18 +114,9 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   }, [filteredDestinations, notes, query, videos]);
 
   useEffect(() => {
-    if (!open) {
-      setQuery("");
-      setVideos([]);
-      setNotes([]);
-      setError(null);
-      setLoading(false);
-      setActiveIndex(0);
-      return;
-    }
     const frame = requestAnimationFrame(() => inputRef.current?.focus());
     return () => cancelAnimationFrame(frame);
-  }, [open]);
+  }, []);
 
   useEffect(() => {
     setActiveIndex(0);
@@ -145,7 +124,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   useEffect(() => {
     const q = query.trim();
-    if (!open || q.length < 2) {
+    if (q.length < 2) {
       abortRef.current?.abort();
       setVideos([]);
       setNotes([]);
@@ -181,9 +160,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         setNotes([]);
         setError(t("error"));
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     }, 250);
 
@@ -191,7 +168,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [open, query, t]);
+  }, [query, t]);
 
   const activateItem = useCallback(
     (item: FlatItem) => {
@@ -202,6 +179,8 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   );
 
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.nativeEvent.isComposing) return;
+
     if (event.key === "ArrowDown") {
       event.preventDefault();
       if (flatItems.length === 0) return;
@@ -223,200 +202,101 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     }
   };
 
-  const showVideos = query.trim().length >= 2;
-  const showNotes = query.trim().length >= 2;
+  const showResults = query.trim().length >= 2;
   const isEmpty = flatItems.length === 0 && !loading;
   const activeId = flatItems[activeIndex]?.id;
 
   useEffect(() => {
-    if (!open || !activeId) return;
+    if (!activeId) return;
     document.getElementById(activeId)?.scrollIntoView({ block: "nearest" });
-  }, [activeId, open]);
+  }, [activeId]);
 
   const videoOffset = filteredDestinations.length;
-  const noteOffset = videoOffset + (showVideos ? videos.length : 0);
+  const noteOffset = videoOffset + (showResults ? videos.length : 0);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={false}
-        className="top-[12%] translate-y-0 gap-0 overflow-hidden p-0 sm:max-w-xl"
-        onOpenAutoFocus={(event) => {
-          event.preventDefault();
-          inputRef.current?.focus();
-        }}
-      >
-        <DialogTitle className="sr-only">{t("title")}</DialogTitle>
+    <DialogContent
+      showCloseButton={false}
+      className="top-[12%] translate-y-0 gap-0 overflow-hidden p-0 sm:max-w-xl"
+      onOpenAutoFocus={(event) => {
+        event.preventDefault();
+        inputRef.current?.focus();
+      }}
+    >
+      <DialogTitle className="sr-only">{t("title")}</DialogTitle>
 
-        <div className="flex items-center gap-2 border-b border-border px-3">
-          <Search className="size-4 shrink-0 text-muted-foreground" />
-          <input
-            ref={inputRef}
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={onKeyDown}
-            placeholder={tNav("searchPlaceholder")}
-            aria-label={t("title")}
-            className="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            role="combobox"
-            aria-expanded={open}
-            aria-controls={listboxId}
-            aria-activedescendant={activeId}
-            aria-autocomplete="list"
-            autoComplete="off"
-          />
-          {loading ? (
-            <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
-          ) : null}
-        </div>
-
-        <div
-          id={listboxId}
-          role="listbox"
+      <div className="flex items-center gap-2 border-b border-border px-3">
+        <Search className="size-4 shrink-0 text-muted-foreground" />
+        <input
+          ref={inputRef}
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={onKeyDown}
+          placeholder={tNav("searchPlaceholder")}
           aria-label={t("title")}
-          className="max-h-[min(60vh,24rem)] overflow-y-auto p-2"
-        >
-          {error ? (
-            <p className="px-2 py-2 text-sm text-destructive">{error}</p>
-          ) : null}
+          className="h-12 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          role="combobox"
+          aria-expanded
+          aria-controls={listboxId}
+          aria-activedescendant={activeId}
+          aria-autocomplete="list"
+          autoComplete="off"
+        />
+        {loading ? (
+          <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
+        ) : null}
+      </div>
 
-          {isEmpty ? (
-            <p className="px-2 py-6 text-center text-sm text-muted-foreground">
-              {t("empty")}
-            </p>
-          ) : null}
+      <div
+        id={listboxId}
+        role="listbox"
+        aria-label={t("title")}
+        className="max-h-[min(60vh,24rem)] overflow-y-auto p-2"
+      >
+        {error ? (
+          <p className="px-2 py-2 text-sm text-destructive">{error}</p>
+        ) : null}
 
-          {filteredDestinations.length > 0 ? (
-            <section className="mb-2">
-              <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
-                {t("destinations")}
-              </h3>
-              <ul className="space-y-0.5">
-                {filteredDestinations.map((dest, index) => {
-                  const itemIndex = index;
-                  const item = flatItems[itemIndex];
-                  const isActive = itemIndex === activeIndex;
-                  return (
-                    <li key={dest.href} role="presentation">
-                      <button
-                        type="button"
-                        id={item?.id}
-                        role="option"
-                        tabIndex={-1}
-                        aria-selected={isActive}
-                        className={cn(
-                          "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm",
-                          isActive
-                            ? "bg-accent text-accent-foreground"
-                            : "hover:bg-muted"
-                        )}
-                        onMouseEnter={() => setActiveIndex(itemIndex)}
-                        onClick={() => item && activateItem(item)}
-                      >
-                        <House className="size-4 shrink-0 text-muted-foreground" />
-                        <span className="truncate">{dest.label}</span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ) : null}
+        {isEmpty ? (
+          <p className="px-2 py-6 text-center text-sm text-muted-foreground">
+            {t("empty")}
+          </p>
+        ) : null}
 
-          {showVideos && videos.length > 0 ? (
-            <section className="mb-2">
-              <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
-                {t("videos")}
-              </h3>
-              <ul className="space-y-0.5">
-                {videos.map((video, index) => {
-                  const itemIndex = videoOffset + index;
-                  const item = flatItems[itemIndex];
-                  const isActive = itemIndex === activeIndex;
-                  return (
-                    <li key={video.youtubeId} role="presentation">
-                      <button
-                        type="button"
-                        id={item?.id}
-                        role="option"
-                        tabIndex={-1}
-                        aria-selected={isActive}
-                        className={cn(
-                          "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm",
-                          isActive
-                            ? "bg-accent text-accent-foreground"
-                            : "hover:bg-muted"
-                        )}
-                        onMouseEnter={() => setActiveIndex(itemIndex)}
-                        onClick={() => item && activateItem(item)}
-                      >
-                        <BookOpen className="size-4 shrink-0 text-muted-foreground" />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate font-medium">
-                            {video.title}
-                          </span>
-                          {video.channelTitle ? (
-                            <span className="block truncate text-xs text-muted-foreground">
-                              {video.channelTitle}
-                            </span>
-                          ) : null}
-                        </span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ) : null}
+        <DestinationResults
+          destinations={filteredDestinations}
+          flatItems={flatItems}
+          activeIndex={activeIndex}
+          heading={t("destinations")}
+          onActivate={activateItem}
+          onHighlight={setActiveIndex}
+        />
 
-          {showNotes && notes.length > 0 ? (
-            <section>
-              <h3 className="px-2 py-1 text-xs font-medium text-muted-foreground">
-                {t("notes")}
-              </h3>
-              <ul className="space-y-0.5">
-                {notes.map((note, index) => {
-                  const itemIndex = noteOffset + index;
-                  const item = flatItems[itemIndex];
-                  const isActive = itemIndex === activeIndex;
-                  return (
-                    <li key={note.id} role="presentation">
-                      <button
-                        type="button"
-                        id={item?.id}
-                        role="option"
-                        tabIndex={-1}
-                        aria-selected={isActive}
-                        className={cn(
-                          "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left text-sm",
-                          isActive
-                            ? "bg-accent text-accent-foreground"
-                            : "hover:bg-muted"
-                        )}
-                        onMouseEnter={() => setActiveIndex(itemIndex)}
-                        onClick={() => item && activateItem(item)}
-                      >
-                        <FileText className="size-4 shrink-0 text-muted-foreground" />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate font-medium">
-                            {noteSnippet(note.text)}
-                          </span>
-                          {note.videoTitle ? (
-                            <span className="block truncate text-xs text-muted-foreground">
-                              {note.videoTitle}
-                            </span>
-                          ) : null}
-                        </span>
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ) : null}
-        </div>
-      </DialogContent>
-    </Dialog>
+        {showResults ? (
+          <VideoResults
+            videos={videos}
+            flatItems={flatItems}
+            offset={videoOffset}
+            activeIndex={activeIndex}
+            heading={t("videos")}
+            onActivate={activateItem}
+            onHighlight={setActiveIndex}
+          />
+        ) : null}
+
+        {showResults ? (
+          <NoteResults
+            notes={notes}
+            flatItems={flatItems}
+            offset={noteOffset}
+            activeIndex={activeIndex}
+            heading={t("notes")}
+            onActivate={activateItem}
+            onHighlight={setActiveIndex}
+          />
+        ) : null}
+      </div>
+    </DialogContent>
   );
 }
