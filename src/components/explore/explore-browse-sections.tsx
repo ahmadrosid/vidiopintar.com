@@ -234,7 +234,7 @@ export function ExploreBrowseSections({
             </div>
 
             {canScrollChannelsLeft ? (
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center bg-gradient-to-r from-background via-background/90 to-transparent pr-8">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center bg-linear-to-r from-background via-background/90 to-transparent pr-8">
                 <button
                   type="button"
                   onClick={() => scrollChannels("left")}
@@ -247,7 +247,7 @@ export function ExploreBrowseSections({
             ) : null}
 
             {canScrollChannelsRight ? (
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center bg-gradient-to-l from-background via-background/90 to-transparent pl-8">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center bg-linear-to-l from-background via-background/90 to-transparent pl-8">
                 <button
                   type="button"
                   onClick={() => scrollChannels("right")}
