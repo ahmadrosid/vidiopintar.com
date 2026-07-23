@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,40 +24,38 @@ interface PendingPaymentAlertProps {
   transactions: Transaction[];
 }
 
+function formatAmount(amount: number, currency: string) {
+  return `${currency} ${amount.toLocaleString("en-US")}`;
+}
+
+function formatDate(date: Date | null) {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString("en-US", {
+    timeZone: "Asia/Jakarta",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function getTimeRemaining(expiresAt: Date) {
+  const now = new Date();
+  const timeLeft = new Date(expiresAt).getTime() - now.getTime();
+  const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+
+  if (hoursLeft < 0) return "Expired";
+  if (hoursLeft < 1) return "Less than 1 hour";
+  if (hoursLeft < 24) return `${hoursLeft} hours left`;
+
+  const daysLeft = Math.floor(hoursLeft / 24);
+  return `${daysLeft} day${daysLeft > 1 ? "s" : ""} left`;
+}
+
 export function PendingPaymentAlert({ transactions }: PendingPaymentAlertProps) {
   const t = useTranslations("billing.pendingPayment");
-  const [localTransactions] = useState(transactions);
 
-  const formatAmount = (amount: number, currency: string) => {
-    return `${currency} ${amount.toLocaleString()}`;
-  };
-
-  const formatDate = (date: Date | null) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const getTimeRemaining = (expiresAt: Date) => {
-    const now = new Date();
-    const timeLeft = new Date(expiresAt).getTime() - now.getTime();
-    const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
-
-    if (hoursLeft < 0) return "Expired";
-    if (hoursLeft < 1) return "Less than 1 hour";
-    if (hoursLeft < 24) return `${hoursLeft} hours left`;
-
-    const daysLeft = Math.floor(hoursLeft / 24);
-    return `${daysLeft} day${daysLeft > 1 ? "s" : ""} left`;
-  };
-
-  const pendingTransactions = localTransactions.filter(
-    (t) => t.status === "pending",
-  );
+  const pendingTransactions = transactions.filter((t) => t.status === "pending");
 
   if (pendingTransactions.length === 0) {
     return null;

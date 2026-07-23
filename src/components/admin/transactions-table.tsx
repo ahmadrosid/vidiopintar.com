@@ -294,7 +294,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
               variant="ghost"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="h-9 px-4 text-sm font-medium rounded-xs hover:bg-accent/90 transition-all duration-200"
+              className="h-9 px-4 text-sm font-medium rounded-xs hover:bg-accent/90 transition-colors duration-200"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -315,7 +315,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                   variant="ghost"
                   size="sm"
                   onClick={resetFilters}
-                  className="h-7 px-3 text-xs rounded-xs hover:bg-accent/90 transition-all duration-200"
+                  className="h-7 px-3 text-xs rounded-xs hover:bg-accent/90 transition-colors duration-200"
                 >
                   <RotateCcw className="h-3 w-3 mr-1.5" />
                   Reset
@@ -480,7 +480,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 w-8 p-0 transition-all duration-200 text-accent hover:text-accent hover:bg-accent/15 ring-2 ring-accent/30"
+                            className="h-8 w-8 p-0 transition-colors duration-200 text-accent hover:text-accent hover:bg-accent/15 ring-2 ring-accent/30"
                             disabled={processingIds.has(transaction.id)}
                             title="Payment confirmation received - Click to confirm"
                           >
@@ -535,7 +535,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50/85 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/50 transition-all duration-200"
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50/85 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/50 transition-colors duration-200"
                             disabled={processingIds.has(transaction.id)}
                             title="Cancel transaction"
                           >

@@ -24,15 +24,29 @@ export function MayarCheckoutButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planType }),
       });
+
+      if (res.status === 401) {
+        router.push("/sign-in");
+        return;
+      }
+
+      if (!res.ok) {
+        let message = "Checkout failed";
+        try {
+          const errBody = (await res.json()) as { error?: string };
+          if (errBody.error) message = errBody.error;
+        } catch {
+          // ignore non-JSON error bodies
+        }
+        setError(message);
+        return;
+      }
+
       const data = (await res.json()) as {
         checkoutUrl?: string;
         error?: string;
       };
-      if (!res.ok || !data.checkoutUrl) {
-        if (res.status === 401) {
-          router.push("/sign-in");
-          return;
-        }
+      if (!data.checkoutUrl) {
         setError(data.error ?? "Checkout failed");
         return;
       }

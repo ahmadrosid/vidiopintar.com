@@ -11,39 +11,37 @@ interface PaymentPageProps {
   searchParams: Promise<{ plan?: string }>;
 }
 
+const PLAN_DETAILS = {
+  monthly: {
+    name: PLAN_CONFIGS.monthly.name,
+    price: `IDR ${PLAN_CONFIGS.monthly.amount.toLocaleString("en-US")}`,
+    amount: PLAN_CONFIGS.monthly.amount,
+  },
+  yearly: {
+    name: PLAN_CONFIGS.yearly.name,
+    price: `IDR ${PLAN_CONFIGS.yearly.amount.toLocaleString("en-US")}`,
+    amount: PLAN_CONFIGS.yearly.amount,
+  },
+} as const;
+
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
-  const t = await getTranslations("payment");
-  const { plan } = await searchParams;
-
-  const user = await getCurrentUser();
-
-  const planDetails = {
-    monthly: {
-      name: PLAN_CONFIGS.monthly.name,
-      price: `IDR ${PLAN_CONFIGS.monthly.amount.toLocaleString()}`,
-      amount: PLAN_CONFIGS.monthly.amount,
-    },
-    yearly: {
-      name: PLAN_CONFIGS.yearly.name,
-      price: `IDR ${PLAN_CONFIGS.yearly.amount.toLocaleString()}`,
-      amount: PLAN_CONFIGS.yearly.amount,
-    },
-  };
+  const [{ plan }, t, user] = await Promise.all([
+    searchParams,
+    getTranslations("payment"),
+    getCurrentUser(),
+  ]);
 
   const validPlan =
     plan && (plan === "monthly" || plan === "yearly") ? plan : "monthly";
-  const currentPlan = planDetails[validPlan];
+  const currentPlan = PLAN_DETAILS[validPlan];
 
-  const canPurchaseCheck = await UserPlanService.canPurchasePlan(
-    user.id,
-    validPlan,
-  );
-
-  const existingTransaction =
-    await transactionsRepository.getPendingTransactionByUserAndPlan(
+  const [canPurchaseCheck, existingTransaction] = await Promise.all([
+    UserPlanService.canPurchasePlan(user.id, validPlan),
+    transactionsRepository.getPendingTransactionByUserAndPlan(
       user.id,
       validPlan,
-    );
+    ),
+  ]);
 
   return (
     <div className="min-h-screen bg-background py-12 px-4">
@@ -82,7 +80,10 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                     <p className="text-xs text-red-700 dark:text-red-300">
                       Current plan: {canPurchaseCheck.activeSubscription.planType}.
                       Expires:{" "}
-                      {canPurchaseCheck.activeSubscription.expiresAt.toLocaleDateString()}
+                      {canPurchaseCheck.activeSubscription.expiresAt.toLocaleDateString(
+                        "en-US",
+                        { timeZone: "Asia/Jakarta" },
+                      )}
                     </p>
                   )}
                   <div className="mt-4">
