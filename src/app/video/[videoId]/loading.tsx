@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Loading() {
   return (
-    <main className="flex flex-col h-screen overflow-hidden bg-melody-gradient relative">
+    <main className="flex flex-col h-screen overflow-hidden bg-background relative">
       <div className="relative z-10 h-full min-h-0">
         <div className="grid grid-cols-1 lg:grid-cols-7 h-full min-h-0">
           {/* Left side - Video player and content */}
@@ -13,7 +13,7 @@ export default function Loading() {
               <div className="flex items-center p-4 gap-2">
                 <a
                   href="/home"
-                  className="text-foreground hover:underline hover:text-melody transition-colors inline-flex gap-2 items-center"
+                  className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center"
                 >
                   Home
                 </a>

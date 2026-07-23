@@ -96,7 +96,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
         <div className="min-h-screen bg-background py-12 px-4">
             <div className="mx-auto max-w-lg">
                 <div className="mb-6">
-                    <a href="/home" className="text-foreground hover:underline hover:text-melody transition-colors inline-flex gap-2 items-center">
+                    <a href="/home" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
                         <ChevronLeft className="size-4" />
                         Home
                     </a>

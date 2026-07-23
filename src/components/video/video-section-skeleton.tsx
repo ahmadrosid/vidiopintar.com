@@ -9,7 +9,7 @@ export function VideoSectionSkeleton() {
         <div className="flex items-center p-2.5 gap-2">
           <a
             href="/home"
-            className="text-foreground hover:underline hover:text-melody transition-colors inline-flex gap-2 items-center"
+            className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center"
           >
             Home
           </a>
