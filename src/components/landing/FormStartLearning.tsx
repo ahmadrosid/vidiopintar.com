@@ -28,12 +28,12 @@ export function ButtonSubmitStartLearning({
       type="submit"
       size="icon"
       disabled={isSubmitting}
-      className="cursor-pointer absolute right-2 top-1/2 -translate-y-1/2 rounded-sm bg-slate-900 hover:bg-slate-900/90 active:scale-[0.975]"
+      className="absolute right-2 top-1/2 z-10 size-9 -translate-y-1/2 cursor-pointer rounded-sm border-0 bg-black text-white shadow-none hover:bg-zinc-900 hover:text-white active:scale-[0.975] dark:bg-white dark:text-black dark:hover:bg-zinc-100 dark:hover:text-black"
     >
       {isSubmitting ? (
-        <Loader className="size-4 animate-spin dark:text-white" />
+        <Loader className="size-4 animate-spin" />
       ) : (
-        <ArrowUp className="text-white size-4" />
+        <ArrowUp className="size-4" />
       )}
     </Button>
   );

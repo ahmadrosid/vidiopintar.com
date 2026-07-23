@@ -1,10 +1,16 @@
 import { cn } from "@/lib/utils"
 import { marked } from "marked"
+import { Inter } from "next/font/google"
 import { memo, useId, useMemo } from "react"
 import ReactMarkdown, { Components } from "react-markdown"
 import remarkBreaks from "remark-breaks"
 import remarkGfm from "remark-gfm"
 import { CodeBlock, CodeBlockCode } from "./code-block"
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+})
 
 export type MarkdownProps = {
   children: string
@@ -92,7 +98,7 @@ function MarkdownComponent({
   const blocks = useMemo(() => parseMarkdownIntoBlocks(children), [children])
 
   return (
-    <div className={className}>
+    <div className={cn(inter.className, className)}>
       {blocks.map((block, index) => (
         <MemoizedMarkdownBlock
           key={`${blockId}-block-${index}`}

@@ -128,7 +128,7 @@ export function SummarySection({
           </Button>
         </div>
       ) : (
-        <div className="relative group prose dark:prose-invert prose-sm px-2 max-w-none">
+        <div className="relative group prose dark:prose-invert prose-lg px-2 max-w-none">
           <Markdown components={markdownComponents}>{renderedSummary}</Markdown>
           <div className="absolute top-0 right-2 flex items-center gap-1 group-hover:visible invisible">
             {showRegenerateButton && (

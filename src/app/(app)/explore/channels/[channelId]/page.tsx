@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ExploreChannelVideosContent } from "@/components/explore/explore-channel-videos-content";
+import { ExploreChannelVideosSkeleton } from "@/components/explore/explore-channel-videos-skeleton";
 import { buildPageMetadata } from "@/lib/geo/metadata";
 import {
   getChannelById,
@@ -24,7 +26,7 @@ export async function generateMetadata({ params }: ExploreChannelPageProps) {
   });
 }
 
-export default async function ExploreChannelPage({
+async function ExploreChannelVideosLoader({
   params,
 }: ExploreChannelPageProps) {
   const { channelId } = await params;
@@ -33,9 +35,17 @@ export default async function ExploreChannelPage({
 
   const videos = await getLatestVideosForChannel(channel.channelId, 10);
 
+  return <ExploreChannelVideosContent channel={channel} videos={videos} />;
+}
+
+export default function ExploreChannelPage({
+  params,
+}: ExploreChannelPageProps) {
   return (
     <div className="w-full space-y-8 px-4 pb-12 pt-4 md:px-8 md:pt-6">
-      <ExploreChannelVideosContent channel={channel} videos={videos} />
+      <Suspense fallback={<ExploreChannelVideosSkeleton />}>
+        <ExploreChannelVideosLoader params={params} />
+      </Suspense>
     </div>
   );
 }

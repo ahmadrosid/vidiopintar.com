@@ -141,7 +141,7 @@ export function UpgradePlansSection({
 
   if (availableUpgrades.length === 0) {
     return (
-      <Card className="bg-card border-none shadow-[0px_6px_20px_2px_#00000033] rounded-xs">
+      <Card className="bg-card border border-border shadow-none rounded-xs">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-primary">
             <Crown className="h-5 w-5 text-yellow-500" />
@@ -162,7 +162,7 @@ export function UpgradePlansSection({
       <DialogTrigger asChild>
         <Button
           size="lg"
-          className="w-full rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF,0px_6px_20px_2px_#000000] active:shadow-none active:scale-[0.975] transition-all duration-200 ease-in-out cursor-pointer"
+          className="w-full rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-all duration-200 ease-in-out cursor-pointer"
         >
           <Sparkles className="h-4 w-4 mr-2" />
           {tBilling("upgrade.button")}
@@ -184,8 +184,8 @@ export function UpgradePlansSection({
             return (
               <Card
                 key={planId}
-                className={`flex flex-col gap-7 bg-card px-7 py-8 rounded-xs border-none min-h-[472px] w-full hover:bg-card/85 transition relative ${
-                  plan.popular ? "shadow-[0px_6px_20px_2px_#00000033]" : ""
+                className={`flex flex-col gap-7 bg-card px-7 py-8 rounded-xs border border-border min-h-[472px] w-full hover:bg-card/85 transition relative shadow-none ${
+                  plan.popular ? "ring-1 ring-accent/40" : ""
                 }`}
               >
                 {plan.popular && (
@@ -267,7 +267,7 @@ export function UpgradePlansSection({
                     className="block mt-auto"
                   >
                     <Button
-                      className="w-full cursor-pointer rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF,0px_6px_20px_2px_#000000] active:shadow-none active:scale-[0.975] transition-all duration-200 ease-in-out"
+                      className="w-full cursor-pointer rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-all duration-200 ease-in-out"
                       size="lg"
                     >
                       {tBilling("upgrade.upgradeTo")} {plan.name}

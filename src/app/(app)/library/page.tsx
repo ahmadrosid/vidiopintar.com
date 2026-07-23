@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { VideoRepository } from "@/lib/db/repository";
 import { VideoListWithFilter } from "@/components/video/video-list-with-filter";
+import { LibraryPageSkeleton } from "@/components/video/library-page-skeleton";
 import { getCurrentUser } from "@/lib/auth";
 import { buildPageMetadata } from "@/lib/geo/metadata";
 import { getTranslations } from "next-intl/server";
@@ -11,13 +13,13 @@ export const metadata = buildPageMetadata({
   noIndex: true,
 });
 
-export default async function LibraryPage() {
+async function LibraryPageContent() {
   const user = await getCurrentUser();
   const videos = await VideoRepository.getAllForUserWithDetails(user.id);
   const t = await getTranslations("library");
 
   return (
-    <div className="w-full space-y-8 px-4 pb-12 pt-4 md:px-8 md:pt-6">
+    <>
       <header className="space-y-1">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
           {t("title")}
@@ -28,6 +30,16 @@ export default async function LibraryPage() {
       </header>
 
       <VideoListWithFilter videos={videos} variant="library" />
+    </>
+  );
+}
+
+export default function LibraryPage() {
+  return (
+    <div className="w-full space-y-8 px-4 pb-12 pt-4 md:px-8 md:pt-6">
+      <Suspense fallback={<LibraryPageSkeleton />}>
+        <LibraryPageContent />
+      </Suspense>
     </div>
   );
 }

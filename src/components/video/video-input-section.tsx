@@ -131,7 +131,7 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
           </div>
         )}
 
-        <div className="flex w-full items-center gap-3 rounded-lg border border-input bg-background py-2 pl-4 pr-2 shadow-xs">
+        <div className="flex w-full items-center gap-3 rounded-lg border border-input bg-background py-2 pl-4 pr-2">
           <Link2 className="size-5 shrink-0 text-accent" />
           <input
             type="text"
