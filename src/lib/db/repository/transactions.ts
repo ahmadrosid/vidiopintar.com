@@ -9,7 +9,8 @@ export class TransactionsRepository {
       .insert(transactions)
       .values({
         ...data,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+        paymentMethod: data.paymentMethod ?? 'mayar',
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       })
       .returning();
     
@@ -33,6 +34,43 @@ export class TransactionsRepository {
       .where(eq(transactions.transactionReference, reference))
       .limit(1);
     
+    return result[0] || null;
+  }
+
+  async getByMayarTransactionId(mayarTransactionId: string): Promise<Transaction | null> {
+    const result = await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.mayarTransactionId, mayarTransactionId))
+      .limit(1);
+
+    return result[0] || null;
+  }
+
+  async getByMayarMemberId(mayarMemberId: string): Promise<Transaction | null> {
+    const result = await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.mayarMemberId, mayarMemberId))
+      .orderBy(desc(transactions.createdAt))
+      .limit(1);
+
+    return result[0] || null;
+  }
+
+  async getPendingByMayarMemberEmail(mayarMemberEmail: string): Promise<Transaction | null> {
+    const result = await db
+      .select()
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.mayarMemberEmail, mayarMemberEmail),
+          eq(transactions.status, 'pending'),
+        ),
+      )
+      .orderBy(desc(transactions.createdAt))
+      .limit(1);
+
     return result[0] || null;
   }
 
@@ -77,7 +115,7 @@ export class TransactionsRepository {
   }
 
   async updateStatus(id: string, status: TransactionStatus, confirmedAt?: Date): Promise<Transaction | null> {
-    const updateData: any = {
+    const updateData: Partial<Transaction> & { updatedAt: Date } = {
       status,
       updatedAt: new Date(),
     };
@@ -92,6 +130,86 @@ export class TransactionsRepository {
       .where(eq(transactions.id, id))
       .returning();
     
+    return result[0] || null;
+  }
+
+  async attachMayarIds(
+    id: string,
+    data: {
+      mayarMemberId: string;
+      mayarTransactionId: string;
+      mayarMemberEmail: string;
+      membershipBillUrl: string;
+    },
+  ): Promise<Transaction | null> {
+    const result = await db
+      .update(transactions)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(transactions.id, id))
+      .returning();
+
+    return result[0] || null;
+  }
+
+  async confirmMayarPayment(
+    id: string,
+    data: {
+      mayarTransactionId?: string | null;
+      mayarMemberId?: string | null;
+      subscriptionEndsAt: Date | null;
+      confirmedAt?: Date;
+    },
+  ): Promise<Transaction | null> {
+    const result = await db
+      .update(transactions)
+      .set({
+        status: 'confirmed',
+        confirmedAt: data.confirmedAt ?? new Date(),
+        subscriptionEndsAt: data.subscriptionEndsAt,
+        mayarTransactionId: data.mayarTransactionId ?? undefined,
+        mayarMemberId: data.mayarMemberId ?? undefined,
+        updatedAt: new Date(),
+      })
+      .where(eq(transactions.id, id))
+      .returning();
+
+    return result[0] || null;
+  }
+
+  async renewSubscription(
+    id: string,
+    subscriptionEndsAt: Date | null,
+  ): Promise<Transaction | null> {
+    const result = await db
+      .update(transactions)
+      .set({
+        status: 'confirmed',
+        subscriptionEndsAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(transactions.id, id))
+      .returning();
+
+    return result[0] || null;
+  }
+
+  async revokeSubscription(
+    id: string,
+    status: Extract<TransactionStatus, 'expired' | 'cancelled'>,
+  ): Promise<Transaction | null> {
+    const result = await db
+      .update(transactions)
+      .set({
+        status,
+        subscriptionEndsAt: new Date(Date.now() - 1000),
+        updatedAt: new Date(),
+      })
+      .where(eq(transactions.id, id))
+      .returning();
+
     return result[0] || null;
   }
 
@@ -132,6 +250,22 @@ export class TransactionsRepository {
       );
   }
 
+  async expireUnpaidBankPending(): Promise<void> {
+    const now = new Date();
+    await db
+      .update(transactions)
+      .set({
+        status: 'expired',
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(transactions.status, 'pending'),
+          eq(transactions.paymentMethod, 'bank_transfer'),
+        ),
+      );
+  }
+
   async getAll(limit: number = 50): Promise<(Transaction & { user: { name: string; email: string } | null })[]> {
     return await db
       .select({
@@ -146,10 +280,15 @@ export class TransactionsRepository {
         paymentSettings: transactions.paymentSettings,
         userAgent: transactions.userAgent,
         ipAddress: transactions.ipAddress,
+        mayarMemberId: transactions.mayarMemberId,
+        mayarTransactionId: transactions.mayarTransactionId,
+        mayarMemberEmail: transactions.mayarMemberEmail,
+        membershipBillUrl: transactions.membershipBillUrl,
         createdAt: transactions.createdAt,
         updatedAt: transactions.updatedAt,
         confirmedAt: transactions.confirmedAt,
         expiresAt: transactions.expiresAt,
+        subscriptionEndsAt: transactions.subscriptionEndsAt,
         user: {
           name: user.name,
           email: user.email,

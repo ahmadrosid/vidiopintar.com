@@ -92,6 +92,12 @@ function applyGeoHeaders(
 
 export default clerkMiddleware(async (auth, req) => {
   const pathname = req.nextUrl.pathname;
+
+  // Mayar webhooks are public; auth is the shared ?token= secret on the route.
+  if (pathname.startsWith("/api/webhooks/mayar")) {
+    return NextResponse.next();
+  }
+
   const mdRewrite = toMarkdownRewritePath(pathname);
 
   if (mdRewrite) {
@@ -107,7 +113,7 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.rewrite(url);
   }
 
-  if (isProtectedRoute(req)) {
+  if (isProtectedRoute(req) || pathname.startsWith("/payment")) {
     await auth.protect();
   }
 

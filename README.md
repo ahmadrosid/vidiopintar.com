@@ -31,9 +31,18 @@ npm run dev
 
 Copy `.env.example` to `.env` and configure:
 - `SQLITE_DATABASE_PATH` (default: `./data/vidiopintar.db`)
-- OpenAI API key
-- Google AI API key
-- Auth secrets
+- Clerk auth keys
+- AI / transcript API keys
+- Mayar Membership billing:
+  - `MAYAR_API_KEY`
+  - `MAYAR_API_BASE` (`https://api.mayar.club/hl/v2` sandbox or `https://api.mayar.id/hl/v2` prod)
+  - `MAYAR_PRODUCT_ID`
+  - `MAYAR_TIER_ID_MONTHLY`
+  - `MAYAR_TIER_ID_YEARLY`
+  - `MAYAR_WEBHOOK_TOKEN` (generate with `openssl rand -hex 32`)
+
+Register the Mayar webhook URL as:
+`https://<your-host>/api/webhooks/mayar?token=<MAYAR_WEBHOOK_TOKEN>`
 
 ## Docker Development Setup
 

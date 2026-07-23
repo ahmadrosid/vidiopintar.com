@@ -18,6 +18,12 @@ export const env = createEnv({
     ADMIN_MASTER_EMAIL: z.string().email(),
     TRANSCRIPT_API_KEY: z.string().min(1),
     YOUTUBE_API_KEY: z.string().min(1).optional(),
+    MAYAR_API_KEY: z.string().min(1).optional(),
+    MAYAR_API_BASE: z.string().url().optional(),
+    MAYAR_PRODUCT_ID: z.string().min(1).optional(),
+    MAYAR_TIER_ID_MONTHLY: z.string().min(1).optional(),
+    MAYAR_TIER_ID_YEARLY: z.string().min(1).optional(),
+    MAYAR_WEBHOOK_TOKEN: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().min(1).default("http://localhost:3000"),

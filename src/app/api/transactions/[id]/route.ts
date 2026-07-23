@@ -43,8 +43,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const body = await request.json();
     const { status } = body;
 
-    if (!status || !['confirmed', 'cancelled', 'waiting_confirmation'].includes(status)) {
-      return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    if (!status || status !== 'cancelled') {
+      return NextResponse.json({ error: 'Only cancellation is allowed' }, { status: 400 });
     }
 
     const transaction = await transactionsRepository.getById(id);
@@ -58,22 +58,11 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    if (!['pending', 'waiting_confirmation'].includes(transaction.status)) {
+    if (transaction.status !== 'pending') {
       return NextResponse.json({ error: 'Transaction cannot be modified' }, { status: 400 });
     }
 
-    // Users can cancel or mark as waiting confirmation, but cannot directly confirm
-    if (status === 'confirmed') {
-      return NextResponse.json({ error: 'Users cannot confirm transactions' }, { status: 403 });
-    }
-
-    // Users can only set waiting_confirmation from pending status
-    if (status === 'waiting_confirmation' && transaction.status !== 'pending') {
-      return NextResponse.json({ error: 'Can only mark pending transactions as waiting confirmation' }, { status: 400 });
-    }
-
-    const confirmedAt = status === 'confirmed' ? new Date() : undefined;
-    const updatedTransaction = await transactionsRepository.updateStatus(id, status, confirmedAt);
+    const updatedTransaction = await transactionsRepository.updateStatus(id, 'cancelled');
 
     return NextResponse.json(updatedTransaction);
   } catch (error) {

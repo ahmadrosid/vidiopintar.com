@@ -12,7 +12,6 @@ const navigationItems = [
   { href: "/admin/users", label: "Users" },
   { href: "/admin/cost", label: "Cost" },
   { href: "/admin/feedback", label: "Feedback" },
-  { href: "/admin/payment-settings", label: "Payment Settings" },
   { href: "/admin/transactions", label: "Transactions" },
 ];
 

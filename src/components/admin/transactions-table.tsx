@@ -186,17 +186,18 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
       return { text, color, fullDate: formatDate(expireDate) };
     }
     
-    // For confirmed transactions, calculate subscription expiry
+    // For confirmed transactions, use stored subscription end (or legacy math)
     if (status === 'confirmed' && confirmedAt) {
       const confirmedDate = new Date(confirmedAt);
       const now = new Date();
       
-      // Calculate subscription expiry based on plan type
       let subscriptionExpiry: Date;
-      if (planType === 'monthly') {
-        subscriptionExpiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+      if (transaction.subscriptionEndsAt) {
+        subscriptionExpiry = new Date(transaction.subscriptionEndsAt);
+      } else if (planType === 'monthly') {
+        subscriptionExpiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000);
       } else if (planType === 'yearly') {
-        subscriptionExpiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000); // 365 days
+        subscriptionExpiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000);
       } else {
         return { text: '-', color: 'text-gray-400', fullDate: null };
       }
@@ -472,18 +473,16 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                 <TableCell>
                   {(transaction.status === 'pending' || transaction.status === 'waiting_confirmation') ? (
                     <div className="flex gap-1">
+                      {transaction.paymentMethod === 'bank_transfer' &&
+                        transaction.status === 'waiting_confirmation' && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             size="sm"
                             variant="ghost"
-                            className={`h-8 w-8 p-0 transition-all duration-200 ${
-                              transaction.status === 'waiting_confirmation'
-                                ? 'text-accent hover:text-accent hover:bg-accent/15 ring-2 ring-accent/30'
-                                : 'text-accent hover:text-accent hover:bg-accent/10'
-                            }`}
+                            className="h-8 w-8 p-0 transition-all duration-200 text-accent hover:text-accent hover:bg-accent/15 ring-2 ring-accent/30"
                             disabled={processingIds.has(transaction.id)}
-                            title={transaction.status === 'waiting_confirmation' ? 'Payment confirmation received - Click to confirm' : 'Confirm transaction'}
+                            title="Payment confirmation received - Click to confirm"
                           >
                             <Check className="h-4 w-4" />
                           </Button>
@@ -514,10 +513,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                             {transaction.status === 'waiting_confirmation' && (
                               <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md p-3">
                                 <div className="text-blue-800 dark:text-blue-200 text-sm font-medium">
-                                  ⚡ Payment confirmation received from user
-                                </div>
-                                <div className="text-blue-700 dark:text-blue-300 text-xs mt-1">
-                                  The user has indicated they have sent the payment and are waiting for admin verification.
+                                  Legacy bank-transfer waiting confirmation
                                 </div>
                               </div>
                             )}
@@ -532,6 +528,7 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
+                      )}
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>

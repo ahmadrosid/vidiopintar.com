@@ -4,6 +4,7 @@ export * from './auth';
 export * from './token-usage';
 export * from './payment-settings';
 export * from './transactions';
+export * from './mayar-webhook-events';
 export * from './notes';
 export * from './usage-events';
 export * from './quizzes';
