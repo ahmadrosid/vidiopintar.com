@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -7,12 +8,12 @@ export function VideoSectionSkeleton() {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white dark:bg-black border-b">
         <div className="flex items-center p-2.5 gap-2">
-          <a
+          <Link
             href="/home"
             className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center"
           >
             Home
-          </a>
+          </Link>
           <ChevronRight className="size-5 text-muted-foreground" />
           <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse flex-1 max-w-md" />
         </div>

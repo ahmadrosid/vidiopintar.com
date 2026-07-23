@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { Suspense, useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { Loader } from "lucide-react"
 import { useVideo } from "@/hooks/use-video"
@@ -17,7 +17,7 @@ interface VideoPlayerProps {
   videoId: string
 }
 
-export function VideoPlayer({ videoId }: VideoPlayerProps) {
+function VideoPlayerInner({ videoId }: VideoPlayerProps) {
   const [isLoading, setIsLoading] = useState(true)
   const playerRef = useRef<HTMLDivElement>(null)
   const playerInstanceRef = useRef<any>(null)
@@ -213,5 +213,23 @@ export function VideoPlayer({ videoId }: VideoPlayerProps) {
       )}
       <div ref={playerRef} className="w-full h-full" />
     </div>
+  )
+}
+
+function VideoPlayerFallback() {
+  return (
+    <div className="relative w-full aspect-video bg-black overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center bg-card">
+        <Loader className="size-12 animate-spin text-spotify" />
+      </div>
+    </div>
+  )
+}
+
+export function VideoPlayer({ videoId }: VideoPlayerProps) {
+  return (
+    <Suspense fallback={<VideoPlayerFallback />}>
+      <VideoPlayerInner videoId={videoId} />
+    </Suspense>
   )
 }

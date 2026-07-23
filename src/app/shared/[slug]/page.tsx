@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { SharedVideoRepository } from "@/lib/db/repository";
 import { Metadata } from "next";
 import { getOptionalUser } from "@/lib/auth";
@@ -60,15 +61,15 @@ export default async function SharedVideoPage(props: SharedVideoPageProps) {
   const quickStartQuestions: string[] = sharedVideo.quickStartQuestions || [];
 
   return (
-    <main className="flex flex-col min-h-screen bg-background relative">
+    <main className="flex flex-col min-h-dvh bg-background relative">
       <div className="relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-7 min-h-screen">
+        <div className="grid grid-cols-1 lg:grid-cols-7 min-h-dvh">
           <div className="lg:col-span-4 h-full overflow-y-auto scrollbar-none relative">
             <div className="sticky top-0 z-50 bg-white dark:bg-black border-b">
               <div className="flex items-center p-4 gap-2">
-                <a href="/home" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
+                <Link href="/home" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
                   Home
-                </a>
+                </Link>
                 <ChevronRight className="size-5 text-muted-foreground" />
                 <h1 className="font-semibold tracking-tight flex-1 truncate">{sharedVideo.title}</h1>
               </div>

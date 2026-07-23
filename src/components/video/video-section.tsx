@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { fetchVideoDetails, fetchVideoTranscript } from "@/lib/youtube";
 import { VideoPlayer } from "@/components/video/video-player";
 import { TranscriptView } from "@/components/video/transcript-view";
@@ -42,12 +43,12 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
     <>
       <div className="sticky top-0 z-50 bg-white dark:bg-black border-b">
         <div className="flex items-center p-2.5 gap-2">
-          <a
+          <Link
             href="/home"
             className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center"
           >
             Home
-          </a>
+          </Link>
           <ChevronRight className="size-5 text-muted-foreground" />
           <h1 className="font-semibold tracking-tight flex-1 truncate">
             {videoDetails.title}

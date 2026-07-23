@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server'
+import Link from 'next/link'
 import { CopyButton } from '@/components/ui/copy-button'
 import { WhatsAppConfirmButton } from '@/components/payment/whatsapp-confirm-button'
 import { transactionsRepository } from '@/lib/db/repository/transactions'
@@ -96,10 +97,10 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
         <div className="min-h-screen bg-background py-12 px-4">
             <div className="mx-auto max-w-lg">
                 <div className="mb-6">
-                    <a href="/home" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
+                    <Link href="/home" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
                         <ChevronLeft className="size-4" />
                         Home
-                    </a>
+                    </Link>
                 </div>
                 <div className="text-center mb-8">
                     <h1 className="text-xl font-medium mb-2">{t('title')}</h1>
@@ -123,12 +124,12 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                                     </p>
                                 )}
                                 <div className="mt-4">
-                                    <a 
+                                    <Link 
                                         href="/profile/billing" 
                                         className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 dark:text-red-200 dark:bg-red-800 dark:border-red-600 dark:hover:bg-red-700 transition-colors"
                                     >
                                         View My Subscription
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

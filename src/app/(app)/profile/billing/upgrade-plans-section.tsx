@@ -162,7 +162,7 @@ export function UpgradePlansSection({
       <DialogTrigger asChild>
         <Button
           size="lg"
-          className="w-full rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-all duration-200 ease-in-out cursor-pointer"
+          className="w-full rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-[transform,box-shadow] duration-200 ease-in-out cursor-pointer"
         >
           <Sparkles className="h-4 w-4 mr-2" />
           {tBilling("upgrade.button")}
@@ -267,7 +267,7 @@ export function UpgradePlansSection({
                     className="block mt-auto"
                   >
                     <Button
-                      className="w-full cursor-pointer rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-all duration-200 ease-in-out"
+                      className="w-full cursor-pointer rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-[transform,box-shadow] duration-200 ease-in-out"
                       size="lg"
                     >
                       {tBilling("upgrade.upgradeTo")} {plan.name}
