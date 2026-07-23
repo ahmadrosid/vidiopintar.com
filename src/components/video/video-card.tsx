@@ -32,7 +32,7 @@ export function VideoCard({
     return (
       <Link
         href={`/video/${youtubeId}`}
-        className="flex gap-4 rounded-xl border border-white/10 bg-card p-3 transition-colors hover:border-white/20 hover:bg-card/80"
+        className="flex gap-4 rounded-xl border border-border bg-card p-3 transition-colors hover:border-muted-foreground/30 hover:bg-card/80"
       >
         <div className="relative aspect-video w-40 shrink-0 overflow-hidden rounded-lg bg-muted sm:w-48">
           {thumbnailUrl ? (
@@ -65,7 +65,7 @@ export function VideoCard({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10 bg-card transition-colors hover:border-white/20 hover:bg-card/80">
+    <div className="overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-muted-foreground/30 hover:bg-card/80">
       <Link href={`/video/${youtubeId}`} className="block">
         <div className="relative aspect-video w-full overflow-hidden bg-muted">
           {thumbnailUrl ? (

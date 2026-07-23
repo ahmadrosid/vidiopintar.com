@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Loading() {
   return (
-    <main className="flex flex-col h-screen overflow-hidden bg-melody-gradient relative">
+    <main className="flex flex-col h-dvh overflow-hidden bg-background relative">
       <div className="relative z-10 h-full min-h-0">
         <div className="grid grid-cols-1 lg:grid-cols-7 h-full min-h-0">
           {/* Left side - Video player and content */}
@@ -11,12 +12,12 @@ export default function Loading() {
             {/* Header */}
             <div className="sticky top-0 z-50 bg-white dark:bg-black border-b">
               <div className="flex items-center p-4 gap-2">
-                <a
+                <Link
                   href="/home"
-                  className="text-foreground hover:underline hover:text-melody transition-colors inline-flex gap-2 items-center"
+                  className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center"
                 >
                   Home
-                </a>
+                </Link>
                 <ChevronRight className="size-5 text-muted-foreground" />
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse flex-1 max-w-md" />
               </div>

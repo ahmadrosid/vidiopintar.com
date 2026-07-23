@@ -154,7 +154,7 @@ export function ExploreContent({
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder={t("searchPlaceholder")}
           aria-label={t("searchPlaceholder")}
-          className="h-11 w-full rounded-xl border border-white/10 bg-card pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40"
+          className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40"
         />
       </div>
 

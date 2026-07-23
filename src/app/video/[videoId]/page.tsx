@@ -17,7 +17,7 @@ export default async function VideoPage(props: {
   const transcriptPromise = fetchVideoTranscript(videoId);
 
   return (
-    <main className="flex flex-col h-screen overflow-hidden bg-melody-gradient relative">
+    <main className="flex flex-col h-dvh overflow-hidden bg-background relative">
       <div className="relative z-10 h-full min-h-0">
         <VideoPageShell
           desktop={

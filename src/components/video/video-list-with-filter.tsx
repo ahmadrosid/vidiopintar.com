@@ -135,7 +135,7 @@ export function VideoListWithFilter({
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={tLibrary("searchPlaceholder")}
               aria-label={tLibrary("searchPlaceholder")}
-              className="h-10 w-full rounded-xl border border-white/10 bg-card pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40"
+              className="h-10 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40"
             />
           </div>
 
@@ -146,7 +146,7 @@ export function VideoListWithFilter({
                 setSelectedChannel(value === "all" ? null : value)
               }
             >
-              <SelectTrigger className="h-10 w-auto min-w-[5.5rem] cursor-pointer rounded-xl border-white/10 bg-card">
+              <SelectTrigger className="h-10 w-auto min-w-[5.5rem] cursor-pointer rounded-xl border border-border bg-card shadow-none">
                 <SelectValue placeholder={tLibrary("all")} />
               </SelectTrigger>
               <SelectContent>
@@ -163,7 +163,7 @@ export function VideoListWithFilter({
               value={sortBy}
               onValueChange={(value) => setSortBy(value as SortOption)}
             >
-              <SelectTrigger className="h-10 w-auto min-w-[9rem] cursor-pointer rounded-xl border-white/10 bg-card">
+              <SelectTrigger className="h-10 w-auto min-w-[9rem] cursor-pointer rounded-xl border border-border bg-card shadow-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -177,7 +177,7 @@ export function VideoListWithFilter({
               </SelectContent>
             </Select>
 
-            <div className="flex items-center rounded-xl border border-white/10 bg-card p-1">
+            <div className="flex items-center rounded-xl border border-border bg-card p-1">
               <button
                 type="button"
                 onClick={() => setLayout("grid")}
@@ -240,7 +240,7 @@ export function VideoListWithFilter({
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("videoList.searchPlaceholder")}
             aria-label={t("videoList.searchPlaceholder")}
-            className="h-9 w-full rounded-lg border border-white/10 bg-card pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40"
+            className="h-9 w-full rounded-lg border border-border bg-card pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40"
           />
         </div>
 
@@ -252,8 +252,8 @@ export function VideoListWithFilter({
           className={cn(
             "h-9 cursor-pointer rounded-lg",
             selectedChannel === null
-              ? "bg-accent text-black hover:bg-accent/90"
-              : "border-white/10 bg-transparent text-foreground hover:bg-white/5"
+              ? "bg-accent text-accent-foreground hover:bg-accent/90"
+              : "border-border bg-transparent text-foreground hover:bg-muted"
           )}
         >
           {t("videoList.allChannels")}
@@ -271,8 +271,8 @@ export function VideoListWithFilter({
               className={cn(
                 "h-9 max-w-48 cursor-pointer truncate rounded-lg",
                 isSelected
-                  ? "bg-accent text-black hover:bg-accent/90"
-                  : "border-white/10 bg-transparent text-foreground hover:bg-white/5"
+                  ? "bg-accent text-accent-foreground hover:bg-accent/90"
+                  : "border-border bg-transparent text-foreground hover:bg-muted"
               )}
             >
               {channel}

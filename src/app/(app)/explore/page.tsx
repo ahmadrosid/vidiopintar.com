@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { desc, eq } from "drizzle-orm";
 import { ExploreContent } from "@/components/explore/explore-content";
+import { ExplorePageSkeleton } from "@/components/explore/explore-page-skeleton";
 import { getCurrentUser } from "@/lib/auth";
 import { db } from "@/lib/db/index";
 import { userVideos } from "@/lib/db/schema/videos";
@@ -28,7 +30,7 @@ async function getRecentWatchedYoutubeIds(userId: string): Promise<string[]> {
   return rows.map((row) => row.youtubeId);
 }
 
-export default async function ExplorePage() {
+async function ExplorePageContent() {
   const user = await getCurrentUser();
   const [explore, recommendedVideos, watchedYoutubeIds] = await Promise.all([
     getExplorePageData(),
@@ -43,13 +45,21 @@ export default async function ExplorePage() {
   ]);
 
   return (
+    <ExploreContent
+      trendingVideos={explore.trendingVideos}
+      recommendedVideos={recommendedVideos}
+      channels={channels}
+      defaultFilterId={explore.defaultFilterId}
+    />
+  );
+}
+
+export default function ExplorePage() {
+  return (
     <div className="w-full space-y-8 px-4 pb-12 pt-4 md:px-8 md:pt-6">
-      <ExploreContent
-        trendingVideos={explore.trendingVideos}
-        recommendedVideos={recommendedVideos}
-        channels={channels}
-        defaultFilterId={explore.defaultFilterId}
-      />
+      <Suspense fallback={<ExplorePageSkeleton />}>
+        <ExplorePageContent />
+      </Suspense>
     </div>
   );
 }
