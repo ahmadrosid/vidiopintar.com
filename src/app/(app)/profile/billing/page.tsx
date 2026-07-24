@@ -44,6 +44,19 @@ export default async function BillingPage() {
 
   const currentPaymentSettings = getPaymentSettings();
 
+  const [monthlyCheck, yearlyCheck] = await Promise.all([
+    UserPlanService.canPurchasePlan(user.id, "monthly"),
+    UserPlanService.canPurchasePlan(user.id, "yearly"),
+  ]);
+
+  const activeSubscriptions: Record<string, { planType: string; expiresAt: string | Date }> = {};
+  if (!monthlyCheck.canPurchase && monthlyCheck.activeSubscription) {
+    activeSubscriptions.monthly = monthlyCheck.activeSubscription;
+  }
+  if (!yearlyCheck.canPurchase && yearlyCheck.activeSubscription) {
+    activeSubscriptions.yearly = yearlyCheck.activeSubscription;
+  }
+
   return (
     <div className="space-y-6">
       <BillingHeader />
@@ -63,7 +76,10 @@ export default async function BillingPage() {
       />
 
       {/* Upgrade Plans Section */}
-      <UpgradePlansSection currentPlan={currentPlan} userId={user.id} />
+      <UpgradePlansSection
+        currentPlan={currentPlan}
+        activeSubscriptions={activeSubscriptions}
+      />
       
       <TransactionHistory 
         transactions={transactions} 

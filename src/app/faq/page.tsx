@@ -2,6 +2,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import MainLayout from "@/components/layouts/main-layout";
 import { buildPageMetadata } from "@/lib/geo/metadata";
 import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/geo/site";
+import { serializeJsonLd } from "@/lib/utils";
 
 export const metadata = buildPageMetadata({
   title: "FAQ - AI YouTube Summarizer",
@@ -31,7 +32,7 @@ export default function FAQPage() {
     <MainLayout>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageSchema) }}
       />
       <FAQ headingLevel="h1" />
     </MainLayout>

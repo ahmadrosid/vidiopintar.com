@@ -35,11 +35,41 @@ interface PendingPaymentAlertProps {
   currentPaymentSettings: PaymentSettings;
 }
 
+function formatAmount(amount: number, currency: string) {
+  return `${currency} ${amount.toLocaleString()}`;
+}
+
+function formatDate(date: Date) {
+  return new Date(date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function getTimeRemaining(expiresAt: Date) {
+  const now = new Date();
+  const timeLeft = new Date(expiresAt).getTime() - now.getTime();
+  const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+  
+  if (hoursLeft < 0) return "Expired";
+  if (hoursLeft < 1) return "Less than 1 hour";
+  if (hoursLeft < 24) return `${hoursLeft} hours left`;
+  
+  const daysLeft = Math.floor(hoursLeft / 24);
+  return `${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
+}
+
 export function PendingPaymentAlert({ transactions, currentPaymentSettings }: PendingPaymentAlertProps) {
   const t = useTranslations('billing.pendingPayment');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [localTransactions, setLocalTransactions] = useState<Transaction[]>(transactions);
+  const [transactionOverrides, setTransactionOverrides] = useState<Record<string, Transaction>>({});
+
+  const localTransactions = transactions.map(
+    (t) => transactionOverrides[t.id] ?? t
+  );
 
   const handleCompletePayment = (transaction: Transaction) => {
     setSelectedTransaction(transaction);
@@ -47,35 +77,13 @@ export function PendingPaymentAlert({ transactions, currentPaymentSettings }: Pe
   };
 
   const handleTransactionUpdate = (updatedTransaction: Transaction) => {
-    setLocalTransactions(prev => 
-      prev.map(t => t.id === updatedTransaction.id ? updatedTransaction : t)
+    setTransactionOverrides((prev) => ({
+      ...prev,
+      [updatedTransaction.id]: updatedTransaction,
+    }));
+    setSelectedTransaction((prev) =>
+      prev?.id === updatedTransaction.id ? updatedTransaction : prev
     );
-  };
-
-  const formatAmount = (amount: number, currency: string) => {
-    return `${currency} ${amount.toLocaleString()}`;
-  };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getTimeRemaining = (expiresAt: Date) => {
-    const now = new Date();
-    const timeLeft = new Date(expiresAt).getTime() - now.getTime();
-    const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
-    
-    if (hoursLeft < 0) return "Expired";
-    if (hoursLeft < 1) return "Less than 1 hour";
-    if (hoursLeft < 24) return `${hoursLeft} hours left`;
-    
-    const daysLeft = Math.floor(hoursLeft / 24);
-    return `${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
   };
 
   // Show the most recent pending transaction prominently

@@ -242,16 +242,3 @@ export async function searchYoutube(input: {
 
   return { videos, channels };
 }
-
-/** @deprecated Prefer searchYoutube — kept for callers that only need videos. */
-export async function searchYoutubeVideos(input: {
-  query: string;
-  maxResults?: number;
-}): Promise<RecommendedVideo[]> {
-  const result = await searchYoutube({
-    query: input.query,
-    maxVideos: input.maxResults,
-    maxChannels: 0,
-  });
-  return result.videos;
-}

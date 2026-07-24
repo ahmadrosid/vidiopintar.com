@@ -1,6 +1,14 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "@/lib/recharts-dynamic";
 
 interface TokenUsageChartProps {
   data: Array<{
@@ -13,7 +21,7 @@ interface TokenUsageChartProps {
 
 export function TokenUsageChart({ data }: TokenUsageChartProps) {
   const chartData = data.map(item => ({
-    date: new Date(item.date).toLocaleDateString(),
+    date: new Date(item.date).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }),
     tokens: item.totalTokens,
     cost: parseFloat(item.totalCost),
     requests: item.requests,

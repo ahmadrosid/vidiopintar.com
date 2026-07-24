@@ -3,6 +3,7 @@ import { getTopUsersByCost, getCostMetrics } from "@/lib/cost-admin-queries";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Users, MessageSquare, Video, Zap, Calculator } from "lucide-react";
 import { AdminNavigation } from "@/components/admin/admin-navigation";
+import Image from "next/image";
 
 export default async function AdminCostPage() {
   await requireAdmin();
@@ -107,9 +108,11 @@ export default async function AdminCostPage() {
                         <a href={`/admin/cost/${user.id}`} className="block">
                           <div className="flex items-center space-x-3">
                             {user.image && (
-                              <img
+                              <Image
                                 src={user.image}
                                 alt={user.name || "User"}
+                                width={28}
+                                height={28}
                                 className="w-7 h-7 rounded-full"
                               />
                             )}

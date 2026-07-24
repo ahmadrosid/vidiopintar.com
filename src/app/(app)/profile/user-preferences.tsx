@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { LanguageSelector } from "@/components/language-selector";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Globe, Moon } from "lucide-react";
 
 type Theme = "light" | "dark" | "system";
@@ -18,23 +18,11 @@ type Theme = "light" | "dark" | "system";
 export function UserPreferences() {
   const { theme, setTheme } = useTheme();
   const t = useTranslations("profile");
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return (
-      <section className="space-y-4">
-        <div className="h-6 w-32 bg-muted rounded animate-pulse" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="h-36 bg-muted rounded-xl animate-pulse" />
-          <div className="h-36 bg-muted rounded-xl animate-pulse" />
-        </div>
-      </section>
-    );
-  }
+  const selectedTheme = useSyncExternalStore(
+    () => () => {},
+    () => theme ?? "system",
+    () => "system"
+  );
 
   return (
     <section className="space-y-4">
@@ -65,7 +53,7 @@ export function UserPreferences() {
             </div>
           </div>
           <Select
-            value={theme}
+            value={selectedTheme}
             onValueChange={(value: Theme) => setTheme(value)}
           >
             <SelectTrigger className="w-full">

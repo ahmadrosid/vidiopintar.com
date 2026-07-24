@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,37 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CopyButton } from "@/components/payment/copy-button";
+import { formatDisplayDateTime } from "@/lib/utils";
+
+const planDetails = {
+  monthly: { name: 'Monthly Plan' },
+  yearly: { name: 'Yearly Plan' }
+};
+
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'confirmed':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+    case 'waiting_confirmation':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+    case 'expired':
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+  }
+}
+
+function formatAmount(amount: number, currency: string) {
+  return `${currency} ${amount.toLocaleString("en-US")}`;
+}
+
+function formatDate(date: Date) {
+  return formatDisplayDateTime(date);
+}
 
 interface Transaction {
   id: string;
@@ -49,12 +80,10 @@ export function TransactionDetailDialog({
   currentPaymentSettings
 }: TransactionDetailDialogProps) {
   const [isUpdating, setIsUpdating] = useState(false);
-  const [currentTransaction, setCurrentTransaction] = useState<Transaction | null>(transaction);
+  const [localUpdate, setLocalUpdate] = useState<Transaction | null>(null);
 
-  // Update local state when transaction prop changes
-  useEffect(() => {
-    setCurrentTransaction(transaction);
-  }, [transaction]);
+  const currentTransaction =
+    transaction && localUpdate?.id === transaction.id ? localUpdate : transaction;
 
   const updateTransactionStatus = async (status: string) => {
     if (!currentTransaction) return;
@@ -74,7 +103,7 @@ export function TransactionDetailDialog({
       }
 
       const updatedTransaction = await response.json();
-      setCurrentTransaction(updatedTransaction);
+      setLocalUpdate(updatedTransaction);
       onTransactionUpdate?.(updatedTransaction);
     } catch (error) {
       console.error('Error updating transaction:', error);
@@ -91,37 +120,6 @@ export function TransactionDetailDialog({
   };
 
   if (!currentTransaction) return null;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'waiting_confirmation':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'expired':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    }
-  };
-
-  const formatAmount = (amount: number, currency: string) => {
-    return `${currency} ${amount.toLocaleString()}`;
-  };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   // Use current payment settings instead of cached ones
   // For bank details, we can use the stored settings to maintain transaction integrity
@@ -141,11 +139,6 @@ export function TransactionDetailDialog({
     accountNumber: storedPaymentSettings?.bankAccountNumber || currentPaymentSettings.bankAccountNumber,
     accountName: storedPaymentSettings?.bankAccountName || currentPaymentSettings.bankAccountName,
     whatsappPhone: currentPaymentSettings.whatsappPhoneNumber
-  };
-
-  const planDetails = {
-    monthly: { name: 'Monthly Plan' },
-    yearly: { name: 'Yearly Plan' }
   };
 
   const currentPlan = planDetails[currentTransaction.planType as keyof typeof planDetails] || { name: currentTransaction.planType };

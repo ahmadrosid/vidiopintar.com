@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/ui/copy-button";
 import { ExternalLink } from "lucide-react";
@@ -17,6 +19,32 @@ interface SharedChatsListProps {
   }>;
 }
 
+function ShareLinkCopyButton({
+  slug,
+  copyMessage,
+  label,
+}: {
+  slug: string;
+  copyMessage: string;
+  label: string;
+}) {
+  const [shareUrl, setShareUrl] = useState("");
+
+  useEffect(() => {
+    setShareUrl(`${window.location.origin}/shared/${slug}`);
+  }, [slug]);
+
+  if (!shareUrl) return null;
+
+  return (
+    <CopyButton
+      content={shareUrl}
+      copyMessage={copyMessage}
+      label={label}
+    />
+  );
+}
+
 export function SharedChatsList({ items }: SharedChatsListProps) {
   const t = useTranslations('profile');
   
@@ -25,14 +53,20 @@ export function SharedChatsList({ items }: SharedChatsListProps) {
       {items.map((item) => (
         <div
           key={item.slug}
-          className="p-4 rounded-xs transition-all duration-200 bg-card hover:bg-card/50 relative group"
+          className="p-4 rounded-xs transition-colors duration-200 bg-card hover:bg-card/50 relative group"
         >
           <div className="flex gap-4">
-            <img 
-              src={item.thumbnailUrl || ""} 
-              alt={item.title}
-              className="w-32 h-20 object-cover rounded shrink-0"
-            />
+            {item.thumbnailUrl ? (
+              <Image
+                src={item.thumbnailUrl}
+                alt={item.title}
+                width={128}
+                height={80}
+                className="w-32 h-20 object-cover rounded shrink-0"
+              />
+            ) : (
+              <div className="w-32 h-20 rounded shrink-0 bg-muted" />
+            )}
             <div className="flex-1 min-w-0 flex flex-col gap-2">
               {/* Video info */}
               <div className="flex-1 min-w-0">
@@ -52,8 +86,8 @@ export function SharedChatsList({ items }: SharedChatsListProps) {
                     {t('sharedChats.view')}
                   </Button>
                 </Link>
-                <CopyButton
-                  content={`${window.location.origin}/shared/${item.slug}`}
+                <ShareLinkCopyButton
+                  slug={item.slug}
                   copyMessage={t('sharedChats.linkCopied')}
                   label={t('sharedChats.copyLink')}
                 />

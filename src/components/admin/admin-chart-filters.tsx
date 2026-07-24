@@ -20,17 +20,17 @@ interface AdminChartsProps {
   };
 }
 
+function getPeriodLabel(period: "7d" | "1m" | "3m") {
+  switch (period) {
+    case "7d": return "7 Days";
+    case "1m": return "1 Month";
+    case "3m": return "3 Months";
+  }
+}
+
 export function AdminChartFilters({ userGrowthData, videoAdditionsData }: AdminChartsProps) {
   const [userGrowthPeriod, setUserGrowthPeriod] = useState<"7d" | "1m" | "3m">("7d");
   const [videoAdditionsPeriod, setVideoAdditionsPeriod] = useState<"7d" | "1m" | "3m">("7d");
-
-  const getPeriodLabel = (period: "7d" | "1m" | "3m") => {
-    switch (period) {
-      case "7d": return "7 Days";
-      case "1m": return "1 Month";
-      case "3m": return "3 Months";
-    }
-  };
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">

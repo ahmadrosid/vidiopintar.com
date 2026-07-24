@@ -49,7 +49,6 @@ export function useVideoSummary({
       const data = await response.json();
       setSummary(data.summary);
     } catch (err) {
-      // Ignore abort errors
       if (err instanceof Error && err.name === 'AbortError') {
         return;
       }
@@ -57,9 +56,7 @@ export function useVideoSummary({
       setError(errorMessage);
       console.error('Error fetching summary:', err);
     } finally {
-      if (!abortController.signal.aborted) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   }, [videoId]);
 

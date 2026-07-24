@@ -1,5 +1,4 @@
 import { MessageRepository } from '@/lib/db/repository';
-import type { NewMessage } from "@/lib/db/schema";
 
 export interface Message {
   id: string;
@@ -7,8 +6,6 @@ export interface Message {
   role: "user" | "assistant";
   timestamp: number;
 }
-
-const chatHistoryCache: Record<string, Message[]> = {};
 
 export async function getChatHistory(videoId: string, userVideoId: number): Promise<Message[]> {
   try {
@@ -23,25 +20,5 @@ export async function getChatHistory(videoId: string, userVideoId: number): Prom
   } catch (error) {
     console.error('Error fetching chat history:', error);
     return [];
-  }
-}
-
-export async function addChatMessage(userVideoId: number, message: Message): Promise<void> {
-  if (!chatHistoryCache[userVideoId]) {
-    chatHistoryCache[userVideoId] = [];
-  }
-  chatHistoryCache[userVideoId].push(message);
-  
-  try {
-    const newMessage: NewMessage = {
-      userVideoId,
-      content: message.content,
-      role: message.role,
-      timestamp: message.timestamp,
-    };
-    
-    await MessageRepository.create(newMessage);
-  } catch (error) {
-    console.error('Error adding chat message:', error);
   }
 }

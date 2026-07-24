@@ -14,10 +14,13 @@ export function getMessageText(
   message: Pick<UIMessage, 'parts'> & { content?: string }
 ): string {
   if (message.parts?.length) {
-    return message.parts
-      .filter((part) => part.type === 'text')
-      .map((part) => part.text)
-      .join('');
+    const textParts: string[] = [];
+    for (const part of message.parts) {
+      if (part.type === 'text') {
+        textParts.push(part.text);
+      }
+    }
+    return textParts.join('');
   }
 
   return message.content ?? '';

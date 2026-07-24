@@ -61,12 +61,6 @@ export function parseCitationBounds(token: string): CitationBounds | null {
   return null;
 }
 
-/** Seek target for a citation marker (start of range). */
-export function parseCitationToken(token: string): number | null {
-  const bounds = parseCitationBounds(token);
-  return bounds?.startSeconds ?? null;
-}
-
 function formatCitationLabel(bounds: CitationBounds): string {
   if (
     bounds.endSeconds != null &&

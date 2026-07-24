@@ -16,6 +16,15 @@ interface FeedbackButtonsProps {
 
 type FeedbackRating = 'bad' | 'decent' | 'love_it'
 
+function getRatingEmoji(rating: string) {
+  switch (rating) {
+    case 'love_it': return '🧡';
+    case 'decent': return '😐';
+    case 'bad': return '😞';
+    default: return '✓';
+  }
+}
+
 export function FeedbackButtons({ messageId, videoId, messageContent, feedbackState, onFeedbackSubmitted }: FeedbackButtonsProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -112,15 +121,6 @@ export function FeedbackButtons({ messageId, videoId, messageContent, feedbackSt
 
   // If feedback has been submitted, show confirmation state
   if (feedbackState?.hasSubmitted) {
-    const getRatingEmoji = (rating: string) => {
-      switch (rating) {
-        case 'love_it': return '🧡';
-        case 'decent': return '😐';
-        case 'bad': return '😞';
-        default: return '✓';
-      }
-    }
-
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <span>{getRatingEmoji(feedbackState.rating)}</span>

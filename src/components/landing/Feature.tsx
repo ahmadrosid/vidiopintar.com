@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import ReactPlayer from "react-player";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/landing/tabs";
 import {
@@ -274,7 +275,14 @@ export function Features() {
                     target="blank"
                   >
                     <div className="flex flex-col gap-1 ">
-                      <img src={video.thumbnail} className="rounded-xs" />
+                      <Image
+                        src={video.thumbnail}
+                        alt={video.title}
+                        width={640}
+                        height={360}
+                        unoptimized
+                        className="rounded-xs w-full h-auto"
+                      />
                       <div className="text-lg text-primary font-medium pt-1 line-clamp-1">
                         {video.title}
                       </div>

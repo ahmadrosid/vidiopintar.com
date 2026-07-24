@@ -53,6 +53,11 @@ const deleteSchema = z.object({
 });
 
 export async function handleDeleteVideo(_prevState: any, formData: FormData): Promise<{ success: boolean, errors: string[] | undefined }> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return { success: false, errors: ["You must be logged in to delete a video"] };
+  }
+
   const validatedFields = deleteSchema.safeParse({
     id: formData.get("id"),
   });
@@ -65,11 +70,6 @@ export async function handleDeleteVideo(_prevState: any, formData: FormData): Pr
   const id = parseInt(validatedFields.data.id, 10);
   
   try {
-    // Get current user
-    const user = await getCurrentUser();
-    if (!user) {
-      return { success: false, errors: ["You must be logged in to delete a video"] };
-    }
 
     // Check if the user owns this video
     const userVideo = await UserVideoRepository.getById(id);

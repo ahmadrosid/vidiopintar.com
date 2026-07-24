@@ -73,15 +73,6 @@ export async function fetchVideoInfoFromApi(
   return (await response.json()) as TranscriptApiVideoInfoResponse;
 }
 
-export async function fetchTranscriptFromApi(
-  videoUrlOrId: string,
-  options: FetchTranscriptOptions = {},
-  apiKey: string = env.TRANSCRIPT_API_KEY,
-): Promise<TranscriptApiSegment[]> {
-  const response = await fetchTranscriptResponse(videoUrlOrId, options, apiKey);
-  return response.transcript;
-}
-
 export async function fetchTranscriptResponse(
   videoUrlOrId: string,
   options: FetchTranscriptOptions = {},

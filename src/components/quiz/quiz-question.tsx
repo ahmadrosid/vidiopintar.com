@@ -57,7 +57,7 @@ export function QuizQuestionView({
 
           return (
             <button
-              key={index}
+              key={option}
               type="button"
               disabled={disabled || showFeedback}
               onClick={() => onSelect(index)}

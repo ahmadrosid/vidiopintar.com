@@ -1,5 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
+const VIDEO_CARD_IDS = ['card-1', 'card-2', 'card-3', 'card-4', 'card-5', 'card-6', 'card-7', 'card-8'] as const;
+
 function VideoCardSkeleton() {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -28,8 +30,8 @@ export function ExploreChannelVideosSkeleton() {
       </div>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, index) => (
-          <VideoCardSkeleton key={index} />
+        {VIDEO_CARD_IDS.map((cardId) => (
+          <VideoCardSkeleton key={cardId} />
         ))}
       </div>
     </div>

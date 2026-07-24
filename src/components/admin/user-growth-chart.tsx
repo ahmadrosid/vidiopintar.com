@@ -1,6 +1,14 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "@/lib/recharts-dynamic";
 import { Suspense } from "react";
 
 interface UserGrowthChartProps {
@@ -42,7 +50,7 @@ function ChartContent({ data }: UserGrowthChartProps) {
               axisLine={{ stroke: "var(--border)" }}
             />
             <Tooltip
-              labelFormatter={(value) => new Date(value).toLocaleDateString()}
+              labelFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               formatter={(value: number) => [value, "New Users"]}
               contentStyle={{
                 backgroundColor: "var(--card)",

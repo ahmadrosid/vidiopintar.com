@@ -11,6 +11,50 @@ export function formatTime(seconds: number): string {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
 }
 
+/** Safe JSON for embedding in `<script type="application/ld+json">` tags. */
+export function serializeJsonLd(data: unknown): string {
+  return JSON.stringify(data)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029")
+}
+
+/** Strip common XSS vectors from trusted static HTML before rendering. */
+export function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
+    .replace(/\s*on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+    .replace(/javascript:/gi, "")
+}
+
+/** Shared date format options for consistent SSR/client rendering. */
+export const DISPLAY_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  timeZone: "UTC",
+};
+
+export const DISPLAY_DATETIME_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: "UTC",
+};
+
+export function formatDisplayDate(date: Date | string | number): string {
+  return new Date(date).toLocaleDateString("en-US", DISPLAY_DATE_OPTIONS);
+}
+
+export function formatDisplayDateTime(date: Date | string | number): string {
+  return new Date(date).toLocaleString("en-US", DISPLAY_DATETIME_OPTIONS);
+}
+
 export function extractVideoId(url: string): string | null {
   const regexes = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/watch\?.*&v=)([^&\n?#]+)/,

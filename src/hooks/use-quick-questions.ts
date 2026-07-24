@@ -1,28 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 interface UseQuickQuestionsOptions {
-  videoId: string;
-  initialQuestions?: string[];
-  enabled?: boolean;
+  initialQuestions: string[];
 }
 
 interface UseQuickQuestionsResult {
   questions: string[];
   isLoading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  refetch: (videoId: string) => Promise<void>;
 }
 
 export function useQuickQuestions({
-  videoId,
-  initialQuestions = [],
-  enabled = true
+  initialQuestions,
 }: UseQuickQuestionsOptions): UseQuickQuestionsResult {
   const [questions, setQuestions] = useState<string[]>(initialQuestions);
-  const [isLoading, setIsLoading] = useState(initialQuestions.length === 0);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchQuestions = async () => {
+  const refetch = useCallback(async (videoId: string) => {
     setIsLoading(true);
     setError(null);
 
@@ -32,7 +28,7 @@ export function useQuickQuestions({
       });
 
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
         throw new Error(data.error || 'Failed to generate questions');
       }
 
@@ -45,21 +41,12 @@ export function useQuickQuestions({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    // If we have initial questions or not enabled, don't fetch
-    if (initialQuestions.length > 0 || !enabled) {
-      return;
-    }
-
-    fetchQuestions();
-  }, [videoId, initialQuestions.length, enabled]);
+  }, []);
 
   return {
     questions,
     isLoading,
     error,
-    refetch: fetchQuestions,
+    refetch,
   };
 }

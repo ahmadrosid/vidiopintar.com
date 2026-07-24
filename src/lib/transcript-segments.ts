@@ -69,9 +69,12 @@ export function formatTimedTranscriptForChat(
 
   let step = 2;
   while (step < segments.length) {
-    lines = segments
-      .filter((_, index) => index === 0 || index % step === 0 || index === segments.length - 1)
-      .map(formatLine);
+    lines = [];
+    for (let index = 0; index < segments.length; index++) {
+      if (index === 0 || index % step === 0 || index === segments.length - 1) {
+        lines.push(formatLine(segments[index]));
+      }
+    }
     joined = lines.join("\n");
     if (joined.length <= maxChars) {
       return joined;

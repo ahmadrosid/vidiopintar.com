@@ -3,6 +3,7 @@ import MainLayout from "@/components/layouts/main-layout"
 import { changelogs } from "@/lib/data/changelogs"
 import { buildPageMetadata } from "@/lib/geo/metadata"
 import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/geo/site"
+import { serializeJsonLd } from "@/lib/utils"
 
 export const metadata = buildPageMetadata({
   title: "Changelogs",
@@ -27,7 +28,7 @@ export default function ChangelogsPage() {
     <MainLayout cta={false}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageSchema) }}
       />
       <main className="relative min-h-screen p-6 overflow-hidden">
         <div className="relative z-10 max-w-5xl px-6 flex justify-start mx-auto pt-20">

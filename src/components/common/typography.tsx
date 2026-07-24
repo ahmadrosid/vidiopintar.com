@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn, sanitizeHtml } from "@/lib/utils"
 
 interface TypographyProps {
   html: string
@@ -15,7 +15,7 @@ export default function Typography({ html }: TypographyProps) {
         "prose-li:text-muted-foreground",
         "w-full max-w-none"
       )}
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: sanitizeHtml(html) }}
     />
   )
 }

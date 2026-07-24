@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const testimonialsData = [
   {
@@ -78,9 +79,11 @@ const Testimonials2 = () => {
             className="bg-card hover:bg-card/90 rounded-xs pl-5 pr-6 py-7 shadow-lg "
           >
             <div className="flex items-start space-x-4">
-              <img
+              <Image
                 src={data.avatar}
                 alt={data.name}
+                width={40}
+                height={40}
                 className="size-10 rounded-full flex-shrink-0"
               />
 

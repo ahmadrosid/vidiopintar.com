@@ -95,25 +95,10 @@ export type PaymentSettingsInput = z.infer<typeof paymentSettingsSchema>;
 
 // Update payment settings schema (allows partial updates)
 export const updatePaymentSettingsSchema = paymentSettingsSchema.partial().extend({
-  id: z.string().uuid('Invalid payment settings ID'),
+  id: z.uuid('Invalid payment settings ID'),
 });
 
 export type UpdatePaymentSettingsInput = z.infer<typeof updatePaymentSettingsSchema>;
-
-// Transaction status update schema
-export const updateTransactionStatusSchema = z.object({
-  status: z.enum(['pending', 'confirmed', 'expired', 'cancelled'], {
-    message: 'Invalid transaction status',
-  }),
-});
-
-export type UpdateTransactionStatusInput = z.infer<typeof updateTransactionStatusSchema>;
-
-// Validation helper functions
-export function validatePlanAmount(planType: PlanType, amount: number): boolean {
-  const config = PLAN_CONFIGS[planType];
-  return amount >= config.minAmount && amount <= config.maxAmount;
-}
 
 export function getExpectedAmount(planType: PlanType): number {
   return PLAN_CONFIGS[planType].amount;

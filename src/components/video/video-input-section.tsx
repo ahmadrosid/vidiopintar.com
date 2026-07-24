@@ -42,10 +42,20 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
   const [showLimitDialog, setShowLimitDialog] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     fetch("/api/user/usage-stats")
       .then((res) => (res.ok ? res.json() : null))
-      .then(setUsage)
-      .catch(() => setUsage(null));
+      .then((data) => {
+        if (!cancelled) setUsage(data);
+      })
+      .catch(() => {
+        if (!cancelled) setUsage(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [userId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,9 +74,8 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ videoUrl: input }),
       });
-      const result = await response.json();
-
       if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
         const apiErrors = result.errors ?? [result.error ?? "An error occurred"];
         setErrors(apiErrors);
         if (apiErrors.some((msg: string) => msg.includes("daily limit") || msg.includes("upgrade"))) {
@@ -75,6 +84,8 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
         setIsSubmitting(false);
         return;
       }
+
+      const result = await response.json();
 
       if (result.videoId) {
         router.push(`/video/${result.videoId}`);

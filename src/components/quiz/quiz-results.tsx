@@ -66,8 +66,8 @@ export function QuizResultsView({
       {wrongQuestions.length > 0 ? (
         <div className="space-y-3">
           <h3 className="text-sm font-semibold">{reviewTitle}</h3>
-          {wrongQuestions.map((question, index) => (
-            <div key={index} className="rounded-lg border p-4">
+          {wrongQuestions.map((question) => (
+            <div key={question.prompt} className="rounded-lg border p-4">
               <p className="font-medium">{question.prompt}</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 {question.explanation}

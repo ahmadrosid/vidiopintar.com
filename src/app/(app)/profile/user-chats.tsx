@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { userVideos, videos } from "@/lib/db/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
 import Link from "next/link";
+import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { Markdown } from "@/components/ui/markdown";
 import { getTranslations } from 'next-intl/server';
@@ -72,15 +73,21 @@ export async function UserChats({ userId }: UserChatsProps) {
           className="block"
         >
           <div
-            className="p-4 rounded-xs transition-all duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50 relative group"
+            className="p-4 rounded-xs transition-colors transition-transform duration-200 cursor-pointer active:scale-[0.975] bg-card hover:bg-card/50 relative group"
           >
             <div className="flex gap-4">
               {/* Thumbnail */}
-              <img 
-                src={chat.thumbnailUrl || ""} 
-                alt={chat.title}
-                className="w-32 h-20 object-cover rounded shrink-0"
-              />
+              {chat.thumbnailUrl ? (
+                <Image
+                  src={chat.thumbnailUrl}
+                  alt={chat.title}
+                  width={128}
+                  height={80}
+                  className="w-32 h-20 object-cover rounded shrink-0"
+                />
+              ) : (
+                <div className="w-32 h-20 rounded shrink-0 bg-muted" />
+              )}
               
               {/* Content */}
               <div className="flex-1 min-w-0 flex flex-col gap-2">

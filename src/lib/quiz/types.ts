@@ -26,6 +26,24 @@ export type RevealedQuizQuestion = PublicQuizQuestion & {
   isCorrect: boolean;
 };
 
+export type QuizEntitlements = {
+  currentPlan: "free" | "monthly" | "yearly";
+  canGenerate: boolean;
+  canRetry: boolean;
+  upgradeRequired: boolean;
+  trialUsed: boolean;
+  hasCompletedAttempt: boolean;
+};
+
+export type QuizState = {
+  quizId: number;
+  attemptId: number;
+  status: "in_progress" | "completed";
+  currentIndex: number;
+  score: number | null;
+  questions: Array<PublicQuizQuestion | RevealedQuizQuestion>;
+};
+
 export function sanitizeQuestionsForClient(
   questions: z.infer<typeof quizQuestionSchema>[],
   answers: (number | null)[],
@@ -65,15 +83,4 @@ export function computeQuizScore(
   return questions.reduce((score, question, index) => {
     return answers[index] === question.correctIndex ? score + 1 : score;
   }, 0);
-}
-
-export function getWrongAnswerIndices(
-  questions: z.infer<typeof quizQuestionSchema>[],
-  answers: (number | null)[],
-): number[] {
-  return questions
-    .map((question, index) =>
-      answers[index] !== question.correctIndex ? index : -1,
-    )
-    .filter((index) => index >= 0);
 }

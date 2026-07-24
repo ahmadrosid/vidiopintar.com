@@ -10,8 +10,10 @@ import {
 import { cn } from "@/lib/utils";
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -63,22 +65,28 @@ function PromptInput({
 }: PromptInputProps) {
   const [internalValue, setInternalValue] = useState(value || "");
 
-  const handleChange = (newValue: string) => {
-    setInternalValue(newValue);
-    onValueChange?.(newValue);
-  };
+  const handleChange = useCallback(
+    (newValue: string) => {
+      setInternalValue(newValue);
+      onValueChange?.(newValue);
+    },
+    [onValueChange]
+  );
+
+  const contextValue = useMemo(
+    () => ({
+      isLoading,
+      value: value ?? internalValue,
+      setValue: onValueChange ?? handleChange,
+      maxHeight,
+      onSubmit,
+    }),
+    [isLoading, value, internalValue, onValueChange, handleChange, maxHeight, onSubmit]
+  );
 
   return (
     <TooltipProvider>
-      <PromptInputContext.Provider
-        value={{
-          isLoading,
-          value: value ?? internalValue,
-          setValue: onValueChange ?? handleChange,
-          maxHeight,
-          onSubmit,
-        }}
-      >
+      <PromptInputContext.Provider value={contextValue}>
         <div
           className={cn(
             "border-input bg-card rounded-xl border p-2",

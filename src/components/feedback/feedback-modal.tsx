@@ -97,9 +97,10 @@ export function FeedbackModal({ isOpen, onClose, onSubmit, context }: FeedbackMo
           <div className="flex gap-3">
             {ratingOptions.map((option) => (
               <button
+                type="button"
                 key={option.value}
                 onClick={() => setSelectedRating(option.value)}
-                className={`flex-1 p-3 rounded-lg border transition-all cursor-pointer ${selectedRating === option.value
+                className={`flex-1 p-3 rounded-lg border transition-colors cursor-pointer ${selectedRating === option.value
                     ? 'border-green-600 bg-green-50 dark:bg-green-950'
                     : 'border-border hover:border-muted-foreground'
                   }`}

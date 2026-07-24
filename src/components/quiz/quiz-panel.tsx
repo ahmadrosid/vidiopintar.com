@@ -1,40 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Crown, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { QuizQuestionView } from "@/components/quiz/quiz-question";
 import { QuizResultsView } from "@/components/quiz/quiz-results";
-import type { PublicQuizQuestion, RevealedQuizQuestion } from "@/lib/quiz/types";
+import type { PublicQuizQuestion, RevealedQuizQuestion, QuizEntitlements, QuizState } from "@/lib/quiz/types";
 
-export type QuizEntitlements = {
-  currentPlan: "free" | "monthly" | "yearly";
-  canGenerate: boolean;
-  canRetry: boolean;
-  upgradeRequired: boolean;
-  trialUsed: boolean;
-  hasCompletedAttempt: boolean;
-};
-
-export type QuizState = {
-  quizId: number;
-  attemptId: number;
-  status: "in_progress" | "completed";
-  currentIndex: number;
-  score: number | null;
-  questions: Array<PublicQuizQuestion | RevealedQuizQuestion>;
-};
+export type { QuizEntitlements, QuizState };
 
 type UseQuizOptions = {
   videoId: string;
-  enabled: boolean;
+  initialQuiz?: QuizState | null;
+  initialEntitlements?: QuizEntitlements | null;
 };
 
-export function useQuiz({ videoId, enabled }: UseQuizOptions) {
-  const [quiz, setQuiz] = useState<QuizState | null>(null);
-  const [entitlements, setEntitlements] = useState<QuizEntitlements | null>(null);
+export function useQuiz({
+  videoId,
+  initialQuiz = null,
+  initialEntitlements = null,
+}: UseQuizOptions) {
+  const [quiz, setQuiz] = useState<QuizState | null>(initialQuiz);
+  const [entitlements, setEntitlements] = useState<QuizEntitlements | null>(initialEntitlements);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,10 +37,11 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
     setError(null);
     try {
       const response = await fetch(`/api/video/${videoId}/quiz`);
-      const data = await response.json();
       if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
         throw new Error(data.error || "Failed to load quiz");
       }
+      const data = await response.json();
       setQuiz(data.quiz ?? null);
       setEntitlements(data.entitlements ?? null);
     } catch (err) {
@@ -60,12 +50,6 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
       setIsLoading(false);
     }
   }, [videoId]);
-
-  useEffect(() => {
-    if (enabled) {
-      fetchQuiz();
-    }
-  }, [enabled, fetchQuiz]);
 
   const generateQuiz = useCallback(
     async (regenerate = false) => {
@@ -78,8 +62,8 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ regenerate }),
         });
-        const data = await response.json();
         if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
           if (data.error === "upgrade_required") {
             setEntitlements(data.entitlements ?? entitlements);
             setError("upgrade_required");
@@ -87,6 +71,7 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
           }
           throw new Error(data.error || "Failed to generate quiz");
         }
+        const data = await response.json();
         setQuiz(data.quiz);
         setEntitlements(data.entitlements);
       } catch (err) {
@@ -113,10 +98,11 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
             selectedIndex,
           }),
         });
-        const data = await response.json();
         if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
           throw new Error(data.error || "Failed to submit answer");
         }
+        const data = await response.json();
         setQuiz(data.quiz);
         setEntitlements(data.entitlements);
         setPendingFeedbackIndex(questionIndex);
@@ -138,8 +124,8 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
       const response = await fetch(`/api/video/${videoId}/quiz/attempt`, {
         method: "POST",
       });
-      const data = await response.json();
       if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
         if (data.error === "upgrade_required") {
           setEntitlements(data.entitlements ?? entitlements);
           setError("upgrade_required");
@@ -147,6 +133,7 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
         }
         throw new Error(data.error || "Failed to retry quiz");
       }
+      const data = await response.json();
       setQuiz(data.quiz);
       setEntitlements(data.entitlements);
     } catch (err) {
@@ -178,10 +165,15 @@ export function useQuiz({ videoId, enabled }: UseQuizOptions) {
 
 type QuizPanelProps = {
   videoId: string;
-  enabled: boolean;
+  initialQuiz?: QuizState | null;
+  initialEntitlements?: QuizEntitlements | null;
 };
 
-export function QuizPanel({ videoId, enabled }: QuizPanelProps) {
+export function QuizPanel({
+  videoId,
+  initialQuiz = null,
+  initialEntitlements = null,
+}: QuizPanelProps) {
   const t = useTranslations("quiz");
   const {
     quiz,
@@ -195,7 +187,7 @@ export function QuizPanel({ videoId, enabled }: QuizPanelProps) {
     submitAnswer,
     retryQuiz,
     advanceAfterFeedback,
-  } = useQuiz({ videoId, enabled });
+  } = useQuiz({ videoId, initialQuiz, initialEntitlements });
 
   if (isLoading) {
     return (

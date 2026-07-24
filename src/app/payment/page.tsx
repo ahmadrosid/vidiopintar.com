@@ -12,29 +12,28 @@ interface PaymentPageProps {
   searchParams: Promise<{ plan?: string }>
 }
 
+const PLAN_PERIODS = {
+  monthly: 'per month',
+  yearly: 'per year',
+} as const;
+
+function getPlanDetails(validPlan: 'monthly' | 'yearly') {
+  const config = PLAN_CONFIGS[validPlan];
+  return {
+    name: config.name,
+    price: `IDR ${config.amount.toLocaleString()}`,
+    amount: config.amount,
+    period: PLAN_PERIODS[validPlan],
+  };
+}
+
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
     const t = await getTranslations('payment')
     const { plan } = await searchParams
 
-    // Use validated plan configurations
-    const planDetails = {
-        monthly: {
-            name: PLAN_CONFIGS.monthly.name,
-            price: `IDR ${PLAN_CONFIGS.monthly.amount.toLocaleString()}`,
-            amount: PLAN_CONFIGS.monthly.amount,
-            period: 'per month'
-        },
-        yearly: {
-            name: PLAN_CONFIGS.yearly.name, 
-            price: `IDR ${PLAN_CONFIGS.yearly.amount.toLocaleString()}`,
-            amount: PLAN_CONFIGS.yearly.amount,
-            period: 'per year'
-        }
-    }
-
     // Validate plan parameter
     const validPlan = plan && (plan === 'monthly' || plan === 'yearly') ? plan : 'monthly';
-    const currentPlan = planDetails[validPlan];
+    const currentPlan = getPlanDetails(validPlan);
     const paymentSettings = getPaymentSettings();
 
     // Get current user and handle transaction
@@ -120,7 +119,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                                 </p>
                                 {canPurchaseCheck.activeSubscription && (
                                     <p className="text-xs text-red-700 dark:text-red-300">
-                                        Your current subscription expires on: {canPurchaseCheck.activeSubscription.expiresAt.toLocaleDateString()}
+                                        Your current subscription expires on: {canPurchaseCheck.activeSubscription.expiresAt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
                                     </p>
                                 )}
                                 <div className="mt-4">

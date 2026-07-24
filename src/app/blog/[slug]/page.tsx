@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Calendar, Clock, ArrowLeft, Share2, Twitter, Linkedin } from 'lucide-react';
 import { buildPageMetadata } from '@/lib/geo/metadata';
+import Image from 'next/image';
 import { OG_IMAGE, SITE_URL } from '@/lib/geo/site';
+import { serializeJsonLd } from '@/lib/utils';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -107,7 +109,7 @@ export default async function BlogPostPage({ params }: Props) {
       <script
         async
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
       />
 
       <article className="min-h-screen bg-background">
@@ -178,11 +180,13 @@ export default async function BlogPostPage({ params }: Props) {
           <div className="container mx-auto px-4 py-8">
             <div className="max-w-4xl mx-auto">
               <div className="aspect-video relative rounded-xl overflow-hidden bg-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={post.coverImage}
                   alt={post.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  unoptimized={post.coverImage.startsWith('http')}
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 896px"
                 />
               </div>
             </div>
