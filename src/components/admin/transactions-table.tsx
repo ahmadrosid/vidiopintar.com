@@ -13,7 +13,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Check, X, MoreHorizontal, Filter, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Check, X, Trash2, Filter, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import { isTransactionActive } from '@/lib/mayar/subscription';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,6 +99,33 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
     } catch (error) {
       console.error('Error cancelling transaction:', error);
       toast.error('Failed to cancel transaction');
+    } finally {
+      setProcessingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(transactionId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleRevokeSubscription = async (transactionId: string) => {
+    setProcessingIds(prev => new Set(prev).add(transactionId));
+
+    try {
+      const response = await fetch(`/api/admin/transactions/${transactionId}/revoke`, {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        throw new Error(data?.error ?? 'Failed to delete subscription');
+      }
+
+      toast.success('Subscription deleted');
+      onUpdate();
+    } catch (error) {
+      console.error('Error deleting subscription:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to delete subscription');
     } finally {
       setProcessingIds(prev => {
         const newSet = new Set(prev);
@@ -588,6 +616,66 @@ export function TransactionsTable({ transactions, onUpdate }: TransactionsTableP
                         </AlertDialogContent>
                       </AlertDialog>
                     </div>
+                  ) : transaction.status === 'confirmed' && isTransactionActive(transaction) ? (
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50/85 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-950/50 transition-colors duration-200"
+                          disabled={processingIds.has(transaction.id)}
+                          title="Delete subscription"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Subscription</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will immediately revoke the user&apos;s active subscription.
+                          </AlertDialogDescription>
+
+                          <div className="bg-muted rounded-lg p-4 space-y-3 border">
+                            {transaction.user && (
+                              <div>
+                                <span className="text-sm text-muted-foreground">User:</span>
+                                <div className="font-medium">{transaction.user.name}</div>
+                                <div className="text-sm text-muted-foreground">{transaction.user.email}</div>
+                              </div>
+                            )}
+                            <div>
+                              <span className="text-sm text-muted-foreground">Plan:</span>
+                              <div className="font-medium capitalize">{transaction.planType}</div>
+                            </div>
+                            <div>
+                              <span className="text-sm text-muted-foreground">Amount:</span>
+                              <div className="font-semibold text-lg">{formatAmount(transaction.amount, transaction.currency)}</div>
+                            </div>
+                          </div>
+
+                          <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-md p-3">
+                            <div className="text-red-800 dark:text-red-200 text-sm font-medium">
+                              The user will lose access to their paid plan immediately.
+                            </div>
+                            {transaction.paymentMethod === 'mayar' && (
+                              <div className="text-red-700 dark:text-red-300 text-xs mt-1">
+                                This only revokes access locally. Mayar billing may still be active unless cancelled in Mayar separately.
+                              </div>
+                            )}
+                          </div>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleRevokeSubscription(transaction.id)}
+                            className="bg-destructive hover:bg-destructive/90 text-white"
+                          >
+                            Delete Subscription
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   ) : null}
                 </TableCell>
               </TableRow>
