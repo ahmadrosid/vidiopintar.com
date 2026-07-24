@@ -35,8 +35,10 @@ export async function getQuizStateForVideo(
     throw new Error("User video not found");
   }
 
-  const entitlements = await UserPlanService.getQuizEntitlements(userId);
-  const quiz = await QuizRepository.getLatestQuizForUserVideo(userVideo.id, userId);
+  const [entitlements, quiz] = await Promise.all([
+    UserPlanService.getQuizEntitlements(userId),
+    QuizRepository.getLatestQuizForUserVideo(userVideo.id, userId),
+  ]);
 
   if (!quiz) {
     return { quiz: null, entitlements };
@@ -52,6 +54,3 @@ export async function getQuizStateForVideo(
     entitlements,
   };
 }
-
-// Re-export for API route reuse
-export { buildQuizPayload, computeQuizScore, sanitizeQuestionsForClient };
