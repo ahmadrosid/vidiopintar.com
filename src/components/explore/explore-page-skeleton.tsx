@@ -1,5 +1,9 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
+const CATEGORY_CHIP_IDS = ['cat-1', 'cat-2', 'cat-3', 'cat-4', 'cat-5', 'cat-6'] as const;
+const CHANNEL_CARD_IDS = ['channel-1', 'channel-2', 'channel-3', 'channel-4', 'channel-5'] as const;
+const SECTION_CARD_IDS = ['section-card-1', 'section-card-2', 'section-card-3', 'section-card-4'] as const;
+
 function VideoCardSkeleton({ className }: { className?: string }) {
   return (
     <div
@@ -16,6 +20,8 @@ function VideoCardSkeleton({ className }: { className?: string }) {
 }
 
 function SectionSkeleton({ cardCount = 4 }: { cardCount?: number }) {
+  const cardIds = SECTION_CARD_IDS.slice(0, cardCount);
+
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between gap-3">
@@ -23,9 +29,9 @@ function SectionSkeleton({ cardCount = 4 }: { cardCount?: number }) {
         <Skeleton className="h-4 w-16" />
       </div>
       <div className="flex gap-4 overflow-hidden">
-        {Array.from({ length: cardCount }).map((_, index) => (
+        {cardIds.map((cardId) => (
           <VideoCardSkeleton
-            key={index}
+            key={cardId}
             className="w-[16.5rem] shrink-0 sm:w-[18rem]"
           />
         ))}
@@ -59,8 +65,8 @@ export function ExplorePageSkeleton() {
       <section className="space-y-4">
         <Skeleton className="h-7 w-44" />
         <div className="flex gap-3 overflow-hidden">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="h-10 w-24 shrink-0 rounded-xl" />
+          {CATEGORY_CHIP_IDS.map((chipId) => (
+            <Skeleton key={chipId} className="h-10 w-24 shrink-0 rounded-xl" />
           ))}
         </div>
       </section>
@@ -74,8 +80,8 @@ export function ExplorePageSkeleton() {
           <Skeleton className="h-4 w-16" />
         </div>
         <div className="flex gap-3 overflow-hidden">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <ChannelCardSkeleton key={index} />
+          {CHANNEL_CARD_IDS.map((channelId) => (
+            <ChannelCardSkeleton key={channelId} />
           ))}
         </div>
       </section>

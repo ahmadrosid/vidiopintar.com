@@ -37,6 +37,7 @@ export function LatestVideos({ videos }: LatestVideosProps) {
                       alt={video.title}
                       fill
                       className="object-cover"
+                      sizes="80px"
                     />
                   </div>
                 )}

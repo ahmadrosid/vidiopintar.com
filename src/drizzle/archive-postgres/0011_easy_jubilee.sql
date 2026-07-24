@@ -1,1 +1,0 @@
-ALTER TABLE "user" ADD COLUMN "preferred_language" text NOT NULL DEFAULT 'en';

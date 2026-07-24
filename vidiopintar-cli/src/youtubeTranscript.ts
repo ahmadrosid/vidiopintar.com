@@ -237,10 +237,14 @@ export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<stri
       sendMetadata: true,
     });
 
-    const transcriptText = transcriptResponse.transcript
-      .map((item) => decodeHtmlEntities(item.text))
-      .filter((text) => text && text !== 'N/A')
-      .join(' ');
+    const transcriptParts: string[] = [];
+    for (const item of transcriptResponse.transcript) {
+      const text = decodeHtmlEntities(item.text);
+      if (text && text !== 'N/A') {
+        transcriptParts.push(text);
+      }
+    }
+    const transcriptText = transcriptParts.join(' ');
 
     if (!transcriptText.trim()) {
       throw new Error('Transcript is empty or contains no valid content.');
@@ -271,10 +275,14 @@ export async function fetchYoutubeTranscriptWithMetadata(videoUrlOrId: string): 
     sendMetadata: true,
   });
 
-  const transcript = transcriptResponse.transcript
-    .map((item) => decodeHtmlEntities(item.text))
-    .filter((text) => text && text !== 'N/A')
-    .join(' ');
+  const transcriptParts: string[] = [];
+  for (const item of transcriptResponse.transcript) {
+    const text = decodeHtmlEntities(item.text);
+    if (text && text !== 'N/A') {
+      transcriptParts.push(text);
+    }
+  }
+  const transcript = transcriptParts.join(' ');
 
   if (!transcript.trim()) {
     throw new Error('Transcript is empty or contains no valid content.');

@@ -1,6 +1,15 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "@/lib/recharts-dynamic";
 import { RetentionCohort } from "@/types/admin";
 
 interface RetentionCohortChartProps {
@@ -58,8 +67,8 @@ export function RetentionCohortChart({ data }: RetentionCohortChartProps) {
                           {totalUsers?.toLocaleString()}
                         </span>
                       </div>
-                      {payload.map((entry, index) => (
-                        <div key={index} className="flex flex-col">
+                      {payload.map((entry) => (
+                        <div key={String(entry.dataKey)} className="flex flex-col">
                           <span className="text-[0.70rem] uppercase text-muted-foreground">
                             {entry.dataKey}
                           </span>

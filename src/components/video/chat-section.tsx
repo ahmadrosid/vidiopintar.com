@@ -7,6 +7,8 @@ import { ChatInterfaceWrapper } from "@/components/chat/chat-interface-wrapper";
 import { UserPlanService } from "@/lib/user-plan-service";
 import { getCurrentUser } from "@/lib/auth";
 import { AlertTriangle } from "lucide-react";
+import { ensureQuickStartQuestions } from "@/lib/questions/ensure-quick-start-questions";
+import { getQuizStateForVideo } from "@/lib/quiz/get-quiz-state";
 
 interface ChatSectionProps {
   videoId: string;
@@ -46,7 +48,25 @@ export async function ChatSection({ videoId, videoDetailsPromise, transcriptProm
   const messageUsage = await UserPlanService.canSendMessage(user.id, userVideo!.id);
   const messageLimitReached = !messageUsage.canSend && messageUsage.reason === 'message_limit_reached';
   const messages = await getChatHistory(videoId, userVideo!.id);
-  const quickStartQuestions = userVideo?.quickStartQuestions ?? [];
+
+  let quickStartQuestions = userVideo?.quickStartQuestions ?? [];
+  if (!messageLimitReached && messages.length === 0 && quickStartQuestions.length === 0) {
+    try {
+      quickStartQuestions = await ensureQuickStartQuestions(user.id, videoId);
+    } catch (error) {
+      console.error("Failed to generate quick start questions:", error);
+    }
+  }
+
+  let initialQuiz = null;
+  let initialQuizEntitlements = null;
+  try {
+    const quizState = await getQuizStateForVideo(user.id, videoId);
+    initialQuiz = quizState.quiz;
+    initialQuizEntitlements = quizState.entitlements;
+  } catch (error) {
+    console.error("Failed to load quiz state:", error);
+  }
 
   return (
     <ChatInterfaceWrapper
@@ -54,6 +74,8 @@ export async function ChatSection({ videoId, videoDetailsPromise, transcriptProm
       userVideoId={userVideo!.id}
       initialMessages={messages}
       initialQuestions={messageLimitReached ? [] : quickStartQuestions}
+      initialQuiz={initialQuiz}
+      initialQuizEntitlements={initialQuizEntitlements}
       messageLimitReached={messageLimitReached}
       messageLimit={messageUsage.messageLimit}
       messagesRemaining={

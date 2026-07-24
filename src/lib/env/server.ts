@@ -4,7 +4,7 @@ import 'dotenv/config';
 
 export const env = createEnv({
   server: {
-    API_BASE_URL: z.string().url().default("https://api.ahmadrosid.com"),
+    API_BASE_URL: z.url().default("https://api.ahmadrosid.com"),
     API_X_HEADER_API_KEY: z.string().min(1),
     NODE_ENV: z.string().min(1),
     SQLITE_DATABASE_PATH: z
@@ -15,7 +15,7 @@ export const env = createEnv({
           ? "/data/vidiopintar.db"
           : "./data/vidiopintar.db",
       ),
-    ADMIN_MASTER_EMAIL: z.string().email(),
+    ADMIN_MASTER_EMAIL: z.email(),
     TRANSCRIPT_API_KEY: z.string().min(1),
     YOUTUBE_API_KEY: z.string().min(1).optional(),
   },

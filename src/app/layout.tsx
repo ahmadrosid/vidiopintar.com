@@ -8,6 +8,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import { Geist, Geist_Mono } from "next/font/google";
 import { OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/geo/site";
+import { serializeJsonLd } from "@/lib/utils";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -19,6 +20,40 @@ const geistMono = Geist_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
 });
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: OG_IMAGE,
+  description: "AI-powered YouTube learning platform that transforms videos into instant summaries and interactive chat experiences",
+  sameAs: [
+    "https://github.com/ahmadrosid/vidiopintar.com",
+    "https://twitter.com/ahmadrosid",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "Customer Support",
+    email: "support@vidiopintar.com",
+  },
+};
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: "Learn anything from YouTube with AI-powered video summaries and chat",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/home?q={search_term_string}`
+    },
+    "query-input": "required name=search_term_string"
+  }
+};
 
 export const metadata: Metadata = {
   title: {
@@ -79,50 +114,16 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: SITE_NAME,
-    url: SITE_URL,
-    logo: OG_IMAGE,
-    description: "AI-powered YouTube learning platform that transforms videos into instant summaries and interactive chat experiences",
-    sameAs: [
-      "https://github.com/ahmadrosid/vidiopintar.com",
-      "https://twitter.com/ahmadrosid",
-    ],
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "Customer Support",
-      email: "support@vidiopintar.com",
-    },
-  };
-
-  const websiteSchema = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: SITE_NAME,
-    url: SITE_URL,
-    description: "Learn anything from YouTube with AI-powered video summaries and chat",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/home?q={search_term_string}`
-      },
-      "query-input": "required name=search_term_string"
-    }
-  };
-
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationSchema) }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteSchema) }}
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>

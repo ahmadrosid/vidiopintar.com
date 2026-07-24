@@ -2,6 +2,9 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+const SUMMARY_LINE_WIDTHS = ['w-[92%]', 'w-[78%]', 'w-[85%]', 'w-[70%]', 'w-[88%]', 'w-[65%]', 'w-[80%]', 'w-[75%]'] as const;
+const TRANSCRIPT_ROW_IDS = ['t1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12'] as const;
+
 export function VideoSectionSkeleton() {
   return (
     <>
@@ -42,11 +45,10 @@ export function VideoSectionSkeleton() {
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-3/4" />
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-1/2" />
               <div className="space-y-2 mt-6">
-                {Array.from({ length: 8 }).map((_, i) => (
+                {SUMMARY_LINE_WIDTHS.map((widthClass) => (
                   <div
-                    key={i}
-                    className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
-                    style={{ width: `${Math.random() * 40 + 60}%` }}
+                    key={widthClass}
+                    className={`h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse ${widthClass}`}
                   />
                 ))}
               </div>
@@ -57,8 +59,8 @@ export function VideoSectionSkeleton() {
             className="h-full overflow-y-auto p-0 m-0"
           >
             <div className="p-4 space-y-3">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className="flex gap-3">
+              {TRANSCRIPT_ROW_IDS.map((rowId) => (
+                <div key={rowId} className="flex gap-3">
                   <div className="w-16 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                   <div className="flex-1 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                 </div>

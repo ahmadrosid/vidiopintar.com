@@ -76,15 +76,17 @@ export default async function TagPage({ params }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {posts.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`}>
-                <Card className="group h-full overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-lg cursor-pointer">
+                <Card className="group h-full overflow-hidden hover:border-primary/50 transition-[border-color,box-shadow] duration-300 hover:shadow-lg cursor-pointer">
                   <div className="aspect-video relative overflow-hidden bg-muted">
                     {post.coverImage ? (
                       post.coverImage.startsWith('http') ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={post.coverImage}
                           alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          fill
+                          unoptimized
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 384px"
                         />
                       ) : (
                         <Image
@@ -92,6 +94,7 @@ export default async function TagPage({ params }: Props) {
                           alt={post.title}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 384px"
                         />
                       )
                     ) : (

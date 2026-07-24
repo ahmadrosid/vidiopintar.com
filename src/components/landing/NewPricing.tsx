@@ -120,9 +120,9 @@ export default function NewPricing() {
                 <div className="text-secondary-foreground text-[0.9375rem] mb-1">
                   What's included:
                 </div>
-                {data.benefit.map((item, index) => (
+                {data.benefit.map((item) => (
                   <div
-                    key={index}
+                    key={item}
                     className="flex items-center gap-1 text-[0.9375rem] text-primary"
                   >
                     <CircleCheck className="size-4 text-primary" />

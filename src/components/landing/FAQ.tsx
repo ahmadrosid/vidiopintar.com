@@ -47,6 +47,7 @@ export function FAQ({ headingLevel = "h2" }: FAQProps) {
 
       <div className="flex flex-wrap gap-2">
         <button
+          type="button"
           onClick={() => setSelectedCategory("All")}
           className={`px-4 py-2 rounded-xs text-[0.9375rem] font-medium transition-colors ${
             selectedCategory === "All"
@@ -58,6 +59,7 @@ export function FAQ({ headingLevel = "h2" }: FAQProps) {
         </button>
         {faqCategories.map((category) => (
           <button
+            type="button"
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`px-4 cursor-pointer py-2 rounded-xs text-[0.9375rem] font-medium transition-colors ${
@@ -88,6 +90,7 @@ export function FAQ({ headingLevel = "h2" }: FAQProps) {
               data-category={faq.category}
             >
               <button
+                type="button"
                 onClick={() => {
                   if (!isVisible) return;
                   toggleFAQ(filteredIndex);
@@ -108,7 +111,7 @@ export function FAQ({ headingLevel = "h2" }: FAQProps) {
               <div
                 className={
                   isVisible
-                    ? `overflow-hidden transition-all duration-300 ease-in-out ${
+                    ? `overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
                         isOpen
                           ? "max-h-[500px] opacity-100"
                           : "max-h-0 opacity-0"

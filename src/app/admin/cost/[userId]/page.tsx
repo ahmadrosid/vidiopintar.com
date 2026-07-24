@@ -6,6 +6,7 @@ import { ArrowLeft, DollarSign, MessageSquare, Video, Zap, Calendar } from "luci
 import { AdminNavigation } from "@/components/admin/admin-navigation";
 import { Markdown } from "@/components/ui/markdown";
 import Link from "next/link";
+import Image from "next/image";
 
 interface UserDetailPageProps {
   params: Promise<{
@@ -113,9 +114,11 @@ export default async function UserDetailPage(props: UserDetailPageProps) {
                     <tr key={video.id} className="border-b hover:bg-accent/50 transition-colors">
                       <td className="py-3 px-4">
                         <div className="flex items-center space-x-3">
-                          <img
+                          <Image
                             src={video.thumbnailUrl}
                             alt={video.title}
+                            width={64}
+                            height={36}
                             className="w-16 h-9 object-cover rounded"
                           />
                           <div>
@@ -135,7 +138,7 @@ export default async function UserDetailPage(props: UserDetailPageProps) {
                       </td>
                       <td className="py-3 px-4 text-right">
                         <span className="text-xs text-muted-foreground">
-                          {video.addedAt.toLocaleDateString()}
+                          {video.addedAt.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
                         </span>
                       </td>
                     </tr>
@@ -183,7 +186,7 @@ export default async function UserDetailPage(props: UserDetailPageProps) {
                       {message.totalCost > 0 && (
                         <span>${message.totalCost.toFixed(4)}</span>
                       )}
-                      <span>{message.createdAt.toLocaleString()}</span>
+                      <span>{message.createdAt.toLocaleString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
                     </div>
                   </div>
                   <div className="prose prose-sm max-w-none dark:prose-invert">

@@ -41,16 +41,16 @@ interface TokenUsageOverviewProps {
   topUsers: TopUser[];
 }
 
+function getPeriodLabel(period: "7d" | "1m" | "3m") {
+  switch (period) {
+    case "7d": return "7 Days";
+    case "1m": return "1 Month";
+    case "3m": return "3 Months";
+  }
+}
+
 export function TokenUsageOverview({ tokenUsageData, modelUsage, operationUsage, topUsers }: TokenUsageOverviewProps) {
   const [period, setPeriod] = useState<"7d" | "1m" | "3m">("7d");
-
-  const getPeriodLabel = (period: "7d" | "1m" | "3m") => {
-    switch (period) {
-      case "7d": return "7 Days";
-      case "1m": return "1 Month";
-      case "3m": return "3 Months";
-    }
-  };
 
   const totalCostByModel = modelUsage.reduce((acc, model) => acc + parseFloat(model.totalCost), 0);
   const totalTokensByModel = modelUsage.reduce((acc, model) => acc + model.totalTokens, 0);
@@ -72,8 +72,8 @@ export function TokenUsageOverview({ tokenUsageData, modelUsage, operationUsage,
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {modelUsage.map((model, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              {modelUsage.map((model) => (
+                <div key={`${model.provider}-${model.model}`} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex flex-col">
                     <div className="font-medium">{model.model}</div>
                     <div className="text-sm text-muted-foreground">{model.provider}</div>
@@ -108,8 +108,8 @@ export function TokenUsageOverview({ tokenUsageData, modelUsage, operationUsage,
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {operationUsage.map((operation, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+              {operationUsage.map((operation) => (
+                <div key={operation.operation} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex flex-col">
                     <div className="font-medium capitalize">{operation.operation.replace('_', ' ')}</div>
                     <div className="text-sm text-muted-foreground">{operation.requests} requests</div>

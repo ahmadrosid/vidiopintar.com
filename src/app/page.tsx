@@ -8,6 +8,7 @@ import MainLayout from "@/components/layouts/main-layout"
 import { faqData } from "@/data/faq"
 import { buildPageMetadata } from "@/lib/geo/metadata"
 import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/geo/site"
+import { serializeJsonLd } from "@/lib/utils"
 
 const faqSchema = {
   "@context": "https://schema.org",
@@ -44,11 +45,11 @@ export default function Page() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageSchema) }}
       />
       <MainLayout>
         <Header />

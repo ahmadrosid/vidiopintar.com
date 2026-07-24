@@ -1,5 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
+const FILTER_CHIP_IDS = ['chip-1', 'chip-2', 'chip-3', 'chip-4', 'chip-5'] as const;
+const VIDEO_CARD_IDS = ['card-1', 'card-2', 'card-3', 'card-4', 'card-5', 'card-6', 'card-7', 'card-8'] as const;
+
 function VideoCardSkeleton() {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -32,14 +35,14 @@ export function LibraryPageSkeleton() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} className="h-9 w-28 rounded-lg" />
+          {FILTER_CHIP_IDS.map((chipId) => (
+            <Skeleton key={chipId} className="h-9 w-28 rounded-lg" />
           ))}
         </div>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, index) => (
-            <VideoCardSkeleton key={index} />
+          {VIDEO_CARD_IDS.map((cardId) => (
+            <VideoCardSkeleton key={cardId} />
           ))}
         </div>
       </div>

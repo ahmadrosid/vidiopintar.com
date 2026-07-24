@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Gift, Calendar, CheckCircle, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { formatDisplayDate } from '@/lib/utils';
 
 interface SubscriptionDetails {
   expiresAt: Date;
@@ -15,27 +16,20 @@ interface CurrentPlanCardProps {
   subscriptionDetails?: SubscriptionDetails | null;
 }
 
-export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPlanCardProps) {
-  const t = useTranslations('pricing');
-  const tBilling = useTranslations('billing');
+function formatExpirationDate(date: Date) {
+  return formatDisplayDate(date);
+}
 
-  const formatExpirationDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+function getDaysUntilExpiry(date: Date) {
+  const now = new Date();
+  const expiry = new Date(date);
+  const timeDiff = expiry.getTime() - now.getTime();
+  const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  return daysDiff;
+}
 
-  const getDaysUntilExpiry = (date: Date) => {
-    const now = new Date();
-    const expiry = new Date(date);
-    const timeDiff = expiry.getTime() - now.getTime();
-    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-    return daysDiff;
-  };
-
-  const planDetails = {
+function buildPlanDetails(t: (key: string) => string) {
+  return {
     free: {
       name: t('plans.free.name'),
       price: 'Free',
@@ -80,7 +74,13 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
       ]
     }
   };
+}
 
+export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPlanCardProps) {
+  const t = useTranslations('pricing');
+  const tBilling = useTranslations('billing');
+
+  const planDetails = buildPlanDetails(t);
   const plan = planDetails[currentPlan];
 
   return (
@@ -128,8 +128,8 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
           <div className="space-y-3">
             <h4 className="font-semibold text-[0.9375rem] text-secondary-foreground">{tBilling('currentPlan.features')}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {plan.features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2 text-[0.9375rem] text-primary">
+              {plan.features.map((feature) => (
+                <div key={feature} className="flex items-center gap-2 text-[0.9375rem] text-primary">
                   <CheckCircle className="size-4 text-primary flex-shrink-0" />
                   <span>{feature}</span>
                 </div>

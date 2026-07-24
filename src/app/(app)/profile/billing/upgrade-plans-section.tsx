@@ -20,72 +20,24 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { formatDisplayDate } from "@/lib/utils";
 
 interface UpgradePlansSectionProps {
   currentPlan: "free" | "monthly" | "yearly";
-  userId?: string;
+  activeSubscriptions: Record<string, ActiveSubscription>;
 }
 
 interface ActiveSubscription {
   planType: string;
-  expiresAt: string;
+  expiresAt: string | Date;
 }
 
 export function UpgradePlansSection({
   currentPlan,
-  userId,
+  activeSubscriptions,
 }: UpgradePlansSectionProps) {
   const t = useTranslations("pricing");
   const tBilling = useTranslations("billing");
-  const [activeSubscriptions, setActiveSubscriptions] = useState<
-    Record<string, ActiveSubscription>
-  >({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
-
-    const checkActiveSubscriptions = async () => {
-      try {
-        const subscriptionChecks = await Promise.all([
-          fetch(`/api/user/can-purchase-plan?plan=monthly`).then((res) =>
-            res.json()
-          ),
-          fetch(`/api/user/can-purchase-plan?plan=yearly`).then((res) =>
-            res.json()
-          ),
-        ]);
-
-        const subscriptions: Record<string, ActiveSubscription> = {};
-
-        if (
-          !subscriptionChecks[0]?.canPurchase &&
-          subscriptionChecks[0]?.activeSubscription
-        ) {
-          subscriptions.monthly = subscriptionChecks[0].activeSubscription;
-        }
-
-        if (
-          !subscriptionChecks[1]?.canPurchase &&
-          subscriptionChecks[1]?.activeSubscription
-        ) {
-          subscriptions.yearly = subscriptionChecks[1].activeSubscription;
-        }
-
-        setActiveSubscriptions(subscriptions);
-      } catch (error) {
-        console.error("Failed to check active subscriptions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkActiveSubscriptions();
-  }, [userId]);
 
   const getAvailableUpgrades = () => {
     if (currentPlan === "yearly" && activeSubscriptions.yearly) {
@@ -224,9 +176,9 @@ export function UpgradePlansSection({
                     <div className="text-secondary-foreground text-[0.9375rem] mb-1">
                       What's included:
                     </div>
-                    {plan.features.map((feature, index) => (
+                    {plan.features.map((feature) => (
                       <div
-                        key={index}
+                        key={feature}
                         className="flex items-center gap-1 text-[0.9375rem] text-primary"
                       >
                         <Check className="size-4 text-primary" />
@@ -245,9 +197,11 @@ export function UpgradePlansSection({
                           <p className="font-semibold">Active Subscription</p>
                           <p className="text-xs mt-1 text-secondary-foreground">
                             Expires:{" "}
-                            {new Date(
-                              activeSubscriptions[plan.id].expiresAt
-                            ).toLocaleDateString()}
+                            {formatDisplayDate(
+                              activeSubscriptions[plan.id].expiresAt instanceof Date
+                                ? activeSubscriptions[plan.id].expiresAt.toISOString()
+                                : activeSubscriptions[plan.id].expiresAt
+                            )}
                           </p>
                         </div>
                       </div>

@@ -122,15 +122,16 @@ export function MessageItem({ messages, status, videoId }: MessageItemProps) {
                         {isAssistant ? (
                             <div className="w-full flex-1">
                                 <div className="prose dark:prose-invert prose-sm px-2 py-6 max-w-none">
-                                    {message.parts.map((part, index) => {
+                                    {message.parts.map((part) => {
                                       if (part.type === "text" && part.text) {
-                                        return <Markdown key={index}>{part.text}</Markdown>;
+                                        return <Markdown key={`text-${part.text}`}>{part.text}</Markdown>;
                                       }
                                       if (part.type === "tool-createNote") {
+                                        const toolPart = part as unknown as CreateNoteToolPartProps;
                                         return (
                                           <CreateNoteToolPart
-                                            key={index}
-                                            part={part as unknown as CreateNoteToolPartProps}
+                                            key={toolPart.toolCallId}
+                                            part={toolPart}
                                           />
                                         );
                                       }

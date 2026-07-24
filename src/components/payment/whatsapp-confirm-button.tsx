@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface WhatsAppConfirmButtonProps {
@@ -11,10 +11,13 @@ interface WhatsAppConfirmButtonProps {
 export function WhatsAppConfirmButton({ whatsappUrl, transactionId }: WhatsAppConfirmButtonProps) {
   const t = useTranslations('payment');
   const [isUpdating, setIsUpdating] = useState(false);
+  const isUpdatingRef = useRef(false);
 
   const handleWhatsAppClick = async () => {
-    // Update transaction status to waiting_confirmation if transaction exists
+    if (isUpdatingRef.current) return;
+
     if (transactionId) {
+      isUpdatingRef.current = true;
       setIsUpdating(true);
       try {
         const response = await fetch(`/api/transactions/${transactionId}`, {
@@ -33,16 +36,17 @@ export function WhatsAppConfirmButton({ whatsappUrl, transactionId }: WhatsAppCo
       } catch (error) {
         console.error('Error updating transaction status:', error);
       } finally {
+        isUpdatingRef.current = false;
         setIsUpdating(false);
       }
     }
 
-    // Open WhatsApp
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <button
+      type="button"
       onClick={handleWhatsAppClick}
       disabled={isUpdating}
       className="w-full inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2.5 rounded-md text-sm font-medium transition-colors"

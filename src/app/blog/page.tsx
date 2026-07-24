@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft } from 'lucide-react';
 import { buildPageMetadata } from '@/lib/geo/metadata';
 import { SITE_LAST_MODIFIED, SITE_URL } from '@/lib/geo/site';
+import { serializeJsonLd } from '@/lib/utils';
 
 export const metadata: Metadata = buildPageMetadata({
   title: 'Blog',
@@ -25,12 +26,26 @@ function CoverImage({ src, alt, className }: { src?: string; alt: string; classN
 
   if (src.startsWith('http')) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={src} alt={alt} className={`object-cover ${className}`} />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        unoptimized
+        className={`object-cover ${className}`}
+        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 384px"
+      />
     );
   }
 
-  return <Image src={src} alt={alt} fill className={`object-cover ${className}`} />;
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      className={`object-cover ${className}`}
+      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 384px"
+    />
+  );
 }
 
 export default function BlogPage() {
@@ -55,7 +70,7 @@ export default function BlogPage() {
     <div className="min-h-screen bg-background">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageSchema) }}
       />
       <section className="border-b border-border bg-muted/30">
         <div className="container mx-auto px-4 py-12 md:py-16">
@@ -142,7 +157,7 @@ export default function BlogPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {otherPosts.map((post) => (
                     <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
-                      <Card className="overflow-hidden rounded-xs shadow-none border-none bg-card hover:bg-card/50 transition-all duration-200">
+                      <Card className="overflow-hidden rounded-xs shadow-none border-none bg-card hover:bg-card/50 transition-colors duration-200">
                         <div className="relative h-40 overflow-hidden bg-muted">
                           <CoverImage
                             src={post.coverImage}

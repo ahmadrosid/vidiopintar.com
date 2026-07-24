@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { NotesList } from "@/app/(app)/profile/notes/notes-list";
 import { getTranslations } from "next-intl/server";
 import { buildPageMetadata } from "@/lib/geo/metadata";
+import { NoteRepository } from "@/lib/db/repository";
 
 export const metadata = buildPageMetadata({
   title: "Notes",
@@ -19,6 +20,7 @@ export default async function NotesPage() {
   }
 
   const t = await getTranslations("profile");
+  const notes = await NoteRepository.getAllByUserIdWithVideoDetails(user.id);
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 px-4 py-8 md:px-8">
@@ -30,7 +32,7 @@ export default async function NotesPage() {
           All your notes from videos you've watched
         </p>
       </div>
-      <NotesList userId={user.id} />
+      <NotesList notes={notes} />
     </div>
   );
 }

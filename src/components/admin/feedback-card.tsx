@@ -48,7 +48,11 @@ function formatTimeAgo(date: Date) {
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) return `${diffInDays}d ago`;
   
-  return date.toLocaleDateString();
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function ChatResponseCard({ feedback, onDelete }: { feedback: FeedbackItem; onDelete?: (id: number) => void }) {
@@ -236,13 +240,13 @@ export function FeedbackCard({ feedback, onDelete }: FeedbackCardProps) {
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  User ID: {feedback.userId.slice(0, 8)}... • {new Date(feedback.createdAt).toLocaleDateString()}
+                  User ID: {feedback.userId.slice(0, 8)}... • {new Date(feedback.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <p className="text-xs text-muted-foreground">
-                {new Date(feedback.createdAt).toLocaleTimeString()}
+                {new Date(feedback.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
               </p>
               {onDelete && (
                 <Button

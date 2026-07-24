@@ -18,7 +18,7 @@ import {
 import Link from "next/link";
 import { Input } from "../ui/input";
 
-export function ButtonSubmitStartLearning({
+function ButtonSubmitStartLearning({
   isSubmitting,
 }: {
   isSubmitting: boolean;
@@ -81,9 +81,8 @@ export function FormStartLearning({ isFooter }: { isFooter?: boolean }) {
         body: JSON.stringify({ videoUrl }),
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
         if (result.errors) {
           const hasLimitError = result.errors.some(
             (error: string) =>
@@ -102,6 +101,8 @@ export function FormStartLearning({ isFooter }: { isFooter?: boolean }) {
         }
         return;
       }
+
+      const result = await response.json();
 
       // Success - redirect to video page
       if (result.videoId) {

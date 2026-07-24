@@ -293,9 +293,10 @@ export class UserPlanService {
   }> {
     const currentPlan = await this.getCurrentPlan(userId);
     const limits = this.getPlanLimits(currentPlan);
-    const trialUsed = await UsageEventRepository.hasQuizGenerated(userId);
-    const hasCompletedAttempt =
-      await QuizRepository.hasCompletedAttemptForUser(userId);
+    const [trialUsed, hasCompletedAttempt] = await Promise.all([
+      UsageEventRepository.hasQuizGenerated(userId),
+      QuizRepository.hasCompletedAttemptForUser(userId),
+    ]);
 
     if (limits.unlimited) {
       return {

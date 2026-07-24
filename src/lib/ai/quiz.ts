@@ -72,11 +72,14 @@ export async function generateQuizFromTranscript(input: {
   );
 
   const timedTranscript = formatTimedTranscriptForChat(segments);
-  const transcriptSeconds = [
-    ...new Set(
-      segments.map((seg) => timeStringToSeconds(seg.start)).filter((s) => s >= 0),
-    ),
-  ].sort((a, b) => a - b);
+  const transcriptSecondsSet = new Set<number>();
+  for (const seg of segments) {
+    const seconds = timeStringToSeconds(seg.start);
+    if (seconds >= 0) {
+      transcriptSecondsSet.add(seconds);
+    }
+  }
+  const transcriptSeconds = [...transcriptSecondsSet].sort((a, b) => a - b);
 
   let contextSection = "";
   if (input.videoTitle) {

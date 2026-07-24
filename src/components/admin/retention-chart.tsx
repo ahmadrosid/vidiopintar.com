@@ -1,6 +1,14 @@
 "use client";
 
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "@/lib/recharts-dynamic";
 import { UserActivityData } from "@/types/admin";
 
 interface UserActivityChartProps {
@@ -11,7 +19,8 @@ export function UserActivityChart({ data }: UserActivityChartProps) {
   const chartData = data.map(item => ({
     date: new Date(item.activityDate).toLocaleDateString('en-US', { 
       month: 'short', 
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: 'UTC',
     }),
     activeUsers: item.activeUsers,
     videosProcessed: item.videosProcessed,

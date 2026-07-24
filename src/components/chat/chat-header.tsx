@@ -1,7 +1,7 @@
 "use client"
 
 import { Share2, Trash2, Loader, Link as LinkIcon, ArrowLeft } from "lucide-react"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import {
     Tooltip,
     TooltipContent,

@@ -55,8 +55,10 @@ export default async function SharedVideoPage(props: SharedVideoPageProps) {
     notFound();
   }
 
-  const transcript = await fetchVideoTranscript(sharedVideo.youtubeId);
-  const messages = await getChatHistory(sharedVideo.youtubeId, sharedVideo.userVideoId);
+  const [transcript, messages] = await Promise.all([
+    fetchVideoTranscript(sharedVideo.youtubeId),
+    getChatHistory(sharedVideo.youtubeId, sharedVideo.userVideoId),
+  ]);
 
   const quickStartQuestions: string[] = sharedVideo.quickStartQuestions || [];
 

@@ -25,8 +25,8 @@ const versionBadgeColors = {
 export function ChangelogList({ changelogs }: ChangelogListProps) {
   return (
     <div className="relative max-w-xl">
-      {changelogs.map((changelog, index) => (
-        <div key={index} className="flex gap-x-6">
+      {changelogs.map((changelog) => (
+        <div key={changelog.version} className="flex gap-x-6">
           {/* Line and dot */}
           <div className="relative flex-none">
             <div className="h-full w-0.5 bg-muted">
@@ -52,8 +52,8 @@ export function ChangelogList({ changelogs }: ChangelogListProps) {
             </div>
 
             <div className="space-y-4">
-              {changelog.changes.map((changeGroup, groupIndex) => (
-                <div key={groupIndex}>
+              {changelog.changes.map((changeGroup) => (
+                <div key={changeGroup.category}>
                   <Badge 
                     variant="secondary"
                     className={cn("capitalize mb-2", categoryColors[changeGroup.category])}
@@ -61,9 +61,9 @@ export function ChangelogList({ changelogs }: ChangelogListProps) {
                     {changeGroup.category}
                   </Badge>
                   <ul className="space-y-1 ml-4">
-                    {changeGroup.items.map((item, itemIndex) => (
+                    {changeGroup.items.map((item) => (
                       <li 
-                        key={itemIndex}
+                        key={item}
                         className="text-sm text-muted-foreground list-disc list-inside"
                       >
                         {item}

@@ -1,6 +1,7 @@
 "use client"
 
-import { Button, buttonVariants } from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { cn } from "@/lib/utils"
 import { type VariantProps } from "class-variance-authority"
 import { ChevronDown } from "lucide-react"

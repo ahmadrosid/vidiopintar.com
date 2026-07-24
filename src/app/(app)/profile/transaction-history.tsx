@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
+import { formatDisplayDateTime } from "@/lib/utils";
 import { useTranslations } from 'next-intl';
 
 interface Transaction {
@@ -41,11 +42,40 @@ interface TransactionHistoryProps {
   currentPaymentSettings: PaymentSettings | null;
 }
 
+function getStatusColor(status: string) {
+  switch (status) {
+    case 'confirmed':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+    case 'waiting_confirmation':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+    case 'expired':
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    case 'cancelled':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+  }
+}
+
+function formatAmount(amount: number, currency: string) {
+  return `${currency} ${amount.toLocaleString("en-US")}`;
+}
+
+function formatDate(date: Date) {
+  return formatDisplayDateTime(date);
+}
+
 export function TransactionHistory({ transactions, currentPaymentSettings }: TransactionHistoryProps) {
   const t = useTranslations('profile');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [localTransactions, setLocalTransactions] = useState<Transaction[]>(transactions);
+  const [transactionOverrides, setTransactionOverrides] = useState<Record<string, Transaction>>({});
+
+  const localTransactions = transactions.map(
+    (t) => transactionOverrides[t.id] ?? t
+  );
 
   const handleTransactionClick = (transaction: Transaction) => {
     if (transaction.status === 'pending' || transaction.status === 'waiting_confirmation') {
@@ -55,40 +85,13 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
   };
 
   const handleTransactionUpdate = (updatedTransaction: Transaction) => {
-    setLocalTransactions(prev => 
-      prev.map(t => t.id === updatedTransaction.id ? updatedTransaction : t)
+    setTransactionOverrides((prev) => ({
+      ...prev,
+      [updatedTransaction.id]: updatedTransaction,
+    }));
+    setSelectedTransaction((prev) =>
+      prev?.id === updatedTransaction.id ? updatedTransaction : prev
     );
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'confirmed':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      case 'waiting_confirmation':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'expired':
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    }
-  };
-
-  const formatAmount = (amount: number, currency: string) => {
-    return `${currency} ${amount.toLocaleString()}`;
-  };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   if (localTransactions.length === 0) {

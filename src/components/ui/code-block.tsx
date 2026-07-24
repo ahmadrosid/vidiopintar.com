@@ -42,17 +42,27 @@ function CodeBlockCode({
   const { resolvedTheme } = useTheme()
 
   useEffect(() => {
+    let cancelled = false;
+
     async function highlight() {
       if (!code) {
-        setHighlightedHtml("<pre><code></code></pre>")
+        if (!cancelled) {
+          setHighlightedHtml("<pre><code></code></pre>")
+        }
         return
       }
 
       const theme = resolvedTheme === 'dark' ? 'github-dark' : 'github-light'
       const html = await codeToHtml(code, { lang: language, theme })
-      setHighlightedHtml(html)
+      if (!cancelled) {
+        setHighlightedHtml(html)
+      }
     }
     highlight()
+
+    return () => {
+      cancelled = true
+    }
   }, [code, language, resolvedTheme])
 
   const classNames = cn(

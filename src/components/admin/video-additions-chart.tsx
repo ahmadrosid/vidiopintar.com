@@ -1,6 +1,14 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "@/lib/recharts-dynamic";
 import { Suspense } from "react";
 
 interface VideoAdditionsChartProps {
@@ -42,7 +50,7 @@ function ChartContent({ data }: VideoAdditionsChartProps) {
               axisLine={{ stroke: "var(--border)" }}
             />
             <Tooltip
-              labelFormatter={(value) => new Date(value).toLocaleDateString()}
+              labelFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               formatter={(value: number) => [value, "Videos Added"]}
               contentStyle={{
                 backgroundColor: "var(--card)",

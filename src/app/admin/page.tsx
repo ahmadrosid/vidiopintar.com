@@ -11,24 +11,39 @@ import { AdminNavigation } from "@/components/admin/admin-navigation";
 export default async function AdminPage() {
   await requireAdmin();
 
-  const metrics = await getAdminMetrics();
-  const userGrowth7d = await getUserGrowthData("7d");
-  const userGrowth1m = await getUserGrowthData("1m");
-  const userGrowth3m = await getUserGrowthData("3m");
-
-  const videoAdditions7d = await getVideoAdditionsData("7d");
-  const videoAdditions1m = await getVideoAdditionsData("1m");
-  const videoAdditions3m = await getVideoAdditionsData("3m");
-
-  const tokenUsage7d = await getTokenUsageData("7d");
-  const tokenUsage1m = await getTokenUsageData("1m");
-  const tokenUsage3m = await getTokenUsageData("3m");
-  const modelUsage = await getTokenUsageByModel();
-  const operationUsage = await getTokenUsageByOperation();
-
-  const latestVideos = await getLatestVideos(6);
-  const latestMessages = await getLatestMessages(6);
-  const topUsers = await getTopUsers(6);
+  const [
+    metrics,
+    userGrowth7d,
+    userGrowth1m,
+    userGrowth3m,
+    videoAdditions7d,
+    videoAdditions1m,
+    videoAdditions3m,
+    tokenUsage7d,
+    tokenUsage1m,
+    tokenUsage3m,
+    modelUsage,
+    operationUsage,
+    latestVideos,
+    latestMessages,
+    topUsers,
+  ] = await Promise.all([
+    getAdminMetrics(),
+    getUserGrowthData("7d"),
+    getUserGrowthData("1m"),
+    getUserGrowthData("3m"),
+    getVideoAdditionsData("7d"),
+    getVideoAdditionsData("1m"),
+    getVideoAdditionsData("3m"),
+    getTokenUsageData("7d"),
+    getTokenUsageData("1m"),
+    getTokenUsageData("3m"),
+    getTokenUsageByModel(),
+    getTokenUsageByOperation(),
+    getLatestVideos(6),
+    getLatestMessages(6),
+    getTopUsers(6),
+  ]);
 
   return (
     <main className="bg-accent dark:bg-background">

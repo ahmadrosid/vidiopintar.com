@@ -47,12 +47,9 @@ export async function getTokenUsageByOperation() {
   return await TokenUsageRepository.getUsageByOperation();
 }
 
-export async function getTopTokenUsers(limit = 10) {
-  return await TokenUsageRepository.getTopUsers(limit);
-}
-
 export async function getUserGrowthData(timeRange: TimeRange) {
-  const daysBack = timeRange === "7d" ? 7 : timeRange === "1m" ? 30 : 90;
+  const daysOffset =
+    timeRange === "7d" ? "-7 days" : timeRange === "1m" ? "-30 days" : "-90 days";
 
   const result = await db
     .select({
@@ -60,7 +57,7 @@ export async function getUserGrowthData(timeRange: TimeRange) {
       count: sql<number>`count(*)`.mapWith(Number),
     })
     .from(user)
-    .where(sql`${user.createdAt} >= datetime('now', ${sql.raw(`'-${daysBack} days'`)})`)
+    .where(sql`${user.createdAt} >= datetime('now', ${daysOffset})`)
     .groupBy(sql`date(${user.createdAt})`)
     .orderBy(sql`date(${user.createdAt})`);
 
@@ -71,7 +68,8 @@ export async function getUserGrowthData(timeRange: TimeRange) {
 }
 
 export async function getVideoAdditionsData(timeRange: TimeRange) {
-  const daysBack = timeRange === "7d" ? 7 : timeRange === "1m" ? 30 : 90;
+  const daysOffset =
+    timeRange === "7d" ? "-7 days" : timeRange === "1m" ? "-30 days" : "-90 days";
 
   const result = await db
     .select({
@@ -79,7 +77,7 @@ export async function getVideoAdditionsData(timeRange: TimeRange) {
       count: sql<number>`count(*)`.mapWith(Number),
     })
     .from(videos)
-    .where(sql`${videos.createdAt} >= datetime('now', ${sql.raw(`'-${daysBack} days'`)})`)
+    .where(sql`${videos.createdAt} >= datetime('now', ${daysOffset})`)
     .groupBy(sql`date(${videos.createdAt})`)
     .orderBy(sql`date(${videos.createdAt})`);
 

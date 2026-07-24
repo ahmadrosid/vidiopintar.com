@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from "motion/react";
 import { AppSidebar } from "@/components/layouts/app-sidebar";
 import { AppTopbar } from "@/components/layouts/app-topbar";
 import { CommandPalette } from "@/components/search/command-palette";
@@ -21,6 +21,7 @@ function isEditableTarget(target: EventTarget | null) {
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const shouldReduceMotion = useReducedMotion();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -56,6 +57,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [searchOpen]);
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="flex h-dvh overflow-hidden bg-background text-foreground">
       <div
         className={cn(
@@ -77,27 +79,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <AnimatePresence>
         {mobileOpen ? (
           <>
-            <motion.button
+            <m.button
               key="mobile-backdrop"
               type="button"
               className="fixed inset-0 z-40 bg-black/60 md:hidden"
               aria-label="Close menu"
-              initial={{ opacity: 0 }}
+              initial={shouldReduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2 }}
               onClick={() => setMobileOpen(false)}
             />
-            <motion.div
+            <m.div
               key="mobile-sidebar"
               className="fixed inset-y-0 left-0 z-50 shadow-xl md:hidden"
-              initial={{ x: "-100%" }}
+              initial={shouldReduceMotion ? false : { x: "-100%" }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={mobileSidebarTransition}
+              exit={shouldReduceMotion ? undefined : { x: "-100%" }}
+              transition={shouldReduceMotion ? { duration: 0 } : mobileSidebarTransition}
             >
               <AppSidebar onNavigate={() => setMobileOpen(false)} />
-            </motion.div>
+            </m.div>
           </>
         ) : null}
       </AnimatePresence>
@@ -116,5 +118,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <CommandPalette open={searchOpen} onOpenChange={handleSearchOpenChange} />
     </div>
+    </LazyMotion>
   );
 }

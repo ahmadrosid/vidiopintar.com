@@ -16,15 +16,6 @@ export const NOTE_COLOR_OPTIONS: NoteColor[] = [
   NOTE_COLORS.purple,
 ];
 
-// Color classes for UI display
-export const NOTE_COLOR_CLASSES: Record<NoteColor, string> = {
-  yellow: "bg-yellow-100 dark:bg-yellow-900/20 border-yellow-300 dark:border-yellow-700",
-  blue: "bg-blue-100 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700",
-  green: "bg-green-100 dark:bg-green-900/20 border-green-300 dark:border-green-700",
-  red: "bg-red-100 dark:bg-red-900/20 border-red-300 dark:border-red-700",
-  purple: "bg-purple-100 dark:bg-purple-900/20 border-purple-300 dark:border-purple-700",
-};
-
 // Color dot classes for color picker
 export const NOTE_COLOR_DOT_CLASSES: Record<NoteColor, string> = {
   yellow: "bg-yellow-400",

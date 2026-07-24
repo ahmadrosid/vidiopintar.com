@@ -21,6 +21,7 @@ export function CopyButton({ text, fieldId }: CopyButtonProps) {
 
   return (
     <button
+      type="button"
       onClick={() => copyToClipboard(text, fieldId)}
       className="flex items-center gap-2 px-3 py-1 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90 transition-colors"
     >

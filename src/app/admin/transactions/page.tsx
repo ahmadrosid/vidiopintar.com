@@ -6,6 +6,12 @@ import { transactionsRepository } from '@/lib/db/repository/transactions';
 import { requireAdmin } from '@/lib/auth-admin';
 import type { TransactionWithUser } from '@/lib/db/schema/transactions';
 
+const idrCurrencyFormatter = new Intl.NumberFormat('id-ID', {
+  style: 'currency',
+  currency: 'IDR',
+  minimumFractionDigits: 0,
+});
+
 async function getTransactions(): Promise<TransactionWithUser[]> {
   await requireAdmin();
   return await transactionsRepository.getAll(100);
@@ -80,11 +86,7 @@ export default async function AdminTransactionsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {new Intl.NumberFormat('id-ID', {
-                  style: 'currency',
-                  currency: 'IDR',
-                  minimumFractionDigits: 0,
-                }).format(totalRevenue)}
+                {idrCurrencyFormatter.format(totalRevenue)}
               </div>
               <p className="text-xs text-muted-foreground">
                 Confirmed payments only

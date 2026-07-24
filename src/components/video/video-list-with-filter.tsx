@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { Search, LayoutGrid, List } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
@@ -69,18 +69,17 @@ export function VideoListWithFilter({
 
   const hasMoreChannels = uniqueChannels.length > maxChannels;
 
-  useEffect(() => {
-    if (selectedChannel && !uniqueChannels.includes(selectedChannel)) {
-      setSelectedChannel(null);
-    }
-  }, [selectedChannel, uniqueChannels]);
+  const effectiveChannel =
+    selectedChannel && uniqueChannels.includes(selectedChannel)
+      ? selectedChannel
+      : null;
 
   const filteredVideos = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
     const filtered = videos.filter((video) => {
       const matchesChannel =
-        !selectedChannel || video.channelTitle === selectedChannel;
+        !effectiveChannel || video.channelTitle === effectiveChannel;
       if (!matchesChannel) return false;
 
       if (!query) return true;
@@ -110,7 +109,7 @@ export function VideoListWithFilter({
           })
         : null,
     }));
-  }, [videos, selectedChannel, searchQuery, sortBy, tLibrary]);
+  }, [videos, effectiveChannel, searchQuery, sortBy, tLibrary]);
 
   if (!videos || videos.length === 0) {
     if (variant === "library") {
