@@ -16,7 +16,9 @@
     "db:verify": "bun scripts/verify-sqlite.ts",
     "db:tables": "bun scripts/db-tables.ts",
     "cli": "bun run vidiopintar-cli/src/index.ts",
-    "doctor": "npx react-doctor@latest"
+    "doctor": "npx react-doctor@latest",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.45",
@@ -84,7 +86,8 @@
     "@types/react-dom": "19.1.6",
     "drizzle-kit": "^0.31.2",
     "pg": "^8.22.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "@types/react": "19.1.8",

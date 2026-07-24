@@ -12,6 +12,12 @@ const SENSITIVE_FIELDS = [
   'paymentSettings',
   'email', // Partially redact emails
   'ipAddress', // Partially redact IPs
+  'mobile',
+  'phone',
+  'customerName',
+  'customerEmail',
+  'customerMobile',
+  'msisdn',
 ];
 
 // Fields to completely exclude from logs

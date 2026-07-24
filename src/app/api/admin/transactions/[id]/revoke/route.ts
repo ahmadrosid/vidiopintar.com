@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { transactionsRepository } from '@/lib/db/repository/transactions';
 import { requireAdmin } from '@/lib/auth-admin';
-import { 
-  paymentLogger, 
-  getSanitizedRequestMetadata, 
-  logPaymentSuccess, 
-  logPaymentFailure 
+import { isTransactionActive } from '@/lib/mayar/subscription';
+import {
+  paymentLogger,
+  getSanitizedRequestMetadata,
+  logPaymentSuccess,
+  logPaymentFailure,
 } from '@/lib/utils/logger';
 
 interface RouteParams {
@@ -14,63 +15,62 @@ interface RouteParams {
 
 export async function POST(request: Request, { params }: RouteParams) {
   const requestMetadata = await getSanitizedRequestMetadata(request);
-  
+
   try {
     const admin = await requireAdmin();
 
     const { id } = await params;
-    
-    // Validate transaction ID format (UUID)
+
     if (!id || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-      paymentLogger.warn('Invalid transaction ID format for confirmation', {
+      paymentLogger.warn('Invalid transaction ID format for subscription revoke', {
         adminId: admin.id,
         providedId: id,
         requestMetadata,
       });
       return NextResponse.json({ error: 'Invalid transaction ID format' }, { status: 400 });
     }
-    
+
     const transaction = await transactionsRepository.getById(id);
-    
+
     if (!transaction) {
-      paymentLogger.warn('Transaction confirmation failed - transaction not found', {
+      paymentLogger.warn('Subscription revoke failed - transaction not found', {
         adminId: admin.id,
         transactionId: id,
       });
       return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
 
-    if (transaction.paymentMethod === 'mayar') {
-      paymentLogger.warn('Mayar transaction cannot be admin-confirmed', {
-        adminId: admin.id,
-        transactionId: id,
-      });
-      return NextResponse.json(
-        { error: 'Mayar payments are webhook-only; admin confirm is disabled' },
-        { status: 410 },
-      );
-    }
-
-    if (transaction.status !== 'waiting_confirmation') {
-      paymentLogger.warn('Transaction confirmation failed - invalid status', {
+    if (transaction.status !== 'confirmed') {
+      paymentLogger.warn('Subscription revoke failed - invalid status', {
         adminId: admin.id,
         transactionId: id,
         currentStatus: transaction.status,
-        expectedStatuses: ['waiting_confirmation'],
+        expectedStatus: 'confirmed',
       });
-      return NextResponse.json({ 
-        error: 'Only bank-transfer waiting_confirmation rows can be confirmed',
-        currentStatus: transaction.status 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Only confirmed transactions can have their subscription revoked',
+          currentStatus: transaction.status,
+        },
+        { status: 400 },
+      );
     }
 
-    const updatedTransaction = await transactionsRepository.updateStatus(
-      id, 
-      'confirmed', 
-      new Date()
-    );
+    if (!isTransactionActive(transaction)) {
+      paymentLogger.warn('Subscription revoke failed - subscription not active', {
+        adminId: admin.id,
+        transactionId: id,
+        subscriptionEndsAt: transaction.subscriptionEndsAt,
+      });
+      return NextResponse.json(
+        { error: 'Subscription is not active or has already expired' },
+        { status: 400 },
+      );
+    }
 
-    logPaymentSuccess('transaction_confirmed', {
+    const updatedTransaction = await transactionsRepository.revokeSubscription(id, 'cancelled');
+
+    logPaymentSuccess('subscription_revoked', {
       userId: admin.id,
       transactionId: id,
       amount: transaction.amount,
@@ -79,13 +79,13 @@ export async function POST(request: Request, { params }: RouteParams) {
     });
 
     return NextResponse.json(updatedTransaction);
-  } catch (error: any) {
-    if (error.message === 'REDIRECT') {
-      paymentLogger.warn('Unauthorized transaction confirmation attempt', requestMetadata);
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'REDIRECT') {
+      paymentLogger.warn('Unauthorized subscription revoke attempt', requestMetadata);
       return NextResponse.redirect('/home');
     }
-    
-    logPaymentFailure('transaction_confirmation', error, {
+
+    logPaymentFailure('subscription_revoke', error, {
       requestMetadata,
     });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
