@@ -90,29 +90,38 @@ function applyGeoHeaders(
   return response;
 }
 
-export default clerkMiddleware(async (auth, req) => {
-  const pathname = req.nextUrl.pathname;
-  const mdRewrite = toMarkdownRewritePath(pathname);
+const authorizedParties = [
+  process.env.NEXT_PUBLIC_SITE_URL,
+  "http://localhost:3000",
+  "https://vidiopintar.com",
+].filter((origin): origin is string => Boolean(origin));
 
-  if (mdRewrite) {
-    const url = req.nextUrl.clone();
-    url.pathname = mdRewrite;
-    return NextResponse.rewrite(url);
-  }
+export default clerkMiddleware(
+  async (auth, req) => {
+    const pathname = req.nextUrl.pathname;
+    const mdRewrite = toMarkdownRewritePath(pathname);
 
-  if (wantsMarkdown(req) && isMarkdownEligiblePath(pathname)) {
-    const url = req.nextUrl.clone();
-    url.pathname =
-      pathname === "/" ? "/md/index.html" : `/md${pathname}`;
-    return NextResponse.rewrite(url);
-  }
+    if (mdRewrite) {
+      const url = req.nextUrl.clone();
+      url.pathname = mdRewrite;
+      return NextResponse.rewrite(url);
+    }
 
-  if (isProtectedRoute(req)) {
-    await auth.protect();
-  }
+    if (wantsMarkdown(req) && isMarkdownEligiblePath(pathname)) {
+      const url = req.nextUrl.clone();
+      url.pathname =
+        pathname === "/" ? "/md/index.html" : `/md${pathname}`;
+      return NextResponse.rewrite(url);
+    }
 
-  return applyGeoHeaders(req, NextResponse.next());
-});
+    if (isProtectedRoute(req)) {
+      await auth.protect();
+    }
+
+    return applyGeoHeaders(req, NextResponse.next());
+  },
+  { authorizedParties },
+);
 
 export const config = {
   matcher: [

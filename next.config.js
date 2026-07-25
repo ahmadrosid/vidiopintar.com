@@ -14,6 +14,9 @@ const withNextIntl = require('next-intl/plugin')(
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Required for Clerk + Server Actions when using a custom local host
+  // (https://vidiopintar.local) instead of localhost.
+  allowedDevOrigins: ['vidiopintar.local', 'https://vidiopintar.local'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'i.ytimg.com' },

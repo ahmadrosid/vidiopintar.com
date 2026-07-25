@@ -5,6 +5,8 @@
   "license": "CC-BY-NC-4.0",
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:local": "bash scripts/dev-local.sh",
+    "setup:local": "bash scripts/setup-local-https.sh",
     "build": "bun --bun next build",
     "start": "bun --bun next start",
     "lint": "next lint",
