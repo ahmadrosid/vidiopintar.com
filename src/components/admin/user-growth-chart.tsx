@@ -51,7 +51,7 @@ function ChartContent({ data }: UserGrowthChartProps) {
             />
             <Tooltip
               labelFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-              formatter={(value: number) => [value, "New Users"]}
+              formatter={(value) => [value, "New Users"]}
               contentStyle={{
                 backgroundColor: "var(--card)",
                 border: "1px solid var(--border)",

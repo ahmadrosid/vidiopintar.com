@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import type { ComponentType } from "react";
 
 export const LineChart = dynamic(
   () => import("recharts").then((m) => m.LineChart),
@@ -37,6 +38,6 @@ export const ResponsiveContainer = dynamic(
   { ssr: false }
 );
 export const Legend = dynamic(
-  () => import("recharts").then((m) => m.Legend),
+  () => import("recharts").then((m) => m.Legend as ComponentType),
   { ssr: false }
 );

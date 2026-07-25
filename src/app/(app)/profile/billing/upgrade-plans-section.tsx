@@ -198,9 +198,7 @@ export function UpgradePlansSection({
                           <p className="text-xs mt-1 text-secondary-foreground">
                             Expires:{" "}
                             {formatDisplayDate(
-                              activeSubscriptions[plan.id].expiresAt instanceof Date
-                                ? activeSubscriptions[plan.id].expiresAt.toISOString()
-                                : activeSubscriptions[plan.id].expiresAt
+                              activeSubscriptions[plan.id].expiresAt
                             )}
                           </p>
                         </div>

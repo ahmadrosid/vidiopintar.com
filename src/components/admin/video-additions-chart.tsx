@@ -51,7 +51,7 @@ function ChartContent({ data }: VideoAdditionsChartProps) {
             />
             <Tooltip
               labelFormatter={(value) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-              formatter={(value: number) => [value, "Videos Added"]}
+              formatter={(value) => [value, "Videos Added"]}
               contentStyle={{
                 backgroundColor: "var(--card)",
                 border: "1px solid var(--border)",
