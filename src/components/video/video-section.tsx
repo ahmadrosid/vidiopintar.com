@@ -26,14 +26,17 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
 
   // Handle transcript error
   if (transcript.error) {
+    const retryable = transcript.errorKind === "retryable";
     return (
       <div className="p-8 text-center">
         <h2 className="text-xl font-bold text-foreground mb-2">
-          Video Not Supported
+          {retryable ? "Transcript Temporarily Unavailable" : "Video Not Supported"}
         </h2>
         <p className="text-muted-foreground">
           {transcript.errorMessage ||
-            "This video doesn't have a transcript available."}
+            (retryable
+              ? "Transcript temporarily unavailable. Try again later."
+              : "This video doesn't have a transcript available.")}
         </p>
       </div>
     );

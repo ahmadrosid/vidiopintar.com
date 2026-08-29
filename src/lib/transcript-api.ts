@@ -1,4 +1,14 @@
-import { env } from "@/lib/env/server";
+import {
+  fetchTranscript,
+  listLanguages,
+  YoutubeTranscriptDisabledError,
+  YoutubeTranscriptNotAvailableError,
+  YoutubeTranscriptTooManyRequestError,
+  YoutubeTranscriptVideoUnavailableError,
+  type CaptionTrackInfo,
+  type TranscriptSegment,
+  type VideoDetails,
+} from "youtube-transcript-plus";
 import { TranscriptCacheRepository, TranscriptRepository } from "@/lib/db/repository";
 import {
   storedSegmentsToTranscriptApi,
@@ -6,9 +16,10 @@ import {
 } from "@/lib/transcript-segments";
 import { extractVideoId } from "@/lib/utils";
 
-const TRANSCRIPT_API_BASE = "https://transcriptapi.com/api/v2";
-const RETRYABLE_STATUSES = new Set([408, 429, 503]);
-const MAX_RETRIES = 3;
+const NO_CAPTIONS_MESSAGE = "Transcript not available for this video";
+const TEMPORARY_UNAVAILABLE_MESSAGE =
+  "Transcript temporarily unavailable. Try again later.";
+const PLUS_FETCH_OPTIONS = { retries: 3, retryDelay: 1000 } as const;
 
 export interface TranscriptApiSegment {
   text: string;
@@ -42,104 +53,135 @@ export interface TranscriptApiResponse {
 }
 
 export interface FetchTranscriptOptions {
-  /** Preferred language code; fallbacks are tried automatically */
   language?: string;
   sendMetadata?: boolean;
   includeTimestamp?: boolean;
 }
 
-interface TranscriptApiErrorBody {
-  detail?: string;
-  code?: string;
-  available_languages?: Array<string | TranscriptApiLanguage>;
+export class TranscriptRetryableError extends Error {
+  constructor(message: string = TEMPORARY_UNAVAILABLE_MESSAGE) {
+    super(message);
+    this.name = "TranscriptRetryableError";
+  }
 }
 
-export async function fetchVideoInfoFromApi(
-  videoUrlOrId: string,
-  apiKey: string = env.TRANSCRIPT_API_KEY,
-): Promise<TranscriptApiVideoInfoResponse> {
-  const url = new URL(`${TRANSCRIPT_API_BASE}/youtube/info`);
-  url.searchParams.set("video_url", videoUrlOrId);
-
-  const response = await fetchWithRetry(url.toString(), apiKey);
-
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new Error(
-      `Failed to fetch video info: ${response.status} ${response.statusText}${body ? ` - ${body}` : ""}`,
-    );
-  }
-
-  return (await response.json()) as TranscriptApiVideoInfoResponse;
+export function isTranscriptRetryableError(error: unknown): boolean {
+  return error instanceof TranscriptRetryableError;
 }
 
-export async function fetchTranscriptResponse(
-  videoUrlOrId: string,
-  options: FetchTranscriptOptions = {},
-  apiKey: string = env.TRANSCRIPT_API_KEY,
-): Promise<TranscriptApiResponse> {
-  const videoId = normalizeVideoId(videoUrlOrId);
-  const cached = await getCachedTranscriptResponse(videoId);
-  if (cached) {
-    return cached;
+function decodeHtmlEntities(text: string): string {
+  const entities: Record<string, string> = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&apos;": "'",
+    "&#39;": "'",
+    "&nbsp;": " ",
+  };
+
+  let decoded = text.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
+  decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
+  decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+
+  let prev = "";
+  while (prev !== decoded) {
+    prev = decoded;
+    decoded = decoded.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
+    decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
+    decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
   }
 
-  const queue = buildLanguageAttempts(options.language);
-  const attempted = new Set<string>();
-  let lastError = "No transcript content available";
-  let definitivelyUnavailable = false;
-
-  while (queue.length > 0) {
-    const language = queue.shift()!;
-    if (attempted.has(language)) continue;
-    attempted.add(language);
-
-    const url = buildTranscriptUrl(videoId, options, language);
-    const response = await fetchWithRetry(url.toString(), apiKey);
-
-    if (response.ok) {
-      const data = (await response.json()) as TranscriptApiResponse;
-      if (data.transcript?.length) {
-        await cacheTranscriptResponse(videoId, data);
-        return data;
-      }
-      continue;
-    }
-
-    const body = await response.text().catch(() => "");
-    lastError = parseTranscriptError(body, response.status, response.statusText);
-
-    if (response.status === 404) {
-      const parsed = parseTranscriptErrorBody(body);
-      if (parsed?.available_languages?.length) {
-        const availableAttempt = extractLanguageCodes(parsed.available_languages).join(",");
-        if (!attempted.has(availableAttempt)) {
-          queue.push(availableAttempt);
-        }
-      } else {
-        definitivelyUnavailable = true;
-      }
-      continue;
-    }
-
-    throw new Error(lastError);
-  }
-
-  if (definitivelyUnavailable) {
-    await TranscriptCacheRepository.markUnavailable(videoId);
-  }
-  throw new Error(lastError);
+  return decoded;
 }
 
 function normalizeVideoId(videoUrlOrId: string): string {
   return extractVideoId(videoUrlOrId) ?? videoUrlOrId;
 }
 
+function matchesLanguagePrefix(languageCode: string, prefix: string): boolean {
+  const code = languageCode.toLowerCase();
+  const needle = prefix.toLowerCase();
+  return code === needle || code.startsWith(`${needle}-`);
+}
+
+export function pickCaptionTrack(
+  tracks: CaptionTrackInfo[],
+  preferred?: string,
+): CaptionTrackInfo | null {
+  if (tracks.length === 0) {
+    return null;
+  }
+
+  const preferredCode = preferred?.trim().toLowerCase();
+  const fallbacks = ["en", "id"].filter((code) => code !== preferredCode);
+
+  if (preferredCode) {
+    const humanPreferred = tracks.find(
+      (track) => !track.isAutoGenerated && matchesLanguagePrefix(track.languageCode, preferredCode),
+    );
+    if (humanPreferred) {
+      return humanPreferred;
+    }
+
+    const asrPreferred = tracks.find(
+      (track) => track.isAutoGenerated && matchesLanguagePrefix(track.languageCode, preferredCode),
+    );
+    if (asrPreferred) {
+      return asrPreferred;
+    }
+  }
+
+  for (const code of fallbacks) {
+    const human = tracks.find(
+      (track) => !track.isAutoGenerated && matchesLanguagePrefix(track.languageCode, code),
+    );
+    if (human) {
+      return human;
+    }
+  }
+
+  for (const code of fallbacks) {
+    const asr = tracks.find(
+      (track) => track.isAutoGenerated && matchesLanguagePrefix(track.languageCode, code),
+    );
+    if (asr) {
+      return asr;
+    }
+  }
+
+  return tracks.find((track) => track.isAutoGenerated) ?? null;
+}
+
+function mapSegments(segments: TranscriptSegment[]): TranscriptApiSegment[] {
+  return segments.map((segment) => ({
+    text: decodeHtmlEntities(segment.text),
+    start: segment.offset,
+    duration: segment.duration,
+  }));
+}
+
+function mapVideoDetails(details?: VideoDetails): TranscriptApiMetadata | undefined {
+  if (!details) {
+    return undefined;
+  }
+
+  const thumbnail = details.thumbnails?.at(-1)?.url ?? details.thumbnails?.[0]?.url;
+
+  return {
+    title: details.title,
+    author_name: details.author,
+    author_url: details.channelId
+      ? `https://www.youtube.com/channel/${details.channelId}`
+      : undefined,
+    thumbnail_url: thumbnail,
+  };
+}
+
 async function getCachedTranscriptResponse(
   videoId: string,
 ): Promise<TranscriptApiResponse | null> {
   const cached = await TranscriptCacheRepository.get(videoId);
-  // Ignore negative cache — it may be stale after transient API errors.
   if (cached?.response?.transcript?.length) {
     return cached.response;
   }
@@ -173,93 +215,83 @@ async function cacheTranscriptResponse(
   );
 }
 
-function buildLanguageAttempts(preferred?: string): string[] {
-  const attempts: string[] = [];
-
-  if (preferred) {
-    attempts.push(`${preferred},en,id,asr`);
-    attempts.push(`${preferred},asr`);
-  } else {
-    attempts.push("en,id,asr");
-  }
-
-  attempts.push("asr");
-
-  return attempts;
-}
-
-function buildTranscriptUrl(
+export async function fetchTranscriptResponse(
   videoUrlOrId: string,
-  options: FetchTranscriptOptions,
-  language?: string,
-) {
-  const url = new URL(`${TRANSCRIPT_API_BASE}/youtube/transcript`);
-  url.searchParams.set("video_url", videoUrlOrId);
-  url.searchParams.set("format", "json");
-  url.searchParams.set("include_timestamp", String(options.includeTimestamp ?? true));
-
-  if (options.sendMetadata) {
-    url.searchParams.set("send_metadata", "true");
+  options: FetchTranscriptOptions = {},
+): Promise<TranscriptApiResponse> {
+  const videoId = normalizeVideoId(videoUrlOrId);
+  const cached = await getCachedTranscriptResponse(videoId);
+  if (cached) {
+    return cached;
   }
 
-  if (language) {
-    url.searchParams.set("language", language);
-  }
-
-  return url;
-}
-
-function parseTranscriptErrorBody(body: string): TranscriptApiErrorBody | null {
+  let tracks: CaptionTrackInfo[];
   try {
-    return JSON.parse(body) as TranscriptApiErrorBody;
-  } catch {
-    return null;
-  }
-}
-
-function extractLanguageCodes(
-  languages: Array<string | TranscriptApiLanguage>,
-): string[] {
-  return languages.map((language) =>
-    typeof language === "string" ? language : language.code,
-  );
-}
-
-function parseTranscriptError(body: string, status: number, statusText: string): string {
-  const parsed = parseTranscriptErrorBody(body);
-
-  if (parsed?.code === "no_transcript_for_requested_languages") {
-    if (!parsed.available_languages?.length) {
-      return "No transcript available for this video";
+    tracks = await listLanguages(videoId, PLUS_FETCH_OPTIONS);
+  } catch (error) {
+    if (error instanceof YoutubeTranscriptDisabledError) {
+      await TranscriptCacheRepository.markUnavailable(videoId);
+      throw new Error(NO_CAPTIONS_MESSAGE);
     }
-    return parsed.detail ?? "No transcript available for the requested languages";
+    if (
+      error instanceof YoutubeTranscriptTooManyRequestError ||
+      error instanceof YoutubeTranscriptNotAvailableError ||
+      error instanceof YoutubeTranscriptVideoUnavailableError
+    ) {
+      throw new TranscriptRetryableError();
+    }
+    throw error;
   }
 
-  return `Failed to fetch transcript: ${status} ${statusText}${body ? ` - ${body}` : ""}`;
-}
+  const track = pickCaptionTrack(tracks, options.language);
+  if (!track) {
+    await TranscriptCacheRepository.markUnavailable(videoId);
+    throw new Error(NO_CAPTIONS_MESSAGE);
+  }
 
-async function fetchWithRetry(url: string, apiKey: string): Promise<Response> {
-  let lastResponse: Response | null = null;
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
+  try {
+    const fetched = await fetchTranscript(videoId, {
+      ...PLUS_FETCH_OPTIONS,
+      lang: track.languageCode,
+      videoDetails: options.sendMetadata === true,
     });
 
-    if (response.ok || !RETRYABLE_STATUSES.has(response.status)) {
-      return response;
+    const segments = Array.isArray(fetched) ? fetched : fetched.segments;
+    const mapped = mapSegments(segments);
+    if (mapped.length === 0) {
+      throw new TranscriptRetryableError();
     }
 
-    lastResponse = response;
+    const metadata = Array.isArray(fetched)
+      ? undefined
+      : mapVideoDetails(fetched.videoDetails);
 
-    if (attempt < MAX_RETRIES - 1) {
-      const retryAfter = response.headers.get("Retry-After");
-      const delayMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : (attempt + 1) * 1000;
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    const response: TranscriptApiResponse = {
+      video_id: videoId,
+      language: track.languageCode,
+      transcript: mapped,
+      metadata,
+    };
+
+    await cacheTranscriptResponse(videoId, response);
+    return response;
+  } catch (error) {
+    if (error instanceof TranscriptRetryableError) {
+      throw error;
     }
+    if (error instanceof YoutubeTranscriptTooManyRequestError) {
+      throw new TranscriptRetryableError();
+    }
+    if (error instanceof YoutubeTranscriptDisabledError) {
+      await TranscriptCacheRepository.markUnavailable(videoId);
+      throw new Error(NO_CAPTIONS_MESSAGE);
+    }
+    if (
+      error instanceof YoutubeTranscriptNotAvailableError ||
+      error instanceof YoutubeTranscriptVideoUnavailableError
+    ) {
+      throw new TranscriptRetryableError();
+    }
+    throw error;
   }
-
-  return lastResponse!;
 }

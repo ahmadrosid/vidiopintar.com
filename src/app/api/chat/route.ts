@@ -84,22 +84,23 @@ export async function POST(req: Request) {
       ? currentTime
       : undefined;
 
-  if (videoId) {
+  const transcriptVideoId = userVideo.youtubeId || videoId;
+  if (transcriptVideoId) {
     try {
-      const transcriptResult = await fetchVideoTranscript(videoId);
+      const transcriptResult = await fetchVideoTranscript(transcriptVideoId);
       if (transcriptResult?.segments?.length > 0) {
         transcriptText = formatTimedTranscriptForChat(
           transcriptResult.segments as StoredTranscriptSegment[],
         );
       }
 
-      let dbVideo = await VideoRepository.getByYoutubeId(videoId);
+      let dbVideo = await VideoRepository.getByYoutubeId(transcriptVideoId);
 
       if (dbVideo) {
         videoTitle = dbVideo.title || '';
         videoDescription = dbVideo.description || '';
       } else {
-        const detailsResult = await fetchVideoDetails(videoId);
+        const detailsResult = await fetchVideoDetails(transcriptVideoId);
         if (detailsResult) {
           videoTitle = detailsResult.title;
           videoDescription = detailsResult.description;
