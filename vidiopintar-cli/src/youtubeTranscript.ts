@@ -101,10 +101,14 @@ function pickCaptionTrack(
 }
 
 function joinTranscript(segments: TranscriptSegment[]): string {
-  return segments
-    .map((item) => decodeHtmlEntities(item.text))
-    .filter((text) => text && text !== "N/A")
-    .join(" ");
+  const parts: string[] = [];
+  for (const item of segments) {
+    const text = decodeHtmlEntities(item.text);
+    if (text && text !== "N/A") {
+      parts.push(text);
+    }
+  }
+  return parts.join(" ");
 }
 
 async function fetchTranscriptSegments(videoId: string, sendMetadata: boolean) {
