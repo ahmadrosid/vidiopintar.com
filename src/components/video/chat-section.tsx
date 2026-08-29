@@ -34,7 +34,7 @@ export async function ChatSection({ videoId, videoDetailsPromise, transcriptProm
           <p className="text-muted-foreground max-w-md">
             {errorMessage}
           </p>
-          {transcript.error && (
+          {transcript.error && transcript.errorKind !== "retryable" && (
             <p className="text-sm text-muted-foreground">
               This video may not have captions available, or captions are disabled by the creator.
             </p>

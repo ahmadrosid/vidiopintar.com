@@ -1,63 +1,42 @@
-const TRANSCRIPT_API_BASE = "https://transcriptapi.com/api/v2";
-const RETRYABLE_STATUSES = new Set([408, 429, 503]);
-const MAX_RETRIES = 3;
+import {
+  fetchTranscript,
+  listLanguages,
+  YoutubeTranscriptDisabledError,
+  YoutubeTranscriptNotAvailableError,
+  YoutubeTranscriptTooManyRequestError,
+  YoutubeTranscriptVideoUnavailableError,
+  type CaptionTrackInfo,
+  type TranscriptSegment,
+  type VideoDetails,
+} from "youtube-transcript-plus";
 
-interface TranscriptApiSegment {
-  text: string;
-  start: number;
-  duration: number;
-}
+const PLUS_FETCH_OPTIONS = { retries: 3, retryDelay: 1000 } as const;
 
-interface TranscriptApiResponse {
-  video_id: string;
-  language: string;
-  transcript: TranscriptApiSegment[];
-  metadata?: {
-    title?: string;
-    author_name?: string;
-    author_url?: string;
-    thumbnail_url?: string;
-  };
-}
-
-interface FetchTranscriptOptions {
-  language?: string;
-  sendMetadata?: boolean;
-  includeTimestamp?: boolean;
-}
-
-/**
- * Decodes HTML entities in a string
- */
 function decodeHtmlEntities(text: string): string {
-  const entities: Record<string, string> = {
-    '&amp;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&quot;': '"',
-    '&apos;': "'",
-    '&#39;': "'",
-    '&nbsp;': ' ',
+  const named: Record<string, string> = {
+    "&amp;": "&",
+    "&lt;": "<",
+    "&gt;": ">",
+    "&quot;": '"',
+    "&apos;": "'",
+    "&#39;": "'",
+    "&nbsp;": " ",
   };
+  const once = (value: string) =>
+    value
+      .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => named[match] ?? match)
+      .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
 
-  let decoded = text.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
-  decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
-  decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
-
-  let prev = '';
+  let decoded = text;
+  let prev = "";
   while (prev !== decoded) {
     prev = decoded;
-    decoded = decoded.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
-    decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
-    decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+    decoded = once(decoded);
   }
-
   return decoded;
 }
 
-/**
- * Extracts video ID from various YouTube URL formats
- */
 export function extractVideoId(url: string): string | null {
   const patterns = [
     /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
@@ -78,190 +57,111 @@ export function extractVideoId(url: string): string | null {
   return null;
 }
 
-async function fetchWithRetry(url: string, apiKey: string): Promise<Response> {
-  let lastResponse: Response | null = null;
-
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-    });
-
-    if (response.ok || !RETRYABLE_STATUSES.has(response.status)) {
-      return response;
-    }
-
-    lastResponse = response;
-
-    if (attempt < MAX_RETRIES - 1) {
-      const retryAfter = response.headers.get('Retry-After');
-      const delayMs = retryAfter ? parseInt(retryAfter, 10) * 1000 : (attempt + 1) * 1000;
-      await new Promise((resolve) => setTimeout(resolve, delayMs));
-    }
-  }
-
-  return lastResponse!;
+function matchesLanguagePrefix(languageCode: string, prefix: string): boolean {
+  const code = languageCode.toLowerCase();
+  const needle = prefix.toLowerCase();
+  return code === needle || code.startsWith(`${needle}-`);
 }
 
-async function fetchTranscriptResponse(
-  videoUrlOrId: string,
-  options: FetchTranscriptOptions = {},
-): Promise<TranscriptApiResponse> {
-  const apiKey = process.env.TRANSCRIPT_API_KEY;
-  if (!apiKey) {
-    throw new Error('TRANSCRIPT_API_KEY environment variable is required');
-  }
-
-  const queue = buildLanguageAttempts(options.language);
-  const attempted = new Set<string>();
-  let lastError = 'No transcript available for this video. The video may not have captions enabled.';
-
-  while (queue.length > 0) {
-    const language = queue.shift()!;
-    if (attempted.has(language)) continue;
-    attempted.add(language);
-
-    const url = buildTranscriptUrl(videoUrlOrId, options, language);
-    const response = await fetchWithRetry(url.toString(), apiKey);
-
-    if (response.ok) {
-      const data = (await response.json()) as TranscriptApiResponse;
-      if (data.transcript?.length) {
-        return data;
-      }
-      continue;
-    }
-
-    const body = await response.text().catch(() => '');
-    lastError = parseTranscriptError(body, response.status, response.statusText);
-
-    if (response.status === 404) {
-      const parsed = parseTranscriptErrorBody(body);
-      if (parsed?.available_languages?.length) {
-        const availableAttempt = parsed.available_languages
-          .map((language) => (typeof language === 'string' ? language : language.code))
-          .join(',');
-        if (!attempted.has(availableAttempt)) {
-          queue.push(availableAttempt);
-        }
-      }
-      continue;
-    }
-
-    throw new Error(lastError);
-  }
-
-  throw new Error(lastError);
-}
-
-function buildLanguageAttempts(preferred?: string): string[] {
-  const attempts: string[] = [];
-
-  if (preferred) {
-    attempts.push(`${preferred},en,id,asr`);
-    attempts.push(`${preferred},asr`);
-  } else {
-    attempts.push('en,id,asr');
-  }
-
-  attempts.push('asr');
-  return attempts;
-}
-
-function buildTranscriptUrl(
-  videoUrlOrId: string,
-  options: FetchTranscriptOptions,
-  language?: string,
-) {
-  const url = new URL(`${TRANSCRIPT_API_BASE}/youtube/transcript`);
-  url.searchParams.set('video_url', videoUrlOrId);
-  url.searchParams.set('format', 'json');
-  url.searchParams.set('include_timestamp', String(options.includeTimestamp ?? true));
-
-  if (options.sendMetadata) {
-    url.searchParams.set('send_metadata', 'true');
-  }
-
-  if (language) {
-    url.searchParams.set('language', language);
-  }
-
-  return url;
-}
-
-interface TranscriptApiLanguage {
-  code: string;
-  name?: string;
-}
-
-interface TranscriptApiErrorBody {
-  detail?: string;
-  code?: string;
-  available_languages?: Array<string | TranscriptApiLanguage>;
-}
-
-function parseTranscriptErrorBody(body: string): TranscriptApiErrorBody | null {
-  try {
-    return JSON.parse(body) as TranscriptApiErrorBody;
-  } catch {
+function pickCaptionTrack(
+  tracks: CaptionTrackInfo[],
+  preferred = "en",
+): CaptionTrackInfo | null {
+  if (tracks.length === 0) {
     return null;
   }
-}
 
-function parseTranscriptError(body: string, status: number, statusText: string): string {
-  const parsed = parseTranscriptErrorBody(body);
+  const preferredCode = preferred.trim().toLowerCase();
+  const fallbacks = ["en", "id"].filter((code) => code !== preferredCode);
 
-  if (parsed?.code === 'no_transcript_for_requested_languages') {
-    if (!parsed.available_languages?.length) {
-      return 'No transcript available for this video. The video may not have captions enabled.';
-    }
-    return parsed.detail ?? 'No transcript available for the requested languages';
+  const humanPreferred = tracks.find(
+    (track) => !track.isAutoGenerated && matchesLanguagePrefix(track.languageCode, preferredCode),
+  );
+  if (humanPreferred) {
+    return humanPreferred;
   }
 
-  return `Failed to fetch transcript: ${status} ${statusText}${body ? ` - ${body}` : ''}`;
+  const asrPreferred = tracks.find(
+    (track) => track.isAutoGenerated && matchesLanguagePrefix(track.languageCode, preferredCode),
+  );
+  if (asrPreferred) {
+    return asrPreferred;
+  }
+
+  for (const code of fallbacks) {
+    const human = tracks.find(
+      (track) => !track.isAutoGenerated && matchesLanguagePrefix(track.languageCode, code),
+    );
+    if (human) {
+      return human;
+    }
+  }
+
+  return tracks.find((track) => track.isAutoGenerated) ?? null;
 }
 
-/**
- * Fetches transcript from a YouTube video URL or video ID
- */
+function joinTranscript(segments: TranscriptSegment[]): string {
+  const parts: string[] = [];
+  for (const item of segments) {
+    const text = decodeHtmlEntities(item.text);
+    if (text && text !== "N/A") {
+      parts.push(text);
+    }
+  }
+  return parts.join(" ");
+}
+
+async function fetchTranscriptSegments(videoId: string, sendMetadata: boolean) {
+  let tracks: CaptionTrackInfo[];
+  try {
+    tracks = await listLanguages(videoId, PLUS_FETCH_OPTIONS);
+  } catch (error) {
+    if (
+      error instanceof YoutubeTranscriptDisabledError ||
+      error instanceof YoutubeTranscriptNotAvailableError
+    ) {
+      throw new Error("No transcript available for this video. The video may not have captions enabled.");
+    }
+    if (
+      error instanceof YoutubeTranscriptTooManyRequestError ||
+      error instanceof YoutubeTranscriptVideoUnavailableError
+    ) {
+      throw new Error("Transcript temporarily unavailable. Try again later.");
+    }
+    throw error;
+  }
+
+  const track = pickCaptionTrack(tracks, "en");
+  if (!track) {
+    throw new Error("No transcript available for this video. The video may not have captions enabled.");
+  }
+
+  const fetched = await fetchTranscript(videoId, {
+    ...PLUS_FETCH_OPTIONS,
+    lang: track.languageCode,
+    videoDetails: sendMetadata,
+  });
+
+  const segments = Array.isArray(fetched) ? fetched : fetched.segments;
+  const transcript = joinTranscript(segments);
+  if (!transcript.trim()) {
+    throw new Error("Transcript is empty or contains no valid content.");
+  }
+
+  const title = Array.isArray(fetched) ? undefined : (fetched.videoDetails as VideoDetails | undefined)?.title;
+  return { transcript, title };
+}
+
 export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<string> {
   const videoId = extractVideoId(videoUrlOrId);
-
   if (!videoId) {
     throw new Error(`Invalid YouTube URL or video ID: ${videoUrlOrId}`);
   }
 
-  try {
-    const transcriptResponse = await fetchTranscriptResponse(videoId, {
-      sendMetadata: true,
-    });
-
-    const transcriptParts: string[] = [];
-    for (const item of transcriptResponse.transcript) {
-      const text = decodeHtmlEntities(item.text);
-      if (text && text !== 'N/A') {
-        transcriptParts.push(text);
-      }
-    }
-    const transcriptText = transcriptParts.join(' ');
-
-    if (!transcriptText.trim()) {
-      throw new Error('Transcript is empty or contains no valid content.');
-    }
-
-    return transcriptText;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to fetch transcript: ${error.message}`);
-    }
-    throw new Error('Failed to fetch transcript: Unknown error');
-  }
+  const { transcript } = await fetchTranscriptSegments(videoId, false);
+  return transcript;
 }
 
-/**
- * Returns video title from transcript metadata when available
- */
 export async function fetchYoutubeTranscriptWithMetadata(videoUrlOrId: string): Promise<{
   transcript: string;
   title?: string;
@@ -271,25 +171,5 @@ export async function fetchYoutubeTranscriptWithMetadata(videoUrlOrId: string): 
     throw new Error(`Invalid YouTube URL or video ID: ${videoUrlOrId}`);
   }
 
-  const transcriptResponse = await fetchTranscriptResponse(videoId, {
-    sendMetadata: true,
-  });
-
-  const transcriptParts: string[] = [];
-  for (const item of transcriptResponse.transcript) {
-    const text = decodeHtmlEntities(item.text);
-    if (text && text !== 'N/A') {
-      transcriptParts.push(text);
-    }
-  }
-  const transcript = transcriptParts.join(' ');
-
-  if (!transcript.trim()) {
-    throw new Error('Transcript is empty or contains no valid content.');
-  }
-
-  return {
-    transcript,
-    title: transcriptResponse.metadata?.title,
-  };
+  return fetchTranscriptSegments(videoId, true);
 }

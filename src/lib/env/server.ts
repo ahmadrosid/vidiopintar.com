@@ -16,7 +16,6 @@ export const env = createEnv({
           : "./data/vidiopintar.db",
       ),
     ADMIN_MASTER_EMAIL: z.email(),
-    TRANSCRIPT_API_KEY: z.string().min(1),
     YOUTUBE_API_KEY: z.string().min(1).optional(),
   },
   client: {

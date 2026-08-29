@@ -1,7 +1,7 @@
 import { VideoRepository, Video, UserRepository } from "@/lib/db/repository";
 import { generateObject } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
-import { fetchTranscriptResponse, fetchVideoInfoFromApi } from '@/lib/transcript-api';
+import { fetchTranscriptResponse, TranscriptRetryableError } from '@/lib/transcript-api';
 import {
   formatTimedTranscriptForChat,
   type StoredTranscriptSegment,
@@ -47,7 +47,7 @@ export async function generateUserVideoSummary(
   return summary;
 }
 
-async function fetchVideoFromOEmbed(videoId: string) {
+export async function fetchVideoFromOEmbed(videoId: string) {
   const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
   const response = await fetch(
     `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`,
@@ -73,29 +73,6 @@ async function fetchVideoFromOEmbed(videoId: string) {
   };
 }
 
-async function fetchVideoFromApi(videoId: string) {
-  try {
-    const info = await fetchVideoInfoFromApi(videoId);
-    const metadata = info.metadata;
-
-    return {
-      title: metadata.title ?? `Video ${videoId}`,
-      description: "",
-      channelTitle: metadata.author_name ?? "Unknown Channel",
-      publishedAt: null,
-      thumbnails: metadata.thumbnail_url
-        ? { high: { url: metadata.thumbnail_url } }
-        : {},
-      tags: [] as string[],
-    };
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("404")) {
-      return fetchVideoFromOEmbed(videoId);
-    }
-    throw error;
-  }
-}
-
 export async function fetchVideoDetails(videoId: string) {
   try {
     const user = await getCurrentUser();
@@ -104,7 +81,7 @@ export async function fetchVideoDetails(videoId: string) {
 
     if (existingVideo) {
       if (existingVideo.channelTitle === "Unknown Channel") {
-        const videoDetails = await fetchVideoFromApi(videoId);
+        const videoDetails = await fetchVideoFromOEmbed(videoId);
         existingVideo = await VideoRepository.upsert({
           youtubeId: videoId,
           title: videoDetails.title,
@@ -128,7 +105,7 @@ export async function fetchVideoDetails(videoId: string) {
       };
     }
 
-    const data = await fetchVideoFromApi(videoId);
+    const data = await fetchVideoFromOEmbed(videoId);
 
     await VideoRepository.upsert({
       youtubeId: videoId,
@@ -167,6 +144,20 @@ export async function fetchVideoTranscript(videoId: string) {
   try {
     const user = await getCurrentUser();
 
+    let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
+    if (!userVideo) {
+      const planCheck = await UserPlanService.canAddVideo(user.id, videoId);
+      if (!planCheck.canAdd) {
+        return {
+          segments: [],
+          error: true,
+          errorMessage: "You've reached your daily limit for new videos. Upgrade for unlimited access or try again tomorrow.",
+          userVideo: null,
+          planLimitReached: true,
+        };
+      }
+    }
+
     let transcriptLanguage = 'en';
     try {
       const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
@@ -199,19 +190,7 @@ export async function fetchVideoTranscript(videoId: string) {
       });
     }
 
-    let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
     if (!userVideo) {
-      const planCheck = await UserPlanService.canAddVideo(user.id, videoId);
-      if (!planCheck.canAdd) {
-        return {
-          segments: [],
-          error: true,
-          errorMessage: "You've reached your daily limit for new videos. Upgrade for unlimited access or try again tomorrow.",
-          userVideo: null,
-          planLimitReached: true,
-        };
-      }
-
       userVideo = await UserVideoRepository.upsert({
         userId: user.id,
         youtubeId: videoId,
@@ -226,11 +205,14 @@ export async function fetchVideoTranscript(videoId: string) {
     }
   } catch (error) {
     console.error('Error fetching transcript:', error)
-    // Don't create userVideo if transcript is not available
+    const retryable = error instanceof TranscriptRetryableError;
     return {
       segments: [],
       error: true,
-      errorMessage: "Transcript not available for this video",
+      errorKind: retryable ? "retryable" : "unavailable",
+      errorMessage: retryable
+        ? (error instanceof Error ? error.message : "Transcript temporarily unavailable. Try again later.")
+        : "Transcript not available for this video",
       userVideo: null
     }
   }

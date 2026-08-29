@@ -10,6 +10,7 @@
         "dotenv": "^16.6.1",
         "marked": "^17.0.1",
         "marked-terminal": "^7.3.0",
+        "youtube-transcript-plus": "2.0.1",
         "zod": "^4.3.6",
       },
       "devDependencies": {
@@ -128,6 +129,8 @@
     "yargs": ["yargs@16.2.0", "", { "dependencies": { "cliui": "^7.0.2", "escalade": "^3.1.1", "get-caller-file": "^2.0.5", "require-directory": "^2.1.1", "string-width": "^4.2.0", "y18n": "^5.0.5", "yargs-parser": "^20.2.2" } }, "sha512-D1mvvtDG0L5ft/jGWkLpG1+m0eQxOfaBvTNELraWj22wSVUMWxZUvYgJYcKh6jGGIkJFhH4IZPQhR4TKpc8mBw=="],
 
     "yargs-parser": ["yargs-parser@20.2.9", "", {}, "sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w=="],
+
+    "youtube-transcript-plus": ["youtube-transcript-plus@2.0.1", "", {}, "sha512-rU49uSbhRJzGNGtXCfx347W2xv7hJp+WDWCuY8rdA+AVcZACi6MnRuH+2JxyUpvtZOT/dayfA/9vs2r9Zr7BjQ=="],
 
     "zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
 
