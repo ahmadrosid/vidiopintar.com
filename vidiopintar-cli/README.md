@@ -15,16 +15,14 @@ A simple command-line tool to chat with YouTube video transcripts directly from 
 Make sure you have the required API keys set in your environment:
 
 ```bash
-# Option 1: Export in your shell
+# Option 1: Export in your shell (chat only)
 export DEEPSEEK_API_KEY=your-api-key-here
-export TRANSCRIPT_API_KEY=your-transcript-api-key-here
 
 # Option 2: Add to .env file in project root (already loaded automatically)
 DEEPSEEK_API_KEY=your-api-key-here
-TRANSCRIPT_API_KEY=your-transcript-api-key-here
 ```
 
-The CLI uses `deepseek-v4-flash` for all chat responses and [TranscriptAPI](https://transcriptapi.com) for transcript fetching.
+The CLI uses `deepseek-v4-flash` for chat and `youtube-transcript-plus` for captions. Transcript-only mode needs no API key.
 
 ## Usage
 
@@ -35,7 +33,7 @@ bun run youtube-chat <youtube-url>
 # Or directly with bun
 bun run vidiopintar-cli/src/index.ts <youtube-url>
 
-# Transcript only (no DeepSeek API key required, but TRANSCRIPT_API_KEY is required)
+# Transcript only (no API key required)
 bun run vidiopintar-cli/src/index.ts <youtube-url> --transcript
 ```
 
