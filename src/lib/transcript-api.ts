@@ -233,18 +233,17 @@ export async function fetchTranscriptResponse(
     const fetched = await fetchTranscript(videoId, {
       ...PLUS_FETCH_OPTIONS,
       lang: track.languageCode,
-      videoDetails: options.sendMetadata === true,
+      videoDetails: true,
     });
 
-    const segments = Array.isArray(fetched) ? fetched : fetched.segments;
-    const mapped = mapSegments(segments);
+    const mapped = mapSegments(fetched.segments);
     if (mapped.length === 0) {
       throw new TranscriptRetryableError();
     }
 
-    const metadata = Array.isArray(fetched)
-      ? undefined
-      : mapVideoDetails(fetched.videoDetails);
+    const metadata = options.sendMetadata === true
+      ? mapVideoDetails(fetched.videoDetails)
+      : undefined;
 
     const response: TranscriptApiResponse = {
       video_id: videoId,
