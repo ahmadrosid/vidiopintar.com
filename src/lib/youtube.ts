@@ -1,7 +1,7 @@
 import { VideoRepository, Video, UserRepository } from "@/lib/db/repository";
 import { generateObject } from 'ai';
 import { AI_MODEL_ID, AI_PROVIDER, aiModel, aiProviderOptions } from '@/lib/ai/model';
-import { fetchTranscriptResponse, isTranscriptRetryableError } from '@/lib/transcript-api';
+import { fetchTranscriptResponse, TranscriptRetryableError } from '@/lib/transcript-api';
 import {
   formatTimedTranscriptForChat,
   type StoredTranscriptSegment,
@@ -73,10 +73,6 @@ export async function fetchVideoFromOEmbed(videoId: string) {
   };
 }
 
-async function fetchVideoFromApi(videoId: string) {
-  return fetchVideoFromOEmbed(videoId);
-}
-
 export async function fetchVideoDetails(videoId: string) {
   try {
     const user = await getCurrentUser();
@@ -85,7 +81,7 @@ export async function fetchVideoDetails(videoId: string) {
 
     if (existingVideo) {
       if (existingVideo.channelTitle === "Unknown Channel") {
-        const videoDetails = await fetchVideoFromApi(videoId);
+        const videoDetails = await fetchVideoFromOEmbed(videoId);
         existingVideo = await VideoRepository.upsert({
           youtubeId: videoId,
           title: videoDetails.title,
@@ -109,7 +105,7 @@ export async function fetchVideoDetails(videoId: string) {
       };
     }
 
-    const data = await fetchVideoFromApi(videoId);
+    const data = await fetchVideoFromOEmbed(videoId);
 
     await VideoRepository.upsert({
       youtubeId: videoId,
@@ -209,7 +205,7 @@ export async function fetchVideoTranscript(videoId: string) {
     }
   } catch (error) {
     console.error('Error fetching transcript:', error)
-    const retryable = isTranscriptRetryableError(error);
+    const retryable = error instanceof TranscriptRetryableError;
     return {
       segments: [],
       error: true,

@@ -13,7 +13,7 @@ import {
 const PLUS_FETCH_OPTIONS = { retries: 3, retryDelay: 1000 } as const;
 
 function decodeHtmlEntities(text: string): string {
-  const entities: Record<string, string> = {
+  const named: Record<string, string> = {
     "&amp;": "&",
     "&lt;": "<",
     "&gt;": ">",
@@ -22,19 +22,18 @@ function decodeHtmlEntities(text: string): string {
     "&#39;": "'",
     "&nbsp;": " ",
   };
+  const once = (value: string) =>
+    value
+      .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => named[match] ?? match)
+      .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
 
-  let decoded = text.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
-  decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
-  decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
-
+  let decoded = text;
   let prev = "";
   while (prev !== decoded) {
     prev = decoded;
-    decoded = decoded.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
-    decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
-    decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+    decoded = once(decoded);
   }
-
   return decoded;
 }
 
@@ -102,14 +101,10 @@ function pickCaptionTrack(
 }
 
 function joinTranscript(segments: TranscriptSegment[]): string {
-  const parts: string[] = [];
-  for (const item of segments) {
-    const text = decodeHtmlEntities(item.text);
-    if (text && text !== "N/A") {
-      parts.push(text);
-    }
-  }
-  return parts.join(" ");
+  return segments
+    .map((item) => decodeHtmlEntities(item.text))
+    .filter((text) => text && text !== "N/A")
+    .join(" ");
 }
 
 async function fetchTranscriptSegments(videoId: string, sendMetadata: boolean) {
@@ -159,15 +154,8 @@ export async function fetchYoutubeTranscript(videoUrlOrId: string): Promise<stri
     throw new Error(`Invalid YouTube URL or video ID: ${videoUrlOrId}`);
   }
 
-  try {
-    const { transcript } = await fetchTranscriptSegments(videoId, false);
-    return transcript;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to fetch transcript: ${error.message}`);
-    }
-    throw new Error("Failed to fetch transcript: Unknown error");
-  }
+  const { transcript } = await fetchTranscriptSegments(videoId, false);
+  return transcript;
 }
 
 export async function fetchYoutubeTranscriptWithMetadata(videoUrlOrId: string): Promise<{

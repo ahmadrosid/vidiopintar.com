@@ -34,17 +34,6 @@ export interface TranscriptApiMetadata {
   thumbnail_url?: string;
 }
 
-export interface TranscriptApiLanguage {
-  code: string;
-  name?: string;
-}
-
-export interface TranscriptApiVideoInfoResponse {
-  video_id: string;
-  metadata: TranscriptApiMetadata;
-  available_languages: TranscriptApiLanguage[];
-}
-
 export interface TranscriptApiResponse {
   video_id: string;
   language: string;
@@ -55,7 +44,6 @@ export interface TranscriptApiResponse {
 export interface FetchTranscriptOptions {
   language?: string;
   sendMetadata?: boolean;
-  includeTimestamp?: boolean;
 }
 
 export class TranscriptRetryableError extends Error {
@@ -65,12 +53,8 @@ export class TranscriptRetryableError extends Error {
   }
 }
 
-export function isTranscriptRetryableError(error: unknown): boolean {
-  return error instanceof TranscriptRetryableError;
-}
-
 function decodeHtmlEntities(text: string): string {
-  const entities: Record<string, string> = {
+  const named: Record<string, string> = {
     "&amp;": "&",
     "&lt;": "<",
     "&gt;": ">",
@@ -79,19 +63,18 @@ function decodeHtmlEntities(text: string): string {
     "&#39;": "'",
     "&nbsp;": " ",
   };
+  const once = (value: string) =>
+    value
+      .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => named[match] ?? match)
+      .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
 
-  let decoded = text.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
-  decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
-  decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
-
+  let decoded = text;
   let prev = "";
   while (prev !== decoded) {
     prev = decoded;
-    decoded = decoded.replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => entities[match] || match);
-    decoded = decoded.replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)));
-    decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+    decoded = once(decoded);
   }
-
   return decoded;
 }
 
@@ -171,9 +154,6 @@ function mapVideoDetails(details?: VideoDetails): TranscriptApiMetadata | undefi
   return {
     title: details.title,
     author_name: details.author,
-    author_url: details.channelId
-      ? `https://www.youtube.com/channel/${details.channelId}`
-      : undefined,
     thumbnail_url: thumbnail,
   };
 }

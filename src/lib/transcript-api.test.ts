@@ -18,9 +18,6 @@ mock.module("youtube-transcript-plus", () => ({
   YoutubeTranscriptDisabledError,
   YoutubeTranscriptNotAvailableError,
   YoutubeTranscriptTooManyRequestError,
-  YoutubeTranscriptNotAvailableLanguageError: class YoutubeTranscriptNotAvailableLanguageError extends Error {
-    availableLangs: string[] = [];
-  },
   YoutubeTranscriptVideoUnavailableError: class YoutubeTranscriptVideoUnavailableError extends Error {},
 }));
 
@@ -40,10 +37,6 @@ mock.module("@/lib/db/repository", () => ({
     getByVideoId,
     upsertSegments,
   },
-}));
-
-mock.module("@/lib/env/server", () => ({
-  env: {},
 }));
 
 const { fetchTranscriptResponse, TranscriptRetryableError } = await import("./transcript-api");
