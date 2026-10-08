@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
 
-drizzle-kit migrate
+node /app/scripts/migrate-sqlite.mjs
 
 exec node server.js
