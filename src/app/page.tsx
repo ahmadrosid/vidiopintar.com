@@ -32,14 +32,12 @@ const response = `{
 
 export default function Page() {
   return (
-    <SitePage>
-      <PageTitle>Transkrip YouTube untuk agen AI.</PageTitle>
+    <SitePage backdrop={<KyotoDusk />}>
+      <PageTitle>
+        <span className="text-[#65c9ad]">vidiopintar</span> — transkrip YouTube untuk agen AI.
+      </PageTitle>
 
-      <div className="overflow-hidden">
-        <KyotoDusk />
-      </div>
-
-      <div className="mt-16">
+      <div className="mt-48 sm:mt-[28vw] lg:mt-80">
         <Row label="Pasang">
           <InstallTabs />
         </Row>
