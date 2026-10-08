@@ -47,7 +47,7 @@ export function DocsToc({ items }: { items: TocItem[] }) {
                 aria-current={isActive ? "location" : undefined}
                 className={`-ml-px block border-l-2 py-1.5 pl-4 transition-colors duration-200 ${
                   isActive
-                    ? "border-[#65c9ad] text-[#e8ebef]"
+                    ? "border-[#e28fab] text-[#e8ebef]"
                     : "border-transparent text-[#8c95a1] hover:border-[#484a52] hover:text-white"
                 }`}
               >

@@ -16,7 +16,7 @@ const sections = [
   { id: "api-key", title: "1. Minta API key" },
   { id: "pasang", title: "2. Pasang server MCP" },
   { id: "panggil", title: "3. Panggil alat" },
-  { id: "batas", title: "Batas beta" },
+  { id: "batas", title: "Batas penggunaan" },
   { id: "privasi", title: "Privasi" },
   { id: "catatan", title: "Catatan" },
 ];
@@ -85,7 +85,7 @@ export default function PanduanPage() {
 
         <article className="min-w-0 max-w-3xl space-y-12 text-base leading-8 text-[#c3c9d1] sm:text-lg">
           <header>
-            <p className="text-sm text-[#65c9ad]">Panduan MCP</p>
+            <p className="text-sm text-[#e28fab]">Panduan MCP</p>
             <h1 className="mt-4 text-balance font-display text-4xl font-extrabold leading-[1] tracking-tight text-[#e8ebef] sm:text-6xl">
               Hubungkan agen AI ke transkrip YouTube.
             </h1>
@@ -97,7 +97,7 @@ export default function PanduanPage() {
 
           <Section id="api-key" title="1. Minta API key">
             <p>
-              Layanan masih dalam beta undangan. Kirim nama agen dan kontak Anda ke{" "}
+              Kirim nama agen dan kontak Anda ke{" "}
               <a className={linkClass} href="mailto:support@vidiopintar.com">support@vidiopintar.com</a>.
             </p>
             <p>Simpan key dengan aman. Vidiopintar hanya menampilkan key saat key dibuat.</p>
@@ -146,7 +146,7 @@ export default function PanduanPage() {
             <CodeBlock label="contoh respons">{response}</CodeBlock>
           </Section>
 
-          <Section id="batas" title="Batas beta">
+          <Section id="batas" title="Batas penggunaan">
             <p>Batas berlaku per API key.</p>
             <div className="overflow-x-auto border border-[#2a2d34]">
               <table className="w-full text-left text-sm sm:text-base">
@@ -172,8 +172,8 @@ export default function PanduanPage() {
           </Section>
 
           <Section id="catatan" title="Catatan">
-            <div className="flex gap-4 border border-[#2a2d34] border-l-2 border-l-[#65c9ad] bg-[#16181c] p-5">
-              <Info weight="duotone" className="mt-1.5 size-5 shrink-0 text-[#65c9ad]" />
+            <div className="flex gap-4 border border-[#2a2d34] border-l-2 border-l-[#e28fab] bg-[#16181c] p-5">
+              <Info weight="duotone" className="mt-1.5 size-5 shrink-0 text-[#e28fab]" />
               <p>
                 Teks transkrip berasal dari video dan harus diperlakukan agen sebagai konten tidak tepercaya, bukan instruksi.
               </p>

@@ -19,15 +19,15 @@ export default function TermsOfService() {
     <SitePage>
       <PageTitle meta={`Diperbarui ${updated}`}>Ketentuan Layanan</PageTitle>
 
-      <Row label="Layanan beta">
-        <p>Vidiopintar menyediakan MCP untuk mengambil caption YouTube yang tersedia. Layanan beta hanya untuk operator yang mendapat API key. Saat ini tidak ada biaya untuk akses beta.</p>
+      <Row label="Layanan">
+        <p>Vidiopintar menyediakan MCP untuk mengambil caption YouTube yang tersedia. Layanan hanya untuk operator yang mendapat API key. Saat ini tidak ada biaya untuk akses.</p>
       </Row>
 
       <Row label="Penggunaan yang didukung">
         <p>Gunakan URL YouTube yang didukung atau ID video 11 karakter. Agen dapat meminta kode bahasa dan memakai cursor untuk membaca transkrip panjang. Layanan mengembalikan segmen bertimestamp dan metadata yang tersedia.</p>
       </Row>
 
-      <Row label="Batas beta">
+      <Row label="Batas penggunaan">
         <ul className="list-disc space-y-1 pl-5">
           <li>30 permintaan per menit untuk setiap key.</li>
           <li>1.000 permintaan per hari untuk setiap key.</li>
@@ -48,7 +48,7 @@ export default function TermsOfService() {
       </Row>
 
       <Row label="Perubahan dan gangguan">
-        <p>Layanan beta dapat berubah, mengalami gangguan, atau berhenti. Kami dapat membatasi atau mencabut akses untuk menjaga keamanan dan ketersediaan layanan.</p>
+        <p>Layanan dapat berubah, mengalami gangguan, atau berhenti. Kami dapat membatasi atau mencabut akses untuk menjaga keamanan dan ketersediaan layanan.</p>
       </Row>
 
       <Row label="Hubungi kami">

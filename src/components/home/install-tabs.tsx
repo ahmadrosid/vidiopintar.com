@@ -144,9 +144,9 @@ export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
               setActive(id);
               setCopied(false);
             }}
-            className={`inline-flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-2 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#65c9ad] sm:text-base ${stacked ? "" : "md:w-full"} ${
+            className={`inline-flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-2 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab] sm:text-base ${stacked ? "" : "md:w-full"} ${
               id === active
-                ? "border-[#65c9ad] bg-[#16352f] text-[#e8ebef]"
+                ? "border-[#e28fab] bg-[#2d1f2a] text-[#e8ebef]"
                 : "border-[#2a2d34] text-[#8c95a1] hover:border-[#484a52] hover:text-[#e8ebef]"
             }`}
           >
@@ -162,9 +162,9 @@ export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
           <button
             type="button"
             onClick={copy}
-            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-[#8c95a1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#65c9ad] sm:text-sm"
+            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-[#8c95a1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab] sm:text-sm"
           >
-            {copied ? <Check className="size-4 text-[#65c9ad]" /> : <Copy className="size-4" />}
+            {copied ? <Check className="size-4 text-[#e28fab]" /> : <Copy className="size-4" />}
             {copied ? "Tersalin" : "Salin"}
           </button>
         </div>

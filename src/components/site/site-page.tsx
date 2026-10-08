@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const linkClass = "text-[#e8ebef] underline decoration-[#65c9ad] underline-offset-4 hover:text-[#8de0c5]";
+export const linkClass = "text-[#e8ebef] underline decoration-[#e28fab] underline-offset-4 hover:text-[#f2b2c4]";
 export const mutedLinkClass = "underline decoration-[#484a52] underline-offset-4 hover:text-white";
 
 export function SitePage({
@@ -28,7 +28,7 @@ export function SitePage({
       <div className={`relative z-10 mx-auto w-full px-6 py-10 ${wide ? "max-w-6xl" : "max-w-4xl"}`}>
         <header className="flex items-baseline justify-between text-base">
           <Link href="/" className="text-[#e8ebef] hover:text-white">vidiopintar</Link>
-          <span className="text-sm text-[#6f7782]">beta</span>
+          <Link href="/panduan" className="text-sm text-[#8c95a1] hover:text-white">Panduan</Link>
         </header>
         {children}
       </div>
@@ -62,7 +62,7 @@ export function Row({
       className={`grid grid-cols-[minmax(0,1fr)] gap-4 border-t border-[#25272d] py-10 ${wide ? "md:gap-6" : "md:grid-cols-[12rem_minmax(0,1fr)] md:gap-8"}`}
     >
       <h2 className="flex items-center gap-2.5 self-start font-display text-xl font-bold tracking-tight text-[#e8ebef]">
-        {icon && <span className="text-[#65c9ad] [&>svg]:size-6">{icon}</span>}
+        {icon && <span className="text-[#e28fab] [&>svg]:size-6">{icon}</span>}
         {label}
       </h2>
       <div className="min-w-0 space-y-3 text-base leading-8 text-[#c3c9d1] sm:text-lg">{children}</div>
