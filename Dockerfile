@@ -46,6 +46,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/scripts/mcp-key.mjs ./scripts/mcp
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bindings ./node_modules/bindings
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/file-uri-to-path ./node_modules/file-uri-to-path
+COPY --from=builder --chown=nextjs:nodejs /app/src/lib/db/resolve-database-path.js ./src/lib/db/resolve-database-path.js
 
 # Runtime migrations use drizzle-orm, already included in the standalone app.
 COPY --from=deps --chown=nextjs:nodejs /app/node_modules/drizzle-orm ./node_modules/drizzle-orm
