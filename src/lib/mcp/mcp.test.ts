@@ -51,7 +51,7 @@ describe("transcript cursors", () => {
   });
 
   test("rejects an unsupported cursor version", () => {
-    const encoded = encodeCursor("vpt_live_test", { ...cursor, v: 2 });
+    const encoded = encodeCursor("vpt_live_test", { ...cursor, v: 2 } as typeof cursor);
     expect(() => decodeCursor("vpt_live_test", encoded)).toThrow(McpServiceError);
   });
 });

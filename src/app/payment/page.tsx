@@ -27,6 +27,37 @@ function getPlanDetails(validPlan: 'monthly' | 'yearly') {
   };
 }
 
+async function getPaymentContext(
+    validPlan: 'monthly' | 'yearly',
+    currentPlan: ReturnType<typeof getPlanDetails>,
+    paymentSettings: ReturnType<typeof getPaymentSettings>,
+) {
+    let transaction;
+    let existingTransaction;
+    let canPurchaseCheck;
+
+    try {
+        const user = await getCurrentUser();
+        canPurchaseCheck = await UserPlanService.canPurchasePlan(user.id, validPlan);
+
+        if (canPurchaseCheck.canPurchase) {
+            existingTransaction = await transactionsRepository.getPendingTransactionByUserAndPlan(user.id, validPlan);
+            transaction = existingTransaction ?? await transactionsRepository.create({
+                userId: user.id,
+                planType: validPlan,
+                amount: currentPlan.amount,
+                currency: 'IDR',
+                transactionReference: await transactionsRepository.generateUniqueReference(),
+                paymentSettings: JSON.stringify(paymentSettings),
+            });
+        }
+    } catch (error) {
+        console.error('Error handling transaction:', error);
+    }
+
+    return { transaction, existingTransaction, canPurchaseCheck };
+}
+
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
     const t = await getTranslations('payment')
     const { plan } = await searchParams
@@ -36,43 +67,11 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
     const currentPlan = getPlanDetails(validPlan);
     const paymentSettings = getPaymentSettings();
 
-    // Get current user and handle transaction
-    let user;
-    let transaction;
-    let existingTransaction;
-    let canPurchaseCheck;
-    
-    try {
-        user = await getCurrentUser();
-        
-        // Check if user can purchase this plan (no active subscription)
-        canPurchaseCheck = await UserPlanService.canPurchasePlan(user.id, validPlan as any);
-        
-        if (!canPurchaseCheck.canPurchase) {
-            // User already has an active subscription, we'll show an error
-        } else {
-            // Check if user already has a pending transaction for this plan
-            existingTransaction = await transactionsRepository.getPendingTransactionByUserAndPlan(user.id, validPlan);
-            
-            if (existingTransaction) {
-                // Use existing transaction instead of creating a new one
-                transaction = existingTransaction;
-            } else {
-                // Create new transaction for this payment request
-                transaction = await transactionsRepository.create({
-                    userId: user.id,
-                    planType: validPlan,
-                    amount: currentPlan.amount,
-                    currency: 'IDR',
-                    transactionReference: await transactionsRepository.generateUniqueReference(),
-                    paymentSettings: JSON.stringify(paymentSettings),
-                });
-            }
-        }
-    } catch (error) {
-        console.error('Error handling transaction:', error);
-        // Continue without transaction if user not authenticated
-    }
+    const { transaction, existingTransaction, canPurchaseCheck } = await getPaymentContext(
+        validPlan,
+        currentPlan,
+        paymentSettings,
+    );
 
     const bankDetails = {
         bankName: paymentSettings.bankName,

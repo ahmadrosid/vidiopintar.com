@@ -65,7 +65,25 @@ function NoteColorSelect({
   );
 }
 
-export function CreateNoteDialog({
+type NoteFormDialogProps = {
+  open: boolean;
+  title: string;
+  timestampLabel: string;
+  notePlaceholder: string;
+  colorLabel: string;
+  cancelLabel: string;
+  saveLabel: string;
+  timestamp: number;
+  text: string;
+  color: NoteColor;
+  isSaving: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSave: () => void;
+  onTextChange: (value: string) => void;
+  onColorChange: (color: NoteColor) => void;
+};
+
+function NoteFormDialog({
   open,
   title,
   timestampLabel,
@@ -73,14 +91,48 @@ export function CreateNoteDialog({
   colorLabel,
   cancelLabel,
   saveLabel,
-  currentTime,
-  noteText,
-  selectedColor,
+  timestamp,
+  text,
+  color,
   isSaving,
   onOpenChange,
   onSave,
-  onNoteTextChange,
-  onSelectedColorChange,
+  onTextChange,
+  onColorChange,
+}: NoteFormDialogProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader><DialogTitle>{title}</DialogTitle></DialogHeader>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{timestampLabel}:</span>
+            <span className="text-sm font-mono text-foreground">{formatTime(timestamp)}</span>
+          </div>
+          <Textarea
+            placeholder={notePlaceholder}
+            value={text}
+            onChange={(e) => onTextChange(e.target.value)}
+            className="min-h-[100px] resize-none"
+            autoFocus
+          />
+          <NoteColorSelect value={color} onValueChange={onColorChange} colorLabel={colorLabel} />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>{cancelLabel}</Button>
+          <Button onClick={onSave} className="cursor-pointer" disabled={isSaving}>
+            {isSaving && <Loader className="mr-2 h-4 w-4 animate-spin" />}{saveLabel}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function CreateNoteDialog({
+  open, title, timestampLabel, notePlaceholder, colorLabel, cancelLabel, saveLabel,
+  currentTime, noteText, selectedColor, isSaving, onOpenChange, onSave,
+  onNoteTextChange, onSelectedColorChange,
 }: {
   open: boolean;
   title: string;
@@ -99,44 +151,7 @@ export function CreateNoteDialog({
   onSelectedColorChange: (color: NoteColor) => void;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">{timestampLabel}:</span>
-            <span className="text-sm font-mono text-foreground">{formatTime(currentTime)}</span>
-          </div>
-
-          <Textarea
-            placeholder={notePlaceholder}
-            value={noteText}
-            onChange={(e) => onNoteTextChange(e.target.value)}
-            className="min-h-[100px] resize-none"
-            autoFocus
-          />
-
-          <NoteColorSelect
-            value={selectedColor}
-            onValueChange={onSelectedColorChange}
-            colorLabel={colorLabel}
-          />
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
-            {cancelLabel}
-          </Button>
-          <Button onClick={onSave} className="cursor-pointer" disabled={isSaving}>
-            {isSaving && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-            {saveLabel}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <NoteFormDialog open={open} title={title} timestampLabel={timestampLabel} notePlaceholder={notePlaceholder} colorLabel={colorLabel} cancelLabel={cancelLabel} saveLabel={saveLabel} timestamp={currentTime} text={noteText} color={selectedColor} isSaving={isSaving} onOpenChange={onOpenChange} onSave={onSave} onTextChange={onNoteTextChange} onColorChange={onSelectedColorChange} />
   );
 }
 
@@ -174,44 +189,7 @@ export function EditNoteDialog({
   onEditingColorChange: (color: NoteColor) => void;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">{timestampLabel}:</span>
-            <span className="text-sm font-mono text-foreground">{formatTime(editingTimestamp)}</span>
-          </div>
-
-          <Textarea
-            placeholder={notePlaceholder}
-            value={editingText}
-            onChange={(e) => onEditingTextChange(e.target.value)}
-            className="min-h-[100px] resize-none"
-            autoFocus
-          />
-
-          <NoteColorSelect
-            value={editingColor}
-            onValueChange={onEditingColorChange}
-            colorLabel={colorLabel}
-          />
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
-            {cancelLabel}
-          </Button>
-          <Button onClick={onSave} className="cursor-pointer" disabled={isSaving}>
-            {isSaving && <Loader className="mr-2 h-4 w-4 animate-spin" />}
-            {saveLabel}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <NoteFormDialog open={open} title={title} timestampLabel={timestampLabel} notePlaceholder={notePlaceholder} colorLabel={colorLabel} cancelLabel={cancelLabel} saveLabel={saveLabel} timestamp={editingTimestamp} text={editingText} color={editingColor} isSaving={isSaving} onOpenChange={onOpenChange} onSave={onSave} onTextChange={onEditingTextChange} onColorChange={onEditingColorChange} />
   );
 }
 

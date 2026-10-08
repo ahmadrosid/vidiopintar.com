@@ -43,10 +43,11 @@ export async function authenticateMcpRequest(request: Request) {
   const minute = Math.floor(now / minuteMs) * minuteMs;
   const day = Math.floor(now / dayMs) * dayMs;
   const updatedAt = new Date(now);
-  for (const [window, periodStart, max] of [
-    ["minute", minute, key.requestsPerMinute],
-    ["day", day, key.requestsPerDay],
-  ] as const) {
+  const recordUsage = async (
+    window: "minute" | "day",
+    periodStart: number,
+    max: number,
+  ) => {
     const [usage] = await db.insert(mcpUsage).values({
       keyId: key.id,
       window,
@@ -59,7 +60,9 @@ export async function authenticateMcpRequest(request: Request) {
       setWhere: lt(mcpUsage.requests, max),
     }).returning({ requests: mcpUsage.requests });
     if (!usage) throw new McpServiceError("USAGE_LIMIT_EXCEEDED", true, 60);
-  }
+  };
+  await recordUsage("minute", minute, key.requestsPerMinute);
+  await recordUsage("day", day, key.requestsPerDay);
   return { id: key.id, token, key };
 }
 

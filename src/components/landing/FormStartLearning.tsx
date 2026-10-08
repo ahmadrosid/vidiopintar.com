@@ -28,6 +28,7 @@ function ButtonSubmitStartLearning({
       type="submit"
       size="icon"
       disabled={isSubmitting}
+      aria-label={isSubmitting ? "Submitting video" : "Submit video"}
       className="absolute right-2 top-1/2 z-10 size-9 -translate-y-1/2 cursor-pointer rounded-sm border-0 bg-black text-white shadow-none hover:bg-zinc-900 hover:text-white active:scale-[0.975] dark:bg-white dark:text-black dark:hover:bg-zinc-100 dark:hover:text-black"
     >
       {isSubmitting ? (

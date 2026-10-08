@@ -11,6 +11,7 @@ LICENSE
 .env.*
 .env*.local
 .next
+.agents
 .swc
 .vercel
 node_modules
@@ -27,6 +28,7 @@ next-env.d.ts
 
 # Not needed for the Next.js image build
 vidiopintar-cli
+vidiopintar*.png
 data
 docs
 chrome-extension

@@ -22,7 +22,7 @@ export default function McpGuidePage() {
   return (
     <main className="min-h-screen bg-[#faf9f6] text-[#172420]">
       <div className="mx-auto max-w-3xl px-6 py-12 md:py-20">
-        <a href="/" className="text-sm font-medium text-[#31725a]">← Vidiopintar</a>
+        <Link href="/" className="text-sm font-medium text-[#31725a]">← Vidiopintar</Link>
         <p className="mt-12 text-sm font-semibold uppercase tracking-[.16em] text-[#31725a]">Panduan MCP</p>
         <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">Hubungkan agen AI ke transkrip YouTube.</h1>
         <p className="mt-5 text-lg leading-8 text-[#59645e]">Vidiopintar menyediakan satu alat MCP untuk mengambil transkrip video. Layanan beta saat ini memakai API key undangan.</p>

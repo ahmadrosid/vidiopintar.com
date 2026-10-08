@@ -245,6 +245,7 @@ export function ChatInterface({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 rounded-full"
+                    aria-label={tQuiz("modeQuiz")}
                     onClick={() => setPanelMode("quiz")}
                   >
                     <ListChecks className="size-4" />
@@ -257,6 +258,7 @@ export function ChatInterface({
                     variant="default"
                     size="icon"
                     className="h-8 w-8 rounded-full"
+                    aria-label={status === "streaming" ? "Stop generation" : "Send message"}
                     onClick={handleSubmit}
                   >
                     {status === "streaming" ? (
