@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/geo/site";
 import { serializeJsonLd } from "@/lib/utils";
 import "./globals.css";
@@ -19,6 +19,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const display = Bricolage_Grotesque({
+  variable: "--font-display-face",
+  subsets: ["latin"],
+  weight: ["700", "800"],
 });
 
 const organizationSchema = {
@@ -111,7 +117,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteSchema) }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${display.variable} antialiased`}>
         <ClerkProvider appearance={{ theme: shadcn }}>
           <NextIntlClientProvider messages={messages}>
           <ThemeProvider>

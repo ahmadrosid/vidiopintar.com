@@ -30,7 +30,7 @@ export function SitePage({ children, backdrop }: { children: React.ReactNode; ba
 export function PageTitle({ children, meta }: { children: React.ReactNode; meta?: React.ReactNode }) {
   return (
     <div className="mb-16 mt-16 sm:mt-24">
-      <h1 className="text-balance text-4xl leading-[1.1] tracking-tight text-[#e8ebef] [text-shadow:0_2px_24px_rgba(19,21,24,0.95),0_0_8px_rgba(19,21,24,0.8)] sm:text-6xl lg:text-7xl">{children}</h1>
+      <h1 className="font-display text-balance text-5xl font-extrabold leading-[0.95] tracking-tight text-[#e8ebef] [text-shadow:0_2px_24px_rgba(19,21,24,0.95),0_0_8px_rgba(19,21,24,0.8)] sm:text-7xl lg:text-8xl">{children}</h1>
       {meta && <p className="mt-6 text-sm text-[#6f7782]">{meta}</p>}
     </div>
   );
