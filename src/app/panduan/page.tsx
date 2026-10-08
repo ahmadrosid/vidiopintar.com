@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 const sections = [
-  { id: "api-key", title: "1. Minta API key" },
+  { id: "api-key", title: "1. Buat API key" },
   { id: "pasang", title: "2. Pasang server MCP" },
   { id: "panggil", title: "3. Panggil alat" },
   { id: "batas", title: "Batas penggunaan" },
@@ -95,10 +95,10 @@ export default function PanduanPage() {
             </p>
           </header>
 
-          <Section id="api-key" title="1. Minta API key">
+          <Section id="api-key" title="1. Buat API key">
             <p>
-              Kirim nama agen dan kontak Anda ke{" "}
-              <a className={linkClass} href="mailto:support@vidiopintar.com">support@vidiopintar.com</a>.
+              Masuk, lalu buka <Link className={linkClass} href="/dashboard">dashboard</Link> dan buat key
+              baru. Anda dapat memiliki hingga lima key aktif dan mencabutnya kapan saja.
             </p>
             <p>Simpan key dengan aman. Vidiopintar hanya menampilkan key saat key dibuat.</p>
           </Section>

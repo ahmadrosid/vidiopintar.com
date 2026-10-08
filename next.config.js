@@ -37,6 +37,10 @@ const nextConfig = {
       { source: '/faq', destination: '/panduan', permanent: true },
       { source: '/changelogs', destination: '/panduan', permanent: true },
       { source: '/rss.xml', destination: '/panduan', permanent: true },
+      // The video-learning app was removed; send old app URLs to the MCP dashboard.
+      { source: '/profile/billing', destination: '/dashboard/billing', permanent: true },
+      { source: '/:path(home|explore|library|notes|profile)/:rest*', destination: '/dashboard', permanent: true },
+      { source: '/:path(watch|video|shared)/:rest*', destination: '/', permanent: true },
     ]
   },
   serverExternalPackages: ['better-sqlite3'],
@@ -44,7 +48,6 @@ const nextConfig = {
     optimizePackageImports: [
       '@phosphor-icons/react',
       'lucide-react',
-      'motion/react',
       '@clerk/ui',
       'date-fns',
     ],

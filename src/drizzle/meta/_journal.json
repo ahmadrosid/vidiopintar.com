@@ -50,6 +50,20 @@
       "when": 1791473044114,
       "tag": "0006_mcp_service",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1791481447297,
+      "tag": "0007_mcp_request_metrics",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1791481544190,
+      "tag": "0008_mcp_key_owner",
+      "breakpoints": true
     }
   ]
 }

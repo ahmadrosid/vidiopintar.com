@@ -6,10 +6,13 @@ export const mutedLinkClass = "underline decoration-[#484a52] underline-offset-4
 export function SitePage({
   children,
   backdrop,
+  nav,
   wide,
 }: {
   children: React.ReactNode;
   backdrop?: React.ReactNode;
+  // Replaces the default header link on the right, e.g. the dashboard menu.
+  nav?: React.ReactNode;
   // Wider container for pages with a sidebar, like the docs.
   wide?: boolean;
 }) {
@@ -28,7 +31,7 @@ export function SitePage({
       <div className={`relative z-10 mx-auto w-full px-6 py-10 ${wide ? "max-w-6xl" : "max-w-4xl"}`}>
         <header className="flex items-baseline justify-between text-base">
           <Link href="/" className="text-[#e8ebef] hover:text-white">vidiopintar</Link>
-          <Link href="/panduan" className="text-sm text-[#8c95a1] hover:text-white">Panduan</Link>
+          {nav ?? <Link href="/panduan" className="text-sm text-[#8c95a1] hover:text-white">Panduan</Link>}
         </header>
         {children}
       </div>

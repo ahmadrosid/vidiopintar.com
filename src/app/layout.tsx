@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { ClerkProvider } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
 import type React from "react"
-import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
@@ -106,7 +105,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} className="dark">
       <head>
         <script
           type="application/ld+json"
@@ -120,10 +119,8 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} ${display.variable} antialiased`}>
         <ClerkProvider appearance={{ theme: shadcn }}>
           <NextIntlClientProvider messages={messages}>
-          <ThemeProvider>
           {children}
           <Toaster />
-          </ThemeProvider>
           </NextIntlClientProvider>
         </ClerkProvider>
       </body>

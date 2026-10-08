@@ -18,7 +18,7 @@ export async function requireAdmin() {
     const user = await getCurrentUserWithAdminCheck();
 
     if (!user.isAdmin) {
-        redirect("/home");
+        redirect("/dashboard");
     }
 
     return user;

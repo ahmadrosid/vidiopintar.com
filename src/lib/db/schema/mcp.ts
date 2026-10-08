@@ -45,6 +45,8 @@ export const mcpRequestMetrics = sqliteTable(
     createdAt: timestampMs("created_at").notNull(),
     durationMs: integer("duration_ms").notNull(),
     outcome: text("outcome").notNull(),
+    providerAttempt: integer("provider_attempt").notNull().default(0),
+    transcriptComplete: integer("transcript_complete").notNull().default(0),
   },
   (table) => [
     index("mcp_request_metrics_created_at_idx").on(table.createdAt),

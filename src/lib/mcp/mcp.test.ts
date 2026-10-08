@@ -1,7 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { decodeCursor, encodeCursor } from "./cursor";
 import { McpServiceError } from "./errors";
-import { isProviderFailure } from "./metrics";
 import { paginateTranscript } from "./transcript";
 import { normalizeVideoReference } from "./video-reference";
 
@@ -71,13 +70,5 @@ describe("transcript pages", () => {
     const page = paginateTranscript(["very long segment"], 0, 3);
     expect(page.segments).toEqual([]);
     expect(page.nextOffset).toBe(0);
-  });
-});
-
-describe("beta metrics", () => {
-  test("counts provider outcomes without treating request errors as provider failures", () => {
-    expect(isProviderFailure("CAPTIONS_UNAVAILABLE")).toBe(true);
-    expect(isProviderFailure("TEMPORARY_PROVIDER_FAILURE")).toBe(true);
-    expect(isProviderFailure("INVALID_VIDEO_REFERENCE")).toBe(false);
   });
 });

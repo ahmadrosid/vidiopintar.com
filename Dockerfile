@@ -41,6 +41,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/src/drizzle ./src/drizzle
 COPY --from=builder --chown=nextjs:nodejs /app/scripts/mcp-key.mjs ./scripts/mcp-key.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/mcp-metrics.mjs ./scripts/mcp-metrics.mjs
 
 # better-sqlite3 is externalized; ensure native bindings are present in the runner
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3

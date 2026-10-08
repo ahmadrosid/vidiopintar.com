@@ -95,9 +95,9 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
         <div className="min-h-screen bg-background py-12 px-4">
             <div className="mx-auto max-w-lg">
                 <div className="mb-6">
-                    <Link href="/home" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
+                    <Link href="/dashboard/billing" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
                         <ChevronLeft className="size-4" />
-                        Home
+                        Tagihan
                     </Link>
                 </div>
                 <div className="text-center mb-8">
@@ -123,7 +123,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                                 )}
                                 <div className="mt-4">
                                     <Link 
-                                        href="/profile/billing" 
+                                        href="/dashboard/billing" 
                                         className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 dark:text-red-200 dark:bg-red-800 dark:border-red-600 dark:hover:bg-red-700 transition-colors"
                                     >
                                         View My Subscription

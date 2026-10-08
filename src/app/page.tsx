@@ -6,8 +6,6 @@ import { ArrowUpRight, Check, Function as FunctionIcon, Gauge, ShieldCheck, Term
 import { PageTitle, Row, SeeAlso, SitePage, Stat } from "@/components/site/site-page";
 import { SITE_URL } from "@/lib/geo/site";
 
-const requestAccessHref = `mailto:support@vidiopintar.com?subject=${encodeURIComponent("Minta API key MCP Vidiopintar")}&body=${encodeURIComponent("Nama agen/aplikasi:\nKontak:\nKegunaan:\n")}`;
-
 export const metadata: Metadata = {
   title: "Transkrip YouTube untuk Agen AI",
   description: "MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
@@ -40,12 +38,12 @@ export default function Page() {
       </PageTitle>
 
       <div className="-mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
-        <a
-          href={requestAccessHref}
+        <Link
+          href="/dashboard"
           className="inline-flex min-h-12 items-center gap-2 bg-[#e28fab] px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-[#f2b2c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab]"
         >
-          Minta API key <ArrowUpRight weight="bold" className="size-5" />
-        </a>
+          Buat API key <ArrowUpRight weight="bold" className="size-5" />
+        </Link>
         <Link href="/panduan" className="text-base text-[#c3c9d1] underline decoration-[#484a52] underline-offset-4 hover:text-white">
           Panduan
         </Link>

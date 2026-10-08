@@ -3,18 +3,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/geo/site";
 
 const isProtectedRoute = createRouteMatcher([
-  "/home(.*)",
-  "/explore(.*)",
-  "/library(.*)",
-  "/notes(.*)",
-  "/profile(.*)",
-  "/admin(.*)",
+  "/dashboard(.*)",
+  "/payment(.*)",
 ]);
 
 const MARKDOWN_PUBLIC_PREFIXES = [
-  "/faq",
-  "/blog",
-  "/changelogs",
   "/panduan",
   "/privacy",
   "/terms",

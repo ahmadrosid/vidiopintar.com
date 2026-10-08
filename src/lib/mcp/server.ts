@@ -1,5 +1,4 @@
-import { createHash } from "node:crypto";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
 import { and, eq, isNull, lt, sql } from "drizzle-orm";
 import {
@@ -12,7 +11,6 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { mcpApiKeys, mcpRequestMetrics, mcpTranscriptCache, mcpUsage } from "@/lib/db/schema";
 import { McpServiceError } from "./errors";
-import { isProviderFailure } from "./metrics";
 import { getTranscriptPage } from "./transcript";
 
 const minuteMs = 60_000;
@@ -106,11 +104,23 @@ const handler = createMcpHandler((requestContext) => {
           requestContext.authInfo?.clientId ?? "",
           Buffer.byteLength(JSON.stringify(response)),
         );
-        await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, "success");
+        await recordRequestMetric(
+          requestContext.authInfo?.clientId ?? "",
+          startedAt,
+          "success",
+          !result.next_cursor,
+          !cursor,
+        );
         return response;
       } catch (error) {
         if (error instanceof McpServiceError) {
-          await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, error.code);
+          await recordRequestMetric(
+            requestContext.authInfo?.clientId ?? "",
+            startedAt,
+            error.code,
+            false,
+            !cursor && error.code !== "INVALID_VIDEO_REFERENCE",
+          );
           return serviceErrorResult(error);
         }
         const message = error instanceof Error ? error.message : "";
@@ -123,7 +133,7 @@ const handler = createMcpHandler((requestContext) => {
               : /transcript|caption/i.test(message)
                 ? new McpServiceError("CAPTIONS_UNAVAILABLE")
                 : new McpServiceError("TEMPORARY_PROVIDER_FAILURE", true, 30);
-        await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code);
+        await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code, false, !cursor);
         return serviceErrorResult(mapped);
       }
     },
@@ -145,7 +155,13 @@ function serviceErrorResult(error: McpServiceError) {
   };
 }
 
-async function recordRequestMetric(keyId: string, startedAt: number, outcome: string) {
+async function recordRequestMetric(
+  keyId: string,
+  startedAt: number,
+  outcome: string,
+  transcriptComplete = false,
+  providerAttempt = false,
+) {
   if (!keyId) return;
   try {
     await db.insert(mcpRequestMetrics).values({
@@ -153,7 +169,9 @@ async function recordRequestMetric(keyId: string, startedAt: number, outcome: st
       keyId,
       createdAt: new Date(),
       durationMs: Math.max(0, Date.now() - startedAt),
-      outcome: outcome === "success" || isProviderFailure(outcome) ? outcome : "request_error",
+      outcome,
+      providerAttempt: providerAttempt ? 1 : 0,
+      transcriptComplete: transcriptComplete ? 1 : 0,
     });
   } catch {
     // Metrics must not stop transcript delivery.

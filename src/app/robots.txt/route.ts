@@ -10,20 +10,12 @@ const BODY = `# As a condition of accessing this website, you agree to abide by 
 
 User-agent: *
 Allow: /
-Allow: /faq
-Allow: /blog
-Allow: /blog/
-Allow: /changelogs
+Allow: /panduan
 Allow: /privacy
 Allow: /terms
 Allow: /llms.txt
-Allow: /shared/
-Disallow: /admin/
-Disallow: /profile/
-Disallow: /video/
-Disallow: /watch
+Disallow: /dashboard
 Disallow: /payment
-Disallow: /home
 Disallow: /api/
 Disallow: /sign-in
 Disallow: /sign-up
