@@ -42,6 +42,18 @@ describe("transcript cursors", () => {
     const encoded = encodeCursor("vpt_live_test", { ...cursor, expiresAt: Date.now() - 1 });
     expect(() => decodeCursor("vpt_live_test", encoded)).toThrow(McpServiceError);
   });
+
+  test("rejects a cursor with changed contents", () => {
+    const packed = Buffer.from(encodeCursor("vpt_live_test", cursor), "base64url");
+    packed[packed.length - 1] ^= 1;
+    expect(() => decodeCursor("vpt_live_test", packed.toString("base64url")))
+      .toThrow(McpServiceError);
+  });
+
+  test("rejects an unsupported cursor version", () => {
+    const encoded = encodeCursor("vpt_live_test", { ...cursor, v: 2 });
+    expect(() => decodeCursor("vpt_live_test", encoded)).toThrow(McpServiceError);
+  });
 });
 
 describe("transcript pages", () => {
