@@ -16,7 +16,7 @@ if (command === "create") {
   const prefix = `${token.slice(0, 16)}...`;
   db.prepare("INSERT INTO mcp_api_keys (id, name, prefix, key_hash, created_at) VALUES (?, ?, ?, ?, ?)")
     .run(randomUUID(), name, prefix, createHash("sha256").update(token).digest("hex"), Date.now());
-  console.log(`Simpan kunci ini sekarang. Kunci lengkap tidak dapat dilihat lagi:\n${token}`);
+  console.log(`Prefix: ${prefix}\nSimpan kunci ini sekarang. Kunci lengkap tidak dapat dilihat lagi:\n${token}`);
 } else if (command === "revoke") {
   const prefix = args[0];
   if (!prefix) throw new Error("Gunakan: npm run mcp:key -- revoke <prefix>");
