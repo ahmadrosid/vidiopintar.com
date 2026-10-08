@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 import { AuthControls } from "@/components/auth-controls"
 import { Logo } from "../logo"
@@ -37,6 +38,9 @@ export default function Navbar() {
             <Logo />
 
             <div className="flex items-center gap-2">
+              <Link href="/mcp" className="mr-2 text-sm font-medium text-foreground hover:underline">
+                MCP untuk agen AI
+              </Link>
               <AuthControls />
             </div>
           </div>

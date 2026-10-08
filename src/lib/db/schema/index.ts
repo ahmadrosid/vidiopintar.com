@@ -8,3 +8,4 @@ export * from './notes';
 export * from './usage-events';
 export * from './quizzes';
 export * from './recommendations';
+export * from './mcp';

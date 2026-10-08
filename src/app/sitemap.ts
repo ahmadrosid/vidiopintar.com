@@ -20,6 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${SITE_URL}/mcp`,
+      lastModified: SITE_LAST_MODIFIED,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/blog`,
       lastModified: SITE_LAST_MODIFIED,
       changeFrequency: 'daily' as const,

@@ -43,6 +43,13 @@
       "when": 1784688000000,
       "tag": "0005_user_recommendations",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1791473044114,
+      "tag": "0006_mcp_service",
+      "breakpoints": true
     }
   ]
 }
