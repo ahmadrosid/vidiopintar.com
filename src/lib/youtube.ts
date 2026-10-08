@@ -201,7 +201,8 @@ export async function fetchVideoTranscript(videoId: string) {
 
     return {
       segments,
-      userVideo
+      userVideo,
+      language: transcriptResponse.language,
     }
   } catch (error) {
     console.error('Error fetching transcript:', error)

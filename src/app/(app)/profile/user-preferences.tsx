@@ -8,10 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LanguageSelector } from "@/components/language-selector";
 import { useTranslations } from "next-intl";
 import { useSyncExternalStore } from "react";
-import { Globe, Moon } from "lucide-react";
+import { Moon } from "lucide-react";
 
 type Theme = "light" | "dark" | "system";
 
@@ -28,20 +27,7 @@ export function UserPreferences() {
     <section className="space-y-4">
       <h2 className="text-lg font-semibold">{t("preferences")}</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="rounded-xl border bg-card p-4 md:p-5 space-y-4">
-          <div className="flex items-start gap-3">
-            <Globe className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium">{t("selectLanguage")}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {t("languageDesc")}
-              </p>
-            </div>
-          </div>
-          <LanguageSelector className="w-full" />
-        </div>
-
+      <div className="grid grid-cols-1 gap-4">
         <div className="rounded-xl border bg-card p-4 md:p-5 space-y-4">
           <div className="flex items-start gap-3">
             <Moon className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />

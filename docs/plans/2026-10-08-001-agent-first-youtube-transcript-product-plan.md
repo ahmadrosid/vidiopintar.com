@@ -128,7 +128,8 @@ Keep account and admin code only where the hosted service needs it for operator 
 - Add access-request instructions for the invite-only beta.
 - State that an operator issues beta API keys after approval.
 - Keep supported clients, limits, privacy, status, and support information easy to find.
-- Keep the existing homepage and app routes until the consumer sunset is announced.
+- The homepage now presents the hosted MCP service. Legacy app routes remain available during the sunset period.
+- Remove the admin reporting pages and website locale switcher as requested. Keep admin access code only where active operator routes still use it.
 
 ### 6. Sunset the consumer product safely
 
@@ -178,8 +179,8 @@ Keep account and admin code only where the hosted service needs it for operator 
 
 ## Implementation status (2026-10-08)
 
-The beta implementation now has an HTTP MCP endpoint, one transcript tool, bearer API keys, revocation, request and output quotas, language-aware cache entries, and bounded transcript pages with encrypted cursors. The public setup route uses Bahasa Indonesia. The consumer homepage and routes remain active during the beta path.
+The beta implementation now has an HTTP MCP endpoint, one transcript tool, bearer API keys, revocation, request and output quotas, language-aware cache entries, and bounded transcript pages with encrypted cursors. The homepage and public setup route use Bahasa Indonesia. The homepage now describes the MCP service and uses the `deep-reef` React scene from ascii.rest. Admin reporting pages and website locale switching are removed. The transcript language selector remains in the legacy video app; other legacy routes remain active during the sunset period.
 
 Local checks passed: production build and all 16 tests; an MCP SDK client discovered the tool and received the invalid-reference error; missing credentials returned `INVALID_CREDENTIALS`; the migration applied to a temporary SQLite database. The six new MCP tests cover URL validation, cursor binding and expiry, and page boundaries.
 
-Release work remains: test a successful transcript and complete pagination against YouTube; test provider failures, revoked keys, and quota limits; verify two named MCP clients; test from the production host; review the source terms and hosting access; set beta targets and run the invite-only beta. Do not remove the consumer product or internationalization until the sunset conditions in step 6 are met.
+Release work remains: test a successful transcript and complete pagination against YouTube; test provider failures, revoked keys, and quota limits; verify two named MCP clients; test from the production host; review the source terms and hosting access; set beta targets and run the invite-only beta. Remove the remaining consumer routes only after the sunset conditions in step 6 are met. `next-intl` remains while those legacy routes still use its message catalog.

@@ -1,6 +1,6 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
+  "configVersion": 1,
   "workspaces": {
     "": {
       "name": "vidiopintar.com",
@@ -25,6 +25,7 @@
         "@t3-oss/env-nextjs": "^0.13.8",
         "@tailwindcss/postcss": "^4.1.4",
         "ai": "^5.0.210",
+        "ascii.rest": "github:bas3line/ascii",
         "better-sqlite3": "^12.11.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -76,6 +77,9 @@
       },
     },
   },
+  "trustedDependencies": [
+    "ascii.rest",
+  ],
   "overrides": {
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
@@ -747,6 +751,8 @@
     "aria-hidden": ["aria-hidden@1.2.4", "", { "dependencies": { "tslib": "^2.0.0" } }, "sha512-y+CcFFwelSXpLZk/7fMB2mUbGtX9lKycf1MWJ7CaTIERyitVlyQx6C+sxcROU2BAJ24OiZyK+8wj2i8AlBoS3A=="],
 
     "asap": ["asap@2.0.6", "", {}, "sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA=="],
+
+    "ascii.rest": ["ascii.rest@github:bas3line/ascii#b2db4f9", { "peerDependencies": { "react": ">=18" }, "optionalPeers": ["react"], "bin": { "ascii.rest": "dist/cli.js" } }, "bas3line-ascii-b2db4f9", "sha512-zjqfiASfldnFSb8SlFjfDDIUTuy0KU4andEYCVV2Zj/7Bp1172XRDxgRtfP54he2LMcmZeiTNRU9VPMxqMdTpQ=="],
 
     "astring": ["astring@1.9.0", "", { "bin": { "astring": "bin/astring" } }, "sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg=="],
 

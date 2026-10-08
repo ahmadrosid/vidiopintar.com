@@ -2,6 +2,7 @@ import { and, eq, gt } from "drizzle-orm";
 import { fetchTranscript, listLanguages } from "youtube-transcript-plus";
 import { db } from "@/lib/db";
 import { mcpTranscriptCache } from "@/lib/db/schema";
+import { fetchVideoFromOEmbed } from "@/lib/youtube";
 import {
   mapTranscriptSegments,
   mapVideoDetails,
@@ -96,6 +97,29 @@ export async function getTranscriptPage(input: {
           updatedAt: new Date(),
         },
       });
+    }
+  }
+
+  if (!response.metadata?.title) {
+    try {
+      const details = await fetchVideoFromOEmbed(videoId);
+      response = {
+        ...response,
+        metadata: {
+          ...response.metadata,
+          title: details.title,
+          author_name: details.channelTitle,
+          thumbnail_url: details.thumbnails.high?.url,
+        },
+      };
+      await db.update(mcpTranscriptCache)
+        .set({ response, updatedAt: new Date() })
+        .where(and(
+          eq(mcpTranscriptCache.videoId, videoId),
+          eq(mcpTranscriptCache.language, response.language),
+        ));
+    } catch {
+      // The title is optional; transcript delivery must continue when oEmbed is unavailable.
     }
   }
 

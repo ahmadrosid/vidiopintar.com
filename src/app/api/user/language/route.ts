@@ -7,10 +7,10 @@ export async function GET() {
     const user = await getCurrentUser();
     const language = await UserRepository.getPreferredLanguage(user.id);
     
-    return Response.json({ language: language || 'en' });
+    return Response.json({ language: language || 'id' });
   } catch (error) {
     console.error('Failed to get user language preference:', error);
-    return Response.json({ language: 'en' }, { status: 200 }); // Default to English
+    return Response.json({ language: 'id' }, { status: 200 });
   }
 }
 

@@ -1,8 +1,7 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLocale } from "next-intl";
-import { Languages } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -10,97 +9,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-type Language = "en" | "id";
+type TranscriptLanguage = "en" | "id";
 
-interface LanguageSelectorProps {
+interface TranscriptLanguageSelectorProps {
   className?: string;
-  iconOnly?: boolean;
+  initialLanguage: TranscriptLanguage;
 }
 
-const languageNames = {
-  en: "English",
-  id: "Bahasa Indonesia",
+const languageNames: Record<TranscriptLanguage, string> = {
+  en: "Inggris",
+  id: "Indonesia",
 };
 
-const locales: Language[] = ["en", "id"];
-
-export function LanguageSelector({
+export function TranscriptLanguageSelector({
   className,
-  iconOnly = false,
-}: LanguageSelectorProps) {
+  initialLanguage,
+}: TranscriptLanguageSelectorProps) {
   const router = useRouter();
-  const locale = useLocale();
+  const [language, setLanguage] = useState(initialLanguage);
 
-  const handleLanguageChange = async (newLocale: Language) => {
-    if (newLocale === locale) return;
-
-    const languageName = languageNames[newLocale];
-
-    document.cookie = `locale=${newLocale};path=/;max-age=${60 * 60 * 24 * 365}`;
-
+  const handleLanguageChange = async (nextLanguage: TranscriptLanguage) => {
     try {
-      await fetch("/api/user/language", {
+      const response = await fetch("/api/user/language", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ language: newLocale }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: nextLanguage }),
       });
-    } catch (error) {
-      console.log("Failed to sync language preference to backend:", error);
-    }
 
-    router.refresh();
-    toast.success(`Language changed to ${languageName}`);
+      if (!response.ok) throw new Error("Language update failed");
+      setLanguage(nextLanguage);
+      router.refresh();
+      toast.success(`Bahasa transkrip: ${languageNames[nextLanguage]}.`);
+    } catch {
+      toast.error("Bahasa transkrip tidak dapat diubah.");
+    }
   };
 
-  if (iconOnly) {
-    return (
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Change language"
-            className={cn("size-8 shrink-0 p-0", className)}
-          >
-            <Languages className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="min-w-[10rem]">
-          {locales.map((loc) => (
-            <DropdownMenuItem
-              key={loc}
-              onSelect={() => handleLanguageChange(loc)}
-              className={cn(locale === loc && "bg-accent")}
-            >
-              {languageNames[loc]}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  }
-
   return (
-    <Select value={locale} onValueChange={handleLanguageChange}>
-      <SelectTrigger className={cn("w-[180px]", className)}>
-        <SelectValue placeholder="Select a language" />
+    <Select value={language} onValueChange={handleLanguageChange}>
+      <SelectTrigger aria-label="Pilih bahasa transkrip" className={cn("w-[160px]", className)}>
+        <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {locales.map((loc) => (
-          <SelectItem key={loc} value={loc}>
-            {languageNames[loc]}
+        {(Object.keys(languageNames) as TranscriptLanguage[]).map((option) => (
+          <SelectItem key={option} value={option}>
+            {languageNames[option]}
           </SelectItem>
         ))}
       </SelectContent>

@@ -6,7 +6,7 @@ import { NotesView } from "@/components/video/notes-view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronRight } from "lucide-react";
 import { SummarySection } from "@/components/video/summary-section";
-import { LanguageSelector } from "@/components/language-selector";
+import { TranscriptLanguageSelector } from "@/components/language-selector";
 import { getTranslations } from "next-intl/server";
 
 interface VideoSectionProps {
@@ -56,7 +56,9 @@ export async function VideoSection({ videoId, videoDetailsPromise, transcriptPro
           <h1 className="font-semibold tracking-tight flex-1 truncate">
             {videoDetails.title}
           </h1>
-          <LanguageSelector />
+          <TranscriptLanguageSelector
+            initialLanguage={transcript.language?.toLowerCase().startsWith("id") ? "id" : "en"}
+          />
         </div>
       </div>
 

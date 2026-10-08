@@ -4,7 +4,6 @@ import { forwardRef, useEffect, useState } from "react";
 import { LogOut, Menu, PanelLeft, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useClerk } from "@clerk/nextjs";
-import { LanguageSelector } from "@/components/language-selector";
 import { Button } from "@/components/ui/button";
 
 interface AppTopbarProps {
@@ -84,7 +83,6 @@ export const AppTopbar = forwardRef<HTMLButtonElement, AppTopbarProps>(
         </div>
 
         <div className="flex shrink-0 items-center gap-1">
-          <LanguageSelector iconOnly />
           <Button
             type="button"
             onClick={handleLogout}

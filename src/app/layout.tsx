@@ -27,7 +27,7 @@ const organizationSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   logo: OG_IMAGE,
-  description: "AI-powered YouTube learning platform that transforms videos into instant summaries and interactive chat experiences",
+  description: "Layanan MCP untuk mengambil transkrip YouTube bagi agen AI.",
   sameAs: [
     "https://github.com/ahmadrosid/vidiopintar.com",
     "https://twitter.com/ahmadrosid",
@@ -44,35 +44,27 @@ const websiteSchema = {
   "@type": "WebSite",
   name: SITE_NAME,
   url: SITE_URL,
-  description: "Learn anything from YouTube with AI-powered video summaries and chat",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${SITE_URL}/home?q={search_term_string}`
-    },
-    "query-input": "required name=search_term_string"
-  }
+  description: "Layanan MCP untuk mengambil transkrip YouTube bagi agen AI.",
 };
 
 export const metadata: Metadata = {
   title: {
-    default: "Vidiopintar - Learn from YouTube with AI",
+    default: "Transkrip YouTube untuk Agen AI | Vidiopintar",
     template: "%s | Vidiopintar",
   },
   description:
-    "Turn YouTube videos into AI summaries, interactive chat, and organized notes. Learn faster from tutorials, podcasts, and lectures.",
+    "Satu alat MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
   openGraph: {
-    title: "Vidiopintar - Learn from YouTube with AI",
+    title: "Transkrip YouTube untuk Agen AI | Vidiopintar",
     description:
-      "Turn YouTube videos into AI summaries, interactive chat, and organized notes.",
+      "Satu alat MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
     url: SITE_URL,
     images: [
       {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: "Vidiopintar - Learn from YouTube with AI",
+        alt: "Vidiopintar — MCP transkrip YouTube",
       },
     ],
     type: "website",
@@ -80,22 +72,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Vidiopintar - Learn from YouTube with AI",
+    title: "Transkrip YouTube untuk Agen AI | Vidiopintar",
     description:
-      "Turn YouTube videos into AI summaries, interactive chat, and organized notes.",
+      "Satu alat MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
     images: [OG_IMAGE],
   },
   keywords: [
-    "AI YouTube summarizer",
     "YouTube transcript",
-    "video summary",
-    "learn from YouTube",
-    "AI video chat",
-    "YouTube learning tool",
-    "educational video AI",
-    "podcast summarizer",
-    "video notes AI",
-    "YouTube knowledge base",
+    "MCP transkrip YouTube",
+    "agen AI",
   ],
   authors: [{ name: SITE_NAME }],
   metadataBase: new URL(SITE_URL),
