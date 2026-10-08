@@ -30,10 +30,39 @@ interface UsageStats {
   dailyLimit: number;
 }
 
+function VideoUsageNotice({ usage, remaining, isAtLimit, isNearLimit }: { usage: UsageStats; remaining: number; isAtLimit: boolean; isNearLimit: boolean }) {
+  const usageMessage = isAtLimit
+    ? `Daily limit of ${usage.dailyLimit} video${usage.dailyLimit > 1 ? "s" : ""} reached`
+    : isNearLimit
+      ? `${remaining} video${remaining > 1 ? "s" : ""} remaining today`
+      : `${remaining} of ${usage.dailyLimit} daily video${usage.dailyLimit > 1 ? "s" : ""} remaining`;
+  return (
+    <p className="flex w-full items-center justify-start gap-2 text-sm text-muted-foreground">
+      {(isAtLimit || isNearLimit) && <AlertTriangle className="size-4 shrink-0 text-amber-500 dark:text-amber-400" />}
+      <span>{usageMessage}{" · "}<Link href="/profile/billing" className="text-accent hover:text-accent/80 hover:underline">Upgrade</Link></span>
+    </p>
+  );
+}
+
+function VideoLimitDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const t = useTranslations("limitDialog");
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader><div className="mb-2 flex items-center gap-3"><div className="rounded-full border border-accent/20 bg-accent/10 p-2"><AlertTriangle className="h-5 w-5 text-accent" /></div><DialogTitle>{t("title")}</DialogTitle></div></DialogHeader>
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
+          <div className="rounded-lg border border-accent/20 bg-accent/10 p-4"><div className="mb-2 flex items-center gap-2"><Crown className="h-4 w-4 text-accent" /><span className="text-sm font-medium">{t("premiumBenefits")}</span></div><ul className="space-y-1 text-xs text-muted-foreground"><li>• {t("benefits.unlimited")}</li><li>• {t("benefits.ai")}</li><li>• {t("benefits.support")}</li><li>• {t("benefits.features")}</li></ul></div>
+        </div>
+        <DialogFooter className="flex gap-2 sm:gap-2"><Button variant="outline" onClick={() => onOpenChange(false)} className="flex-1">{t("waitTomorrow")}</Button><Link href="/profile/billing" className="flex-1"><Button className="w-full"><Crown className="mr-2 h-4 w-4" />{t("upgradeNow")}</Button></Link></DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function VideoInputSection({ userId }: VideoInputSectionProps) {
   const router = useRouter();
   const tHero = useTranslations("heroForm");
-  const tLimit = useTranslations("limitDialog");
 
   const [usage, setUsage] = useState<UsageStats | null>(null);
   const [input, setInput] = useState("");
@@ -105,31 +134,9 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
   const isAtLimit = usage ? usage.videosUsedToday >= usage.dailyLimit : false;
   const isNearLimit = usage ? usagePercent >= 80 && !isAtLimit : false;
 
-  const usageMessage = isAtLimit
-    ? `Daily limit of ${usage?.dailyLimit} video${usage && usage.dailyLimit > 1 ? "s" : ""} reached`
-    : isNearLimit
-      ? `${remaining} video${remaining > 1 ? "s" : ""} remaining today`
-      : `${remaining} of ${usage?.dailyLimit} daily video${usage && usage.dailyLimit > 1 ? "s" : ""} remaining`;
-
   return (
     <div className="flex w-full flex-col items-stretch gap-3">
-      {usage && !usage.unlimited && (
-        <p className="flex w-full items-center justify-start gap-2 text-sm text-muted-foreground">
-          {(isAtLimit || isNearLimit) && (
-            <AlertTriangle className="size-4 shrink-0 text-amber-500 dark:text-amber-400" />
-          )}
-          <span>
-            {usageMessage}
-            {" · "}
-            <Link
-              href="/profile/billing"
-              className="text-accent hover:text-accent/80 hover:underline"
-            >
-              Upgrade
-            </Link>
-          </span>
-        </p>
-      )}
+      {usage && !usage.unlimited && <VideoUsageNotice usage={usage} remaining={remaining} isAtLimit={isAtLimit} isNearLimit={isNearLimit} />}
 
       <form onSubmit={handleSubmit} className="w-full space-y-2">
         {errors.length > 0 && !showLimitDialog && (
@@ -164,46 +171,7 @@ export function VideoInputSection({ userId }: VideoInputSectionProps) {
         </div>
       </form>
 
-      <Dialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="mb-2 flex items-center gap-3">
-              <div className="rounded-full border border-accent/20 bg-accent/10 p-2">
-                <AlertTriangle className="h-5 w-5 text-accent" />
-              </div>
-              <DialogTitle>{tLimit("title")}</DialogTitle>
-            </div>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">{tLimit("description")}</p>
-            <div className="rounded-lg border border-accent/20 bg-accent/10 p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <Crown className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium">{tLimit("premiumBenefits")}</span>
-              </div>
-              <ul className="space-y-1 text-xs text-muted-foreground">
-                <li>• {tLimit("benefits.unlimited")}</li>
-                <li>• {tLimit("benefits.ai")}</li>
-                <li>• {tLimit("benefits.support")}</li>
-                <li>• {tLimit("benefits.features")}</li>
-              </ul>
-            </div>
-          </div>
-
-          <DialogFooter className="flex gap-2 sm:gap-2">
-            <Button variant="outline" onClick={() => setShowLimitDialog(false)} className="flex-1">
-              {tLimit("waitTomorrow")}
-            </Button>
-            <Link href="/profile/billing" className="flex-1">
-              <Button className="w-full">
-                <Crown className="mr-2 h-4 w-4" />
-                {tLimit("upgradeNow")}
-              </Button>
-            </Link>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <VideoLimitDialog open={showLimitDialog} onOpenChange={setShowLimitDialog} />
     </div>
   );
 }

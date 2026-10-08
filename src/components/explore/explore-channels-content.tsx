@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ExploreBackHeader } from "@/components/explore/explore-back-header";
 import { ChannelResultCard } from "@/components/explore/channel-result-card";
 import { formatSubscriberCount } from "@/components/explore/format-subscriber-count";
 import type { YoutubeSearchChannel } from "@/lib/youtube/search";
@@ -18,24 +17,7 @@ export function ExploreChannelsContent({
 
   return (
     <div className="w-full space-y-8">
-      <div className="space-y-4">
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" />
-          {t("backToExplore")}
-        </Link>
-
-        <header className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-            {t("channels")}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {t("channelCount", { count: channels.length })}
-          </p>
-        </header>
-      </div>
+      <ExploreBackHeader title={t("channels")} count={t("channelCount", { count: channels.length })} backLabel={t("backToExplore")} />
 
       {channels.length === 0 ? (
         <p className="py-6 text-sm text-muted-foreground">{t("emptyChannels")}</p>

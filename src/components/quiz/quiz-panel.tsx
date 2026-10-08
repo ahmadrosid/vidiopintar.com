@@ -169,12 +169,63 @@ type QuizPanelProps = {
   initialEntitlements?: QuizEntitlements | null;
 };
 
+function QuizLoading() {
+  return <div className="flex h-full w-full items-center justify-center p-6"><Loader2 className="size-6 animate-spin text-muted-foreground" /></div>;
+}
+
+function QuizUpgradePrompt() {
+  const t = useTranslations("quiz");
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6 text-center">
+      <AlertTriangle className="size-10 text-amber-500" />
+      <div className="space-y-2"><p className="font-semibold">{t("upgradeTitle")}</p><p className="text-sm text-muted-foreground">{t("upgradeDescription")}</p></div>
+      <Link href="/profile/billing"><Button><Crown className="mr-2 size-4" />{t("upgradeCta")}</Button></Link>
+    </div>
+  );
+}
+
+function QuizEmptyPrompt({ isGenerating, error, onGenerate }: { isGenerating: boolean; error: string | null; onGenerate: () => void }) {
+  const t = useTranslations("quiz");
+  return (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6 text-center">
+      <div className="space-y-2"><p className="font-semibold">{t("emptyTitle")}</p><p className="text-sm text-muted-foreground">{t("emptyDescription")}</p></div>
+      <Button onClick={onGenerate} disabled={isGenerating}>{isGenerating ? <><Loader2 className="mr-2 size-4 animate-spin" />{t("generating")}</> : t("generate")}</Button>
+      {error && error !== "upgrade_required" && <p className="text-sm text-destructive">{error}</p>}
+    </div>
+  );
+}
+
+function QuizResultsPanel({ quiz, entitlements, isGenerating, onRetry, onGenerate }: {
+  quiz: QuizState;
+  entitlements: QuizEntitlements | null;
+  isGenerating: boolean;
+  onRetry: () => void;
+  onGenerate: () => void;
+}) {
+  const t = useTranslations("quiz");
+  const wrongQuestions = quiz.questions.filter((question): question is RevealedQuizQuestion => "isCorrect" in question && !question.isCorrect);
+  return <QuizResultsView score={quiz.score ?? 0} total={quiz.questions.length} wrongQuestions={wrongQuestions} onRetry={onRetry} onGenerateNew={entitlements?.canGenerate ? onGenerate : undefined} retryLabel={t("retry")} retryWithProLabel={t("retryWithPro")} generateNewLabel={t("generateNew")} generatingLabel={t("generating")} title={t("resultsTitle")} reviewTitle={t("reviewTitle")} seekLabel={t("seekToMoment")} upgradeRequired={Boolean(entitlements?.upgradeRequired)} canRetry={Boolean(entitlements?.canRetry)} canGenerate={Boolean(entitlements?.canGenerate)} isGenerating={isGenerating} onUpgrade={() => { window.location.href = "/profile/billing"; }} />;
+}
+
+function ActiveQuizQuestion({ quiz, pendingFeedbackIndex, isSubmitting, onSubmit, onAdvance }: {
+  quiz: QuizState;
+  pendingFeedbackIndex: number | null;
+  isSubmitting: boolean;
+  onSubmit: (index: number, answer: number) => void;
+  onAdvance: () => void;
+}) {
+  const t = useTranslations("quiz");
+  const activeIndex = pendingFeedbackIndex ?? Math.min(quiz.currentIndex, quiz.questions.length - 1);
+  const activeQuestion = quiz.questions[activeIndex];
+  const selectedIndex = "selectedIndex" in activeQuestion ? activeQuestion.selectedIndex : null;
+  return <QuizQuestionView question={activeQuestion} questionNumber={activeIndex + 1} totalQuestions={quiz.questions.length} onSelect={(index) => onSubmit(activeIndex, index)} disabled={isSubmitting || pendingFeedbackIndex !== null} selectedIndex={selectedIndex} showFeedback={pendingFeedbackIndex === activeIndex} nextLabel={activeIndex >= quiz.questions.length - 1 ? t("seeResults") : t("nextQuestion")} onNext={onAdvance} seekLabel={t("seekToMoment")} />;
+}
+
 export function QuizPanel({
   videoId,
   initialQuiz = null,
   initialEntitlements = null,
 }: QuizPanelProps) {
-  const t = useTranslations("quiz");
   const {
     quiz,
     entitlements,
@@ -190,11 +241,7 @@ export function QuizPanel({
   } = useQuiz({ videoId, initialQuiz, initialEntitlements });
 
   if (isLoading) {
-    return (
-      <div className="flex h-full w-full items-center justify-center p-6">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <QuizLoading />;
   }
 
   const showUpgrade =
@@ -203,110 +250,16 @@ export function QuizPanel({
     (entitlements?.trialUsed && !entitlements.canGenerate && !quiz);
 
   if (showUpgrade && !quiz) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6 text-center">
-        <AlertTriangle className="size-10 text-amber-500" />
-        <div className="space-y-2">
-          <p className="font-semibold">{t("upgradeTitle")}</p>
-          <p className="text-sm text-muted-foreground">{t("upgradeDescription")}</p>
-        </div>
-        <Link href="/profile/billing">
-          <Button>
-            <Crown className="mr-2 size-4" />
-            {t("upgradeCta")}
-          </Button>
-        </Link>
-      </div>
-    );
+    return <QuizUpgradePrompt />;
   }
 
   if (!quiz) {
-    return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-6 text-center">
-        <div className="space-y-2">
-          <p className="font-semibold">{t("emptyTitle")}</p>
-          <p className="text-sm text-muted-foreground">{t("emptyDescription")}</p>
-        </div>
-        <Button onClick={() => generateQuiz()} disabled={isGenerating}>
-          {isGenerating ? (
-            <>
-              <Loader2 className="mr-2 size-4 animate-spin" />
-              {t("generating")}
-            </>
-          ) : (
-            t("generate")
-          )}
-        </Button>
-        {error && error !== "upgrade_required" && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
-      </div>
-    );
+    return <QuizEmptyPrompt isGenerating={isGenerating} error={error} onGenerate={() => generateQuiz()} />;
   }
 
   if (quiz.status === "completed" && pendingFeedbackIndex === null) {
-    const wrongQuestions = quiz.questions.filter(
-      (question): question is RevealedQuizQuestion =>
-        "isCorrect" in question && !question.isCorrect,
-    );
-
-    return (
-      <QuizResultsView
-        score={quiz.score ?? 0}
-        total={quiz.questions.length}
-        wrongQuestions={wrongQuestions}
-        onRetry={retryQuiz}
-        onGenerateNew={
-          entitlements?.canGenerate
-            ? () => generateQuiz(true)
-            : undefined
-        }
-        retryLabel={t("retry")}
-        retryWithProLabel={t("retryWithPro")}
-        generateNewLabel={t("generateNew")}
-        generatingLabel={t("generating")}
-        title={t("resultsTitle")}
-        reviewTitle={t("reviewTitle")}
-        seekLabel={t("seekToMoment")}
-        upgradeRequired={Boolean(entitlements?.upgradeRequired)}
-        canRetry={Boolean(entitlements?.canRetry)}
-        canGenerate={Boolean(entitlements?.canGenerate)}
-        isGenerating={isGenerating}
-        onUpgrade={() => {
-          window.location.href = "/profile/billing";
-        }}
-      />
-    );
+    return <QuizResultsPanel quiz={quiz} entitlements={entitlements} isGenerating={isGenerating} onRetry={retryQuiz} onGenerate={() => generateQuiz(true)} />;
   }
 
-  const activeIndex =
-    pendingFeedbackIndex ?? Math.min(quiz.currentIndex, quiz.questions.length - 1);
-  const activeQuestion = quiz.questions[activeIndex];
-  const selectedIndex =
-    "selectedIndex" in activeQuestion ? activeQuestion.selectedIndex : null;
-
-  return (
-    <QuizQuestionView
-      question={activeQuestion}
-      questionNumber={activeIndex + 1}
-      totalQuestions={quiz.questions.length}
-      onSelect={(index) => submitAnswer(activeIndex, index)}
-      disabled={isSubmitting || pendingFeedbackIndex !== null}
-      selectedIndex={selectedIndex}
-      showFeedback={pendingFeedbackIndex === activeIndex}
-      nextLabel={
-        activeIndex >= quiz.questions.length - 1
-          ? t("seeResults")
-          : t("nextQuestion")
-      }
-      onNext={() => {
-        if (activeIndex >= quiz.questions.length - 1) {
-          advanceAfterFeedback();
-          return;
-        }
-        advanceAfterFeedback();
-      }}
-      seekLabel={t("seekToMoment")}
-    />
-  );
+  return <ActiveQuizQuestion quiz={quiz} pendingFeedbackIndex={pendingFeedbackIndex} isSubmitting={isSubmitting} onSubmit={submitAnswer} onAdvance={advanceAfterFeedback} />;
 }

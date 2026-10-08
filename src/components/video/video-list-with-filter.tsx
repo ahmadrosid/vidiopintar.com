@@ -39,6 +39,50 @@ interface VideoListWithFilterProps {
   recommendedVideos?: RecommendedVideo[];
 }
 
+type FilteredVideo = Video & { meta: string | null };
+
+function LibraryVideoList({ videos, channels, selectedChannel, setSelectedChannel, sortBy, setSortBy, layout, setLayout, searchQuery, setSearchQuery }: {
+  videos: FilteredVideo[];
+  channels: string[];
+  selectedChannel: string | null;
+  setSelectedChannel: (channel: string | null) => void;
+  sortBy: SortOption;
+  setSortBy: (sort: SortOption) => void;
+  layout: ViewLayout;
+  setLayout: (layout: ViewLayout) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}) {
+  const t = useTranslations("library");
+  return (
+    <div className="w-full">
+      <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="relative min-w-0 flex-1"><Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input type="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t("searchPlaceholder")} aria-label={t("searchPlaceholder")} className="h-10 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40" /></div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={selectedChannel ?? "all"} onValueChange={(value) => setSelectedChannel(value === "all" ? null : value)}>
+            <SelectTrigger className="h-10 w-auto min-w-[5.5rem] cursor-pointer rounded-xl border border-border bg-card shadow-none"><SelectValue placeholder={t("all")} /></SelectTrigger>
+            <SelectContent><SelectItem value="all">{t("all")}</SelectItem>{channels.map((channel) => <SelectItem key={channel} value={channel}>{channel}</SelectItem>)}</SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+            <SelectTrigger className="h-10 w-auto min-w-[9rem] cursor-pointer rounded-xl border border-border bg-card shadow-none"><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="recent">{t("sort.recent")}</SelectItem><SelectItem value="title">{t("sort.title")}</SelectItem><SelectItem value="channel">{t("sort.channel")}</SelectItem></SelectContent>
+          </Select>
+          <div className="flex items-center rounded-xl border border-border bg-card p-1">
+            <button type="button" onClick={() => setLayout("grid")} aria-label={t("view.grid")} aria-pressed={layout === "grid"} className={cn("cursor-pointer rounded-lg p-1.5 transition-colors", layout === "grid" ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground")}><LayoutGrid className="size-4" /></button>
+            <button type="button" onClick={() => setLayout("list")} aria-label={t("view.list")} aria-pressed={layout === "list"} className={cn("cursor-pointer rounded-lg p-1.5 transition-colors", layout === "list" ? "bg-white/10 text-foreground" : "text-muted-foreground hover:text-foreground")}><List className="size-4" /></button>
+          </div>
+        </div>
+      </div>
+      <VideoList videos={videos} layout={layout} />
+    </div>
+  );
+}
+
+function EmptyVideoList({ isLibrary, recommendedVideos }: { isLibrary: boolean; recommendedVideos?: RecommendedVideo[] }) {
+  const t = useTranslations("library");
+  return isLibrary ? <p className="py-16 text-center text-sm text-muted-foreground">{t("empty")}</p> : <RecommendedVideos videos={recommendedVideos} />;
+}
+
 export function VideoListWithFilter({
   videos,
   showViewAll = true,
@@ -111,107 +155,10 @@ export function VideoListWithFilter({
     }));
   }, [videos, effectiveChannel, searchQuery, sortBy, tLibrary]);
 
-  if (!videos || videos.length === 0) {
-    if (variant === "library") {
-      return (
-        <p className="py-16 text-center text-sm text-muted-foreground">
-          {tLibrary("empty")}
-        </p>
-      );
-    }
-    return <RecommendedVideos videos={recommendedVideos} />;
-  }
+  if (!videos.length) return <EmptyVideoList isLibrary={variant === "library"} recommendedVideos={recommendedVideos} />;
 
   if (variant === "library") {
-    return (
-      <div className="w-full">
-        <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="relative min-w-0 flex-1">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={tLibrary("searchPlaceholder")}
-              aria-label={tLibrary("searchPlaceholder")}
-              className="h-10 w-full rounded-xl border border-border bg-card pl-10 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent/40"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Select
-              value={selectedChannel ?? "all"}
-              onValueChange={(value) =>
-                setSelectedChannel(value === "all" ? null : value)
-              }
-            >
-              <SelectTrigger className="h-10 w-auto min-w-[5.5rem] cursor-pointer rounded-xl border border-border bg-card shadow-none">
-                <SelectValue placeholder={tLibrary("all")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{tLibrary("all")}</SelectItem>
-                {uniqueChannels.map((channel) => (
-                  <SelectItem key={channel} value={channel}>
-                    {channel}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={sortBy}
-              onValueChange={(value) => setSortBy(value as SortOption)}
-            >
-              <SelectTrigger className="h-10 w-auto min-w-[9rem] cursor-pointer rounded-xl border border-border bg-card shadow-none">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recent">
-                  {tLibrary("sort.recent")}
-                </SelectItem>
-                <SelectItem value="title">{tLibrary("sort.title")}</SelectItem>
-                <SelectItem value="channel">
-                  {tLibrary("sort.channel")}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            <div className="flex items-center rounded-xl border border-border bg-card p-1">
-              <button
-                type="button"
-                onClick={() => setLayout("grid")}
-                aria-label={tLibrary("view.grid")}
-                aria-pressed={layout === "grid"}
-                className={cn(
-                  "cursor-pointer rounded-lg p-1.5 transition-colors",
-                  layout === "grid"
-                    ? "bg-white/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <LayoutGrid className="size-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setLayout("list")}
-                aria-label={tLibrary("view.list")}
-                aria-pressed={layout === "list"}
-                className={cn(
-                  "cursor-pointer rounded-lg p-1.5 transition-colors",
-                  layout === "list"
-                    ? "bg-white/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <List className="size-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <VideoList videos={filteredVideos} layout={layout} />
-      </div>
-    );
+    return <LibraryVideoList videos={filteredVideos} channels={uniqueChannels} selectedChannel={selectedChannel} setSelectedChannel={setSelectedChannel} sortBy={sortBy} setSortBy={setSortBy} layout={layout} setLayout={setLayout} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />;
   }
 
   return (

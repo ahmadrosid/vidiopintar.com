@@ -7,14 +7,16 @@ const endpoint = "https://vidiopintar.com/api/mcp";
 const clients = [
   {
     id: "claude-code",
-    label: "Claude Code",
-    code: `claude mcp add --transport http vidiopintar ${endpoint} \\
+    label: "claude code",
+    code: `claude mcp add --transport http vidiopintar \\
+  ${endpoint} \\
   --header "Authorization: Bearer <API_KEY>"`,
   },
   {
     id: "cursor",
-    label: "Cursor",
-    code: `{
+    label: "cursor",
+    code: `// ~/.cursor/mcp.json
+{
   "mcpServers": {
     "vidiopintar": {
       "url": "${endpoint}",
@@ -25,22 +27,10 @@ const clients = [
   },
   {
     id: "vscode",
-    label: "VS Code",
-    code: `{
+    label: "vs code",
+    code: `// .vscode/mcp.json
+{
   "servers": {
-    "vidiopintar": {
-      "type": "http",
-      "url": "${endpoint}",
-      "headers": { "Authorization": "Bearer <API_KEY>" }
-    }
-  }
-}`,
-  },
-  {
-    id: "other",
-    label: "Lainnya",
-    code: `{
-  "mcpServers": {
     "vidiopintar": {
       "type": "http",
       "url": "${endpoint}",
@@ -58,7 +48,7 @@ export function InstallTabs() {
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(client.code);
+      await navigator.clipboard.writeText(client.code.replace(/^\/\/.*\n/, ""));
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -67,8 +57,8 @@ export function InstallTabs() {
   };
 
   return (
-    <div className="border border-[#25272d] bg-[#0d0f12]">
-      <div role="tablist" aria-label="Klien MCP" className="flex overflow-x-auto border-b border-[#25272d]">
+    <div>
+      <div role="tablist" aria-label="Klien MCP" className="flex flex-wrap gap-x-5 gap-y-2">
         {clients.map((item) => (
           <button
             key={item.id}
@@ -79,30 +69,26 @@ export function InstallTabs() {
               setActive(item.id);
               setCopied(false);
             }}
-            className={`min-h-12 shrink-0 px-5 text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#65c9ad] sm:text-base ${
+            className={`focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#65c9ad] ${
               item.id === active
-                ? "border-b border-[#65c9ad] text-[#e8ebef]"
+                ? "text-[#e8ebef] underline decoration-[#65c9ad] underline-offset-4"
                 : "text-[#6f7782] hover:text-[#c3c9d1]"
             }`}
           >
             {item.label}
           </button>
         ))}
+        <button
+          type="button"
+          onClick={copy}
+          className="ml-auto text-[#6f7782] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#65c9ad]"
+        >
+          {copied ? "[tersalin]" : "[salin]"}
+        </button>
       </div>
-      <div role="tabpanel" className="p-5 sm:p-8">
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={copy}
-            className="min-h-9 shrink-0 border border-[#303239] px-4 text-sm text-[#c3c9d1] transition-colors hover:border-[#65c9ad] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#65c9ad]"
-          >
-            {copied ? "Tersalin ✓" : "Salin"}
-          </button>
-        </div>
-        <pre className="mt-2 overflow-x-auto text-sm leading-7 text-[#c9cbd1] sm:text-base">
-          <code>{client.code}</code>
-        </pre>
-      </div>
+      <pre role="tabpanel" className="mt-5 overflow-x-auto text-sm leading-7 text-[#c9cbd1] sm:text-base">
+        <code>{client.code}</code>
+      </pre>
     </div>
   );
 }

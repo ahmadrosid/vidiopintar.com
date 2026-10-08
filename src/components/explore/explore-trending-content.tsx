@@ -1,9 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ExploreBackHeader } from "@/components/explore/explore-back-header";
 import { VideoCard } from "@/components/video/video-card";
 import { cn } from "@/lib/utils";
 import {
@@ -43,24 +42,7 @@ export function ExploreTrendingContent({
 
   return (
     <div className="w-full space-y-8">
-      <div className="space-y-4">
-        <Link
-          href="/explore"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-4" />
-          {t("backToExplore")}
-        </Link>
-
-        <header className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
-            {t("trending")}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {t("videoCount", { count: filteredVideos.length })}
-          </p>
-        </header>
-      </div>
+      <ExploreBackHeader title={t("trending")} count={t("videoCount", { count: filteredVideos.length })} backLabel={t("backToExplore")} />
 
       <div className="flex flex-wrap gap-3">
         {filterOptions.map((filterId) => {
