@@ -21,7 +21,7 @@ describe("fetchVideoFromOEmbed", () => {
         }),
         { status: 200 },
       );
-    }) as typeof fetch;
+    }) as unknown as typeof fetch;
 
     const details = await fetchVideoFromOEmbed("dQw4w9WgXcQ");
 
@@ -34,7 +34,7 @@ describe("fetchVideoFromOEmbed", () => {
 
   test("uses fallback title when oembed fails", async () => {
     globalThis.fetch = (async () =>
-      new Response("gone", { status: 404 })) as typeof fetch;
+      new Response("gone", { status: 404 })) as unknown as typeof fetch;
 
     await expect(fetchVideoFromOEmbed("dQw4w9WgXcQ")).rejects.toThrow(
       /Failed to fetch video details/,

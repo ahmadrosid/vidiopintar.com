@@ -22,7 +22,9 @@ function resolveDatabasePath() {
     return PRODUCTION_DATABASE_PATH;
   }
 
-  return path.resolve(configured);
+  if (path.isAbsolute(configured)) return configured;
+
+  return path.join(process.cwd(), "data", path.basename(configured));
 }
 
 module.exports = { resolveDatabasePath };

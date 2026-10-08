@@ -43,19 +43,10 @@ const nextConfig = {
     optimizePackageImports: [
       '@phosphor-icons/react',
       'lucide-react',
-      'recharts',
       'motion/react',
       '@clerk/ui',
       'date-fns',
     ],
-    webpackBuildWorker: true,
-  },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals.push('better-sqlite3');
-    }
-    // Keep default filesystem cache so Docker BuildKit can reuse /.next/cache.
-    return config;
   },
 }
 

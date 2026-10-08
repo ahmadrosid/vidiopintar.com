@@ -96,7 +96,7 @@ const authorizedParties = [
   "https://vidiopintar.com",
 ].filter((origin): origin is string => Boolean(origin));
 
-export default clerkMiddleware(
+export const proxy = clerkMiddleware(
   async (auth, req) => {
     const pathname = req.nextUrl.pathname;
     const mdRewrite = toMarkdownRewritePath(pathname);
