@@ -1,7 +1,5 @@
 {
   "entry": [
-    "src/i18n.ts",
-    "chrome-extension/background.js",
-    "chrome-extension/content.js"
+    "src/i18n.ts"
   ]
 }

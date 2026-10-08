@@ -17,7 +17,6 @@
     "db:migrate-from-pg": "bun scripts/migrate-pg-to-sqlite.ts",
     "db:verify": "bun scripts/verify-sqlite.ts",
     "db:tables": "bun scripts/db-tables.ts",
-    "cli": "bun run vidiopintar-cli/src/index.ts",
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
