@@ -193,6 +193,8 @@ The source tree has no active production deploy workflow. Deployment access exis
 
 The live homepage and `/mcp.md` now return HTTP 200. The homepage shows the Bahasa MCP setup, `youtube_get_transcript`, limits, privacy, and beta access. `/api/health` reports a healthy application and database. An unauthenticated MCP initialize request returns HTTP 401 with `INVALID_CREDENTIALS`. This confirms the production endpoint is present, but it does not verify a transcript call with a valid production key. No valid key was read or used.
 
-The app now builds with Next.js 16.4.0 and React 19.3.0. Local build, test, Docker build, and React Doctor checks passed. GitHub React Doctor passed for the upgrade commit. The GitHub Docker image build is still running. The upgrade is pushed to `main` as `a447698`.
+The app now builds with Next.js 16.4.0 and React 19.3.0. Local build, test, Docker build, and React Doctor checks passed. GitHub React Doctor and Docker image builds passed. The upgrade is pushed to `main` as `a447698`.
+
+The runner image no longer includes the Drizzle CLI and its build dependencies. The entrypoint applies migrations through the Drizzle ORM runtime already included with the app. Fresh and repeated migrations passed in a temporary SQLite database. The local image size fell from 336.2 MB to 294.8 MB. GitHub built and pushed the updated image from commit `6798446`.
 
 The earlier production status above is stale: the homepage is no longer the old consumer page, and `/api/mcp` no longer returns 404. Production transcript verification, a second named MCP client, beta targets and results, a published consumer sunset date, and user transition remain open release gates. Do not remove legacy routes or deploy a new release before the required user approval and release gates.
