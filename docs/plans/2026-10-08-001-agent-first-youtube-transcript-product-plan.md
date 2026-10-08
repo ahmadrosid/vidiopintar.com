@@ -188,3 +188,11 @@ Release work remains. The production website still serves the old consumer page,
 The current provider uses an unofficial YouTube transcript scraper. The user confirmed permission to use this source. Keep the confirmation with the launch record and continue to monitor provider terms and reliability. YouTube can still throttle the provider; local testing returned a temporary too-many-requests response.
 
 The source tree has no active production deploy workflow. Deployment access exists as GitHub secret names, but the secrets were not read. Do not remove consumer routes until the sunset conditions in step 6 are met. `next-intl` remains while those legacy routes still use its message catalog.
+
+## Verification update (2026-10-09)
+
+The live homepage and `/mcp.md` now return HTTP 200. The homepage shows the Bahasa MCP setup, `youtube_get_transcript`, limits, privacy, and beta access. `/api/health` reports a healthy application and database. An unauthenticated MCP initialize request returns HTTP 401 with `INVALID_CREDENTIALS`. This confirms the production endpoint is present, but it does not verify a transcript call with a valid production key. No valid key was read or used.
+
+The app now builds with Next.js 16.4.0 and React 19.3.0. Local build, test, Docker build, and React Doctor checks passed. GitHub React Doctor passed for the upgrade commit. The GitHub Docker image build is still running. The upgrade is pushed to `main` as `a447698`.
+
+The earlier production status above is stale: the homepage is no longer the old consumer page, and `/api/mcp` no longer returns 404. Production transcript verification, a second named MCP client, beta targets and results, a published consumer sunset date, and user transition remain open release gates. Do not remove legacy routes or deploy a new release before the required user approval and release gates.
