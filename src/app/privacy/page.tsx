@@ -1,161 +1,68 @@
-import Typography from "@/components/common/typography"
-import MainLayout from "@/components/layouts/main-layout"
-import { buildPageMetadata } from "@/lib/geo/metadata"
-import { SITE_LAST_MODIFIED } from "@/lib/geo/site"
-import Link from "next/link"
+import type { Metadata } from "next";
+import Link from "next/link";
+import { SITE_LAST_MODIFIED, SITE_URL } from "@/lib/geo/site";
 
-export const metadata = buildPageMetadata({
-  title: "Privacy Policy",
-  description:
-    "How Vidiopintar collects, uses, and protects personal information, including your data rights and security practices.",
-  path: "/privacy",
-})
+export const metadata: Metadata = {
+  title: "Kebijakan Privasi | Vidiopintar",
+  description: "Cara Vidiopintar memproses API key, permintaan transkrip, dan data penggunaan MCP.",
+  alternates: { canonical: `${SITE_URL}/privacy` },
+};
+
+const updated = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+}).format(SITE_LAST_MODIFIED);
 
 export default function PrivacyPolicy() {
-  const lastUpdated = SITE_LAST_MODIFIED.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-
-  const htmlContent = `
-  <h2>Introduction</h2>
-  <p>Welcome to VidioPintar. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our video processing service.</p>
-
-  <h2>Information We Collect</h2>
-  <p>We collect the following types of information:</p>
-  <h3>Personal Information</h3>
-  <ul>
-    <li>Email address when you create an account</li>
-    <li>Name (optional) for account personalization</li>
-    <li>Payment information for premium features</li>
-  </ul>
-
-  <h3>Usage Data</h3>
-  <ul>
-    <li>Video processing preferences and settings</li>
-    <li>Service usage patterns and frequency</li>
-    <li>Device and browser information</li>
-    <li>IP address and general location data</li>
-  </ul>
-
-  <h3>Content Data</h3>
-  <ul>
-    <li>Videos you upload for processing</li>
-    <li>Generated transcriptions and translations</li>
-    <li>Processing preferences and output settings</li>
-  </ul>
-
-  <h2>How We Use Your Information</h2>
-  <p>We use the collected information for the following purposes:</p>
-  <ul>
-    <li>To provide and maintain our video processing service</li>
-    <li>To process your videos and deliver requested features</li>
-    <li>To improve and optimize our service performance</li>
-    <li>To communicate with you about your account and service updates</li>
-    <li>To process payments for premium features</li>
-    <li>To detect, prevent, and address technical issues</li>
-    <li>To comply with legal obligations</li>
-  </ul>
-
-  <h2>Data Storage and Security</h2>
-  <p>We implement appropriate technical and organizational measures to protect your  personal information against unauthorized access, alteration, disclosure, or destruction.</p>
-  <ul>
-    <li>All data transmissions are encrypted using industry-standard SSL/TLS protocols</li>
-    <li>Videos are processed in secure, isolated environments</li>
-    <li>Processed videos are automatically deleted after 30 days unless you choose to save them</li>
-    <li>We use trusted cloud service providers with strong security certifications</li>
-    <li>Access to personal data is restricted to authorized personnel only</li>
-  </ul>
-
-  <h2>Data Sharing and Third Parties</h2>
-  <p>We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following situations:</p>
-  <ul>
-    <li>With service providers who assist in operating our platform (e.g., cloud hosting, payment processing)</li>
-    <li>To comply with legal obligations or respond to lawful requests</li>
-    <li>To protect our rights, privacy, safety, or property</li>
-    <li>With your explicit consent</li>
-  </ul>
-
-  <h2>Your Rights and Choices</h2>
-  <p>You have the following rights regarding your personal information:</p>
-  <ul>
-    <li><strong>Access:</strong> Request a copy of your personal data</li>
-    <li><strong>Correction:</strong> Request correction of inaccurate data</li>
-    <li><strong>Deletion:</strong> Request deletion of your account and associated data</li>
-    <li><strong>Data Portability:</strong> Request your data in a machine-readable format</li>
-    <li><strong>Opt-out:</strong> Unsubscribe from marketing communications</li>
-  </ul>
-  <p>To exercise these rights, please contact us at <a href="mailto:privacy@vidiopintar.com">privacy@vidiopintar.com</a></p>
-
-  <h2>Cookies and Tracking</h2>
-  <p>We use cookies and similar tracking technologies to improve your experience on our platform:</p>
-  <ul>
-    <li><strong>Essential Cookies:</strong> Required for basic functionality and security</li>
-    <li><strong>Analytics Cookies:</strong> Help us understand how users interact with our service</li>
-    <li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
-  </ul>
-  <p>You can manage cookie preferences through your browser settings.</p>
-
-  <h2>Children's Privacy</h2>
-  <p>Our service is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you become aware that a child has provided us with personal information, please contact us immediately.</p>
-
-  <h2>Changes to This Policy</h2>
-  <p>We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date. We encourage you to review this Privacy Policy periodically.</p>
-
-  <h2>Contact Us</h2>
-  <p>If you have any questions about this Privacy Policy or our data practices, please contact us:</p>
-  <p> Email: <a href="mailto:support@vidiopintar.com">support@vidiopintar.com</a></p>
-  <p> Website: <a href="https://vidiopintar.com">vidiopintar.com</a></p>
-  `
-
   return (
-    <MainLayout>
-      <main className="bg-background">
-        <div className="relative isolate">
-          <div className="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
-            <div className="mx-auto max-w-5xl px-6">
-              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl mb-8">
-                Privacy Policy
-              </h1>
-              <p className="text-muted-foreground mb-12">
-                Last updated:{" "}
-                <time dateTime={SITE_LAST_MODIFIED.toISOString()}>{lastUpdated}</time>
-              </p>
+    <main className="min-h-screen bg-[#101114] font-mono text-[#dedfe3]">
+      <header className="mx-auto flex max-w-3xl justify-between px-6 py-7 text-sm">
+        <Link href="/" className="text-[#f0f1f3]">vidiopintar<span className="text-[#65c9ad]">.</span></Link>
+        <Link href="/mcp" className="text-[#a1a3aa] underline underline-offset-4">Panduan MCP ↗</Link>
+      </header>
+      <article className="mx-auto max-w-3xl px-6 pb-20 pt-10">
+        <p className="text-xs text-[#65c9ad]">LAYANAN MCP</p>
+        <h1 className="mt-4 text-3xl font-medium tracking-tight text-[#f0f1f3] sm:text-4xl">Kebijakan Privasi</h1>
+        <p className="mt-3 text-xs text-[#858891]">Diperbarui {updated}</p>
 
-              <nav className="mb-10 flex flex-wrap gap-4 text-sm">
-                <Link href="/terms" className="text-primary hover:underline">
-                  Terms of Service
-                </Link>
-                <Link href="/faq" className="text-primary hover:underline">
-                  FAQ
-                </Link>
-                <Link href="/blog" className="text-primary hover:underline">
-                  Blog
-                </Link>
-                <a
-                  href="https://support.google.com/youtube/"
-                  className="text-primary hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  YouTube Help
-                </a>
-                <a
-                  href="https://schema.org/PrivacyPolicy"
-                  className="text-primary hover:underline"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Schema.org PrivacyPolicy
-                </a>
-              </nav>
-
-              <Typography html={htmlContent} />
-            </div>
-          </div>
+        <div className="mt-10 space-y-8 text-sm leading-7 text-[#b8bac1]">
+          <section>
+            <h2 className="text-base font-medium text-white">Data yang diproses</h2>
+            <p className="mt-2">Saat agen memanggil MCP, layanan memproses URL atau ID video YouTube, kode bahasa, cursor, dan API key. Layanan memakai data ini untuk mengambil dan mengirim transkrip.</p>
+          </section>
+          <section>
+            <h2 className="text-base font-medium text-white">API key dan penggunaan</h2>
+            <p className="mt-2">Vidiopintar tidak menyimpan API key lengkap. Sistem menyimpan hash key, prefix, nama key, waktu pencabutan, jumlah permintaan, dan jumlah byte keluaran. Key lengkap hanya tampil saat operator membuatnya.</p>
+          </section>
+          <section>
+            <h2 className="text-base font-medium text-white">Cache transkrip</h2>
+            <p className="mt-2">Layanan menyimpan segmen transkrip dan metadata video dalam cache selama tujuh hari. Pembersihan berjalan saat ada permintaan MCP. Cache dapat tersimpan lebih lama jika layanan tidak menerima permintaan atau pembersihan gagal.</p>
+          </section>
+          <section>
+            <h2 className="text-base font-medium text-white">Masa simpan data penggunaan</h2>
+            <p className="mt-2">Sistem menghapus catatan kuota yang lebih lama dari 90 hari. Sistem juga menghapus catatan key yang sudah dicabut setelah 90 hari. Saat operator mencabut key, sistem mengganti hash key agar key lama tidak dapat digunakan lagi.</p>
+          </section>
+          <section>
+            <h2 className="text-base font-medium text-white">Penyedia layanan</h2>
+            <p className="mt-2">Vidiopintar meminta caption dari YouTube. YouTube memproses permintaan menurut kebijakan dan ketentuannya sendiri. Penyedia hosting juga dapat memproses data teknis untuk menjalankan layanan.</p>
+          </section>
+          <section>
+            <h2 className="text-base font-medium text-white">Percakapan agen</h2>
+            <p className="mt-2">MCP tidak menyimpan prompt atau riwayat percakapan agen. Jangan kirim informasi sensitif melalui input video, bahasa, atau cursor.</p>
+          </section>
+          <section>
+            <h2 className="text-base font-medium text-white">Permintaan privasi</h2>
+            <p className="mt-2">Untuk meminta akses atau penghapusan data key, hubungi <a className="text-[#8de0c5] underline underline-offset-4" href="mailto:support@vidiopintar.com">support@vidiopintar.com</a>. Sertakan prefix key. Jangan kirim API key lengkap.</p>
+          </section>
         </div>
-      </main>
-    </MainLayout>
-  )
+
+        <nav className="mt-12 flex gap-5 border-t border-[#303239] pt-5 text-xs text-[#858891]">
+          <Link className="hover:text-white" href="/terms">Ketentuan layanan</Link>
+          <Link className="hover:text-white" href="/mcp">Panduan MCP</Link>
+          <a className="hover:text-white" href="mailto:support@vidiopintar.com">Dukungan</a>
+        </nav>
+      </article>
+    </main>
+  );
 }

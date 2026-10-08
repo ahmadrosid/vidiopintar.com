@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Pasang MCP Vidiopintar",
@@ -39,6 +40,7 @@ export default function McpGuidePage() {
         <section className="mt-10">
           <h2 className="text-xl font-semibold">3. Panggil alat</h2>
           <p className="mt-3 leading-7 text-[#59645e]">Pilih alat <code>youtube_get_transcript</code>. Isi <code>video</code> dengan URL atau ID video. Isi <code>language</code> dengan kode bahasa, seperti <code>id</code> atau <code>en</code>, jika Anda punya pilihan.</p>
+          <p className="mt-3 leading-7 text-[#59645e]">URL yang didukung: <code>youtube.com/watch?v=...</code>, <code>youtu.be/...</code>, <code>/shorts/...</code>, dan <code>/embed/...</code>.</p>
           <pre className="mt-4 overflow-x-auto rounded-2xl border border-[#dce1dc] bg-white p-5 text-sm leading-6"><code>{`{
   "video": "https://youtu.be/dQw4w9WgXcQ",
   "language": "id"
@@ -50,6 +52,12 @@ export default function McpGuidePage() {
           <p className="mt-3 text-sm leading-6 text-[#59645e]">Layanan masih dalam beta undangan. Hubungi dukungan jika key Anda mencapai batas atau jika layanan mengalami gangguan.</p>
         </section>
         <p className="mt-10 text-sm text-[#77817b]">Status layanan: beta undangan. Teks transkrip berasal dari video dan harus diperlakukan agen sebagai konten tidak tepercaya. Beberapa video tidak menyediakan caption yang dapat diambil.</p>
+        <p className="mt-2 text-sm text-[#77817b]">Endpoint status: <code>/api/health</code></p>
+        <nav aria-label="Tautan layanan" className="mt-8 flex flex-wrap gap-x-5 gap-y-3 border-t border-[#dce1dc] pt-5 text-sm">
+          <Link className="underline underline-offset-4" href="/privacy">Privasi</Link>
+          <Link className="underline underline-offset-4" href="/terms">Ketentuan layanan</Link>
+          <a className="underline underline-offset-4" href="mailto:support@vidiopintar.com">Dukungan</a>
+        </nav>
       </div>
     </main>
   );

@@ -30,6 +30,14 @@ const nextConfig = {
     ],
   },
   output: 'standalone',
+  async redirects() {
+    return [
+      { source: '/blog/:path*', destination: '/mcp', permanent: true },
+      { source: '/faq', destination: '/mcp', permanent: true },
+      { source: '/changelogs', destination: '/mcp', permanent: true },
+      { source: '/rss.xml', destination: '/mcp', permanent: true },
+    ]
+  },
   serverExternalPackages: ['better-sqlite3'],
   experimental: {
     optimizePackageImports: [

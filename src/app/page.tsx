@@ -19,29 +19,29 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-[#101114] font-mono text-[#dedfe3]">
-      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-7">
-        <Link href="/" className="text-sm font-semibold tracking-tight text-[#f0f1f3]">
+    <main className="min-h-screen bg-[#131518] font-mono text-[#c3c9d1]">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-8">
+        <Link href="/" className="text-sm font-medium tracking-tight text-[#e8ebef]">
           vidiopintar<span className="text-[#65c9ad]">.</span>
         </Link>
         <Link
           href="/mcp"
-          className="text-xs text-[#a1a3aa] underline decoration-[#484a52] underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#65c9ad]"
+          className="text-sm text-[#8c95a1] underline decoration-[#484a52] underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#65c9ad]"
         >
           Panduan MCP ↗
         </Link>
       </header>
 
-      <section className="mx-auto flex w-full max-w-5xl flex-col px-6 pb-20 pt-10 md:pt-16">
-        <p className="text-xs text-[#65c9ad]">MCP UNTUK AGEN AI</p>
-        <h1 className="mt-5 max-w-3xl text-balance text-4xl font-medium leading-tight tracking-[-0.04em] text-[#f0f1f3] sm:text-5xl md:text-6xl">
-          Transkrip YouTube, siap dipakai agen Anda.
+      <section className="mx-auto flex w-full max-w-6xl flex-col px-6 pb-20 pt-8 md:pt-12">
+        <p className="text-sm text-[#8c95a1]">MCP · TRANSKRIP YOUTUBE</p>
+        <h1 className="mt-3 max-w-3xl text-balance text-xl font-medium leading-relaxed text-[#e8ebef] sm:text-2xl">
+          Ambil transkrip YouTube lewat satu alat MCP.
         </h1>
-        <p className="mt-5 max-w-xl text-sm leading-7 text-[#a1a3aa] sm:text-base">
-          Satu alat MCP untuk mengambil transkrip video beserta penanda waktunya.
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#8c95a1]">
+          Agen AI dapat meminta transkrip video dengan penanda waktu lewat endpoint yang sama.
         </p>
 
-        <div className="mt-10 overflow-hidden border border-[#303239] bg-[#03101a]">
+        <div className="mt-8 overflow-hidden bg-[#03101a]">
           <DeepReef />
         </div>
 
@@ -55,15 +55,15 @@ export default function Page() {
           <span className="text-xs text-[#858891]">Beta undangan · memerlukan API key</span>
         </div>
 
-        <div className="mt-12 border-t border-[#303239] pt-5">
-          <p className="text-[10px] uppercase tracking-[.16em] text-[#858891]">Endpoint MCP</p>
+        <div className="mt-10 border-t border-[#303239] pt-5">
+          <p className="text-xs text-[#8c95a1]">Endpoint MCP</p>
           <code className="mt-2 block break-all text-xs text-[#c9cbd1] sm:text-sm">
             https://vidiopintar.com/api/mcp
           </code>
         </div>
       </section>
 
-      <footer className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-4 border-t border-[#25272d] px-6 py-6 text-xs text-[#858891]">
+      <footer className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 border-t border-[#25272d] px-6 py-6 text-sm text-[#8c95a1]">
         <span>Vidiopintar · MCP transkrip YouTube</span>
         <nav aria-label="Tautan layanan" className="flex gap-5">
           <Link className="hover:text-white" href="/privacy">Privasi</Link>
