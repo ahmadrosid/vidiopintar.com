@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/table";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { formatDisplayDateTime } from "@/lib/utils";
-import { useTranslations } from 'next-intl';
 
 interface Transaction {
   id: string;
@@ -68,7 +67,6 @@ function formatDate(date: Date) {
 }
 
 export function TransactionHistory({ transactions, currentPaymentSettings }: TransactionHistoryProps) {
-  const t = useTranslations('profile');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [transactionOverrides, setTransactionOverrides] = useState<Record<string, Transaction>>({});

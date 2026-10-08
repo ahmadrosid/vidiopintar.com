@@ -1,4 +1,3 @@
-import { getTranslations } from 'next-intl/server'
 import Link from 'next/link'
 import { CopyButton } from '@/components/ui/copy-button'
 import { WhatsAppConfirmButton } from '@/components/payment/whatsapp-confirm-button'
@@ -59,7 +58,6 @@ async function getPaymentContext(
 }
 
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
-    const t = await getTranslations('payment')
     const { plan } = await searchParams
 
     // Validate plan parameter
@@ -101,8 +99,8 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                     </Link>
                 </div>
                 <div className="text-center mb-8">
-                    <h1 className="text-xl font-medium mb-2">{t('title')}</h1>
-                    <p className="text-sm text-muted-foreground">{t('subtitle')}</p>
+                    <h1 className="text-xl font-medium mb-2">{"Selesaikan Pembayaran"}</h1>
+                    <p className="text-sm text-muted-foreground">{"Transfer ke rekening di bawah, lalu konfirmasi via WhatsApp"}</p>
                 </div>
 
                 {canPurchaseCheck && !canPurchaseCheck.canPurchase && canPurchaseCheck.reason === 'already_have_active_subscription' && (
@@ -136,7 +134,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
 
                 {existingTransaction && (
                     <p className="text-sm text-muted-foreground text-center mb-6">
-                        {t('existingPayment')}
+                        {"Menampilkan pembayaran tertunda untuk paket ini."}
                     </p>
                 )}
 
@@ -154,39 +152,39 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                     <div className="space-y-3 text-sm">
                         <div className="flex items-center justify-between gap-4">
                             <div className="min-w-0">
-                                <p className="text-xs text-muted-foreground">{t('accountNumber')}</p>
+                                <p className="text-xs text-muted-foreground">{"Rekening"}</p>
                                 <p className="font-mono truncate">{bankDetails.accountNumber}</p>
                             </div>
-                            <CopyButton content={bankDetails.accountNumber} copyMessage={t('copied')} />
+                            <CopyButton content={bankDetails.accountNumber} copyMessage={"Disalin!"} />
                         </div>
 
                         <div className="flex items-center justify-between gap-4">
                             <div>
-                                <p className="text-xs text-muted-foreground">{t('amount')}</p>
+                                <p className="text-xs text-muted-foreground">{"Jumlah"}</p>
                                 <p className="font-medium">{currentPlan.price}</p>
                             </div>
-                            <CopyButton content={currentPlan.price.split(' ')[1]} copyMessage={t('copied')} />
+                            <CopyButton content={currentPlan.price.split(' ')[1]} copyMessage={"Disalin!"} />
                         </div>
 
                         {transaction?.transactionReference && (
                             <div className="flex items-center justify-between gap-4">
                                 <div className="min-w-0">
-                                    <p className="text-xs text-muted-foreground">{t('transactionReference')}</p>
+                                    <p className="text-xs text-muted-foreground">{"Referensi"}</p>
                                     <p className="font-mono truncate">{transaction.transactionReference}</p>
                                 </div>
-                                <CopyButton content={transaction.transactionReference} copyMessage={t('copied')} />
+                                <CopyButton content={transaction.transactionReference} copyMessage={"Disalin!"} />
                             </div>
                         )}
                     </div>
 
-                    <p className="text-sm text-muted-foreground">{t('instructionsShort')}</p>
+                    <p className="text-sm text-muted-foreground">{"Transfer jumlah yang tepat, lalu konfirmasi pembayaran via WhatsApp."}</p>
 
                     <div className="space-y-3 text-center">
                         <WhatsAppConfirmButton 
                             whatsappUrl={whatsappUrl}
                             transactionId={transaction?.id}
                         />
-                        <p className="text-xs text-muted-foreground">{t('confirmationNote')}</p>
+                        <p className="text-xs text-muted-foreground">{"Kami akan verifikasi dan aktifkan langganan dalam 24 jam"}</p>
                     </div>
                 </div>
                 )}

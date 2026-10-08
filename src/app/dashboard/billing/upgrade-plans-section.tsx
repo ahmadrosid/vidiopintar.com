@@ -18,7 +18,6 @@ import {
   Sparkles,
   AlertTriangle,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { formatDisplayDate } from "@/lib/utils";
 
@@ -36,8 +35,6 @@ export function UpgradePlansSection({
   currentPlan,
   activeSubscriptions,
 }: UpgradePlansSectionProps) {
-  const t = useTranslations("pricing");
-  const tBilling = useTranslations("billing");
 
   const getAvailableUpgrades = () => {
     if (currentPlan === "yearly" && activeSubscriptions.yearly) {
@@ -54,39 +51,39 @@ export function UpgradePlansSection({
   const planDetails = {
     monthly: {
       id: "monthly",
-      name: t("plans.monthly.name"),
+      name: "Bulanan",
       price: "IDR 50,000",
-      period: t("plans.monthly.period"),
-      description: t("plans.monthly.description"),
+      period: "per bulan",
+      description: "Sempurna untuk memulai",
       icon: Calendar,
       color: "text-blue-500",
       popular: false,
       originalPrice: undefined,
       features: [
-        t("plans.monthly.features.unlimited"),
-        t("plans.monthly.features.ai"),
-        t("plans.monthly.features.summaries"),
-        t("plans.monthly.features.quiz"),
-        t("plans.monthly.features.support"),
+        "Pemrosesan video tanpa batas",
+        "Wawasan bertenaga AI",
+        "Ringkasan instan",
+        "Kuis tanpa batas",
+        "Dukungan email",
       ],
     },
     yearly: {
       id: "yearly",
-      name: t("plans.yearly.name"),
+      name: "Tahunan",
       price: "IDR 500,000",
       originalPrice: "IDR 600,000",
-      period: t("plans.yearly.period"),
-      description: t("plans.yearly.description"),
+      period: "per tahun",
+      description: "Nilai terbaik untuk pembelajar yang berkomitmen",
       icon: Crown,
       color: "text-yellow-500",
       popular: true,
       features: [
-        t("plans.yearly.features.unlimited"),
-        t("plans.yearly.features.ai"),
-        t("plans.yearly.features.summaries"),
-        t("plans.yearly.features.quiz"),
-        t("plans.yearly.features.support"),
-        t("plans.yearly.features.priority"),
+        "Pemrosesan video tanpa batas",
+        "Wawasan bertenaga AI",
+        "Ringkasan instan",
+        "Kuis tanpa batas",
+        "Dukungan email",
+        "Dukungan prioritas",
       ],
     },
   };
@@ -97,12 +94,12 @@ export function UpgradePlansSection({
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-primary">
             <Crown className="h-5 w-5 text-yellow-500" />
-            {tBilling("currentPlan.premiumTitle")}
+            {"Kamu sudah di Paket Premium!"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-secondary-foreground text-[0.9375rem]">
-            {tBilling("currentPlan.premiumDescription")}
+            {"Kamu saat ini menggunakan paket tertinggi kami dengan semua fitur premium tersedia."}
           </p>
         </CardContent>
       </Card>
@@ -117,16 +114,16 @@ export function UpgradePlansSection({
           className="w-full rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-[transform,box-shadow] duration-200 ease-in-out cursor-pointer"
         >
           <Sparkles className="h-4 w-4 mr-2" />
-          {tBilling("upgrade.button")}
+          {"Upgrade Paket"}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-4xl! max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-4xl font-semibold tracking-tight text-primary">
-            {tBilling("upgrade.title")}
+            {"Upgrade Paket"}
           </DialogTitle>
           <p className="text-secondary-foreground text-base pt-2">
-            {tBilling("upgrade.subtitle")}
+            {"Dapatkan akses ke lebih banyak fitur dan buka potensi penuh kamu."}
           </p>
         </DialogHeader>
 
@@ -147,7 +144,7 @@ export function UpgradePlansSection({
                       className="size-4 text-[#D1CDFF] drop-shadow-[0px_1px_2px_#5047C9]"
                     />
                     <span className="drop-shadow-[0px_1px_2px_#5047C9] select-none">
-                      {t("popular")}
+                      {"Paling Populer"}
                     </span>
                   </div>
                 )}
@@ -222,7 +219,7 @@ export function UpgradePlansSection({
                       className="w-full cursor-pointer rounded-xs font-semibold border-b-2 border-x-1 border-[#00AAB6] text-[0.9375rem] shadow-[inset_0px_0.5px_1px_0px_#88F8FF] active:shadow-none active:scale-[0.975] transition-[transform,box-shadow] duration-200 ease-in-out"
                       size="lg"
                     >
-                      {tBilling("upgrade.upgradeTo")} {plan.name}
+                      {"Upgrade ke"} {plan.name}
                       <ArrowUpRight className="h-4 w-4 ml-2" />
                     </Button>
                   </Link>

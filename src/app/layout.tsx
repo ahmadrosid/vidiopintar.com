@@ -3,8 +3,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { shadcn } from "@clerk/ui/themes";
 import type React from "react"
 import { Toaster } from "@/components/ui/sonner"
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getLocale } from 'next-intl/server';
 import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
 import { OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/geo/site";
 import { serializeJsonLd } from "@/lib/utils";
@@ -96,16 +94,13 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-
   return (
-    <html lang={locale} className="dark">
+    <html lang="id" className="dark">
       <head>
         <script
           type="application/ld+json"
@@ -118,10 +113,8 @@ export default async function RootLayout({
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} ${display.variable} antialiased`}>
         <ClerkProvider appearance={{ theme: shadcn }}>
-          <NextIntlClientProvider messages={messages}>
           {children}
           <Toaster />
-          </NextIntlClientProvider>
         </ClerkProvider>
       </body>
     </html>

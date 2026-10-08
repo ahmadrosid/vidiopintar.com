@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CreditCard, Clock } from "lucide-react";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
-import { useTranslations } from "next-intl";
 
 interface Transaction {
   id: string;
@@ -62,7 +61,6 @@ function getTimeRemaining(expiresAt: Date) {
 }
 
 export function PendingPaymentAlert({ transactions, currentPaymentSettings }: PendingPaymentAlertProps) {
-  const t = useTranslations('billing.pendingPayment');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [transactionOverrides, setTransactionOverrides] = useState<Record<string, Transaction>>({});
@@ -103,34 +101,31 @@ export function PendingPaymentAlert({ transactions, currentPaymentSettings }: Pe
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <h3 className="font-semibold text-orange-900 dark:text-orange-100">
-                  {t('title')}
+                  {"Selesaikan Pembayaran"}
                 </h3>
                 <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                  {localTransactions.length} {t('pending')}
+                  {localTransactions.length} {"menunggu"}
                 </Badge>
               </div>
               
               <p className="text-sm text-orange-800 dark:text-orange-200 mb-4">
-                {t('description', { 
-                  count: localTransactions.length, 
-                  plural: localTransactions.length > 1 ? 's' : '' 
-                })}
+                Kamu memiliki {localTransactions.length} pembayaran yang tertunda. Selesaikan langganan untuk mengakses semua fitur.
               </p>
 
               {/* Latest transaction details */}
               <div className="bg-white dark:bg-gray-900 rounded-lg p-4 mb-4 border border-orange-200 dark:border-orange-800">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                   <div>
-                    <p className="text-gray-600 dark:text-gray-400">{t('plan')}</p>
+                    <p className="text-gray-600 dark:text-gray-400">{"Paket"}</p>
                     <p className="font-medium capitalize">{latestTransaction.planType} Plan</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 dark:text-gray-400">{t('amount')}</p>
+                    <p className="text-gray-600 dark:text-gray-400">{"Jumlah"}</p>
                     <p className="font-medium">{formatAmount(latestTransaction.amount, latestTransaction.currency)}</p>
                   </div>
                   <div>
                     <p className="text-gray-600 dark:text-gray-400">
-                      {latestTransaction.expiresAt ? t('expires') : t('created')}
+                      {latestTransaction.expiresAt ? "Berakhir" : "Dibuat"}
                     </p>
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3 text-gray-500" />
@@ -151,15 +146,12 @@ export function PendingPaymentAlert({ transactions, currentPaymentSettings }: Pe
                   className="bg-orange-600 hover:bg-orange-700 text-white"
                 >
                   <CreditCard className="h-4 w-4 mr-2" />
-                  {latestTransaction.status === 'waiting_confirmation' ? t('viewStatus') : t('completePayment')}
+                  {latestTransaction.status === 'waiting_confirmation' ? "Lihat Status" : "Selesaikan Pembayaran"}
                 </Button>
                 
                 {localTransactions.length > 1 && (
                   <p className="text-xs text-orange-700 dark:text-orange-300 flex items-center">
-                    {t('morePending', { 
-                      count: localTransactions.length - 1, 
-                      plural: localTransactions.length - 1 > 1 ? 's' : '' 
-                    })}
+                    + {localTransactions.length - 1} transaksi tertunda lainnya di riwayat bawah
                   </p>
                 )}
               </div>

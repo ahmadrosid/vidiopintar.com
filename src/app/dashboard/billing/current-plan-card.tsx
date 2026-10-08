@@ -3,7 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Crown, Gift, Calendar, CheckCircle, Clock } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import { formatDisplayDate } from '@/lib/utils';
 
 interface SubscriptionDetails {
@@ -28,59 +27,57 @@ function getDaysUntilExpiry(date: Date) {
   return daysDiff;
 }
 
-function buildPlanDetails(t: (key: string) => string) {
+function buildPlanDetails() {
   return {
     free: {
-      name: t('plans.free.name'),
+      name: "Gratis",
       price: 'Free',
-      period: t('plans.free.period'),
+      period: "selamanya",
       icon: Gift,
       color: 'text-gray-500',
       bgColor: 'bg-gray-50 dark:bg-gray-800',
       features: [
-        t('plans.free.features.limited'),
-        t('plans.free.features.basic'),
-        t('plans.free.features.summaries'),
-        t('plans.free.features.community')
+        "2 video per hari",
+        "Wawasan AI dasar",
+        "Ringkasan sederhana",
+        "Dukungan komunitas"
       ]
     },
     monthly: {
-      name: t('plans.monthly.name'),
+      name: "Bulanan",
       price: 'IDR 50,000',
-      period: t('plans.monthly.period'),
+      period: "per bulan",
       icon: Calendar,
       color: 'text-blue-500',
       bgColor: 'bg-blue-50 dark:bg-blue-900/20',
       features: [
-        t('plans.monthly.features.unlimited'),
-        t('plans.monthly.features.ai'),
-        t('plans.monthly.features.summaries'),
-        t('plans.monthly.features.support')
+        "Pemrosesan video tanpa batas",
+        "Wawasan bertenaga AI",
+        "Ringkasan instan",
+        "Dukungan email"
       ]
     },
     yearly: {
-      name: t('plans.yearly.name'),
+      name: "Tahunan",
       price: 'IDR 500,000',
-      period: t('plans.yearly.period'),
+      period: "per tahun",
       icon: Crown,
       color: 'text-yellow-500',
       bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
       features: [
-        t('plans.yearly.features.unlimited'),
-        t('plans.yearly.features.ai'),
-        t('plans.yearly.features.summaries'),
-        t('plans.yearly.features.support'),
-        t('plans.yearly.features.priority')
+        "Pemrosesan video tanpa batas",
+        "Wawasan bertenaga AI",
+        "Ringkasan instan",
+        "Dukungan email",
+        "Dukungan prioritas"
       ]
     }
   };
 }
 
 export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPlanCardProps) {
-  const t = useTranslations('pricing');
-  const tBilling = useTranslations('billing');
 
-  const planDetails = buildPlanDetails(t);
+  const planDetails = buildPlanDetails();
   const plan = planDetails[currentPlan];
 
   return (
@@ -88,8 +85,8 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg text-primary">{tBilling('currentPlan.title')}</CardTitle>
-            <p className="text-sm text-secondary-foreground">{tBilling('currentPlan.description')}</p>
+            <CardTitle className="text-lg text-primary">{"Paket Saat Ini"}</CardTitle>
+            <p className="text-sm text-secondary-foreground">{"Langganan aktif kamu"}</p>
           </div>
           <Badge variant={currentPlan === 'yearly' ? 'default' : currentPlan === 'monthly' ? 'secondary' : 'outline'}>
             {plan.name}
@@ -126,7 +123,7 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
           )}
 
           <div className="space-y-3">
-            <h4 className="font-semibold text-[0.9375rem] text-secondary-foreground">{tBilling('currentPlan.features')}</h4>
+            <h4 className="font-semibold text-[0.9375rem] text-secondary-foreground">{"Fitur Paket:"}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {plan.features.map((feature) => (
                 <div key={feature} className="flex items-center gap-2 text-[0.9375rem] text-primary">

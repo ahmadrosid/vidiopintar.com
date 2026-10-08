@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Copy, CheckCircle } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 
 interface CopyButtonProps {
   text: string;
@@ -10,7 +9,6 @@ interface CopyButtonProps {
 }
 
 export function CopyButton({ text, fieldId }: CopyButtonProps) {
-  const t = useTranslations('payment');
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const copyToClipboard = (text: string, field: string) => {
@@ -27,11 +25,11 @@ export function CopyButton({ text, fieldId }: CopyButtonProps) {
     >
       {copiedField === fieldId ? (
         <>
-          <CheckCircle className="size-4" /> {t('copied')}
+          <CheckCircle className="size-4" /> {"Disalin!"}
         </>
       ) : (
         <>
-          <Copy className="size-4" /> {t('copy')}
+          <Copy className="size-4" /> {"Salin"}
         </>
       )}
     </button>
