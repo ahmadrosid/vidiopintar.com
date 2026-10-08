@@ -32,10 +32,11 @@ const nextConfig = {
   output: 'standalone',
   async redirects() {
     return [
-      { source: '/blog/:path*', destination: '/mcp', permanent: true },
-      { source: '/faq', destination: '/mcp', permanent: true },
-      { source: '/changelogs', destination: '/mcp', permanent: true },
-      { source: '/rss.xml', destination: '/mcp', permanent: true },
+      { source: '/mcp', destination: '/panduan', permanent: true },
+      { source: '/blog/:path*', destination: '/panduan', permanent: true },
+      { source: '/faq', destination: '/panduan', permanent: true },
+      { source: '/changelogs', destination: '/panduan', permanent: true },
+      { source: '/rss.xml', destination: '/panduan', permanent: true },
     ]
   },
   serverExternalPackages: ['better-sqlite3'],

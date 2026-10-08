@@ -38,7 +38,7 @@ export default function Navbar() {
             <Logo />
 
             <div className="flex items-center gap-2">
-              <Link href="/mcp" className="mr-2 text-sm font-medium text-foreground hover:underline">
+              <Link href="/panduan" className="mr-2 text-sm font-medium text-foreground hover:underline">
                 MCP untuk agen AI
               </Link>
               <AuthControls />

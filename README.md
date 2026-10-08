@@ -2,7 +2,7 @@
 
 Vidiopintar is a hosted MCP service for AI agents. It returns timestamped transcripts from YouTube videos through one tool: `youtube_get_transcript`.
 
-After deployment, the public setup guide is in Bahasa Indonesia at [`/mcp`](https://vidiopintar.com/mcp). The MCP service uses invite-only API keys during beta.
+After deployment, the public setup guide is in Bahasa Indonesia at [`/panduan`](https://vidiopintar.com/panduan). The MCP service uses invite-only API keys during beta.
 
 ## Connect an agent
 

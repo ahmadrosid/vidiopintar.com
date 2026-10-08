@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
-      url: `${SITE_URL}/mcp`,
+      url: `${SITE_URL}/panduan`,
       lastModified: SITE_LAST_MODIFIED,
       changeFrequency: 'weekly' as const,
       priority: 0.8,

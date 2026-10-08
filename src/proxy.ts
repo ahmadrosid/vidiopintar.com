@@ -15,6 +15,7 @@ const MARKDOWN_PUBLIC_PREFIXES = [
   "/faq",
   "/blog",
   "/changelogs",
+  "/panduan",
   "/privacy",
   "/terms",
 ];

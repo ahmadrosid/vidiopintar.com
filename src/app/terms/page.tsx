@@ -58,7 +58,7 @@ export default function TermsOfService() {
       <SeeAlso
         links={[
           { href: "/privacy", label: "privasi" },
-          { href: "/mcp", label: "panduan" },
+          { href: "/panduan", label: "panduan" },
           { href: "mailto:support@vidiopintar.com", label: "dukungan" },
         ]}
       />

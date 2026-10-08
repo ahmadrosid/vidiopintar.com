@@ -8,7 +8,7 @@ function links(): string {
   return [
     "## Tautan layanan",
     "",
-    `- [Panduan MCP](${markdownUrlFor("/mcp")})`,
+    `- [Panduan MCP](${markdownUrlFor("/panduan")})`,
     `- [Privasi](${markdownUrlFor("/privacy")})`,
     `- [Ketentuan layanan](${markdownUrlFor("/terms")})`,
     `- [Status layanan](${SITE_URL}/api/health)`,
@@ -33,7 +33,7 @@ function homeMarkdown(): string {
 
 function mcpMarkdown(): string {
   return [
-    pageHeader("Panduan MCP Vidiopintar", "/mcp", "Hubungkan agen AI ke alat transkrip YouTube."),
+    pageHeader("Panduan MCP Vidiopintar", "/panduan", "Hubungkan agen AI ke alat transkrip YouTube."),
     "Endpoint: `https://vidiopintar.com/api/mcp`",
     "",
     "Autentikasi memakai header `Authorization: Bearer <API_KEY>`. Minta key beta melalui support@vidiopintar.com. Key lengkap hanya tampil saat operator membuatnya.",
@@ -104,6 +104,7 @@ export function normalizePath(rawPath: string): string {
 export function getMarkdownForPath(rawPath: string): string | null {
   switch (normalizePath(rawPath)) {
     case "/": return homeMarkdown();
+    case "/panduan":
     case "/mcp": return mcpMarkdown();
     case "/privacy": return privacyMarkdown();
     case "/terms": return termsMarkdown();
@@ -121,7 +122,7 @@ export function buildLlmsTxt(): string {
 - Endpoint: ${SITE_URL}/api/mcp
 - Transport: Streamable HTTP dengan bearer API key
 - Status: beta undangan
-- Batas dan panduan: ${SITE_URL}/mcp
+- Batas dan panduan: ${SITE_URL}/panduan
 - Status sistem: ${SITE_URL}/api/health
 - Privasi: ${SITE_URL}/privacy
 - Ketentuan: ${SITE_URL}/terms

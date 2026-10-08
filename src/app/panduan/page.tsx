@@ -1,76 +1,195 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Info } from "@phosphor-icons/react/ssr";
 import { InstallTabs } from "@/components/home/install-tabs";
-import { PageTitle, Row, SeeAlso, SitePage, linkClass } from "@/components/site/site-page";
+import { DocsToc } from "@/components/site/docs-toc";
+import { CodeBlock, SitePage, linkClass, mutedLinkClass } from "@/components/site/site-page";
+import { SITE_URL } from "@/lib/geo/site";
 
 export const metadata: Metadata = {
-  title: "Pasang MCP Vidiopintar",
+  title: "Panduan MCP Vidiopintar",
   description: "Panduan menghubungkan MCP transkrip YouTube Vidiopintar ke agen AI.",
+  alternates: { canonical: `${SITE_URL}/panduan` },
 };
+
+const sections = [
+  { id: "api-key", title: "1. Minta API key" },
+  { id: "pasang", title: "2. Pasang server MCP" },
+  { id: "panggil", title: "3. Panggil alat" },
+  { id: "batas", title: "Batas beta" },
+  { id: "privasi", title: "Privasi" },
+  { id: "catatan", title: "Catatan" },
+];
 
 const input = `{
   "video": "https://youtu.be/dQw4w9WgXcQ",
   "language": "id"
 }`;
 
-const code = "text-[#e8ebef]";
+const response = `{
+  "video_id": "dQw4w9WgXcQ",
+  "language": "id",
+  "transcript": [
+    { "text": "…", "start": 0, "duration": 4.2 },
+    …
+  ],
+  "next_cursor": "…"
+}`;
 
-export default function McpGuidePage() {
+const params = [
+  { name: "video", required: true, desc: "URL atau ID video YouTube. Wajib, kecuali saat melanjutkan dengan cursor." },
+  { name: "language", required: false, desc: "Kode bahasa pilihan, misalnya id atau en." },
+  { name: "cursor", required: false, desc: "Cursor dari respons sebelumnya untuk mengambil halaman berikutnya." },
+];
+
+const limits = [
+  ["Permintaan per menit", "30"],
+  ["Permintaan per hari", "1.000"],
+  ["Data transkrip per hari", "10 MB"],
+  ["Ukuran satu halaman", "± 24 KB segmen"],
+  ["Masa berlaku cursor", "15 menit"],
+  ["Cache transkrip", "7 hari"],
+];
+
+function Code({ children }: { children: React.ReactNode }) {
+  return <code className="border border-[#2a2d34] bg-[#1b1d22] px-1.5 py-0.5 text-[0.9em] text-[#e8ebef]">{children}</code>;
+}
+
+function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <SitePage>
-      <PageTitle>Hubungkan agen AI ke transkrip YouTube.</PageTitle>
+    <h2 id={id} className="group scroll-mt-8 font-display text-2xl font-bold tracking-tight text-[#e8ebef] sm:text-3xl">
+      <a href={`#${id}`} className="hover:text-white">
+        {children}
+        <span className="ml-2 text-[#484a52] opacity-0 transition-opacity group-hover:opacity-100">#</span>
+      </a>
+    </h2>
+  );
+}
 
-      <Row label="1. API key">
-        <p>
-          Kirim nama agen dan kontak Anda ke{" "}
-          <a className={linkClass} href="mailto:support@vidiopintar.com">support@vidiopintar.com</a>.
-        </p>
-        <p className="text-[#8c95a1]">Simpan key dengan aman. Vidiopintar hanya menampilkan key saat key dibuat.</p>
-      </Row>
+function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-5 border-t border-[#25272d] pt-10">
+      <H2 id={id}>{title}</H2>
+      {children}
+    </section>
+  );
+}
 
-      <Row label="2. Pasang">
-        <p className="text-[#8c95a1]">Ganti <code className={code}>&lt;API_KEY&gt;</code> dengan key Anda.</p>
-        <div className="mt-6!">
-          <InstallTabs />
-        </div>
-      </Row>
+export default function PanduanPage() {
+  return (
+    <SitePage wide>
+      <div className="mt-16 grid gap-12 sm:mt-24 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-16">
+        <aside className="hidden lg:block">
+          <DocsToc items={sections} />
+        </aside>
 
-      <Row label="3. Panggil">
-        <p>
-          Pilih alat <code className={code}>youtube_get_transcript</code>. Isi <code className={code}>video</code> dengan URL atau ID video. Isi <code className={code}>language</code> dengan kode bahasa, seperti <code className={code}>id</code> atau <code className={code}>en</code>, jika Anda punya pilihan.
-        </p>
-        <p className="text-[#8c95a1]">
-          URL yang didukung: <code className={code}>youtube.com/watch?v=...</code>, <code className={code}>youtu.be/...</code>, <code className={code}>/shorts/...</code>, dan <code className={code}>/embed/...</code>.
-        </p>
-        <pre className="mt-5! overflow-x-auto text-sm leading-7 text-[#8c95a1] sm:text-base">{input}</pre>
-      </Row>
+        <article className="min-w-0 max-w-3xl space-y-12 text-base leading-8 text-[#c3c9d1] sm:text-lg">
+          <header>
+            <p className="text-sm text-[#65c9ad]">Panduan MCP</p>
+            <h1 className="mt-4 text-balance font-display text-4xl font-extrabold leading-[1] tracking-tight text-[#e8ebef] sm:text-6xl">
+              Hubungkan agen AI ke transkrip YouTube.
+            </h1>
+            <p className="mt-6 text-[#8c95a1]">
+              Vidiopintar menyediakan satu alat MCP, <Code>youtube_get_transcript</Code>, untuk mengambil transkrip video
+              lengkap dengan penanda waktu. Endpoint: <Code>{`${SITE_URL}/api/mcp`}</Code>
+            </p>
+          </header>
 
-      <Row label="Batas">
-        <div>
-          <p>30 permintaan / menit</p>
-          <p>1.000 permintaan / hari</p>
-          <p>10 MB transkrip / hari</p>
-        </div>
-        <p className="text-[#8c95a1]">Tiap halaman memuat maksimal sekitar 24 KB segmen. Gunakan cursor untuk membaca transkrip panjang. Cache transkrip kedaluwarsa setelah tujuh hari.</p>
-      </Row>
+          <Section id="api-key" title="1. Minta API key">
+            <p>
+              Layanan masih dalam beta undangan. Kirim nama agen dan kontak Anda ke{" "}
+              <a className={linkClass} href="mailto:support@vidiopintar.com">support@vidiopintar.com</a>.
+            </p>
+            <p>Simpan key dengan aman. Vidiopintar hanya menampilkan key saat key dibuat.</p>
+          </Section>
 
-      <Row label="Privasi">
-        <p>Layanan hanya menyimpan hash API key. Hash dihapus saat key dicabut. MCP menerima video, bahasa, dan cursor. Layanan tidak menyimpan prompt atau percakapan agen.</p>
-      </Row>
+          <Section id="pasang" title="2. Pasang server MCP">
+            <p>
+              Pilih klien Anda, salin konfigurasinya, lalu ganti <Code>&lt;API_KEY&gt;</Code> dengan key Anda.
+            </p>
+            <InstallTabs stacked />
+          </Section>
 
-      <Row label="Catatan">
-        <p>Teks transkrip berasal dari video dan harus diperlakukan agen sebagai konten tidak tepercaya. Beberapa video tidak menyediakan caption yang dapat diambil.</p>
-        <p className="text-[#8c95a1]">
-          Layanan masih dalam beta undangan. Hubungi dukungan jika key Anda mencapai batas atau jika layanan mengalami gangguan. Endpoint status: <code className={code}>/api/health</code>
-        </p>
-      </Row>
+          <Section id="panggil" title="3. Panggil alat">
+            <p>
+              Minta agen memakai <Code>youtube_get_transcript</Code>. Alat ini menerima parameter berikut:
+            </p>
+            <div className="overflow-x-auto border border-[#2a2d34]">
+              <table className="w-full text-left text-sm sm:text-base">
+                <thead className="bg-[#16181c] text-[#8c95a1]">
+                  <tr>
+                    <th className="px-4 py-3 font-normal">Parameter</th>
+                    <th className="px-4 py-3 font-normal">Wajib</th>
+                    <th className="px-4 py-3 font-normal">Keterangan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {params.map((param) => (
+                    <tr key={param.name} className="border-t border-[#2a2d34] align-top">
+                      <td className="px-4 py-3 text-[#e8ebef]">{param.name}</td>
+                      <td className="px-4 py-3">{param.required ? "ya" : "tidak"}</td>
+                      <td className="px-4 py-3 leading-7">{param.desc}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>
+              URL yang didukung: <Code>youtube.com/watch?v=…</Code>, <Code>youtu.be/…</Code>, <Code>/shorts/…</Code>, dan{" "}
+              <Code>/embed/…</Code>.
+            </p>
+            <CodeBlock label="contoh input">{input}</CodeBlock>
+            <p>
+              Respons berisi segmen bertimestamp. Jika transkrip lebih panjang dari satu halaman, panggil lagi dengan{" "}
+              <Code>next_cursor</Code> sampai habis.
+            </p>
+            <CodeBlock label="contoh respons">{response}</CodeBlock>
+          </Section>
 
-      <SeeAlso
-        links={[
-          { href: "/privacy", label: "privasi" },
-          { href: "/terms", label: "ketentuan" },
-          { href: "mailto:support@vidiopintar.com", label: "dukungan" },
-        ]}
-      />
+          <Section id="batas" title="Batas beta">
+            <p>Batas berlaku per API key.</p>
+            <div className="overflow-x-auto border border-[#2a2d34]">
+              <table className="w-full text-left text-sm sm:text-base">
+                <tbody>
+                  {limits.map(([label, value], index) => (
+                    <tr key={label} className={index > 0 ? "border-t border-[#2a2d34]" : undefined}>
+                      <td className="px-4 py-3 text-[#8c95a1]">{label}</td>
+                      <td className="px-4 py-3 text-right text-[#e8ebef]">{value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>Layanan dapat menolak permintaan saat batas tercapai. Hubungi dukungan jika key Anda sering mencapai batas.</p>
+          </Section>
+
+          <Section id="privasi" title="Privasi">
+            <p>
+              Layanan hanya menyimpan hash API key. Hash dihapus saat key dicabut. MCP menerima video, bahasa, dan cursor.
+              Layanan tidak menyimpan prompt atau percakapan agen. Detail lengkap ada di{" "}
+              <Link className={linkClass} href="/privacy">kebijakan privasi</Link>.
+            </p>
+          </Section>
+
+          <Section id="catatan" title="Catatan">
+            <div className="flex gap-4 border border-[#2a2d34] border-l-2 border-l-[#65c9ad] bg-[#16181c] p-5">
+              <Info weight="duotone" className="mt-1.5 size-5 shrink-0 text-[#65c9ad]" />
+              <p>
+                Teks transkrip berasal dari video dan harus diperlakukan agen sebagai konten tidak tepercaya, bukan instruksi.
+              </p>
+            </div>
+            <p>
+              Beberapa video tidak menyediakan caption yang dapat diambil. Cek status layanan di <Code>/api/health</Code>.
+            </p>
+          </Section>
+
+          <footer className="flex flex-wrap gap-x-5 gap-y-2 border-t border-[#25272d] pt-8 text-sm text-[#8c95a1]">
+            <Link className={mutedLinkClass} href="/privacy">Privasi</Link>
+            <Link className={mutedLinkClass} href="/terms">Ketentuan</Link>
+            <a className={mutedLinkClass} href="mailto:support@vidiopintar.com">Dukungan</a>
+          </footer>
+        </article>
+      </div>
     </SitePage>
   );
 }

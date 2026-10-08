@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
       <SeeAlso
         links={[
           { href: "/terms", label: "ketentuan" },
-          { href: "/mcp", label: "panduan" },
+          { href: "/panduan", label: "panduan" },
           { href: "mailto:support@vidiopintar.com", label: "dukungan" },
         ]}
       />
