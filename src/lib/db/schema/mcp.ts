@@ -1,9 +1,12 @@
 import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { user } from "./auth";
 
 const timestampMs = (name: string) => integer(name, { mode: "timestamp_ms" });
 
 export const mcpApiKeys = sqliteTable("mcp_api_keys", {
   id: text("id").primaryKey(),
+  // Null for operator keys created with `npm run mcp:key`.
+  userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   prefix: text("prefix").notNull().unique(),
   keyHash: text("key_hash").notNull().unique(),
@@ -12,7 +15,7 @@ export const mcpApiKeys = sqliteTable("mcp_api_keys", {
   bytesPerDay: integer("bytes_per_day").notNull().default(10_000_000),
   createdAt: timestampMs("created_at").notNull(),
   revokedAt: timestampMs("revoked_at"),
-});
+}, (table) => [index("mcp_api_keys_user_id_idx").on(table.userId)]);
 
 export const mcpUsage = sqliteTable(
   "mcp_usage",
@@ -29,6 +32,23 @@ export const mcpUsage = sqliteTable(
   (table) => [
     primaryKey({ columns: [table.keyId, table.window, table.periodStart] }),
     index("mcp_usage_period_start_idx").on(table.periodStart),
+  ],
+);
+
+export const mcpRequestMetrics = sqliteTable(
+  "mcp_request_metrics",
+  {
+    id: text("id").primaryKey(),
+    keyId: text("key_id")
+      .notNull()
+      .references(() => mcpApiKeys.id, { onDelete: "cascade" }),
+    createdAt: timestampMs("created_at").notNull(),
+    durationMs: integer("duration_ms").notNull(),
+    outcome: text("outcome").notNull(),
+  },
+  (table) => [
+    index("mcp_request_metrics_created_at_idx").on(table.createdAt),
+    index("mcp_request_metrics_key_created_idx").on(table.keyId, table.createdAt),
   ],
 );
 

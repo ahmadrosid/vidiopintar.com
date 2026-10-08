@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
 import { and, eq, isNull, lt, sql } from "drizzle-orm";
 import {
@@ -9,8 +10,9 @@ import {
 } from "youtube-transcript-plus";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { mcpApiKeys, mcpTranscriptCache, mcpUsage } from "@/lib/db/schema";
+import { mcpApiKeys, mcpRequestMetrics, mcpTranscriptCache, mcpUsage } from "@/lib/db/schema";
 import { McpServiceError } from "./errors";
+import { isProviderFailure } from "./metrics";
 import { getTranscriptPage } from "./transcript";
 
 const minuteMs = 60_000;
@@ -22,6 +24,7 @@ async function cleanupExpiredMcpData(now: number) {
   lastCleanupAt = now;
   try {
     await db.delete(mcpTranscriptCache).where(lt(mcpTranscriptCache.expiresAt, new Date(now)));
+    await db.delete(mcpRequestMetrics).where(lt(mcpRequestMetrics.createdAt, new Date(now - 90 * dayMs)));
     await db.delete(mcpUsage).where(lt(mcpUsage.periodStart, now - 90 * dayMs));
     await db.delete(mcpApiKeys).where(lt(mcpApiKeys.revokedAt, new Date(now - 90 * dayMs)));
   } catch {
@@ -87,6 +90,7 @@ const handler = createMcpHandler((requestContext) => {
       }),
     },
     async ({ video, language, cursor }) => {
+      const startedAt = Date.now();
       try {
         const result = await getTranscriptPage({
           video: video ?? "",
@@ -102,9 +106,11 @@ const handler = createMcpHandler((requestContext) => {
           requestContext.authInfo?.clientId ?? "",
           Buffer.byteLength(JSON.stringify(response)),
         );
+        await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, "success");
         return response;
       } catch (error) {
         if (error instanceof McpServiceError) {
+          await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, error.code);
           return serviceErrorResult(error);
         }
         const message = error instanceof Error ? error.message : "";
@@ -117,6 +123,7 @@ const handler = createMcpHandler((requestContext) => {
               : /transcript|caption/i.test(message)
                 ? new McpServiceError("CAPTIONS_UNAVAILABLE")
                 : new McpServiceError("TEMPORARY_PROVIDER_FAILURE", true, 30);
+        await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code);
         return serviceErrorResult(mapped);
       }
     },
@@ -136,6 +143,21 @@ function serviceErrorResult(error: McpServiceError) {
     content: [{ type: "text" as const, text: JSON.stringify(data) }],
     structuredContent: data,
   };
+}
+
+async function recordRequestMetric(keyId: string, startedAt: number, outcome: string) {
+  if (!keyId) return;
+  try {
+    await db.insert(mcpRequestMetrics).values({
+      id: randomUUID(),
+      keyId,
+      createdAt: new Date(),
+      durationMs: Math.max(0, Date.now() - startedAt),
+      outcome: outcome === "success" || isProviderFailure(outcome) ? outcome : "request_error",
+    });
+  } catch {
+    // Metrics must not stop transcript delivery.
+  }
 }
 
 async function addOutputUsage(keyId: string, bytes: number) {
