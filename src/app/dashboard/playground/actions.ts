@@ -37,7 +37,7 @@ export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>):
 
     return { ok: true, page };
   } catch (error) {
-    const mapped = toServiceError(error);
+    const mapped = toServiceError(error instanceof Error ? error : new Error(String(error)));
 
     return { ok: false, code: mapped.code, message: mapped.message, retryable: mapped.retryable };
   }

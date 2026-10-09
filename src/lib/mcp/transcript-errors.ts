@@ -7,7 +7,7 @@ import {
 import { McpServiceError } from "./errors";
 
 // Maps any error from the transcript pipeline to the public error code shown to callers.
-export function toServiceError(error: unknown): McpServiceError {
+export function toServiceError(error: Error): McpServiceError {
   if (error instanceof McpServiceError) return error;
 
   if (error instanceof YoutubeTranscriptVideoUnavailableError) return new McpServiceError("VIDEO_UNAVAILABLE");

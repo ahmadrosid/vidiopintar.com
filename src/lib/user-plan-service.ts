@@ -1,8 +1,11 @@
+import { z } from 'zod';
 import { transactionsRepository } from '@/lib/db/repository/transactions';
 import { UserVideoRepository } from '@/lib/db/repository';
 import { UsageEventRepository } from '@/lib/db/repository/usage-events';
 
 export type UserPlan = 'free' | 'monthly' | 'yearly';
+
+const userPlanSchema = z.enum(['free', 'monthly', 'yearly']);
 
 export interface PlanLimits {
   videosPerDay: number;
@@ -61,7 +64,9 @@ export class UserPlanService {
     });
 
     if (activeTransaction) {
-      return activeTransaction.planType as UserPlan;
+      const planType = userPlanSchema.safeParse(activeTransaction.planType);
+
+      return planType.success ? planType.data : 'free';
     }
 
     return 'free';

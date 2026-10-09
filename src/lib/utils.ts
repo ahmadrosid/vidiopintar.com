@@ -13,7 +13,9 @@ export function formatTime(seconds: number): string {
 }
 
 /** Safe JSON for embedding in `<script type="application/ld+json">` tags. */
-export function serializeJsonLd(data: unknown): string {
+type JsonLdValue = string | number | boolean | null | JsonLdValue[] | { [key: string]: JsonLdValue };
+
+export function serializeJsonLd(data: JsonLdValue): string {
   return JSON.stringify(data)
     .replace(/</g, "\\u003c")
     .replace(/>/g, "\\u003e")

@@ -6,7 +6,6 @@ import {
   createTransactionSchema, 
   validateAmountMatchesPlan,
   PAYMENT_LIMITS,
-  type PlanType 
 } from '@/lib/validations/payment';
 import { 
   paymentLogger, 
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
     const validatedData = createTransactionSchema.parse(body);
     
     // Validate amount matches plan pricing
-    const amountValidation = validateAmountMatchesPlan(validatedData.planType as PlanType, validatedData.amount);
+    const amountValidation = validateAmountMatchesPlan(validatedData.planType, validatedData.amount);
 
     if (!amountValidation.isValid) {
       paymentLogger.warn('Invalid amount for plan type', {

@@ -137,7 +137,7 @@ const handler = createMcpHandler((requestContext) => {
           return serviceErrorResult(error);
         }
 
-        const mapped = toServiceError(error);
+        const mapped = toServiceError(error instanceof Error ? error : new Error(String(error)));
         await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code, false, !cursor, requestVideoId(video));
 
         return serviceErrorResult(mapped);

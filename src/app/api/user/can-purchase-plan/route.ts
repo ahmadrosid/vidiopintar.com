@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import { UserPlanService } from '@/lib/user-plan-service';
+import { z } from 'zod';
+
+const purchasablePlanSchema = z.enum(['monthly', 'yearly']);
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,11 +16,13 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const plan = searchParams.get('plan');
 
-    if (!plan || !['monthly', 'yearly'].includes(plan)) {
+    const parsedPlan = purchasablePlanSchema.safeParse(plan);
+
+    if (!parsedPlan.success) {
       return NextResponse.json({ error: 'Invalid plan parameter' }, { status: 400 });
     }
 
-    const canPurchaseCheck = await UserPlanService.canPurchasePlan(user.id, plan as any);
+    const canPurchaseCheck = await UserPlanService.canPurchasePlan(user.id, parsedPlan.data);
     
     return NextResponse.json(canPurchaseCheck);
   } catch (error) {
