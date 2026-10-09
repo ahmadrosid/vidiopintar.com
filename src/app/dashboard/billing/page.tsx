@@ -14,7 +14,6 @@ import { UpgradePlansSection } from "./upgrade-plans-section";
 export default async function BillingPage() {
   const user = await getCurrentUser();
 
-  // Get user's transaction history
   let transactions: any[] = [];
   try {
     transactions = await transactionsRepository.getByUserId(user.id, 20);
@@ -22,13 +21,10 @@ export default async function BillingPage() {
     console.log('Could not get user transactions:', error);
   }
 
-  // Find pending and waiting confirmation transactions
   const pendingTransactions = transactions.filter(t => t.status === 'pending' || t.status === 'waiting_confirmation');
 
-  // Determine current plan using UserPlanService (checks for expiration)
   const currentPlan = await UserPlanService.getCurrentPlan(user.id);
 
-  // Get subscription details for the current plan
   let subscriptionDetails = null;
   if (currentPlan !== 'free') {
     const activeSubscription = await UserPlanService.hasActiveSubscription(user.id, currentPlan);

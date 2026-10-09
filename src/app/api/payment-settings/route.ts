@@ -38,10 +38,8 @@ export async function POST(request: Request) {
   const requestMetadata = await getSanitizedRequestMetadata(request);
   
   try {
-    // Require admin authentication
     const admin = await requireAdmin();
     
-    // Parse and validate request body
     const body = await request.json();
     const validatedData = paymentSettingsSchema.parse(body);
 
@@ -84,10 +82,8 @@ export async function PUT(request: Request) {
   const requestMetadata = await getSanitizedRequestMetadata(request);
   
   try {
-    // Require admin authentication
     const admin = await requireAdmin();
     
-    // Parse and validate request body
     const body = await request.json();
     const validatedData = updatePaymentSettingsSchema.parse(body);
     

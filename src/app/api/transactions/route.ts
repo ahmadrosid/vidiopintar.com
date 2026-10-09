@@ -27,7 +27,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse and validate request body
     const body = await request.json();
     const validatedData = createTransactionSchema.parse(body);
     
@@ -66,10 +65,8 @@ export async function POST(request: Request) {
       }, { status: 429 });
     }
 
-    // Generate unique transaction reference
     const transactionReference = await transactionsRepository.generateUniqueReference();
 
-    // Get user agent and IP from request headers
     const headersList = await headers();
     const userAgent = headersList.get('user-agent')?.substring(0, 500) || undefined;
     const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || 

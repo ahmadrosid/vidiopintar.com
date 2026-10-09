@@ -7,7 +7,6 @@ import { outcomeLabels } from "@/lib/mcp/outcomes";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DashboardTitle } from "../dashboard-sidebar";
 
-// Validated with the dataviz palette checker against the #131518 surface.
 const SUCCESS = "#c96d8e";
 const FAILED = "#bf8a2f";
 
