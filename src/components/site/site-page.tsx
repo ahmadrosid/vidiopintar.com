@@ -29,10 +29,7 @@ export function SitePage({
       <div className={`relative z-10 mx-auto w-full px-6 py-10 ${wide ? "max-w-6xl" : "max-w-4xl"}`}>
         <header className="flex items-baseline justify-between text-base">
           <Link href="/" className="text-site-text hover:text-site-text">vidiopintar</Link>
-          <div className="flex items-center gap-6">
-            <Link href="/panduan" className="text-sm text-site-text-muted hover:text-site-text">Panduan</Link>
-            <ThemeToggle className="inline-flex items-center text-site-text-muted hover:text-site-text" />
-          </div>
+          <Link href="/panduan" className="text-sm text-site-text-muted hover:text-site-text">Panduan</Link>
         </header>
         {children}
         <SiteFooter />
@@ -61,7 +58,10 @@ function SiteFooter() {
           ),
         )}
       </nav>
-      <p className="mt-6 text-xs text-site-text-faint">© {new Date().getFullYear()} Vidiopintar. MCP transkrip YouTube untuk AI Agent.</p>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+        <p className="text-xs text-site-text-faint">© {new Date().getFullYear()} Vidiopintar. MCP transkrip YouTube untuk AI Agent.</p>
+        <ThemeToggle className="w-44" />
+      </div>
     </footer>
   );
 }

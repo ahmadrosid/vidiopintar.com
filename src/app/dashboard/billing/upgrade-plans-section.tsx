@@ -101,7 +101,7 @@ export function UpgradePlansSection({
           Upgrade paket
         </button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] w-full max-w-4xl! overflow-y-auto rounded-none border-site-line bg-site-panel font-mono text-site-text">
+      <DialogContent className={`max-h-[90vh] w-full overflow-y-auto rounded-none border-site-line bg-site-panel font-mono text-site-text ${availableUpgrades.length > 1 ? "max-w-4xl!" : "max-w-xl!"}`}>
         <DialogHeader>
           <DialogTitle className="font-display text-4xl font-extrabold tracking-tight text-site-text">
             Upgrade paket
@@ -109,7 +109,7 @@ export function UpgradePlansSection({
           <p className="pt-2 text-sm text-site-text-muted">Dapatkan akses ke lebih banyak fitur dan buka potensi penuh kamu.</p>
         </DialogHeader>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className={`mt-6 grid gap-4 ${availableUpgrades.length > 1 ? "md:grid-cols-2" : ""}`}>
           {availableUpgrades.map((planId) => {
             const plan = planDetails[planId];
             const active = activeSubscriptions[plan.id];
@@ -133,7 +133,7 @@ export function UpgradePlansSection({
                   <p className="mt-3 text-sm text-site-text-2">{plan.description}</p>
                 </div>
 
-                <ul className="flex flex-col gap-2">
+                <ul className={`grid gap-2 ${availableUpgrades.length > 1 ? "" : "sm:grid-cols-2"}`}>
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2 text-sm text-site-text">
                       <HugeiconsIcon icon={CheckIcon} className="size-4 shrink-0 text-site-accent" />

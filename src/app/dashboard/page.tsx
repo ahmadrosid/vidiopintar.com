@@ -79,7 +79,7 @@ export default async function DashboardPage({
           Buat API key
           <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-4" />
         </Link>
-        <nav aria-label="Rentang waktu" className="mb-2 flex flex-wrap gap-2">
+        <nav aria-label="Rentang waktu" className="flex flex-wrap gap-2">
           {ANALYTICS_RANGES.map((value) => (
             <Link key={value} href={href({ range: value })} aria-current={value === range ? "true" : undefined} className={chipClass(value === range)}>
               {value} hari
@@ -117,7 +117,7 @@ export default async function DashboardPage({
           {history.length === 0 ? (
             <p className="text-site-text-faint">Belum ada permintaan.</p>
           ) : (
-            <div className="overflow-x-auto border border-site-line bg-white">
+            <div className="overflow-x-auto border border-site-line bg-site-panel">
               <table className="w-full text-left text-sm">
                 <thead className="bg-site-header text-site-text-muted">
                   <tr>
