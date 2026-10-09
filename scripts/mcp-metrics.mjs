@@ -2,25 +2,36 @@ import Database from "better-sqlite3";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+
 const { resolveDatabasePath } = require("../src/lib/db/resolve-database-path.js");
+
 const args = process.argv.slice(2);
+
 const valueAfter = (name, fallback) => {
   const index = args.indexOf(name);
+
   return index < 0 ? fallback : args[index + 1];
 };
+
 const days = Number(valueAfter("--days", "14"));
+
 const costValue = valueAfter("--cost-usd", undefined);
+
 const costUsd = costValue === undefined ? undefined : Number(costValue);
+
 if (!Number.isInteger(days) || days < 1 || days > 90) {
   throw new Error("--days must be an integer from 1 to 90.");
 }
+
 if (costValue !== undefined && (!Number.isFinite(costUsd) || costUsd < 0)) {
   throw new Error("--cost-usd must be a non-negative number.");
 }
 
 const db = new Database(resolveDatabasePath(), { readonly: true });
+
 try {
   const since = Date.now() - days * 86_400_000;
+
   const rows = db.prepare(`
     WITH first_success AS (
       SELECT key_id, MIN(created_at) AS created_at
@@ -36,6 +47,7 @@ try {
     WHERE m.created_at >= ?
     ORDER BY m.created_at
   `).all(since);
+
   const successRows = rows.filter((row) => row.outcome === "success");
   const providerRows = rows.filter((row) => row.provider_attempt === 1);
   const providerSuccesses = providerRows.filter((row) => row.outcome === "success");
@@ -49,6 +61,7 @@ try {
 
   for (const row of rows) {
     const day = new Date(row.created_at).toISOString().slice(0, 10);
+
     const daily = byDay.get(day) ?? {
       calls: 0,
       successes: 0,
@@ -58,19 +71,25 @@ try {
       provider_failures: 0,
       errors: {},
     };
+
     daily.calls += 1;
+
     if (row.outcome === "success") {
       daily.successes += 1;
+
       if (row.transcript_complete === 1) daily.transcripts += 1;
     } else {
       daily.errors[row.outcome] = (daily.errors[row.outcome] ?? 0) + 1;
       errorCodes[row.outcome] = (errorCodes[row.outcome] ?? 0) + 1;
     }
+
     if (row.provider_attempt === 1) {
       daily.provider_attempts += 1;
+
       if (row.outcome === "success") daily.provider_successes += 1;
       else daily.provider_failures += 1;
     }
+
     byDay.set(day, daily);
 
     const key = perKey.get(row.key_id) ?? {
@@ -78,9 +97,11 @@ try {
       firstSuccessAt: row.first_success_at,
       successDays: new Set(),
     };
+
     if (row.outcome === "success") {
       key.successDays.add(day);
     }
+
     perKey.set(row.key_id, key);
   }
 
@@ -88,11 +109,14 @@ try {
     .filter((key) => key.firstSuccessAt !== null && key.firstSuccessAt >= since)
     .map((key) => Math.max(0, key.firstSuccessAt - key.keyCreatedAt))
     .sort((a, b) => a - b);
+
   const median = (values) => values.length === 0
     ? null
     : values[Math.floor((values.length - 1) / 2)];
+
   const round = (value) => Math.round(value * 1_000_000) / 1_000_000;
   const successfulKeys = [...perKey.values()].filter((key) => key.firstSuccessAt !== null);
+
   const report = {
     period_days: days,
     calls: rows.length,
@@ -114,6 +138,7 @@ try {
     }),
     daily: Object.fromEntries([...byDay.entries()].sort(([a], [b]) => a.localeCompare(b))),
   };
+
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 } finally {
   db.close();

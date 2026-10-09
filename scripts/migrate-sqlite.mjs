@@ -4,6 +4,7 @@ import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import path from "node:path";
 
 const databasePath = process.env.SQLITE_DATABASE_PATH ?? "/data/vidiopintar.db";
+
 const sqlite = new Database(databasePath);
 
 try {

@@ -8,6 +8,7 @@ async function seedTransactions() {
     
     if (existingTransactions.length > 0) {
       console.log('Transactions already exist, skipping seed...');
+
       return;
     }
 
@@ -15,6 +16,7 @@ async function seedTransactions() {
     
     if (users.length === 0) {
       console.log('No users found in database. Please create users first.');
+
       return;
     }
 

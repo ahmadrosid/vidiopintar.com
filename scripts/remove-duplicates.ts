@@ -42,5 +42,7 @@ const result = db
   .run();
 
 console.log(`Deleted ${result.changes} duplicate rows`);
+
 db.close();
+
 console.log("Done!");

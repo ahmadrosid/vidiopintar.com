@@ -6,6 +6,7 @@ async function seedPaymentSettings() {
     
     if (existingSettings) {
       console.log('Payment settings already exist, skipping seed...');
+
       return;
     }
 
