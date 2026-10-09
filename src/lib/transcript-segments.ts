@@ -11,12 +11,15 @@ export interface StoredTranscriptSegment {
 
 export function timeStringToSeconds(time: string): number {
   const parts = time.split(":").map(Number);
+
   if (parts.length === 3) {
     return parts[0] * 3600 + parts[1] * 60 + parts[2];
   }
+
   if (parts.length === 2) {
     return parts[0] * 60 + parts[1];
   }
+
   return 0;
 }
 
@@ -57,6 +60,7 @@ export function formatTimedTranscriptForChat(
 
   const formatLine = (segment: StoredTranscriptSegment) => {
     const seconds = timeStringToSeconds(segment.start);
+
     return `[${seconds}s] ${segment.text}`;
   };
 
@@ -68,17 +72,22 @@ export function formatTimedTranscriptForChat(
   }
 
   let step = 2;
+
   while (step < segments.length) {
     lines = [];
+
     for (let index = 0; index < segments.length; index++) {
       if (index === 0 || index % step === 0 || index === segments.length - 1) {
         lines.push(formatLine(segments[index]));
       }
     }
+
     joined = lines.join("\n");
+
     if (joined.length <= maxChars) {
       return joined;
     }
+
     step += 1;
   }
 
@@ -96,6 +105,7 @@ export function storedSegmentsToTranscriptApi(
     transcript: segments.map((segment) => {
       const start = timeStringToSeconds(segment.start);
       const end = timeStringToSeconds(segment.end);
+
       return {
         text: segment.text,
         start,

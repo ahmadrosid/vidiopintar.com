@@ -89,6 +89,7 @@ export function TransactionDetailDialog({
     if (!currentTransaction) return;
 
     setIsUpdating(true);
+
     try {
       const response = await fetch(`/api/transactions/${currentTransaction.id}`, {
         method: 'PATCH',
@@ -123,6 +124,7 @@ export function TransactionDetailDialog({
 
   // Use stored bank details for transaction integrity, current WhatsApp number for an up-to-date contact
   let storedPaymentSettings: any = null;
+
   try {
     if (currentTransaction.paymentSettings) {
       storedPaymentSettings = JSON.parse(currentTransaction.paymentSettings);

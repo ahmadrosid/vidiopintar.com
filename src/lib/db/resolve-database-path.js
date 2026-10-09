@@ -1,6 +1,7 @@
 const path = require("node:path");
 
 const PRODUCTION_DATABASE_PATH = "/data/vidiopintar.db";
+
 const DEVELOPMENT_DATABASE_PATH = "./data/vidiopintar.db";
 
 /**

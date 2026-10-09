@@ -69,9 +69,11 @@ export function UpgradePlansSection({
     if (currentPlan === "yearly" && activeSubscriptions.yearly) {
       return [];
     }
+
     if (currentPlan === "monthly" && activeSubscriptions.monthly) {
       return ["yearly"];
     }
+
     return ["monthly", "yearly"];
   };
 
@@ -109,6 +111,7 @@ export function UpgradePlansSection({
           {availableUpgrades.map((planId) => {
             const plan = planDetails[planId as keyof typeof planDetails];
             const active = activeSubscriptions[plan.id];
+
             return (
               <div
                 key={planId}

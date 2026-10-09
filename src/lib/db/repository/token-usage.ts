@@ -19,6 +19,7 @@ export class TokenUsageRepository {
     requestDuration?: number;
   }) {
     const [result] = await db.insert(tokenUsage).values(data).returning();
+
     return result;
   }
 

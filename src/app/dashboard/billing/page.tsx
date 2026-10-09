@@ -15,6 +15,7 @@ export default async function BillingPage() {
   const user = await getCurrentUser();
 
   let transactions: any[] = [];
+
   try {
     transactions = await transactionsRepository.getByUserId(user.id, 20);
   } catch (error) {
@@ -26,8 +27,10 @@ export default async function BillingPage() {
   const currentPlan = await UserPlanService.getCurrentPlan(user.id);
 
   let subscriptionDetails = null;
+
   if (currentPlan !== 'free') {
     const activeSubscription = await UserPlanService.hasActiveSubscription(user.id, currentPlan);
+
     if (activeSubscription.hasActive && activeSubscription.expiresAt) {
       subscriptionDetails = {
         expiresAt: activeSubscription.expiresAt,
@@ -44,9 +47,11 @@ export default async function BillingPage() {
   ]);
 
   const activeSubscriptions: Record<string, { planType: string; expiresAt: string | Date }> = {};
+
   if (!monthlyCheck.canPurchase && monthlyCheck.activeSubscription) {
     activeSubscriptions.monthly = monthlyCheck.activeSubscription;
   }
+
   if (!yearlyCheck.canPurchase && yearlyCheck.activeSubscription) {
     activeSubscriptions.yearly = yearlyCheck.activeSubscription;
   }

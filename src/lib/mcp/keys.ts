@@ -13,6 +13,7 @@ const dayMs = 86_400_000;
 // Active keys with today's usage. The "day" window starts at UTC midnight, as in authenticateMcpRequest.
 export async function listUserMcpKeys(userId: string) {
   const today = Math.floor(Date.now() / dayMs) * dayMs;
+
   const rows = await db
     .select({
       id: mcpApiKeys.id,
@@ -31,6 +32,7 @@ export async function listUserMcpKeys(userId: string) {
     )
     .where(and(eq(mcpApiKeys.userId, userId), isNull(mcpApiKeys.revokedAt)))
     .orderBy(desc(mcpApiKeys.createdAt));
+
   return rows.map((row) => ({ ...row, requestsToday: row.requestsToday ?? 0, bytesToday: row.bytesToday ?? 0 }));
 }
 
@@ -39,6 +41,7 @@ export async function createUserMcpKey(userId: string, name: string) {
     .select({ active: count() })
     .from(mcpApiKeys)
     .where(and(eq(mcpApiKeys.userId, userId), isNull(mcpApiKeys.revokedAt)));
+
   if (active >= MAX_ACTIVE_KEYS_PER_USER) return null;
 
   const token = `vpt_live_${randomBytes(32).toString("base64url")}`;
@@ -51,6 +54,7 @@ export async function createUserMcpKey(userId: string, name: string) {
     keyHash: hashToken(token),
     createdAt: new Date(),
   });
+
   return { token, prefix };
 }
 
@@ -61,5 +65,6 @@ export async function revokeUserMcpKey(userId: string, keyId: string) {
     .set({ keyHash: hashToken(randomBytes(32).toString("hex")), revokedAt: new Date() })
     .where(and(eq(mcpApiKeys.id, keyId), eq(mcpApiKeys.userId, userId), isNull(mcpApiKeys.revokedAt)))
     .returning({ id: mcpApiKeys.id });
+
   return result.length > 0;
 }

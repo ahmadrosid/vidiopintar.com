@@ -73,15 +73,15 @@ export const paymentSettingsSchema = z.object({
   bankName: z.string()
     .min(1, 'Bank name is required')
     .max(100, 'Bank name cannot exceed 100 characters')
-    .regex(/^[a-zA-Z0-9\s\-\(\)\.]+$/, 'Bank name contains invalid characters'),
+    .regex(/^[a-zA-Z0-9\s\-(\).]+$/, 'Bank name contains invalid characters'),
   bankAccountNumber: z.string()
     .min(1, 'Bank account number is required')
     .max(50, 'Bank account number cannot exceed 50 characters')
-    .regex(/^[0-9\-]+$/, 'Bank account number must contain only numbers and hyphens'),
+    .regex(/^[0-9-]+$/, 'Bank account number must contain only numbers and hyphens'),
   bankAccountName: z.string()
     .min(1, 'Bank account name is required')
     .max(100, 'Bank account name cannot exceed 100 characters')
-    .regex(/^[a-zA-Z\s\.]+$/, 'Bank account name can only contain letters, spaces, and periods'),
+    .regex(/^[a-zA-Z\s.]+$/, 'Bank account name can only contain letters, spaces, and periods'),
   whatsappPhoneNumber: z.string()
     .min(1, 'WhatsApp phone number is required')
     .max(20, 'WhatsApp phone number cannot exceed 20 characters')

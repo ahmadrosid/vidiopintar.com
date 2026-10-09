@@ -50,9 +50,11 @@ export class UserPlanService {
       // Check if subscription is still active based on plan type
       if (tx.planType === 'monthly') {
         const expiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
         return now <= expiry;
       } else if (tx.planType === 'yearly') {
         const expiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000); // 365 days
+
         return now <= expiry;
       }
       
@@ -144,6 +146,7 @@ export class UserPlanService {
     }
 
     const userVideo = await UserVideoRepository.getById(userVideoId);
+
     if (!userVideo || userVideo.userId !== userId) {
       return { canSend: false, currentPlan, reason: 'unauthorized' };
     }
@@ -152,6 +155,7 @@ export class UserPlanService {
       userId,
       userVideo.youtubeId,
     );
+
     const messageLimit = limits.messagesPerVideo;
 
     if (messagesUsed >= messageLimit) {
@@ -227,9 +231,11 @@ export class UserPlanService {
       // Check if subscription is still active based on plan type
       if (tx.planType === 'monthly') {
         const expiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+
         return now <= expiry;
       } else if (tx.planType === 'yearly') {
         const expiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000); // 365 days
+
         return now <= expiry;
       }
       
@@ -238,6 +244,7 @@ export class UserPlanService {
 
     if (activeTransaction) {
       const confirmedDate = new Date(activeTransaction.confirmedAt!);
+
       const expiresAt = activeTransaction.planType === 'monthly' 
         ? new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000)
         : new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000);
@@ -293,6 +300,7 @@ export class UserPlanService {
   }> {
     const currentPlan = await this.getCurrentPlan(userId);
     const limits = this.getPlanLimits(currentPlan);
+
     const [trialUsed, hasCompletedAttempt] = await Promise.all([
       UsageEventRepository.hasQuizGenerated(userId),
       QuizRepository.hasCompletedAttemptForUser(userId),
@@ -329,9 +337,11 @@ export class UserPlanService {
     reason?: 'upgrade_required' | 'trial_used';
   }> {
     const entitlements = await this.getQuizEntitlements(userId);
+
     if (entitlements.canGenerate) {
       return { allowed: true, currentPlan: entitlements.currentPlan };
     }
+
     return {
       allowed: false,
       currentPlan: entitlements.currentPlan,
@@ -345,9 +355,11 @@ export class UserPlanService {
     reason?: 'upgrade_required';
   }> {
     const entitlements = await this.getQuizEntitlements(userId);
+
     if (entitlements.canRetry) {
       return { allowed: true, currentPlan: entitlements.currentPlan };
     }
+
     return {
       allowed: false,
       currentPlan: entitlements.currentPlan,

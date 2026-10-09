@@ -21,6 +21,7 @@ const inputSchema = z.object({
 export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>): Promise<PlaygroundResult> {
   const user = await getCurrentUser();
   const parsed = inputSchema.safeParse(input);
+
   if (!parsed.success) {
     return { ok: false, code: "INVALID_VIDEO_REFERENCE", message: "Masukkan URL YouTube atau ID video yang valid.", retryable: false };
   }
@@ -33,9 +34,11 @@ export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>):
       // Cursors are encrypted with this value, so each user's cursors only work for that user.
       token: `playground:${user.id}`,
     });
+
     return { ok: true, page };
   } catch (error) {
     const mapped = toServiceError(error);
+
     return { ok: false, code: mapped.code, message: mapped.message, retryable: mapped.retryable };
   }
 }

@@ -8,6 +8,7 @@ export async function generateSummary(text: string, language: 'en' | 'id' = 'en'
   const systemPrompt = getSummaryPrompt(language);
 
     const startTime = Date.now();
+
     const result = await generateText({
         model: aiModel,
         providerOptions: aiProviderOptions,

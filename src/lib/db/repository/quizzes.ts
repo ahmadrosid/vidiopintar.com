@@ -25,6 +25,7 @@ export const QuizRepository = {
       )
       .orderBy(desc(videoQuizzes.createdAt))
       .limit(1);
+
     return rows[0];
   },
 
@@ -46,6 +47,7 @@ export const QuizRepository = {
         createdAt: new Date(),
       })
       .returning();
+
     return rows[0];
   },
 
@@ -60,6 +62,7 @@ export const QuizRepository = {
         and(eq(quizAttempts.id, attemptId), eq(quizAttempts.userId, userId)),
       )
       .limit(1);
+
     return rows[0];
   },
 
@@ -75,6 +78,7 @@ export const QuizRepository = {
       )
       .orderBy(desc(quizAttempts.createdAt))
       .limit(1);
+
     return rows[0];
   },
 
@@ -94,6 +98,7 @@ export const QuizRepository = {
       )
       .orderBy(desc(quizAttempts.createdAt))
       .limit(1);
+
     return rows[0];
   },
 
@@ -107,6 +112,7 @@ export const QuizRepository = {
           eq(quizAttempts.status, "completed"),
         ),
       );
+
     return (result[0]?.count ?? 0) > 0;
   },
 
@@ -119,6 +125,7 @@ export const QuizRepository = {
       { length: input.questionCount },
       () => null,
     );
+
     const rows = await db
       .insert(quizAttempts)
       .values({
@@ -131,6 +138,7 @@ export const QuizRepository = {
         updatedAt: new Date(),
       })
       .returning();
+
     return rows[0];
   },
 
@@ -160,6 +168,7 @@ export const QuizRepository = {
         ),
       )
       .returning();
+
     return rows[0];
   },
 
@@ -172,6 +181,7 @@ export const QuizRepository = {
       { length: questionCount },
       () => null,
     );
+
     const rows = await db
       .update(quizAttempts)
       .set({
@@ -189,6 +199,7 @@ export const QuizRepository = {
         ),
       )
       .returning();
+
     return rows[0];
   },
 };

@@ -9,6 +9,7 @@ interface RouteParams {
 export async function GET(request: Request, { params }: RouteParams) {
   try {
     const user = await getOptionalUser();
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -28,6 +29,7 @@ export async function GET(request: Request, { params }: RouteParams) {
     return NextResponse.json(transaction);
   } catch (error) {
     console.error('Error fetching transaction:', error);
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -35,6 +37,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const user = await getOptionalUser();
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -78,6 +81,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json(updatedTransaction);
   } catch (error) {
     console.error('Error updating transaction:', error);
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

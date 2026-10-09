@@ -30,6 +30,7 @@ export async function GET() {
     return NextResponse.json(settings);
   } catch (error) {
     paymentLogger.error('Error fetching payment settings', error);
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -54,6 +55,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     if (error.message === 'REDIRECT') {
       paymentLogger.warn('Unauthorized payment settings creation attempt', requestMetadata);
+
       return NextResponse.redirect('/home');
     }
     
@@ -62,6 +64,7 @@ export async function POST(request: Request) {
         validationErrors: error.issues,
         requestMetadata,
       });
+
       return NextResponse.json({ 
         error: 'Validation failed',
         details: error.issues.map(err => ({
@@ -74,6 +77,7 @@ export async function POST(request: Request) {
     logPaymentFailure('payment_settings_creation', error, {
       requestMetadata,
     });
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -96,6 +100,7 @@ export async function PUT(request: Request) {
         userId: admin.id,
         settingsId: id,
       });
+
       return NextResponse.json({ error: 'Settings not found' }, { status: 404 });
     }
 
@@ -108,6 +113,7 @@ export async function PUT(request: Request) {
   } catch (error: any) {
     if (error.message === 'REDIRECT') {
       paymentLogger.warn('Unauthorized payment settings update attempt', requestMetadata);
+
       return NextResponse.redirect('/home');
     }
     
@@ -116,6 +122,7 @@ export async function PUT(request: Request) {
         validationErrors: error.issues,
         requestMetadata,
       });
+
       return NextResponse.json({ 
         error: 'Validation failed',
         details: error.issues.map(err => ({
@@ -128,6 +135,7 @@ export async function PUT(request: Request) {
     logPaymentFailure('payment_settings_update', error, {
       requestMetadata,
     });
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

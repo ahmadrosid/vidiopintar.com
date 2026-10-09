@@ -13,6 +13,7 @@ describe("fetchVideoFromOEmbed", () => {
       const url = String(input);
       expect(url).toContain("youtube.com/oembed");
       expect(url).not.toContain("transcriptapi.com");
+
       return new Response(
         JSON.stringify({
           title: "Never Gonna Give You Up",

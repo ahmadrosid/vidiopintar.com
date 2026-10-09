@@ -20,8 +20,10 @@ export function DeleteAccount() {
 
   const handleDelete = async () => {
     setIsDeleting(true);
+
     try {
       const response = await fetch("/api/user/delete", { method: "DELETE" });
+
       if (response.ok) {
         await signOut({ redirectUrl: "/" });
       }

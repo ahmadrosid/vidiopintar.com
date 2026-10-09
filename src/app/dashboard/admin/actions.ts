@@ -11,6 +11,7 @@ export async function confirmTransactionAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const transaction = id ? await transactionsRepository.getById(id) : null;
+
   if (!transaction || !openStatuses.includes(transaction.status)) return;
 
   await transactionsRepository.updateStatus(id, "confirmed", new Date());
@@ -21,6 +22,7 @@ export async function cancelTransactionAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const transaction = id ? await transactionsRepository.getById(id) : null;
+
   if (!transaction || !openStatuses.includes(transaction.status)) return;
 
   await transactionsRepository.updateStatus(id, "cancelled");

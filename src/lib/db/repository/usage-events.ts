@@ -11,12 +11,14 @@ function getTodayRange() {
   today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
+
   return { today, tomorrow };
 }
 
 export const UsageEventRepository = {
   async countVideosAddedToday(userId: string): Promise<number> {
     const { today, tomorrow } = getTodayRange();
+
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(userUsageEvents)
@@ -28,11 +30,13 @@ export const UsageEventRepository = {
           lt(userUsageEvents.createdAt, tomorrow),
         ),
       );
+
     return result[0]?.count ?? 0;
   },
 
   async hasVideoAddedToday(userId: string, youtubeId: string): Promise<boolean> {
     const { today, tomorrow } = getTodayRange();
+
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(userUsageEvents)
@@ -45,6 +49,7 @@ export const UsageEventRepository = {
           lt(userUsageEvents.createdAt, tomorrow),
         ),
       );
+
     return (result[0]?.count ?? 0) > 0;
   },
 
@@ -72,6 +77,7 @@ export const UsageEventRepository = {
           eq(userUsageEvents.eventType, USAGE_EVENT_TYPES.CHAT_MESSAGE),
         ),
       );
+
     return result[0]?.count ?? 0;
   },
 
@@ -94,6 +100,7 @@ export const UsageEventRepository = {
           eq(userUsageEvents.eventType, USAGE_EVENT_TYPES.QUIZ_GENERATED),
         ),
       );
+
     return (result[0]?.count ?? 0) > 0;
   },
 
@@ -106,16 +113,19 @@ export const UsageEventRepository = {
         eventType: USAGE_EVENT_TYPES.QUIZ_GENERATED,
         createdAt: new Date(),
       });
+
       return true;
     } catch (error) {
       const message =
         error instanceof Error ? error.message : String(error);
+
       if (
         message.includes("UNIQUE constraint failed") ||
         message.includes("unique constraint")
       ) {
         return false;
       }
+
       throw error;
     }
   },

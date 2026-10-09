@@ -69,6 +69,9 @@ export const quizAttempts = sqliteTable(
 );
 
 export type VideoQuiz = InferSelectModel<typeof videoQuizzes>;
+
 export type NewVideoQuiz = InferInsertModel<typeof videoQuizzes>;
+
 export type QuizAttempt = InferSelectModel<typeof quizAttempts>;
+
 export type NewQuizAttempt = InferInsertModel<typeof quizAttempts>;

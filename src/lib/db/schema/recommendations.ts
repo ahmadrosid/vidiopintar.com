@@ -42,4 +42,5 @@ export const userRecommendations = sqliteTable(
 );
 
 export type UserRecommendation = InferSelectModel<typeof userRecommendations>;
+
 export type NewUserRecommendation = InferInsertModel<typeof userRecommendations>;

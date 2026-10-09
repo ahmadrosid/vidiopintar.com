@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(canPurchaseCheck);
   } catch (error) {
     console.error('Failed to check if user can purchase plan:', error);
+
     return NextResponse.json(
       { error: 'Failed to check plan availability' },
       { status: 500 }

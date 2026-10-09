@@ -27,7 +27,9 @@ export const transactions = sqliteTable("transactions", {
 });
 
 export type Transaction = typeof transactions.$inferSelect;
+
 export type NewTransaction = typeof transactions.$inferInsert;
+
 export type TransactionWithUser = Transaction & {
   user: { name: string; email: string } | null;
 };
@@ -38,4 +40,5 @@ export type TransactionStatus =
   | "confirmed"
   | "expired"
   | "cancelled";
+
 export type PlanType = "monthly" | "yearly";

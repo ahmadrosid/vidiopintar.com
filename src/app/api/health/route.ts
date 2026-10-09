@@ -15,6 +15,7 @@ export async function GET() {
     return NextResponse.json({ status: 'ok', message: 'Application and database are healthy' });
   } catch (error) {
     console.error('Database connection failed:', error);
+
     return NextResponse.json(
       { 
         status: 'error', 

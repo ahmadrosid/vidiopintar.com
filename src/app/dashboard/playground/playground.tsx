@@ -6,6 +6,7 @@ import { useState, useTransition } from "react";
 import { fetchTranscriptAction, type PlaygroundResult } from "./actions";
 
 type Segment = { text: string; start: number; duration: number };
+
 type TranscriptPage = Extract<PlaygroundResult, { ok: true }>["page"];
 
 type RunState =
@@ -14,10 +15,13 @@ type RunState =
   | { status: "success"; page: TranscriptPage; segments: Segment[]; ms: number };
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
+
 const inputClass = `min-h-12 w-full min-w-0 border border-site-line bg-site-panel px-4 text-base text-site-text placeholder:text-site-text-faint ${focusRing}`;
+
 const labelClass = "mb-2 block text-sm text-site-text-muted";
 
 const decimalFormat = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 });
+
 const formatDuration = (ms: number) => (ms < 1000 ? `${ms} ms` : `${decimalFormat.format(ms / 1000)} dtk`);
 
 function formatTimestamp(seconds: number) {
@@ -25,6 +29,7 @@ function formatTimestamp(seconds: number) {
   const h = Math.floor(total / 3600);
   const m = Math.floor((total % 3600) / 60);
   const s = String(total % 60).padStart(2, "0");
+
   return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${s}` : `${m}:${s}`;
 }
 
@@ -41,16 +46,21 @@ export function Playground() {
     setCopied(false);
     startTransition(async () => {
       const startedAt = performance.now();
+
       const input = cursor
         ? { cursor }
         : { video: video.trim(), ...(language.trim() ? { language: language.trim() } : {}) };
+
       try {
         const result = await fetchTranscriptAction(input);
         const ms = Math.round(performance.now() - startedAt);
+
         if (!result.ok) {
           setState({ status: "error", message: result.message, code: result.code, ms });
+
           return;
         }
+
         setState({ status: "success", page: result.page, segments: [...previous, ...result.page.transcript], ms });
       } catch {
         setState({
@@ -65,6 +75,7 @@ export function Playground() {
 
   const copyTranscript = async () => {
     if (state.status !== "success") return;
+
     try {
       await navigator.clipboard.writeText(state.segments.map((s) => `[${formatTimestamp(s.start)}] ${s.text}`).join("\n"));
       setCopied(true);
@@ -81,6 +92,7 @@ export function Playground() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
+
           if (canRun) run();
         }}
         className="space-y-5"

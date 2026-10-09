@@ -15,11 +15,13 @@ const MARKDOWN_PUBLIC_PREFIXES = [
 
 function wantsMarkdown(request: NextRequest): boolean {
   const accept = request.headers.get("accept") || "";
+
   return accept.includes("text/markdown");
 }
 
 function isMarkdownEligiblePath(pathname: string): boolean {
   if (pathname === "/") return true;
+
   return MARKDOWN_PUBLIC_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
@@ -32,9 +34,11 @@ function toMarkdownRewritePath(pathname: string): string | null {
 
   if (pathname.endsWith(".md")) {
     const withoutExt = pathname.slice(0, -3);
+
     if (withoutExt === "" || withoutExt === "/") {
       return "/md/index.html";
     }
+
     return `/md${withoutExt}`;
   }
 
@@ -43,6 +47,7 @@ function toMarkdownRewritePath(pathname: string): string | null {
 
 function markdownAlternateHref(pathname: string): string {
   if (pathname === "/") return `${SITE_URL}/index.html.md`;
+
   return `${SITE_URL}${pathname}.md`;
 }
 
@@ -98,6 +103,7 @@ export const proxy = clerkMiddleware(
     if (mdRewrite) {
       const url = req.nextUrl.clone();
       url.pathname = mdRewrite;
+
       return NextResponse.rewrite(url);
     }
 
@@ -105,6 +111,7 @@ export const proxy = clerkMiddleware(
       const url = req.nextUrl.clone();
       url.pathname =
         pathname === "/" ? "/md/index.html" : `/md${pathname}`;
+
       return NextResponse.rewrite(url);
     }
 

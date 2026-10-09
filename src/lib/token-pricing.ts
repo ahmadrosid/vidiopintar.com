@@ -22,6 +22,7 @@ export function calculateTokenCost(
   
   if (!pricing) {
     console.warn(`No pricing found for ${provider}:${model}`);
+
     return { inputCost: 0, outputCost: 0, totalCost: 0 };
   }
   

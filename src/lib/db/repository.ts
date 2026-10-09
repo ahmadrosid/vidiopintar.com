@@ -16,24 +16,34 @@ export { TokenUsageRepository } from "./repository/token-usage"
 
 // Types for users
 export type User = InferSelectModel<typeof user>
+
 export type NewUser = InferInsertModel<typeof user>
 
 // Types for user_videos
 export type UserVideo = InferSelectModel<typeof userVideos>
+
 export type NewUserVideo = InferInsertModel<typeof userVideos>
 
 // Types for shared_videos
 export type SharedVideo = InferSelectModel<typeof sharedVideos>
+
 export type NewSharedVideo = InferInsertModel<typeof sharedVideos>
 
 // Infer types from Drizzle schema
 export type Video = InferSelectModel<typeof videos>
+
 export type NewVideo = InferInsertModel<typeof videos>
+
 export type Message = InferSelectModel<typeof messages>
+
 export type NewMessage = InferInsertModel<typeof messages>
+
 export type Note = InferSelectModel<typeof notes>
+
 export type NewNote = InferInsertModel<typeof notes>
+
 export type Feedback = InferSelectModel<typeof feedback>
+
 export type NewFeedback = InferInsertModel<typeof feedback>
 
 const SEARCH_RESULT_LIMIT = 8
@@ -68,6 +78,7 @@ export const VideoRepository = {
 
   async searchForUser(userId: string, query: string) {
     const q = query.trim()
+
     if (q.length < 2) return []
 
     const pattern = containsPattern(q)
@@ -96,11 +107,13 @@ export const VideoRepository = {
   },
   async getByYoutubeId(youtubeId: string): Promise<Video | undefined> {
     const result = await db.select().from(videos).where(eq(videos.youtubeId, youtubeId))
+
     return result[0]
   },
 
   async create(video: NewVideo): Promise<Video> {
     const result = await db.insert(videos).values(video).returning()
+
     return result[0]
   },
 
@@ -113,6 +126,7 @@ export const VideoRepository = {
         .set({ ...video, updatedAt: new Date() })
         .where(eq(videos.youtubeId, video.youtubeId))
         .returning()
+
       return result[0]
     } else {
       return await this.create(video)
@@ -125,9 +139,11 @@ export const VideoRepository = {
 
   async delete(id: number): Promise<void> {
     const video = await db.select().from(videos).where(eq(videos.id, id)).limit(1)
+
     if (video.length === 0) {
       throw new Error("Video not found")
     }
+
     await db.delete(videos).where(eq(videos.id, id))
   },
 }
@@ -143,6 +159,7 @@ export const MessageRepository = {
 
   async create(message: NewMessage): Promise<Message> {
     const result = await db.insert(messages).values(message).returning()
+
     return result[0]
   },
 
@@ -151,6 +168,7 @@ export const MessageRepository = {
       .select({ count: sql<number>`count(*)` })
       .from(messages)
       .where(and(eq(messages.userVideoId, userVideoId), eq(messages.role, 'user')))
+
     return result[0]?.count ?? 0
   },
 }
@@ -188,6 +206,7 @@ export const NoteRepository = {
 
   async searchByUserId(userId: string, query: string) {
     const q = query.trim()
+
     if (q.length < 2) return []
 
     const pattern = containsPattern(q)
@@ -221,6 +240,7 @@ export const NoteRepository = {
       createdAt: new Date(),
       updatedAt: new Date(),
     }).returning()
+
     return result[0]
   },
 
@@ -230,6 +250,7 @@ export const NoteRepository = {
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(notes.id, id))
       .returning()
+
     return result[0]
   },
 
@@ -239,6 +260,7 @@ export const NoteRepository = {
 
   async getById(id: number): Promise<Note | undefined> {
     const result = await db.select().from(notes).where(eq(notes.id, id)).limit(1)
+
     return result[0]
   },
 }
@@ -246,6 +268,7 @@ export const NoteRepository = {
 export const UserVideoRepository = {
   async getById(id: number): Promise<UserVideo | undefined> {
     const result = await db.select().from(userVideos).where(eq(userVideos.id, id))
+
     return result[0]
   },
   async delete(id: number): Promise<void> {
@@ -256,11 +279,13 @@ export const UserVideoRepository = {
       .select()
       .from(userVideos)
       .where(and(eq(userVideos.userId, userId), eq(userVideos.youtubeId, youtubeId)))
+
     return result[0]
   },
 
   async create(userVideo: NewUserVideo): Promise<UserVideo> {
     const result = await db.insert(userVideos).values(userVideo).returning()
+
     return result[0]
   },
 
@@ -282,9 +307,11 @@ export const UserVideoRepository = {
           },
         })
         .returning()
+
       return result[0]
     } catch (error) {
       console.warn('ON CONFLICT failed, falling back to check-then-insert:', error)
+
       const existingUserVideo = await this.getByUserAndYoutubeId(
         userVideo.userId!,
         userVideo.youtubeId!
@@ -300,6 +327,7 @@ export const UserVideoRepository = {
           })
           .where(eq(userVideos.id, existingUserVideo.id))
           .returning()
+
         return result[0]
       } else {
         return await this.create({
@@ -317,6 +345,7 @@ export const UserVideoRepository = {
       .set({ summary, updatedAt: new Date() })
       .where(eq(userVideos.id, id))
       .returning()
+
     return result[0]
   },
 
@@ -329,6 +358,7 @@ export const UserVideoRepository = {
       .set({ quickStartQuestions, updatedAt: new Date() })
       .where(eq(userVideos.id, id))
       .returning()
+
     return result[0]
   },
 
@@ -359,6 +389,7 @@ export const TranscriptRepository = {
     segments: Array<{ start: string; end: string; text: string; isChapterStart: boolean }>
   ) {
     await db.delete(transcriptSegments).where(eq(transcriptSegments.videoId, videoId))
+
     if (segments.length > 0) {
       await db.insert(transcriptSegments).values(
         segments.map((segment) => ({
@@ -380,6 +411,7 @@ export const TranscriptCacheRepository = {
       .from(transcriptCache)
       .where(eq(transcriptCache.videoId, videoId))
       .limit(1)
+
     return result[0]
   },
 
@@ -429,11 +461,13 @@ export const TranscriptCacheRepository = {
 export const SharedVideoRepository = {
   async create(sharedVideo: NewSharedVideo): Promise<SharedVideo> {
     const result = await db.insert(sharedVideos).values(sharedVideo).returning()
+
     return result[0]
   },
 
   async getBySlug(slug: string): Promise<SharedVideo | undefined> {
     const result = await db.select().from(sharedVideos).where(eq(sharedVideos.slug, slug))
+
     return result[0]
   },
 
@@ -487,6 +521,7 @@ export const SharedVideoRepository = {
 export const UserRepository = {
   async getById(id: string): Promise<User | undefined> {
     const result = await db.select().from(user).where(eq(user.id, id))
+
     return result[0]
   },
 
@@ -496,6 +531,7 @@ export const UserRepository = {
       .set({ preferredLanguage: language, updatedAt: new Date() })
       .where(eq(user.id, userId))
       .returning()
+
     return result[0]
   },
 
@@ -504,6 +540,7 @@ export const UserRepository = {
       .select({ preferredLanguage: user.preferredLanguage })
       .from(user)
       .where(eq(user.id, userId))
+
     return result[0]?.preferredLanguage
   },
 }
@@ -511,6 +548,7 @@ export const UserRepository = {
 export const FeedbackRepository = {
   async create(feedbackData: NewFeedback): Promise<Feedback> {
     const result = await db.insert(feedback).values(feedbackData).returning()
+
     return result[0]
   },
 
@@ -552,6 +590,7 @@ export const FeedbackRepository = {
 
   async getById(id: number): Promise<Feedback | undefined> {
     const result = await db.select().from(feedback).where(eq(feedback.id, id))
+
     return result[0]
   },
 
@@ -560,6 +599,7 @@ export const FeedbackRepository = {
       .delete(feedback)
       .where(eq(feedback.id, id))
       .returning({ id: feedback.id });
+
     if (result.length === 0) {
       throw new Error("Feedback not found");
     }

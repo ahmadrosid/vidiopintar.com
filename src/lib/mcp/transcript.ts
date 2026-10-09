@@ -14,17 +14,21 @@ import { decodeCursor, encodeCursor, transcriptSnapshot } from "./cursor";
 import { normalizeVideoReference } from "./video-reference";
 
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
 const PAGE_BYTES = 24_000;
 
 export function paginateTranscript<T>(segments: T[], offset: number, maxBytes: number) {
   let end = offset;
   let bytes = 0;
+
   while (end < segments.length) {
     const nextBytes = Buffer.byteLength(JSON.stringify(segments[end]));
+
     if (bytes + nextBytes > maxBytes) break;
     bytes += nextBytes;
     end += 1;
   }
+
   return { segments: segments.slice(offset, end), nextOffset: end, bytes };
 }
 
@@ -45,6 +49,7 @@ export async function getTranscriptPage(input: {
     ) {
       throw new McpServiceError("INVALID_CURSOR");
     }
+
     const cached = await db.query.mcpTranscriptCache.findFirst({
       where: and(
         eq(mcpTranscriptCache.videoId, videoId),
@@ -52,15 +57,19 @@ export async function getTranscriptPage(input: {
         gt(mcpTranscriptCache.expiresAt, new Date()),
       ),
     });
+
     if (!cached) throw new McpServiceError("INVALID_CURSOR");
     response = cached.response;
+
     if (transcriptSnapshot(response.transcript) !== cursor.snapshot) {
       throw new McpServiceError("INVALID_CURSOR");
     }
   } else {
     const tracks = await listLanguages(videoId, { retries: 2, retryDelay: 750 });
     const track = pickCaptionTrack(tracks, input.language);
+
     if (!track) throw new McpServiceError("CAPTIONS_UNAVAILABLE");
+
     const cached = await db.query.mcpTranscriptCache.findFirst({
       where: and(
         eq(mcpTranscriptCache.videoId, videoId),
@@ -68,7 +77,9 @@ export async function getTranscriptPage(input: {
         gt(mcpTranscriptCache.expiresAt, new Date()),
       ),
     });
+
     response = cached?.response;
+
     if (!response) {
       const fetched = await fetchTranscript(videoId, {
         retries: 2,
@@ -76,12 +87,14 @@ export async function getTranscriptPage(input: {
         lang: track.languageCode,
         videoDetails: true,
       });
+
       response = {
         video_id: videoId,
         language: track.languageCode,
         transcript: mapTranscriptSegments(fetched.segments),
         metadata: mapVideoDetails(fetched.videoDetails),
       };
+
       if (!response.transcript.length) throw new McpServiceError("CAPTIONS_UNAVAILABLE");
       await db.insert(mcpTranscriptCache).values({
         videoId,
@@ -127,10 +140,13 @@ export async function getTranscriptPage(input: {
   const offset = cursor?.offset ?? 0;
   const page = paginateTranscript(response.transcript, offset, PAGE_BYTES);
   const end = page.nextOffset;
+
   if (end === offset && end < response.transcript.length) {
     throw new McpServiceError("SERVICE_MISCONFIGURED");
   }
+
   const title = response.metadata?.title;
+
   const metadata = response.metadata
     ? {
         author_name: response.metadata.author_name,
@@ -138,6 +154,7 @@ export async function getTranscriptPage(input: {
         thumbnail_url: response.metadata.thumbnail_url,
       }
     : undefined;
+
   return {
     video_id: videoId,
     language: response.language,

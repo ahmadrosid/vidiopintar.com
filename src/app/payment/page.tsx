@@ -7,6 +7,7 @@ import { transactionsRepository } from '@/lib/db/repository/transactions'
 import { getCurrentUser } from '@/lib/auth'
 import { getPaymentSettings, PLAN_CONFIGS } from '@/lib/validations/payment'
 import { UserPlanService } from '@/lib/user-plan-service'
+
 interface PaymentPageProps {
   searchParams: Promise<{ plan?: string }>
 }
@@ -18,6 +19,7 @@ const PLAN_PERIODS = {
 
 function getPlanDetails(validPlan: 'monthly' | 'yearly') {
   const config = PLAN_CONFIGS[validPlan];
+
   return {
     name: config.name,
     price: `IDR ${config.amount.toLocaleString()}`,

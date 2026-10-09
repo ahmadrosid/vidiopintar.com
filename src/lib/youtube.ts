@@ -32,9 +32,11 @@ export async function generateUserVideoSummary(
   const textToSummarize = `${video.title}\n${video.description ?? ""}\n\n${timedTranscript}`;
 
   let userLanguage: 'en' | 'id' = 'en';
+
   try {
     const user = await getCurrentUser();
     const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
+
     if (savedLanguage === 'en' || savedLanguage === 'id') {
       userLanguage = savedLanguage;
     }
@@ -49,6 +51,7 @@ export async function generateUserVideoSummary(
 
 export async function fetchVideoFromOEmbed(videoId: string) {
   const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
   const response = await fetch(
     `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`,
   );
@@ -93,6 +96,7 @@ export async function fetchVideoDetails(videoId: string) {
           updatedAt: new Date(),
         });
       }
+
       return {
         title: existingVideo.title,
         description: existingVideo.description || "",
@@ -145,8 +149,10 @@ export async function fetchVideoTranscript(videoId: string) {
     const user = await getCurrentUser();
 
     let userVideo = await UserVideoRepository.getByUserAndYoutubeId(user.id, videoId);
+
     if (!userVideo) {
       const planCheck = await UserPlanService.canAddVideo(user.id, videoId);
+
       if (!planCheck.canAdd) {
         return {
           segments: [],
@@ -159,8 +165,10 @@ export async function fetchVideoTranscript(videoId: string) {
     }
 
     let transcriptLanguage = 'en';
+
     try {
       const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
+
       if (savedLanguage === 'en' || savedLanguage === 'id') {
         transcriptLanguage = savedLanguage;
       }
@@ -178,6 +186,7 @@ export async function fetchVideoTranscript(videoId: string) {
     // user_videos.youtube_id references videos.youtube_id — ensure parent row exists
     // before upserting (fetchVideoDetails may still be running in parallel).
     const existingVideo = await VideoRepository.getByYoutubeId(videoId);
+
     if (!existingVideo) {
       const metadata = transcriptResponse.metadata;
       await VideoRepository.upsert({
@@ -207,6 +216,7 @@ export async function fetchVideoTranscript(videoId: string) {
   } catch (error) {
     console.error('Error fetching transcript:', error)
     const retryable = error instanceof TranscriptRetryableError;
+
     return {
       segments: [],
       error: true,
@@ -227,9 +237,11 @@ export async function generateQuickStartQuestions(
   videoId?: string
 ) {
   let userLanguage: 'en' | 'id' = 'en';
+
   try {
     const user = await getCurrentUser();
     const savedLanguage = await UserRepository.getPreferredLanguage(user.id);
+
     if (savedLanguage === 'en' || savedLanguage === 'id') {
       userLanguage = savedLanguage;
     }
@@ -248,9 +260,11 @@ export async function generateQuickStartQuestions(
 
   // Build context with optional video metadata
   let contextSection = '';
+
   if (videoTitle) {
     contextSection += `Video Title: ${videoTitle}\n`;
   }
+
   if (videoDescription) {
     contextSection += `Video Description: ${videoDescription}\n`;
   }
@@ -265,6 +279,7 @@ ${truncatedTranscript}
 `;
 
   const startTime = Date.now();
+
   const result = await generateObject({
     model: aiModel,
     providerOptions: aiProviderOptions,

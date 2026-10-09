@@ -36,4 +36,5 @@ export const tokenUsage = sqliteTable(
 );
 
 export type TokenUsage = typeof tokenUsage.$inferSelect;
+
 export type NewTokenUsage = typeof tokenUsage.$inferInsert;

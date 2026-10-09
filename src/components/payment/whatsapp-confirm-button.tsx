@@ -17,6 +17,7 @@ export function WhatsAppConfirmButton({ whatsappUrl, transactionId }: WhatsAppCo
     if (transactionId) {
       isUpdatingRef.current = true;
       setIsUpdating(true);
+
       try {
         const response = await fetch(`/api/transactions/${transactionId}`, {
           method: 'PATCH',

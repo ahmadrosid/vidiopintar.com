@@ -10,6 +10,7 @@ import { DashboardTitle } from "./dashboard-sidebar";
 import { DeleteAccount } from "./delete-account";
 
 const SUCCESS = "#c96d8e";
+
 const FAILED = "#bf8a2f";
 
 const requestSeries: ChartSeries[] = [
@@ -24,8 +25,11 @@ const statusFilters: { value: HistoryStatus; label: string }[] = [
 ];
 
 const numberFormat = new Intl.NumberFormat("id-ID");
+
 const decimalFormat = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 });
+
 const dayLabel = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", timeZone: "UTC" });
+
 const timeLabel = new Intl.DateTimeFormat("id-ID", {
   day: "numeric",
   month: "short",
@@ -50,12 +54,14 @@ export default async function DashboardPage({
   const params = await searchParams;
   const range: AnalyticsRange = ANALYTICS_RANGES.find((value) => String(value) === params.range) ?? 30;
   const status: HistoryStatus = statusFilters.find((item) => item.value === params.status)?.value ?? "all";
+
   const href = (next: { range?: AnalyticsRange; status?: HistoryStatus }) =>
     `/dashboard?${new URLSearchParams({ range: String(next.range ?? range), status: next.status ?? status })}`;
 
   const user = await getCurrentUser();
   const { totals, daily, history } = await getUserMcpAnalytics(user.id, range, status);
   const successRate = totals.requests ? Math.round((totals.success / totals.requests) * 100) : null;
+
   const points = daily.map((point) => ({
     label: dayLabel.format(point.day),
     values: { success: point.success, failed: point.failed, bytes: point.bytes },
@@ -126,6 +132,7 @@ export default async function DashboardPage({
                   {history.map((row) => {
                     const ok = row.outcome === "success";
                     const Icon = ok ? CheckmarkCircle02Icon : AlertCircleIcon;
+
                     return (
                       <tr key={row.id} className="border-t border-site-line">
                         <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{timeLabel.format(row.createdAt)}</td>

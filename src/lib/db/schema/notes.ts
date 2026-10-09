@@ -26,4 +26,5 @@ export const notes = sqliteTable("notes", {
 });
 
 export type Note = InferSelectModel<typeof notes>;
+
 export type NewNote = InferInsertModel<typeof notes>;

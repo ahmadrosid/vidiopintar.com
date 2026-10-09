@@ -25,14 +25,17 @@ export async function GET(_request: Request, context: RouteContext) {
   // Support /index.html.md and /index.md for the homepage
   if (joined === "index.html" || joined === "index") {
     const body = getMarkdownForPath("/");
+
     if (!body) {
       return new Response("Not found", { status: 404 });
     }
+
     return markdownResponse(body);
   }
 
   const path = normalizePath(joined);
   const body = getMarkdownForPath(path);
+
   if (!body) {
     return new Response("Not found", { status: 404 });
   }

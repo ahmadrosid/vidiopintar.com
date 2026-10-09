@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export type ChartSeries = { key: string; label: string; color: string };
+
 export type ChartPoint = { label: string; values: Record<string, number> };
 
 interface ColumnChartProps {
@@ -13,21 +14,27 @@ interface ColumnChartProps {
 }
 
 const countFormat = new Intl.NumberFormat("id-ID", { notation: "compact", maximumFractionDigits: 1 });
+
 const mbFormat = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 2 });
+
 const formatters = {
   count: (value: number) => countFormat.format(value),
   bytes: (value: number) => `${mbFormat.format(value / 1_000_000)} MB`,
 };
 
 const HEIGHT = 200;
+
 const PAD = { top: 12, right: 8, bottom: 28, left: 52 };
+
 const GAP = 2;
+
 const MAX_BAR = 24;
 
 function niceMax(value: number) {
   if (value <= 0) return 1;
   const magnitude = 10 ** Math.floor(Math.log10(value));
   const step = [1, 2, 2.5, 5, 10].find((candidate) => candidate * magnitude >= value) ?? 10;
+
   return step * magnitude;
 }
 
@@ -45,10 +52,12 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
 
   useEffect(() => {
     const node = wrapRef.current;
+
     if (!node) return;
     setWidth(Math.max(280, node.getBoundingClientRect().width));
     const observer = new ResizeObserver(([entry]) => setWidth(Math.max(280, entry.contentRect.width)));
     observer.observe(node);
+
     return () => observer.disconnect();
   }, []);
 
@@ -116,9 +125,11 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
             {points.map((point, index) => {
               const x = PAD.left + band * index + (band - barW) / 2;
               let base = 0;
+
               const segments = series
                 .map((item) => ({ item, value: point.values[item.key] ?? 0 }))
                 .filter((segment) => segment.value > 0);
+
               return (
                 <g key={point.label} opacity={active === null || active === index ? 1 : 0.45}>
                   {segments.map(({ item, value }, segmentIndex) => {
@@ -128,6 +139,7 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
                     const top = y(base) + (segmentIndex < segments.length - 1 ? GAP : 0);
                     const height = Math.max(1, bottom - top);
                     const isTop = segmentIndex === segments.length - 1;
+
                     return isTop ? (
                       <path key={item.key} d={rect(x, bottom - height, barW, height)} fill={item.color} />
                     ) : (

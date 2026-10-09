@@ -11,6 +11,7 @@ function getEmailFromSessionClaims(
 ): string | null {
   if (!sessionClaims) return null;
   const email = sessionClaims.email;
+
   return typeof email === "string" ? email : null;
 }
 
@@ -29,6 +30,7 @@ async function findUserByEmail(email: string): Promise<User | null> {
     .from(user)
     .where(eq(user.email, email))
     .limit(1);
+
   return existing ?? null;
 }
 
@@ -38,6 +40,7 @@ async function findUserById(userId: string): Promise<User | null> {
     .from(user)
     .where(eq(user.id, userId))
     .limit(1);
+
   return existing ?? null;
 }
 
@@ -46,6 +49,7 @@ async function createUserFromClerkProfile(
   clerkUser: NonNullable<Awaited<ReturnType<typeof currentUser>>>,
 ): Promise<User | null> {
   const email = clerkUser.primaryEmailAddress?.emailAddress;
+
   if (!email) return null;
 
   const name =
@@ -56,6 +60,7 @@ async function createUserFromClerkProfile(
   const image = clerkUser.imageUrl ?? null;
 
   const existingByEmail = await findUserByEmail(email);
+
   if (existingByEmail) return existingByEmail;
 
   const [created] = await db
@@ -74,26 +79,34 @@ async function createUserFromClerkProfile(
 
 const syncUserFromClerk = cache(async (): Promise<User | null> => {
   const { userId, sessionClaims } = await clerkAuth();
+
   if (!userId) return null;
 
   const existingById = await findUserById(userId);
+
   if (existingById) return existingById;
 
   const emailFromClaims = getEmailFromSessionClaims(sessionClaims);
+
   if (emailFromClaims) {
     const existingByEmail = await findUserByEmail(emailFromClaims);
+
     if (existingByEmail) return existingByEmail;
   }
 
   try {
     const clerkUser = await currentUser();
+
     if (!clerkUser) return null;
+
     return createUserFromClerkProfile(userId, clerkUser);
   } catch (error) {
     if (isClerkRateLimitError(error) && emailFromClaims) {
       const existingByEmail = await findUserByEmail(emailFromClaims);
+
       if (existingByEmail) return existingByEmail;
     }
+
     throw error;
   }
 });
@@ -104,8 +117,10 @@ export async function getOptionalUser(): Promise<User | null> {
 
 export async function getCurrentUser(): Promise<User> {
   const dbUser = await syncUserFromClerk();
+
   if (!dbUser) {
     redirect("/sign-in");
   }
+
   return dbUser;
 }

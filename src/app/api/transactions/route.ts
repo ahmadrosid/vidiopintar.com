@@ -24,6 +24,7 @@ export async function POST(request: Request) {
     
     if (!user) {
       paymentLogger.warn('Unauthorized transaction creation attempt', requestMetadata);
+
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
     
     // Validate amount matches plan pricing
     const amountValidation = validateAmountMatchesPlan(validatedData.planType as PlanType, validatedData.amount);
+
     if (!amountValidation.isValid) {
       paymentLogger.warn('Invalid amount for plan type', {
         userId: user.id,
@@ -40,6 +42,7 @@ export async function POST(request: Request) {
         expectedAmount: amountValidation.expectedAmount,
         error: amountValidation.error,
       });
+
       return NextResponse.json({ 
         error: 'Invalid amount',
         details: amountValidation.error,
@@ -59,6 +62,7 @@ export async function POST(request: Request) {
         recentTransactionCount: recentTransactions.length,
         limit: PAYMENT_LIMITS.MAX_TRANSACTIONS_PER_USER_PER_DAY,
       });
+
       return NextResponse.json({ 
         error: 'Transaction limit exceeded',
         details: `Maximum ${PAYMENT_LIMITS.MAX_TRANSACTIONS_PER_USER_PER_DAY} transactions per day allowed`
@@ -69,6 +73,7 @@ export async function POST(request: Request) {
 
     const headersList = await headers();
     const userAgent = headersList.get('user-agent')?.substring(0, 500) || undefined;
+
     const ipAddress = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                      headersList.get('x-real-ip') || 
                      undefined;
@@ -99,6 +104,7 @@ export async function POST(request: Request) {
         validationErrors: error.issues,
         requestMetadata,
       });
+
       return NextResponse.json({ 
         error: 'Validation failed',
         details: error.issues.map(err => ({
@@ -111,6 +117,7 @@ export async function POST(request: Request) {
     logPaymentFailure('transaction_creation', error, {
       requestMetadata,
     });
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -120,8 +127,10 @@ export async function GET(request: Request) {
   
   try {
     const user = await getOptionalUser();
+
     if (!user) {
       paymentLogger.warn('Unauthorized transaction fetch attempt', requestMetadata);
+
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -141,6 +150,7 @@ export async function GET(request: Request) {
     logPaymentFailure('transaction_fetch', error, {
       requestMetadata,
     });
+
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -5,7 +5,9 @@ import { mcpApiKeys, mcpRequestMetrics, mcpUsage } from "@/lib/db/schema";
 const dayMs = 86_400_000;
 
 export const ANALYTICS_RANGES = [7, 30, 90] as const;
+
 export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
+
 export type HistoryStatus = "all" | "success" | "failed";
 
 export type DailyPoint = { day: number; success: number; failed: number; bytes: number };
@@ -70,14 +72,17 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
 
   const outcomes = new Map(outcomesByDay.map((row) => [Number(row.day), row]));
   const bytes = new Map(bytesByDay.map((row) => [Number(row.day), row.bytes]));
+
   const daily: DailyPoint[] = Array.from({ length: range }, (_, index) => {
     const day = start + index * dayMs;
     const row = outcomes.get(day);
+
     return { day, success: Number(row?.success ?? 0), failed: Number(row?.failed ?? 0), bytes: bytes.get(day) ?? 0 };
   });
 
   const success = daily.reduce((total, point) => total + point.success, 0);
   const failed = daily.reduce((total, point) => total + point.failed, 0);
+
   // Median latency of successful calls, read as the middle row so we never load every duration.
   const [median] = success
     ? await db
@@ -108,12 +113,14 @@ export const LOG_PAGE_SIZE = 50;
 // "all", "success", "failed" (any error), or one specific outcome code.
 export async function getUserMcpLogs(userId: string, outcome: string, page: number) {
   const ownKey = eq(mcpApiKeys.userId, userId);
+
   const outcomeFilter =
     outcome === "all"
       ? undefined
       : outcome === "failed"
         ? ne(mcpRequestMetrics.outcome, "success")
         : eq(mcpRequestMetrics.outcome, outcome);
+
   const where = and(ownKey, outcomeFilter);
 
   const [rows, [{ total }]] = await Promise.all([

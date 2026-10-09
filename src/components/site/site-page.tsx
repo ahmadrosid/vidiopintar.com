@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const linkClass = "text-site-text underline decoration-site-accent underline-offset-4 hover:text-site-accent-hover";
+
 export const mutedLinkClass = "underline decoration-site-line-strong underline-offset-4 hover:text-site-text";
 
 export function SitePage({

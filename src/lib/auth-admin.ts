@@ -8,6 +8,7 @@ export function isUserAdmin(user: any): boolean {
 
 export async function getCurrentUserWithAdminCheck() {
     const user = await getCurrentUser();
+
     return {
         ...user,
         isAdmin: isUserAdmin(user)

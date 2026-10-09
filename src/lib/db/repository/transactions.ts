@@ -64,6 +64,7 @@ export class TransactionsRepository {
 
   async getRecentTransactionsByUserId(userId: string, timeWindowMs: number): Promise<Transaction[]> {
     const cutoffTime = new Date(Date.now() - timeWindowMs);
+
     return await db
       .select()
       .from(transactions)
@@ -105,6 +106,7 @@ export class TransactionsRepository {
 
   async getExpiredTransactions(): Promise<Transaction[]> {
     const now = new Date();
+
     return await db
       .select()
       .from(transactions)

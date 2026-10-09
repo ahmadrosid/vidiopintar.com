@@ -8,6 +8,7 @@ export async function POST(request: Request) {
   headers.set("access-control-allow-origin", "*");
   headers.set("access-control-allow-headers", "authorization, content-type, mcp-protocol-version, mcp-session-id, last-event-id");
   headers.set("access-control-allow-methods", "POST, GET, DELETE, OPTIONS");
+
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 

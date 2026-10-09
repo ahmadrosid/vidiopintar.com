@@ -15,11 +15,13 @@ const nameSchema = z.string().trim().min(1, "Nama key wajib diisi.").max(60, "Na
 export async function createKeyAction(_prev: CreateKeyState, formData: FormData): Promise<CreateKeyState> {
   const user = await getCurrentUser();
   const parsed = nameSchema.safeParse(formData.get("name") ?? "");
+
   if (!parsed.success) {
     return { status: "error", message: parsed.error.issues[0].message };
   }
 
   const created = await createUserMcpKey(user.id, parsed.data);
+
   if (!created) {
     return {
       status: "error",
@@ -28,6 +30,7 @@ export async function createKeyAction(_prev: CreateKeyState, formData: FormData)
   }
 
   revalidatePath("/dashboard");
+
   return { status: "created", token: created.token, name: parsed.data };
 }
 

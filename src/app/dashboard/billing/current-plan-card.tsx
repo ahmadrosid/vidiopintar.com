@@ -19,6 +19,7 @@ function getDaysUntilExpiry(date: Date) {
   const expiry = new Date(date);
   const timeDiff = expiry.getTime() - now.getTime();
   const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
   return daysDiff;
 }
 

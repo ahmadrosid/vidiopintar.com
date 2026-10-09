@@ -26,6 +26,7 @@ function getSqlite(): Database.Database {
   if (!global.sqliteDb) {
     global.sqliteDb = createDatabase();
   }
+
   return global.sqliteDb;
 }
 
@@ -33,6 +34,7 @@ function getDrizzle() {
   if (!global.drizzleDb) {
     global.drizzleDb = drizzle(getSqlite(), { schema });
   }
+
   return global.drizzleDb;
 }
 
@@ -40,6 +42,7 @@ export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
   get(_target, prop, receiver) {
     const instance = getDrizzle();
     const value = Reflect.get(instance, prop, receiver);
+
     return typeof value === "function" ? value.bind(instance) : value;
   },
 });

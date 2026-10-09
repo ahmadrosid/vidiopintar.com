@@ -8,13 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DashboardTitle } from "../dashboard-sidebar";
 
 const SUCCESS = "#c96d8e";
+
 const FAILED = "#bf8a2f";
 
 const errorCodes = Object.keys(outcomeLabels).filter((code) => code !== "success");
 
 const numberFormat = new Intl.NumberFormat("id-ID");
+
 const decimalFormat = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 });
+
 const formatDuration = (ms: number) => (ms < 1000 ? `${ms} ms` : `${decimalFormat.format(ms / 1000)} dtk`);
+
 const timeLabel = new Intl.DateTimeFormat("id-ID", {
   day: "numeric",
   month: "short",
@@ -30,6 +34,7 @@ function isOutcomeFilter(value: string | undefined): value is string {
 }
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
+
 const filterItem = "cursor-pointer rounded-none text-site-text-2 focus:bg-site-accent-soft focus:text-site-text";
 
 export default async function LogsPage({
@@ -45,8 +50,10 @@ export default async function LogsPage({
   const user = await getCurrentUser();
   const { rows, total } = await getUserMcpLogs(user.id, outcome, page);
   const totalPages = Math.max(1, Math.ceil(total / LOG_PAGE_SIZE));
+
   const pageHref = (target: number) => {
     const query = new URLSearchParams({ outcome, page: String(target + 1) });
+
     return `/dashboard/logs?${query}`;
   };
 
@@ -106,6 +113,7 @@ export default async function LogsPage({
               {rows.map((row) => {
                 const ok = row.outcome === "success";
                 const Icon = ok ? CheckmarkCircle02Icon : AlertCircleIcon;
+
                 return (
                   <tr key={row.id} className="border-t border-site-line">
                     <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{timeLabel.format(row.createdAt)}</td>

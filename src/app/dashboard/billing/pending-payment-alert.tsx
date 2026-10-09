@@ -52,10 +52,13 @@ function getTimeRemaining(expiresAt: Date) {
   const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
 
   if (hoursLeft < 0) return "Kedaluwarsa";
+
   if (hoursLeft < 1) return "Kurang dari 1 jam";
+
   if (hoursLeft < 24) return `${hoursLeft} jam lagi`;
 
   const daysLeft = Math.floor(hoursLeft / 24);
+
   return `${daysLeft} hari lagi`;
 }
 

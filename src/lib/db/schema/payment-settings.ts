@@ -18,4 +18,5 @@ export const paymentSettings = sqliteTable("payment_settings", {
 });
 
 export type PaymentSettings = typeof paymentSettings.$inferSelect;
+
 export type NewPaymentSettings = typeof paymentSettings.$inferInsert;

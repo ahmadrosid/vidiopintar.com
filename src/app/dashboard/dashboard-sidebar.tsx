@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/theme-toggle";
+
 const links = [
   { href: "/dashboard", label: "Dashboard", Icon: Key01Icon },
   { href: "/dashboard/api-keys", label: "API key", Icon: ShieldKeyIcon },
@@ -16,8 +17,11 @@ const links = [
 ];
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
+
 const itemBase = `flex min-h-11 shrink-0 cursor-pointer items-center gap-3 border-l-2 px-4 text-left text-sm transition-colors ${focusRing}`;
+
 const itemIdle = "border-transparent text-site-text-muted hover:bg-site-header hover:text-site-text";
+
 const itemActive = "border-site-accent bg-site-active text-site-text";
 
 export function DashboardSidebar({ email, isAdmin }: { email: string; isAdmin: boolean }) {
@@ -37,6 +41,7 @@ export function DashboardSidebar({ email, isAdmin }: { email: string; isAdmin: b
       <nav className="flex gap-1 overflow-x-auto px-2 pb-2 md:flex-1 md:flex-col md:overflow-visible md:pb-0">
         {navLinks.map(({ href, label, Icon }) => {
           const active = pathname === href;
+
           return (
             <Link
               key={href}

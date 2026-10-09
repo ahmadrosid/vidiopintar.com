@@ -10,12 +10,15 @@ import { getTranscriptPage } from "./transcript";
 import { normalizeVideoReference } from "./video-reference";
 
 const minuteMs = 60_000;
+
 const dayMs = 86_400_000;
+
 let lastCleanupAt = 0;
 
 async function cleanupExpiredMcpData(now: number) {
   if (now - lastCleanupAt < 6 * 60 * 60 * 1000) return;
   lastCleanupAt = now;
+
   try {
     await db.delete(mcpTranscriptCache).where(lt(mcpTranscriptCache.expiresAt, new Date(now)));
     await db.delete(mcpRequestMetrics).where(lt(mcpRequestMetrics.createdAt, new Date(now - 90 * dayMs)));
@@ -28,11 +31,14 @@ async function cleanupExpiredMcpData(now: number) {
 
 export async function authenticateMcpRequest(request: Request) {
   const token = request.headers.get("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
+
   if (!token || !/^vpt_live_[A-Za-z0-9_-]{43}$/.test(token)) return null;
   const keyHash = createHash("sha256").update(token).digest("hex");
+
   const key = await db.query.mcpApiKeys.findFirst({
     where: and(eq(mcpApiKeys.keyHash, keyHash), isNull(mcpApiKeys.revokedAt)),
   });
+
   if (!key) return null;
 
   const now = Date.now();
@@ -40,6 +46,7 @@ export async function authenticateMcpRequest(request: Request) {
   const minute = Math.floor(now / minuteMs) * minuteMs;
   const day = Math.floor(now / dayMs) * dayMs;
   const updatedAt = new Date(now);
+
   const recordUsage = async (
     window: "minute" | "day",
     periodStart: number,
@@ -56,10 +63,13 @@ export async function authenticateMcpRequest(request: Request) {
       set: { requests: sql`${mcpUsage.requests} + 1`, updatedAt },
       setWhere: lt(mcpUsage.requests, max),
     }).returning({ requests: mcpUsage.requests });
+
     if (!usage) throw new McpServiceError("USAGE_LIMIT_EXCEEDED", true, 60);
   };
+
   await recordUsage("minute", minute, key.requestsPerMinute);
   await recordUsage("day", day, key.requestsPerDay);
+
   return { id: key.id, token, key };
 }
 
@@ -85,6 +95,7 @@ const handler = createMcpHandler((requestContext) => {
     },
     async ({ video, language, cursor }) => {
       const startedAt = Date.now();
+
       try {
         const result = await getTranscriptPage({
           video: video ?? "",
@@ -92,10 +103,12 @@ const handler = createMcpHandler((requestContext) => {
           cursor,
           token,
         });
+
         const response = {
           content: [{ type: "text" as const, text: JSON.stringify(result) }],
           structuredContent: result,
         };
+
         await addOutputUsage(
           requestContext.authInfo?.clientId ?? "",
           Buffer.byteLength(JSON.stringify(response)),
@@ -108,6 +121,7 @@ const handler = createMcpHandler((requestContext) => {
           !cursor,
           result.video_id,
         );
+
         return response;
       } catch (error) {
         if (error instanceof McpServiceError) {
@@ -119,19 +133,24 @@ const handler = createMcpHandler((requestContext) => {
             !cursor && error.code !== "INVALID_VIDEO_REFERENCE",
             requestVideoId(video),
           );
+
           return serviceErrorResult(error);
         }
+
         const mapped = toServiceError(error);
         await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code, false, !cursor, requestVideoId(video));
+
         return serviceErrorResult(mapped);
       }
     },
   );
+
   return server;
 });
 
 function requestVideoId(video?: string) {
   if (!video) return null;
+
   try {
     return normalizeVideoReference(video);
   } catch {
@@ -146,6 +165,7 @@ function serviceErrorResult(error: McpServiceError) {
     retry_after_seconds: error.retryAfter,
     message: error.message,
   };
+
   return {
     isError: true,
     content: [{ type: "text" as const, text: JSON.stringify(data) }],
@@ -162,6 +182,7 @@ async function recordRequestMetric(
   videoId: string | null = null,
 ) {
   if (!keyId) return;
+
   try {
     await db.insert(mcpRequestMetrics).values({
       id: randomUUID(),
@@ -182,7 +203,9 @@ async function addOutputUsage(keyId: string, bytes: number) {
   if (!keyId) return;
   const day = Math.floor(Date.now() / dayMs) * dayMs;
   const key = await db.query.mcpApiKeys.findFirst({ where: eq(mcpApiKeys.id, keyId) });
+
   if (!key) throw new McpServiceError("INVALID_CREDENTIALS");
+
   const [usage] = await db.insert(mcpUsage).values({
     keyId,
     window: "day",
@@ -194,11 +217,13 @@ async function addOutputUsage(keyId: string, bytes: number) {
     set: { outputBytes: sql`${mcpUsage.outputBytes} + ${bytes}`, updatedAt: new Date() },
     setWhere: sql`${mcpUsage.outputBytes} + ${bytes} <= ${key.bytesPerDay}`,
   }).returning({ outputBytes: mcpUsage.outputBytes });
+
   if (!usage) throw new McpServiceError("USAGE_LIMIT_EXCEEDED");
 }
 
 export async function handleMcpRequest(request: Request) {
   let identity;
+
   try {
     identity = await authenticateMcpRequest(request);
   } catch (error) {
@@ -211,8 +236,10 @@ export async function handleMcpRequest(request: Request) {
         },
       });
     }
+
     throw error;
   }
+
   if (!identity) {
     return new Response(JSON.stringify({
       code: "INVALID_CREDENTIALS",
@@ -225,11 +252,13 @@ export async function handleMcpRequest(request: Request) {
       },
     });
   }
+
   const authInfo = {
     token: identity.token,
     clientId: identity.id,
     scopes: ["transcript:read"],
   };
+
   try {
     return await handler.fetch(request, { authInfo });
   } catch {

@@ -64,6 +64,7 @@ export default async function AdminPage() {
             <tbody>
               {transactions.map((transaction) => {
                 const isOpen = openStatuses.includes(transaction.status);
+
                 return (
                   <tr key={transaction.id} className="border-t border-site-line">
                     <td className="whitespace-nowrap px-4 py-2.5 text-site-text">{transaction.user?.email ?? "–"}</td>

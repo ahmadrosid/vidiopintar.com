@@ -19,10 +19,12 @@ export function useCopyToClipboard({
       .then(() => {
         toast.success(copyMessage)
         setIsCopied(true)
+
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)
           timeoutRef.current = null
         }
+
         timeoutRef.current = setTimeout(() => {
           setIsCopied(false)
         }, 2000)
