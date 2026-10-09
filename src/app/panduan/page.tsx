@@ -46,7 +46,6 @@ const params = [
 const limits = [
   ["Permintaan per menit", "30"],
   ["Permintaan per hari", "1.000"],
-  ["Data transkrip per hari", "10 MB"],
   ["Ukuran satu halaman", "± 24 KB segmen"],
   ["Masa berlaku cursor", "15 menit"],
   ["Cache transkrip", "7 hari"],

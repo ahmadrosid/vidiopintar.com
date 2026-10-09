@@ -19,7 +19,6 @@ const requestSeries: ChartSeries[] = [
   { key: "success", label: "Berhasil", color: SUCCESS },
   { key: "failed", label: "Gagal", color: FAILED },
 ];
-const bytesSeries: ChartSeries[] = [{ key: "bytes", label: "Transkrip", color: SUCCESS }];
 
 const statusFilters: { value: HistoryStatus; label: string }[] = [
   { value: "all", label: "Semua" },
@@ -38,7 +37,6 @@ const timeLabel = new Intl.DateTimeFormat("id-ID", {
   timeZone: "Asia/Jakarta",
 });
 
-const formatMegabytes = (bytes: number) => `${decimalFormat.format(bytes / 1_000_000)} MB`;
 const formatDuration = (ms: number) => (ms < 1000 ? `${ms} ms` : `${decimalFormat.format(ms / 1000)} dtk`);
 
 function chipClass(selected: boolean) {
@@ -89,9 +87,8 @@ export default async function DashboardPage({
             <Stat value={numberFormat.format(totals.failed)} unit="gagal" />
             <Stat value={totals.medianMs === null ? "–" : formatDuration(totals.medianMs)} unit="median durasi" />
           </div>
-          <div className="grid gap-10 pt-6 lg:grid-cols-2">
+          <div className="pt-6">
             <ColumnChart title="Permintaan per hari" series={requestSeries} points={points} unit="count" />
-            <ColumnChart title={`Data transkrip per hari · ${formatMegabytes(totals.bytes)}`} series={bytesSeries} points={points} unit="bytes" />
           </div>
         </Row>
 

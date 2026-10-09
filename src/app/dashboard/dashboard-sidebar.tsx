@@ -1,13 +1,14 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { BookOpen01Icon, HistoryIcon, CreditCardIcon, Key01Icon, PlayIcon, Logout01Icon, UserCircleIcon } from "@hugeicons/core-free-icons";
+import { BookOpen01Icon, HistoryIcon, CreditCardIcon, Key01Icon, PlayIcon, Logout01Icon, ShieldKeyIcon, UserCircleIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 import { ThemeToggle } from "@/components/theme-toggle";
 const links = [
   { href: "/dashboard", label: "Dashboard", Icon: Key01Icon },
+  { href: "/dashboard/api-keys", label: "API key", Icon: ShieldKeyIcon },
   { href: "/dashboard/playground", label: "Playground", Icon: PlayIcon },
   { href: "/dashboard/logs", label: "Riwayat", Icon: HistoryIcon },
   { href: "/dashboard/billing", label: "Tagihan", Icon: CreditCardIcon },

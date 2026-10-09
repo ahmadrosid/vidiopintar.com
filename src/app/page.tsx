@@ -69,10 +69,9 @@ export default function Page() {
         </Row>
 
         <Row label="Batas" icon={<HugeiconsIcon icon={GaugeIcon} />}>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 gap-6">
             <Stat value="30" unit="permintaan / menit" />
             <Stat value="1.000" unit="permintaan / hari" />
-            <Stat value="10 MB" unit="transkrip / hari" />
           </div>
         </Row>
 

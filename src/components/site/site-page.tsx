@@ -35,8 +35,34 @@ export function SitePage({
           </div>
         </header>
         {children}
+        <SiteFooter />
       </div>
     </main>
+  );
+}
+
+const footerLinks = [
+  { href: "/panduan", label: "Panduan" },
+  { href: "/privacy", label: "Privasi" },
+  { href: "/terms", label: "Ketentuan" },
+  { href: "/api/health", label: "Status" },
+  { href: "mailto:support@vidiopintar.com", label: "Dukungan" },
+];
+
+export function SiteFooter() {
+  return (
+    <footer className="mt-24 border-t border-site-line-soft pt-8 text-sm text-site-text-muted">
+      <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-3">
+        {footerLinks.map((link) =>
+          link.href.startsWith("http") || link.href.startsWith("mailto:") || link.href.startsWith("/api/") ? (
+            <a key={link.href} href={link.href} className="hover:text-site-text">{link.label}</a>
+          ) : (
+            <Link key={link.href} href={link.href} className="hover:text-site-text">{link.label}</Link>
+          ),
+        )}
+      </nav>
+      <p className="mt-6 text-xs text-site-text-faint">© {new Date().getFullYear()} Vidiopintar. MCP transkrip YouTube untuk AI Agent.</p>
+    </footer>
   );
 }
 
