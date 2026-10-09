@@ -50,8 +50,6 @@ export function transcriptApiSegmentsToStored(
   });
 }
 
-const TIMED_TRANSCRIPT_MAX_CHARS = 48_000;
-
 export interface StoredTranscriptResponse {
   video_id: string;
   language: string;

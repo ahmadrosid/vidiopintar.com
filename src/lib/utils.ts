@@ -25,14 +25,6 @@ export function serializeJsonLd(data: JsonLdValue): string {
 }
 
 /** Strip common XSS vectors from trusted static HTML before rendering. */
-function sanitizeHtml(html: string): string {
-  return html
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-    .replace(/\s*on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
-    .replace(/javascript:/gi, "")
-}
-
 /** Shared date format options for consistent SSR/client rendering. */
 const DISPLAY_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",

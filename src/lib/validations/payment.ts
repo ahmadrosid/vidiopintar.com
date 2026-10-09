@@ -63,13 +63,11 @@ export const createTransactionSchema = z.object({
   paymentSettings: z.string().optional(),
 });
 
-type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
-
 export const paymentSettingsSchema = z.object({
   bankName: z.string()
     .min(1, 'Bank name is required')
     .max(100, 'Bank name cannot exceed 100 characters')
-    .regex(/^[a-zA-Z0-9\s\-(\).]+$/, 'Bank name contains invalid characters'),
+    .regex(/^[a-zA-Z0-9\s\-().]+$/, 'Bank name contains invalid characters'),
   bankAccountNumber: z.string()
     .min(1, 'Bank account number is required')
     .max(50, 'Bank account number cannot exceed 50 characters')
@@ -87,13 +85,9 @@ export const paymentSettingsSchema = z.object({
     .max(1000, 'WhatsApp message template cannot exceed 1000 characters'),
 });
 
-type PaymentSettingsInput = z.infer<typeof paymentSettingsSchema>;
-
 export const updatePaymentSettingsSchema = paymentSettingsSchema.partial().extend({
   id: z.uuid('Invalid payment settings ID'),
 });
-
-type UpdatePaymentSettingsInput = z.infer<typeof updatePaymentSettingsSchema>;
 
 function getExpectedAmount(planType: PlanType): number {
   return PLAN_CONFIGS[planType].amount;

@@ -3,8 +3,6 @@ import { z } from "zod";
 import type { TranscriptApiResponse } from "@/lib/transcript-api";
 import { McpServiceError } from "./errors";
 
-const CURSOR_TTL_MS = 15 * 60 * 1000;
-
 const cursorPayloadSchema = z.object({
   v: z.literal(1),
   videoId: z.string(),

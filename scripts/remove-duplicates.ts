@@ -10,6 +10,7 @@ const sqlitePath = path.resolve(
 
 const db = new Database(sqlitePath);
 
+// SAFETY: the SQL selects user_id, youtube_id, count and ids, matching the declared row shape.
 const duplicates = db
   .prepare(
     `SELECT user_id, youtube_id, COUNT(*) as count, group_concat(id) as ids

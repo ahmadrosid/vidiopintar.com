@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { transactionsRepository } from '@/lib/db/repository/transactions';
-import { UserVideoRepository } from '@/lib/db/repository';
 import { UsageEventRepository } from '@/lib/db/repository/usage-events';
 
 export type UserPlan = 'free' | 'monthly' | 'yearly';

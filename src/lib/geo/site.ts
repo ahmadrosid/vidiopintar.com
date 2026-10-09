@@ -21,12 +21,3 @@ export function markdownUrlFor(path: string): string {
   return `${absoluteUrl(path)}.md`;
 }
 
-function truncateDescription(text: string, max = 155): string {
-  const normalized = text.replace(/\s+/g, " ").trim();
-
-  if (normalized.length <= max) return normalized;
-  const sliced = normalized.slice(0, max - 1);
-  const lastSpace = sliced.lastIndexOf(" ");
-
-  return `${(lastSpace > 80 ? sliced.slice(0, lastSpace) : sliced).trimEnd()}…`;
-}

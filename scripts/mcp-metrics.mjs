@@ -106,8 +106,9 @@ try {
   }
 
   const timeToFirstSuccess = [...perKey.values()]
-    .filter((key) => key.firstSuccessAt !== null && key.firstSuccessAt >= since)
-    .map((key) => Math.max(0, key.firstSuccessAt - key.keyCreatedAt))
+    .flatMap((key) => (key.firstSuccessAt !== null && key.firstSuccessAt >= since
+      ? [Math.max(0, key.firstSuccessAt - key.keyCreatedAt)]
+      : []))
     .sort((a, b) => a - b);
 
   const median = (values) => values.length === 0
@@ -116,6 +117,11 @@ try {
 
   const round = (value) => Math.round(value * 1_000_000) / 1_000_000;
   const successfulKeys = [...perKey.values()].filter((key) => key.firstSuccessAt !== null);
+
+  const costSummary = costUsd === undefined ? undefined : {
+    hosting_cost_usd: costUsd,
+    cost_per_successful_transcript_usd: successfulTranscripts === 0 ? null : round(costUsd / successfulTranscripts),
+  };
 
   const report = {
     period_days: days,
@@ -132,10 +138,7 @@ try {
     activated_keys: successfulKeys.length,
     repeat_use_keys: successfulKeys.filter((key) => key.successDays.size > 1).length,
     median_time_to_first_success_ms: median(timeToFirstSuccess),
-    ...(costUsd === undefined ? {} : {
-      hosting_cost_usd: costUsd,
-      cost_per_successful_transcript_usd: successfulTranscripts === 0 ? null : round(costUsd / successfulTranscripts),
-    }),
+    ...costSummary,
     daily: Object.fromEntries([...byDay.entries()].sort(([a], [b]) => a.localeCompare(b))),
   };
 
@@ -143,3 +146,5 @@ try {
 } finally {
   db.close();
 }
+
+

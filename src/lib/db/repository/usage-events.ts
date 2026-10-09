@@ -1,7 +1,6 @@
 import { and, eq, gte, lt, sql } from "drizzle-orm";
 import { db } from "@/lib/db/index";
 import {
-  QUIZ_ACCOUNT_YOUTUBE_ID,
   USAGE_EVENT_TYPES,
   userUsageEvents,
 } from "@/lib/db/schema/usage-events";
