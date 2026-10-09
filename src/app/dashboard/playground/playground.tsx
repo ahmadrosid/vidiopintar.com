@@ -74,7 +74,7 @@ function highlight(text: string, query: string) {
 
 function StatBox({ value, label }: { value: string; label: string }) {
   return (
-    <div className="border border-site-line bg-site-bg p-4">
+    <div className="border border-site-line bg-white p-4">
       <p className="font-display text-2xl font-extrabold leading-none tracking-tight text-site-text">
         {value}
       </p>
@@ -244,47 +244,49 @@ export function Playground() {
 
       {state.status === "success" && stats && (
         <>
-          <div className="flex flex-col gap-5 border border-site-line bg-site-panel p-5 sm:flex-row">
-            {state.page.metadata?.thumbnail_url && (
-              <Image
-                src={state.page.metadata.thumbnail_url}
-                alt=""
-                width={320}
-                height={180}
-                className="h-auto w-full shrink-0 border border-site-line sm:w-56"
-              />
-            )}
-            <div className="min-w-0 space-y-2">
-              <a
-                href={`https://www.youtube.com/watch?v=${state.page.video_id}`}
-                target="_blank"
-                rel="noreferrer"
-                className={`block font-display text-xl font-bold leading-tight tracking-tight text-site-text hover:text-site-accent ${focusRing}`}
-              >
-                {state.page.title ?? state.page.video_id}
-              </a>
-              {state.page.metadata?.author_name && (
-                <p className="text-sm text-site-text-muted">
-                  {state.page.metadata.author_name}
-                </p>
+          <div className="flex flex-col gap-4 lg:flex-row">
+            <div className="flex flex-1 flex-col gap-5 border border-site-line bg-white p-5 sm:flex-row">
+              {state.page.metadata?.thumbnail_url && (
+                <Image
+                  src={state.page.metadata.thumbnail_url}
+                  alt=""
+                  width={320}
+                  height={180}
+                  className="h-auto w-full shrink-0 border border-site-line sm:w-56"
+                />
               )}
-              <p className="text-sm text-site-text-faint">
-                ID {state.page.video_id} · Bahasa {state.page.language}
-              </p>
+              <div className="min-w-0 space-y-2">
+                <a
+                  href={`https://www.youtube.com/watch?v=${state.page.video_id}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`block font-display text-xl font-bold leading-tight tracking-tight text-site-text hover:text-site-accent ${focusRing}`}
+                >
+                  {state.page.title ?? state.page.video_id}
+                </a>
+                {state.page.metadata?.author_name && (
+                  <p className="text-sm text-site-text-muted">
+                    {state.page.metadata.author_name}
+                  </p>
+                )}
+                <p className="text-sm text-site-text-faint">
+                  ID {state.page.video_id} · Bahasa {state.page.language}
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <StatBox
-              value={numberFormat.format(state.segments.length)}
-              label="segmen dimuat"
-            />
-            <StatBox
-              value={formatTimestamp(stats.duration)}
-              label="durasi video"
-            />
-            <StatBox value={numberFormat.format(stats.words)} label="kata" />
-            <StatBox value={formatDuration(state.ms)} label="waktu ambil" />
+            <div className="grid grid-cols-2 gap-4 lg:w-96 lg:shrink-0">
+              <StatBox
+                value={numberFormat.format(state.segments.length)}
+                label="segmen dimuat"
+              />
+              <StatBox
+                value={formatTimestamp(stats.duration)}
+                label="durasi video"
+              />
+              <StatBox value={numberFormat.format(stats.words)} label="kata" />
+              <StatBox value={formatDuration(state.ms)} label="waktu ambil" />
+            </div>
           </div>
 
           <div className="border border-site-line bg-site-panel">
