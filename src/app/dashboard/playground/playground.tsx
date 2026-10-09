@@ -8,7 +8,7 @@ import {
   PlayIcon,
   Search01Icon,
 } from "@hugeicons/core-free-icons";
-import { useMemo, useState, useTransition } from "react";
+import { Fragment, useMemo, useState, useTransition } from "react";
 import { fetchTranscriptAction, type PlaygroundResult } from "./actions";
 
 type Segment = { text: string; start: number; duration: number };
@@ -59,17 +59,26 @@ function escapeRegExp(value: string) {
 function highlight(text: string, query: string) {
   if (!query) return text;
 
+  // Parts alternate between plain text (even index) and matches (odd index).
+  // Keys come from the character offset, which stays unique even when a part is empty.
+  let offset = 0;
+
   return text
     .split(new RegExp(`(${escapeRegExp(query)})`, "gi"))
-    .map((part, index) =>
-      index % 2 === 1 ? (
-        <mark key={index} className="bg-site-accent-soft text-site-text">
+    .map((part, index) => {
+      const isMatch = index % 2 === 1;
+      const key = `${isMatch ? "match" : "text"}-${offset}`;
+
+      offset += part.length;
+
+      return isMatch ? (
+        <mark key={key} className="bg-site-accent-soft text-site-text">
           {part}
         </mark>
       ) : (
-        part
-      ),
-    );
+        <Fragment key={key}>{part}</Fragment>
+      );
+    });
 }
 
 const jsonToken =
@@ -81,6 +90,16 @@ const jsonTokenClass = {
   number: "text-[#9a6a1f] dark:text-[#e5b25f]",
   keyword: "text-[#3b5b9a] dark:text-[#8fb0ea]",
 } as const;
+
+function jsonTokenClassName(
+  string: string | undefined,
+  colon: string | undefined,
+  keyword: string | undefined,
+) {
+  if (string) return colon ? jsonTokenClass.key : jsonTokenClass.string;
+
+  return keyword ? jsonTokenClass.keyword : jsonTokenClass.number;
+}
 
 function JsonView({ value }: { value: unknown }) {
   const text = JSON.stringify(value, null, 2);
@@ -94,16 +113,8 @@ function JsonView({ value }: { value: unknown }) {
 
     const [token, string, colon, keyword] = match;
 
-    const className = string
-      ? colon
-        ? jsonTokenClass.key
-        : jsonTokenClass.string
-      : keyword
-        ? jsonTokenClass.keyword
-        : jsonTokenClass.number;
-
     nodes.push(
-      <span key={index} className={className}>
+      <span key={index} className={jsonTokenClassName(string, colon, keyword)}>
         {string ?? token}
       </span>,
     );
@@ -124,6 +135,317 @@ function StatBox({ value, label }: { value: string; label: string }) {
         {value}
       </p>
       <p className="mt-2 text-sm text-site-text-muted">{label}</p>
+    </div>
+  );
+}
+
+function SearchForm({
+  video,
+  onVideoChange,
+  language,
+  onLanguageChange,
+  canRun,
+  pending,
+  onSubmit,
+}: {
+  video: string;
+  onVideoChange: (value: string) => void;
+  language: string;
+  onLanguageChange: (value: string) => void;
+  canRun: boolean;
+  pending: boolean;
+  onSubmit: () => void;
+}) {
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+
+        if (canRun) onSubmit();
+      }}
+      className="flex flex-wrap items-end gap-4"
+    >
+      <div className="min-w-64 flex-1">
+        <label htmlFor="pg-video" className={labelClass}>
+          URL atau ID video
+        </label>
+        <input
+          id="pg-video"
+          value={video}
+          onChange={(event) => onVideoChange(event.target.value)}
+          placeholder="https://www.youtube.com/watch?v=…"
+          className={inputClass}
+        />
+      </div>
+      <div className="w-full sm:w-40">
+        <label htmlFor="pg-lang" className={labelClass}>
+          Bahasa (opsional)
+        </label>
+        <input
+          id="pg-lang"
+          value={language}
+          onChange={(event) => onLanguageChange(event.target.value)}
+          placeholder="id, en"
+          className={inputClass}
+        />
+      </div>
+
+      <button
+        type="submit"
+        disabled={!canRun}
+        className={`inline-flex min-h-12 shrink-0 cursor-pointer items-center justify-center gap-2 bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
+      >
+        <HugeiconsIcon icon={PlayIcon} className="size-4" />
+        {pending ? "Mengambil…" : "Jalankan"}
+      </button>
+    </form>
+  );
+}
+
+function ErrorNotice({
+  code,
+  ms,
+  message,
+}: {
+  code: string;
+  ms: number;
+  message: string;
+}) {
+  return (
+    <div className="border border-site-line border-l-2 border-l-[#bf8a2f] bg-site-panel p-5">
+      <p className="text-sm text-site-text-muted">
+        {code} · {formatDuration(ms)}
+      </p>
+      <p className="mt-2 text-site-text">{message}</p>
+    </div>
+  );
+}
+
+function ResultSummary({
+  page,
+  segmentCount,
+  duration,
+  words,
+  ms,
+}: {
+  page: TranscriptPage;
+  segmentCount: number;
+  duration: number;
+  words: number;
+  ms: number;
+}) {
+  return (
+    <div className="flex flex-col gap-4 lg:flex-row">
+      <div className="flex flex-1 flex-col gap-5 border border-site-line bg-site-panel p-5 sm:flex-row">
+        {page.metadata?.thumbnail_url && (
+          <Image
+            src={page.metadata.thumbnail_url}
+            alt=""
+            width={320}
+            height={180}
+            className="h-auto w-full shrink-0 border border-site-line sm:w-56"
+          />
+        )}
+        <div className="min-w-0 space-y-2">
+          <a
+            href={`https://www.youtube.com/watch?v=${page.video_id}`}
+            target="_blank"
+            rel="noreferrer"
+            className={`block font-display text-xl font-bold leading-tight tracking-tight text-site-text hover:text-site-accent ${focusRing}`}
+          >
+            {page.title ?? page.video_id}
+          </a>
+          {page.metadata?.author_name && (
+            <p className="text-sm text-site-text-muted">
+              {page.metadata.author_name}
+            </p>
+          )}
+          <p className="text-sm text-site-text-faint">
+            ID {page.video_id} · Bahasa {page.language}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 lg:w-96 lg:shrink-0">
+        <StatBox
+          value={numberFormat.format(segmentCount)}
+          label="segmen dimuat"
+        />
+        <StatBox value={formatTimestamp(duration)} label="durasi video" />
+        <StatBox value={numberFormat.format(words)} label="kata" />
+        <StatBox value={formatDuration(ms)} label="waktu ambil" />
+      </div>
+    </div>
+  );
+}
+
+function CopyButton({
+  active,
+  idleLabel,
+  doneLabel,
+  onClick,
+}: {
+  active: boolean;
+  idleLabel: string;
+  doneLabel: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex cursor-pointer items-center gap-1.5 hover:text-site-text ${focusRing}`}
+    >
+      {active ? (
+        <HugeiconsIcon icon={CheckIcon} className="size-4 text-site-accent" />
+      ) : (
+        <HugeiconsIcon icon={Copy01Icon} className="size-4" />
+      )}
+      {active ? doneLabel : idleLabel}
+    </button>
+  );
+}
+
+function TranscriptBody({
+  page,
+  showRaw,
+  visibleSegments,
+  query,
+}: {
+  page: TranscriptPage;
+  showRaw: boolean;
+  visibleSegments: Segment[];
+  query: string;
+}) {
+  if (showRaw) {
+    return (
+      <pre className="max-h-[32rem] overflow-auto bg-site-panel p-5 text-sm leading-7 text-site-text-2">
+        <JsonView value={page} />
+      </pre>
+    );
+  }
+
+  if (visibleSegments.length === 0) {
+    return (
+      <p className="p-5 text-sm text-site-text-faint">
+        Tidak ada segmen yang cocok dengan “{query}”.
+      </p>
+    );
+  }
+
+  return (
+    <ol className="max-h-[32rem] overflow-y-auto p-2">
+      {visibleSegments.map((segment) => (
+        <li
+          key={`${segment.start}-${segment.text}`}
+          className="flex gap-4 px-3 py-1.5 text-sm leading-6 sm:text-base"
+        >
+          <a
+            href={`https://www.youtube.com/watch?v=${page.video_id}&t=${Math.floor(segment.start)}s`}
+            target="_blank"
+            rel="noreferrer"
+            className={`w-14 shrink-0 tabular-nums text-site-accent underline decoration-transparent underline-offset-4 hover:decoration-site-accent ${focusRing}`}
+          >
+            {formatTimestamp(segment.start)}
+          </a>
+          <span className="min-w-0 text-site-text-2">
+            {highlight(segment.text, query.trim())}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function TranscriptCard({
+  page,
+  segments,
+  visibleSegments,
+  query,
+  onQueryChange,
+  showRaw,
+  onToggleRaw,
+  copied,
+  onCopy,
+  pending,
+  onLoadMore,
+}: {
+  page: TranscriptPage;
+  segments: Segment[];
+  visibleSegments: Segment[];
+  query: string;
+  onQueryChange: (value: string) => void;
+  showRaw: boolean;
+  onToggleRaw: () => void;
+  copied: CopyMode | null;
+  onCopy: (mode: CopyMode) => void;
+  pending: boolean;
+  onLoadMore: () => void;
+}) {
+  return (
+    <div className="border border-site-line bg-site-panel">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-site-line bg-site-header px-4 py-2 text-xs text-site-text-muted sm:text-sm">
+        <label className="relative flex min-w-48 flex-1 items-center">
+          <span className="sr-only">Cari di transkrip</span>
+          <HugeiconsIcon
+            icon={Search01Icon}
+            className="pointer-events-none absolute left-2 size-4"
+          />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => onQueryChange(event.target.value)}
+            placeholder="Cari di transkrip…"
+            className={`h-9 w-full min-w-0 border border-site-line bg-site-panel pr-3 pl-8 text-sm text-site-text placeholder:text-site-text-faint ${focusRing}`}
+          />
+        </label>
+        <div className="flex shrink-0 flex-wrap items-center gap-4">
+          <button
+            type="button"
+            onClick={onToggleRaw}
+            className={`cursor-pointer hover:text-site-text ${focusRing}`}
+          >
+            {showRaw ? "Transkrip" : "JSON"}
+          </button>
+          <CopyButton
+            active={copied === "text"}
+            idleLabel="Salin teks"
+            doneLabel="Tersalin"
+            onClick={() => onCopy("text")}
+          />
+          <CopyButton
+            active={copied === "timestamps"}
+            idleLabel="Salin + waktu"
+            doneLabel="Tersalin"
+            onClick={() => onCopy("timestamps")}
+          />
+        </div>
+      </div>
+
+      <TranscriptBody
+        page={page}
+        showRaw={showRaw}
+        visibleSegments={visibleSegments}
+        query={query}
+      />
+
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-site-line px-4 py-3 text-sm text-site-text-muted">
+        <span>
+          {query.trim()
+            ? `${numberFormat.format(visibleSegments.length)} dari ${numberFormat.format(segments.length)} segmen cocok`
+            : `Menampilkan ${numberFormat.format(segments.length)} segmen`}
+        </span>
+        {page.next_cursor && (
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onLoadMore}
+            className={`cursor-pointer underline decoration-site-line-strong underline-offset-4 hover:text-site-text disabled:opacity-50 ${focusRing}`}
+          >
+            Ambil halaman berikutnya
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -237,211 +559,43 @@ export function Playground() {
 
   return (
     <div className="space-y-8">
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-
-          if (canRun) run();
-        }}
-        className="flex flex-wrap items-end gap-4"
-      >
-        <div className="min-w-64 flex-1">
-          <label htmlFor="pg-video" className={labelClass}>
-            URL atau ID video
-          </label>
-          <input
-            id="pg-video"
-            value={video}
-            onChange={(event) => setVideo(event.target.value)}
-            placeholder="https://www.youtube.com/watch?v=…"
-            className={inputClass}
-          />
-        </div>
-        <div className="w-full sm:w-40">
-          <label htmlFor="pg-lang" className={labelClass}>
-            Bahasa (opsional)
-          </label>
-          <input
-            id="pg-lang"
-            value={language}
-            onChange={(event) => setLanguage(event.target.value)}
-            placeholder="id, en"
-            className={inputClass}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={!canRun}
-          className={`inline-flex min-h-12 shrink-0 cursor-pointer items-center justify-center gap-2 bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:cursor-not-allowed disabled:opacity-60 ${focusRing}`}
-        >
-          <HugeiconsIcon icon={PlayIcon} className="size-4" />
-          {pending ? "Mengambil…" : "Jalankan"}
-        </button>
-      </form>
+      <SearchForm
+        video={video}
+        onVideoChange={setVideo}
+        language={language}
+        onLanguageChange={setLanguage}
+        canRun={canRun}
+        pending={pending}
+        onSubmit={() => run()}
+      />
 
       {state.status === "error" && (
-        <div className="border border-site-line border-l-2 border-l-[#bf8a2f] bg-site-panel p-5">
-          <p className="text-sm text-site-text-muted">
-            {state.code} · {formatDuration(state.ms)}
-          </p>
-          <p className="mt-2 text-site-text">{state.message}</p>
-        </div>
+        <ErrorNotice code={state.code} ms={state.ms} message={state.message} />
       )}
 
       {state.status === "success" && stats && (
         <>
-          <div className="flex flex-col gap-4 lg:flex-row">
-            <div className="flex flex-1 flex-col gap-5 border border-site-line bg-site-panel p-5 sm:flex-row">
-              {state.page.metadata?.thumbnail_url && (
-                <Image
-                  src={state.page.metadata.thumbnail_url}
-                  alt=""
-                  width={320}
-                  height={180}
-                  className="h-auto w-full shrink-0 border border-site-line sm:w-56"
-                />
-              )}
-              <div className="min-w-0 space-y-2">
-                <a
-                  href={`https://www.youtube.com/watch?v=${state.page.video_id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`block font-display text-xl font-bold leading-tight tracking-tight text-site-text hover:text-site-accent ${focusRing}`}
-                >
-                  {state.page.title ?? state.page.video_id}
-                </a>
-                {state.page.metadata?.author_name && (
-                  <p className="text-sm text-site-text-muted">
-                    {state.page.metadata.author_name}
-                  </p>
-                )}
-                <p className="text-sm text-site-text-faint">
-                  ID {state.page.video_id} · Bahasa {state.page.language}
-                </p>
-              </div>
-            </div>
+          <ResultSummary
+            page={state.page}
+            segmentCount={state.segments.length}
+            duration={stats.duration}
+            words={stats.words}
+            ms={state.ms}
+          />
 
-            <div className="grid grid-cols-2 gap-4 lg:w-96 lg:shrink-0">
-              <StatBox
-                value={numberFormat.format(state.segments.length)}
-                label="segmen dimuat"
-              />
-              <StatBox
-                value={formatTimestamp(stats.duration)}
-                label="durasi video"
-              />
-              <StatBox value={numberFormat.format(stats.words)} label="kata" />
-              <StatBox value={formatDuration(state.ms)} label="waktu ambil" />
-            </div>
-          </div>
-
-          <div className="border border-site-line bg-site-panel">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-site-line bg-site-header px-4 py-2 text-xs text-site-text-muted sm:text-sm">
-              <label className="relative flex min-w-48 flex-1 items-center">
-                <span className="sr-only">Cari di transkrip</span>
-                <HugeiconsIcon
-                  icon={Search01Icon}
-                  className="pointer-events-none absolute left-2 size-4"
-                />
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Cari di transkrip…"
-                  className={`h-9 w-full min-w-0 border border-site-line bg-site-panel pr-3 pl-8 text-sm text-site-text placeholder:text-site-text-faint ${focusRing}`}
-                />
-              </label>
-              <div className="flex shrink-0 flex-wrap items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setShowRaw((value) => !value)}
-                  className={`cursor-pointer hover:text-site-text ${focusRing}`}
-                >
-                  {showRaw ? "Transkrip" : "JSON"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => copyTranscript("text")}
-                  className={`inline-flex cursor-pointer items-center gap-1.5 hover:text-site-text ${focusRing}`}
-                >
-                  {copied === "text" ? (
-                    <HugeiconsIcon
-                      icon={CheckIcon}
-                      className="size-4 text-site-accent"
-                    />
-                  ) : (
-                    <HugeiconsIcon icon={Copy01Icon} className="size-4" />
-                  )}
-                  {copied === "text" ? "Tersalin" : "Salin teks"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => copyTranscript("timestamps")}
-                  className={`inline-flex cursor-pointer items-center gap-1.5 hover:text-site-text ${focusRing}`}
-                >
-                  {copied === "timestamps" ? (
-                    <HugeiconsIcon
-                      icon={CheckIcon}
-                      className="size-4 text-site-accent"
-                    />
-                  ) : (
-                    <HugeiconsIcon icon={Copy01Icon} className="size-4" />
-                  )}
-                  {copied === "timestamps" ? "Tersalin" : "Salin + waktu"}
-                </button>
-              </div>
-            </div>
-
-            {showRaw ? (
-              <pre className="max-h-[32rem] overflow-auto bg-site-panel p-5 text-sm leading-7 text-site-text-2">
-                <JsonView value={state.page} />
-              </pre>
-            ) : visibleSegments.length === 0 ? (
-              <p className="p-5 text-sm text-site-text-faint">
-                Tidak ada segmen yang cocok dengan “{query}”.
-              </p>
-            ) : (
-              <ol className="max-h-[32rem] overflow-y-auto p-2">
-                {visibleSegments.map((segment) => (
-                  <li
-                    key={`${segment.start}-${segment.text}`}
-                    className="flex gap-4 px-3 py-1.5 text-sm leading-6 sm:text-base"
-                  >
-                    <a
-                      href={`https://www.youtube.com/watch?v=${state.page.video_id}&t=${Math.floor(segment.start)}s`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`w-14 shrink-0 tabular-nums text-site-accent underline decoration-transparent underline-offset-4 hover:decoration-site-accent ${focusRing}`}
-                    >
-                      {formatTimestamp(segment.start)}
-                    </a>
-                    <span className="min-w-0 text-site-text-2">
-                      {highlight(segment.text, query.trim())}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            )}
-
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-site-line px-4 py-3 text-sm text-site-text-muted">
-              <span>
-                {query.trim()
-                  ? `${numberFormat.format(visibleSegments.length)} dari ${numberFormat.format(state.segments.length)} segmen cocok`
-                  : `Menampilkan ${numberFormat.format(state.segments.length)} segmen`}
-              </span>
-              {state.page.next_cursor && (
-                <button
-                  type="button"
-                  disabled={pending}
-                  onClick={() => run(state.page.next_cursor)}
-                  className={`cursor-pointer underline decoration-site-line-strong underline-offset-4 hover:text-site-text disabled:opacity-50 ${focusRing}`}
-                >
-                  Ambil halaman berikutnya
-                </button>
-              )}
-            </div>
-          </div>
+          <TranscriptCard
+            page={state.page}
+            segments={state.segments}
+            visibleSegments={visibleSegments}
+            query={query}
+            onQueryChange={setQuery}
+            showRaw={showRaw}
+            onToggleRaw={() => setShowRaw((value) => !value)}
+            copied={copied}
+            onCopy={copyTranscript}
+            pending={pending}
+            onLoadMore={() => run(state.page.next_cursor ?? undefined)}
+          />
         </>
       )}
     </div>

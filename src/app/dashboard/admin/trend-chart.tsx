@@ -13,7 +13,10 @@ interface TrendChartProps {
   unit: "count" | "idr";
 }
 
-const countFormat = new Intl.NumberFormat("id-ID", { notation: "compact", maximumFractionDigits: 1 });
+const countFormat = new Intl.NumberFormat("id-ID", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
 
 const formatters = {
   count: (value: number) => countFormat.format(value),
@@ -27,7 +30,10 @@ const PAD = { top: 16, right: 12, bottom: 28, left: 56 };
 function niceMax(value: number) {
   if (value <= 0) return 1;
   const magnitude = 10 ** Math.floor(Math.log10(value));
-  const step = [1, 2, 2.5, 5, 10].find((candidate) => candidate * magnitude >= value) ?? 10;
+
+  const step =
+    [1, 2, 2.5, 5, 10].find((candidate) => candidate * magnitude >= value) ??
+    10;
 
   return step * magnitude;
 }
@@ -51,6 +57,12 @@ function smoothPath(points: [number, number][]) {
   return d;
 }
 
+function SeriesSwatch({ color }: { color: string }) {
+  return (
+    <span aria-hidden className="h-0.5 w-3" style={{ background: color }} />
+  );
+}
+
 export function TrendChart({ title, series, points, unit }: TrendChartProps) {
   const format = formatters[unit];
   const gradientId = useId();
@@ -63,13 +75,20 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
 
     if (!node) return;
     setWidth(Math.max(280, node.getBoundingClientRect().width));
-    const observer = new ResizeObserver(([entry]) => setWidth(Math.max(280, entry.contentRect.width)));
+
+    const observer = new ResizeObserver(([entry]) =>
+      setWidth(Math.max(280, entry.contentRect.width)),
+    );
+
     observer.observe(node);
 
     return () => observer.disconnect();
   }, []);
 
-  const values = points.flatMap((point) => series.map((item) => point.values[item.key] ?? 0));
+  const values = points.flatMap((point) =>
+    series.map((item) => point.values[item.key] ?? 0),
+  );
+
   const empty = values.every((value) => value === 0);
   const yMax = niceMax(Math.max(...values, 0));
   const chartWidth = width ?? 0;
@@ -85,7 +104,10 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
 
   const onPointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
     const left = event.currentTarget.getBoundingClientRect().left;
-    const index = step > 0 ? Math.round((event.clientX - left - PAD.left) / step) : 0;
+
+    const index =
+      step > 0 ? Math.round((event.clientX - left - PAD.left) / step) : 0;
+
     setActive(Math.min(points.length - 1, Math.max(0, index)));
   };
 
@@ -93,11 +115,18 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
     event.preventDefault();
     const delta = event.key === "ArrowRight" ? 1 : -1;
-    setActive((current) => Math.min(points.length - 1, Math.max(0, (current ?? (delta > 0 ? -1 : points.length)) + delta)));
+    setActive((current) =>
+      Math.min(
+        points.length - 1,
+        Math.max(0, (current ?? (delta > 0 ? -1 : points.length)) + delta),
+      ),
+    );
   };
 
   const activePoint = active === null ? null : points[active];
-  const tooltipLeft = active === null ? 0 : Math.min(Math.max(x(active), 80), chartWidth - 80);
+
+  const tooltipLeft =
+    active === null ? 0 : Math.min(Math.max(x(active), 80), chartWidth - 80);
 
   return (
     <figure className="space-y-3">
@@ -107,7 +136,7 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
           <span className="flex gap-4 text-xs text-site-text-muted">
             {series.map((item) => (
               <span key={item.key} className="inline-flex items-center gap-1.5">
-                <span aria-hidden className="h-0.5 w-3" style={{ background: item.color }} />
+                <SeriesSwatch color={item.color} />
                 {item.label}
               </span>
             ))}
@@ -131,7 +160,11 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
           >
             <defs>
               <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={primary.color} stopOpacity={0.22} />
+                <stop
+                  offset="0%"
+                  stopColor={primary.color}
+                  stopOpacity={0.22}
+                />
                 <stop offset="100%" stopColor={primary.color} stopOpacity={0} />
               </linearGradient>
             </defs>
@@ -146,7 +179,13 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
                   style={{ stroke: "var(--site-line-soft)" }}
                   strokeWidth={1}
                 />
-                <text x={PAD.left - 8} y={y(tick)} dy="0.32em" textAnchor="end" className="fill-site-text-faint text-[11px] tabular-nums">
+                <text
+                  x={PAD.left - 8}
+                  y={y(tick)}
+                  dy="0.32em"
+                  textAnchor="end"
+                  className="fill-site-text-faint text-[11px] tabular-nums"
+                >
                   {format(tick)}
                 </text>
               </g>
@@ -162,7 +201,12 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
             {series.map((item, seriesIndex) => (
               <path
                 key={item.key}
-                d={smoothPath(points.map((point, index): [number, number] => [x(index), y(point.values[item.key] ?? 0)]))}
+                d={smoothPath(
+                  points.map((point, index): [number, number] => [
+                    x(index),
+                    y(point.values[item.key] ?? 0),
+                  ]),
+                )}
                 fill="none"
                 stroke={item.color}
                 strokeWidth={2}
@@ -203,7 +247,9 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
                   key={`${index}-${position}`}
                   x={x(index)}
                   y={HEIGHT - 8}
-                  textAnchor={position === 0 ? "start" : position === 2 ? "end" : "middle"}
+                  textAnchor={
+                    position === 0 ? "start" : position === 2 ? "end" : "middle"
+                  }
                   className="fill-site-text-faint text-[11px]"
                 >
                   {points[index].label}
@@ -212,7 +258,12 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
             )}
 
             {empty && (
-              <text x={PAD.left + plotW / 2} y={PAD.top + plotH / 2} textAnchor="middle" className="fill-site-text-faint text-xs">
+              <text
+                x={PAD.left + plotW / 2}
+                y={PAD.top + plotH / 2}
+                textAnchor="middle"
+                className="fill-site-text-faint text-xs"
+              >
                 Belum ada data
               </text>
             )}
@@ -228,8 +279,10 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
             <p className="mb-1.5 text-site-text-muted">{activePoint.label}</p>
             {series.map((item) => (
               <p key={item.key} className="flex items-center gap-2">
-                <span aria-hidden className="h-0.5 w-3" style={{ background: item.color }} />
-                <span className="font-semibold text-site-text tabular-nums">{format(activePoint.values[item.key] ?? 0)}</span>
+                <SeriesSwatch color={item.color} />
+                <span className="font-semibold text-site-text tabular-nums">
+                  {format(activePoint.values[item.key] ?? 0)}
+                </span>
                 <span className="text-site-text-muted">{item.label}</span>
               </p>
             ))}

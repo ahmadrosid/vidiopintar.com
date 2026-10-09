@@ -9,8 +9,11 @@ import { UpgradePrompt } from "../upgrade-prompt";
 
 export default async function ApiKeysPage() {
   const user = await getCurrentUser();
-  const plan = await UserPlanService.getCurrentPlan(user.id);
-  const keys = await listUserMcpKeys(user.id);
+
+  const [plan, keys] = await Promise.all([
+    UserPlanService.getCurrentPlan(user.id),
+    listUserMcpKeys(user.id),
+  ]);
 
   return (
     <>
@@ -23,22 +26,22 @@ export default async function ApiKeysPage() {
           {plan === "free" ? (
             <UpgradePrompt feature="Membuat API key" />
           ) : (
-          <ApiKeysManager
-            keys={keys}
-            header={
-              <>
-                <h2 className="flex items-center gap-2.5 font-display text-xl font-bold tracking-tight text-site-text">
-                  <span className="text-site-accent [&>svg]:size-6">
-                    <HugeiconsIcon icon={ShieldKeyIcon} />
-                  </span>
-                  Kelola key
-                </h2>
-                <p className="text-sm text-site-text-faint">
-                  {keys.length}/{MAX_ACTIVE_KEYS_PER_USER} aktif
-                </p>
-              </>
-            }
-          />
+            <ApiKeysManager
+              keys={keys}
+              header={
+                <>
+                  <h2 className="flex items-center gap-2.5 font-display text-xl font-bold tracking-tight text-site-text">
+                    <span className="text-site-accent [&>svg]:size-6">
+                      <HugeiconsIcon icon={ShieldKeyIcon} />
+                    </span>
+                    Kelola key
+                  </h2>
+                  <p className="text-sm text-site-text-faint">
+                    {keys.length}/{MAX_ACTIVE_KEYS_PER_USER} aktif
+                  </p>
+                </>
+              }
+            />
           )}
         </section>
       </div>

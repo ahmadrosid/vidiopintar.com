@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ComputerIcon,
@@ -28,6 +28,8 @@ const OPTIONS = [
   { value: "dark", label: "Gelap", icon: Moon01Icon },
 ] as const;
 
+const listeners = new Set<() => void>();
+
 function readTheme(): Theme {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -36,6 +38,16 @@ function readTheme(): Theme {
   } catch {}
 
   return "system";
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  window.addEventListener("storage", listener);
+
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", listener);
+  };
 }
 
 function applyTheme(theme: Theme) {
@@ -48,11 +60,12 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const [theme, setTheme] = useState<Theme>("system");
-
-  useEffect(() => {
-    setTheme(readTheme());
-  }, []);
+  // The server has no localStorage, so it renders "system" and the client reads the saved value during render.
+  const theme = useSyncExternalStore(
+    subscribe,
+    readTheme,
+    () => "system" as const,
+  );
 
   const change = (next: Theme) => {
     try {
@@ -61,7 +74,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     } catch {}
 
     applyTheme(next);
-    setTheme(next);
+    listeners.forEach((listener) => listener());
   };
 
   return (
