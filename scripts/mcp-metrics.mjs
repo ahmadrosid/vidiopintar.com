@@ -15,17 +15,12 @@ const valueAfter = (name, fallback) => {
 
 const days = Number(valueAfter("--days", "14"));
 
-const costValue = valueAfter("--cost-usd", undefined);
 
-const costUsd = costValue === undefined ? undefined : Number(costValue);
 
 if (!Number.isInteger(days) || days < 1 || days > 90) {
   throw new Error("--days must be an integer from 1 to 90.");
 }
 
-if (costValue !== undefined && (!Number.isFinite(costUsd) || costUsd < 0)) {
-  throw new Error("--cost-usd must be a non-negative number.");
-}
 
 const db = new Database(resolveDatabasePath(), { readonly: true });
 
@@ -118,10 +113,6 @@ try {
   const round = (value) => Math.round(value * 1_000_000) / 1_000_000;
   const successfulKeys = [...perKey.values()].filter((key) => key.firstSuccessAt !== null);
 
-  const costSummary = costUsd === undefined ? undefined : {
-    hosting_cost_usd: costUsd,
-    cost_per_successful_transcript_usd: successfulTranscripts === 0 ? null : round(costUsd / successfulTranscripts),
-  };
 
   const report = {
     period_days: days,
@@ -138,7 +129,6 @@ try {
     activated_keys: successfulKeys.length,
     repeat_use_keys: successfulKeys.filter((key) => key.successDays.size > 1).length,
     median_time_to_first_success_ms: median(timeToFirstSuccess),
-    ...costSummary,
     daily: Object.fromEntries([...byDay.entries()].sort(([a], [b]) => a.localeCompare(b))),
   };
 
