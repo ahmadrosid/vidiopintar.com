@@ -79,7 +79,7 @@ export default async function LogsPage({
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-none border-site-line bg-site-header text-site-text">
+            <SelectContent className="rounded-none border-site-line bg-site-header text-site-text shadow-none">
               <SelectItem value="all" className={filterItem}>Semua</SelectItem>
               <SelectItem value="success" className={filterItem}>Berhasil</SelectItem>
               <SelectItem value="failed" className={filterItem}>Semua error</SelectItem>
