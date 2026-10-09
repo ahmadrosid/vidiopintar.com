@@ -98,23 +98,30 @@ function RevokeButton({ id, name }: { id: string; name: string }) {
           disabled={pending}
           className={`shrink-0 cursor-pointer text-sm text-site-text-muted underline decoration-site-line-strong underline-offset-4 hover:text-site-text disabled:opacity-50 ${focusRing}`}
         >
-          {pending ? "Mencabut..." : "Cabut"}
+          {pending ? "Menghapus..." : "Hapus"}
         </button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="max-w-md rounded-none border-site-line bg-site-panel font-mono text-site-text">
         <AlertDialogHeader>
-          <AlertDialogTitle>Cabut key “{name}”?</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="font-display text-2xl font-extrabold tracking-tight text-site-text">
+            Hapus key “{name}”?
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-site-text-2">
             Agen yang memakai key ini akan langsung ditolak. Tindakan ini tidak
             dapat dibatalkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogCancel
+            className={`min-h-12 cursor-pointer rounded-none border-site-line bg-transparent px-6 font-display text-lg font-bold text-site-text hover:bg-site-header ${focusRing}`}
+          >
+            Batal
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={() => startTransition(() => revokeKeyAction(id))}
+            className={`min-h-12 cursor-pointer rounded-none bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] hover:bg-site-accent-fill-hover ${focusRing}`}
           >
-            Cabut key
+            Hapus
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -128,10 +135,21 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
     { status: "idle" },
   );
   const [open, setOpen] = useState(false);
+  // Holds the new key while the dialog shows its setup view; cleared when the dialog reopens.
+  const [created, setCreated] = useState<{
+    token: string;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
-    if (state.status === "created") setOpen(false);
+    if (state.status === "created")
+      setCreated({ token: state.token, name: state.name });
   }, [state]);
+
+  const changeOpen = (next: boolean) => {
+    setOpen(next);
+    if (next) setCreated(null);
+  };
 
   // The full key is only known right after creation; the server stores a hash.
   const createdToken = state.status === "created" ? state.token : undefined;
@@ -140,7 +158,7 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-4 text-base leading-8 text-site-text-2 sm:text-lg">
         {header}
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={changeOpen}>
           <DialogTrigger asChild>
             <button
               type="button"
@@ -149,44 +167,70 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
               Buat key
             </button>
           </DialogTrigger>
-          <DialogContent className="max-w-md rounded-none border-site-line bg-site-panel font-mono text-site-text">
-            <DialogHeader>
-              <DialogTitle className="font-display text-2xl font-extrabold tracking-tight text-site-text">
-                Buat API key
-              </DialogTitle>
-              <DialogDescription className="text-site-text-2">
-                Beri nama agar mudah dikenali. Key hanya ditampilkan sekali
-                setelah dibuat.
-              </DialogDescription>
-            </DialogHeader>
-            <form action={formAction} className="flex flex-col gap-3">
-              <label
-                htmlFor="key-name"
-                className="text-sm text-site-text-muted"
-              >
-                Nama key
-              </label>
-              <input
-                id="key-name"
-                name="name"
-                required
-                maxLength={60}
-                placeholder="Contoh: Produksi"
-                className={`min-h-12 w-full min-w-0 border border-site-line bg-site-bg px-4 text-base text-site-text placeholder:text-site-text-faint ${focusRing}`}
-              />
-              {state.status === "error" && (
-                <p className="text-sm text-site-accent-hover">
-                  {state.message}
-                </p>
-              )}
-              <button
-                type="submit"
-                disabled={pending}
-                className={`inline-flex min-h-12 w-full cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:opacity-60 ${focusRing}`}
-              >
-                {pending ? "Membuat..." : "Buat key"}
-              </button>
-            </form>
+          <DialogContent
+            className={`${created ? "max-w-2xl" : "max-w-md"} rounded-none border-site-line bg-site-panel font-mono text-site-text`}
+          >
+            {created ? (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="font-display text-2xl font-extrabold tracking-tight text-site-text">
+                    Key “{created.name}” dibuat
+                  </DialogTitle>
+                  <DialogDescription className="text-site-text-2">
+                    Salin konfigurasi di bawah ke klien Anda. Key ini hanya
+                    ditampilkan sekali.
+                  </DialogDescription>
+                </DialogHeader>
+                <InstallTabs stacked apiKey={created.token} />
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className={`inline-flex min-h-12 w-full cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover ${focusRing}`}
+                >
+                  Selesai
+                </button>
+              </>
+            ) : (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="font-display text-2xl font-extrabold tracking-tight text-site-text">
+                    Buat API key
+                  </DialogTitle>
+                  <DialogDescription className="text-site-text-2">
+                    Beri nama agar mudah dikenali. Key hanya ditampilkan sekali
+                    setelah dibuat.
+                  </DialogDescription>
+                </DialogHeader>
+                <form action={formAction} className="flex flex-col gap-3">
+                  <label
+                    htmlFor="key-name"
+                    className="text-sm text-site-text-muted"
+                  >
+                    Nama key
+                  </label>
+                  <input
+                    id="key-name"
+                    name="name"
+                    required
+                    maxLength={60}
+                    placeholder="Contoh: Produksi"
+                    className={`min-h-12 w-full min-w-0 border border-site-line bg-site-bg px-4 text-base text-site-text placeholder:text-site-text-faint ${focusRing}`}
+                  />
+                  {state.status === "error" && (
+                    <p className="text-sm text-site-accent-hover">
+                      {state.message}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={pending}
+                    className={`inline-flex min-h-12 w-full cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:opacity-60 ${focusRing}`}
+                  >
+                    {pending ? "Membuat..." : "Buat key"}
+                  </button>
+                </form>
+              </>
+            )}
           </DialogContent>
         </Dialog>
       </div>
