@@ -1,7 +1,18 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { z } from "zod";
+import type { TranscriptApiResponse } from "@/lib/transcript-api";
 import { McpServiceError } from "./errors";
 
 const CURSOR_TTL_MS = 15 * 60 * 1000;
+
+const cursorPayloadSchema = z.object({
+  v: z.literal(1),
+  videoId: z.string(),
+  language: z.string(),
+  snapshot: z.string(),
+  offset: z.number().int().min(1),
+  expiresAt: z.number().int(),
+});
 
 export interface TranscriptCursor {
   videoId: string;
@@ -42,27 +53,18 @@ export function decodeCursor(token: string, value: string): TranscriptCursor {
       decipher.final(),
     ]).toString("utf8");
 
-    const payload = JSON.parse(decoded) as TranscriptCursor & { v: number };
+    const parsed = cursorPayloadSchema.safeParse(JSON.parse(decoded));
 
-    if (
-      payload.v !== 1 ||
-      typeof payload.videoId !== "string" ||
-      typeof payload.language !== "string" ||
-      typeof payload.snapshot !== "string" ||
-      !Number.isSafeInteger(payload.offset) ||
-      payload.offset < 1 ||
-      !Number.isSafeInteger(payload.expiresAt) ||
-      payload.expiresAt <= Date.now()
-    ) {
+    if (!parsed.success || parsed.data.expiresAt <= Date.now()) {
       throw new Error("Invalid cursor");
     }
 
-    return payload;
+    return parsed.data;
   } catch {
     throw new McpServiceError("INVALID_CURSOR");
   }
 }
 
-export function transcriptSnapshot(value: unknown) {
+export function transcriptSnapshot(value: TranscriptApiResponse["transcript"]) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
 }
