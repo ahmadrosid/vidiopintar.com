@@ -72,6 +72,50 @@ function highlight(text: string, query: string) {
     );
 }
 
+const jsonToken =
+  /("(?:\\.|[^"\\])*")(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
+
+const jsonTokenClass = {
+  key: "text-[#8a3b5c]",
+  string: "text-[#2f6b4f]",
+  number: "text-[#9a6a1f]",
+  keyword: "text-[#3b5b9a]",
+} as const;
+
+function JsonView({ value }: { value: unknown }) {
+  const text = JSON.stringify(value, null, 2);
+  const nodes: React.ReactNode[] = [];
+  let last = 0;
+
+  for (const match of text.matchAll(jsonToken)) {
+    const index = match.index ?? 0;
+
+    if (index > last) nodes.push(text.slice(last, index));
+
+    const [token, string, colon, keyword] = match;
+    const className = string
+      ? colon
+        ? jsonTokenClass.key
+        : jsonTokenClass.string
+      : keyword
+        ? jsonTokenClass.keyword
+        : jsonTokenClass.number;
+
+    nodes.push(
+      <span key={index} className={className}>
+        {string ?? token}
+      </span>,
+    );
+
+    if (colon) nodes.push(colon);
+    last = index + token.length;
+  }
+
+  if (last < text.length) nodes.push(text.slice(last));
+
+  return <>{nodes}</>;
+}
+
 function StatBox({ value, label }: { value: string; label: string }) {
   return (
     <div className="border border-site-line bg-white p-4">
@@ -347,8 +391,8 @@ export function Playground() {
             </div>
 
             {showRaw ? (
-              <pre className="max-h-[32rem] overflow-auto p-5 text-sm leading-7 text-site-text">
-                {JSON.stringify(state.page, null, 2)}
+              <pre className="max-h-[32rem] overflow-auto bg-white p-5 text-sm leading-7 text-site-text-2">
+                <JsonView value={state.page} />
               </pre>
             ) : visibleSegments.length === 0 ? (
               <p className="p-5 text-sm text-site-text-faint">
