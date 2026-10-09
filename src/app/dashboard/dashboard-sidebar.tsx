@@ -1,7 +1,7 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { BookOpen01Icon, HistoryIcon, CreditCardIcon, Key01Icon, PlayIcon, Logout01Icon, ShieldKeyIcon, UserCircleIcon } from "@hugeicons/core-free-icons";
+import { BookOpen01Icon, HistoryIcon, CreditCardIcon, Key01Icon, PlayIcon, Logout01Icon, ShieldKeyIcon, UserCircleIcon, UserSettings01Icon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
@@ -20,7 +20,8 @@ const itemBase = `flex min-h-11 shrink-0 cursor-pointer items-center gap-3 borde
 const itemIdle = "border-transparent text-site-text-muted hover:bg-site-header hover:text-site-text";
 const itemActive = "border-site-accent bg-site-active text-site-text";
 
-export function DashboardSidebar({ email }: { email: string }) {
+export function DashboardSidebar({ email, isAdmin }: { email: string; isAdmin: boolean }) {
+  const navLinks = isAdmin ? [...links, { href: "/dashboard/admin", label: "Admin", Icon: UserSettings01Icon }] : links;
   const pathname = usePathname();
   const { openUserProfile, signOut } = useClerk();
 
@@ -34,7 +35,7 @@ export function DashboardSidebar({ email }: { email: string }) {
 
       {/* Horizontal on phones, vertical in the sidebar from md up. */}
       <nav className="flex gap-1 overflow-x-auto px-2 pb-2 md:flex-1 md:flex-col md:overflow-visible md:pb-0">
-        {links.map(({ href, label, Icon }) => {
+        {navLinks.map(({ href, label, Icon }) => {
           const active = pathname === href;
           return (
             <Link

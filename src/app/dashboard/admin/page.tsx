@@ -1,7 +1,8 @@
 import { requireAdmin } from "@/lib/auth-admin";
 import { transactionsRepository } from "@/lib/db/repository/transactions";
 import { formatDisplayDateTime } from "@/lib/utils";
-import { PageTitle, SitePage, Stat } from "@/components/site/site-page";
+import { Stat } from "@/components/site/site-page";
+import { DashboardTitle } from "../dashboard-sidebar";
 import { cancelTransactionAction, confirmTransactionAction } from "./actions";
 
 export const metadata = {
@@ -31,8 +32,8 @@ export default async function AdminPage() {
   const open = transactions.filter((t) => openStatuses.includes(t.status)).length;
 
   return (
-    <SitePage wide>
-      <PageTitle>Admin</PageTitle>
+    <>
+      <DashboardTitle meta="Konfirmasi pembayaran transfer bank dan kelola status transaksi.">Admin</DashboardTitle>
 
       <div className="mb-10 grid grid-cols-2 gap-6 sm:grid-cols-3">
         <Stat value={String(waiting)} unit="menunggu konfirmasi" />
@@ -106,6 +107,6 @@ export default async function AdminPage() {
           </table>
         </div>
       )}
-    </SitePage>
+    </>
   );
 }

@@ -14,7 +14,7 @@ export async function confirmTransactionAction(formData: FormData) {
   if (!transaction || !openStatuses.includes(transaction.status)) return;
 
   await transactionsRepository.updateStatus(id, "confirmed", new Date());
-  revalidatePath("/admin");
+  revalidatePath("/dashboard/admin");
 }
 
 export async function cancelTransactionAction(formData: FormData) {
@@ -24,5 +24,5 @@ export async function cancelTransactionAction(formData: FormData) {
   if (!transaction || !openStatuses.includes(transaction.status)) return;
 
   await transactionsRepository.updateStatus(id, "cancelled");
-  revalidatePath("/admin");
+  revalidatePath("/dashboard/admin");
 }
