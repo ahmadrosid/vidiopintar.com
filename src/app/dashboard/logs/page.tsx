@@ -52,7 +52,7 @@ export default async function LogsPage({
 
   return (
     <>
-      <DashboardTitle meta="Setiap permintaan ke API MCP beserta hasil dan kode error-nya.">Log</DashboardTitle>
+      <DashboardTitle meta="Setiap permintaan ke API MCP beserta hasil dan kode error-nya.">Riwayat</DashboardTitle>
 
       <form action="/dashboard/logs" className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="min-w-0 flex-1">

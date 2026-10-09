@@ -8,7 +8,7 @@ import { BookOpen, ClockCounterClockwise, CreditCard, Key, Play, SignOut, UserCi
 const links = [
   { href: "/dashboard", label: "Dashboard", Icon: Key },
   { href: "/dashboard/playground", label: "Playground", Icon: Play },
-  { href: "/dashboard/logs", label: "Log", Icon: ClockCounterClockwise },
+  { href: "/dashboard/logs", label: "Riwayat", Icon: ClockCounterClockwise },
   { href: "/dashboard/billing", label: "Tagihan", Icon: CreditCard },
   { href: "/panduan", label: "Panduan", Icon: BookOpen },
 ];
