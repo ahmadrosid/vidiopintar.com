@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
 import {
   Dialog,
   DialogContent,
@@ -77,48 +74,9 @@ export function TransactionDetailDialog({
   transaction,
   isOpen,
   onClose,
-  onTransactionUpdate,
   currentPaymentSettings
 }: TransactionDetailDialogProps) {
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [localUpdate, setLocalUpdate] = useState<Transaction | null>(null);
-
-  const currentTransaction =
-    transaction && localUpdate?.id === transaction.id ? localUpdate : transaction;
-
-  const updateTransactionStatus = async (status: string) => {
-    if (!currentTransaction) return;
-
-    setIsUpdating(true);
-
-    try {
-      const response = await fetch(`/api/transactions/${currentTransaction.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update transaction');
-      }
-
-      const updatedTransaction = await response.json();
-      setLocalUpdate(updatedTransaction);
-      onTransactionUpdate?.(updatedTransaction);
-    } catch (error) {
-      console.error('Error updating transaction:', error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
-  const handleWhatsAppClick = async () => {
-    if (currentTransaction?.status === 'pending') {
-      await updateTransactionStatus('waiting_confirmation');
-    }
-  };
+  const currentTransaction = transaction;
 
   if (!currentTransaction) return null;
 
@@ -163,18 +121,6 @@ export function TransactionDetailDialog({
             {currentTransaction.expiresAt && currentTransaction.status === 'pending' && ` · Berakhir ${formatDate(currentTransaction.expiresAt)}`}
           </p>
 
-          {currentTransaction.status === 'waiting_confirmation' && (
-            <div className="flex items-start gap-3 border border-site-line bg-site-header p-4 text-sm">
-              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="mt-0.5 size-5 shrink-0 text-site-accent" />
-              <div>
-                <p className="mb-1 font-semibold text-site-text">Konfirmasi pembayaran terkirim</p>
-                <p className="text-site-text-2">
-                  Konfirmasi pembayaranmu sudah dikirim ke tim kami. Kami akan memverifikasi dan mengonfirmasi pembayaranmu segera.
-                </p>
-              </div>
-            </div>
-          )}
-
           {currentTransaction.status === 'pending' && (
             <>
               <div>
@@ -192,11 +138,9 @@ export function TransactionDetailDialog({
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={handleWhatsAppClick}
-                  aria-disabled={isUpdating}
                   className={ctaClass}
                 >
-                  {isUpdating ? "Memperbarui..." : "Saya sudah transfer"}
+                  Saya sudah transfer
                 </a>
                 <p className="text-center text-xs text-site-text-muted">Kami verifikasi dan aktifkan langganan dalam 24 jam.</p>
               </div>

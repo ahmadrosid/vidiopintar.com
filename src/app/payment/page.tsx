@@ -169,7 +169,6 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                     <div className="mt-6 space-y-3">
                         <WhatsAppConfirmButton
                             whatsappUrl={whatsappUrl}
-                            transactionId={transaction?.id}
                             label="Saya sudah transfer"
                         />
                         <p className="text-center text-xs text-site-text-muted">Kami verifikasi dan aktifkan langganan dalam 24 jam.</p>
