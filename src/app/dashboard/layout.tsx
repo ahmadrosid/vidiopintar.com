@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { SitePage } from "@/components/site/site-page";
-import { DashboardNav } from "./dashboard-nav";
+import { getCurrentUser } from "@/lib/auth";
+import { DashboardSidebar } from "./dashboard-sidebar";
 
 export const metadata: Metadata = {
   title: "Dashboard",
   robots: { index: false, follow: false },
 };
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return <SitePage nav={<DashboardNav />}>{children}</SitePage>;
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const user = await getCurrentUser();
+
+  return (
+    <div className="min-h-screen bg-[#131518] font-mono text-[#c3c9d1] md:flex">
+      <DashboardSidebar email={user.email} />
+      <main className="min-w-0 flex-1">
+        <div className="w-full max-w-4xl px-6 py-10 md:px-12 md:py-16">{children}</div>
+      </main>
+    </div>
+  );
 }

@@ -47,6 +47,8 @@ export const mcpRequestMetrics = sqliteTable(
     outcome: text("outcome").notNull(),
     providerAttempt: integer("provider_attempt").notNull().default(0),
     transcriptComplete: integer("transcript_complete").notNull().default(0),
+    // Shown in the user's request history; null when the input was not a valid video.
+    videoId: text("video_id"),
   },
   (table) => [
     index("mcp_request_metrics_created_at_idx").on(table.createdAt),

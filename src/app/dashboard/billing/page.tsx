@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import { PageTitle } from "@/components/site/site-page";
+import { DashboardTitle } from "../dashboard-sidebar";
 import { transactionsRepository } from "@/lib/db/repository/transactions";
 import { getPaymentSettings } from "@/lib/validations/payment";
 import { UserPlanService } from "@/lib/user-plan-service";
@@ -53,8 +53,8 @@ export default async function BillingPage() {
   }
 
   return (
-    <div className="space-y-6 pb-10">
-      <PageTitle>Tagihan</PageTitle>
+    <div className="space-y-6">
+      <DashboardTitle>Tagihan</DashboardTitle>
 
       {/* Pending Payment Alert - Show above current plan */}
       {pendingTransactions.length > 0 && (

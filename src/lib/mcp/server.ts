@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { mcpApiKeys, mcpRequestMetrics, mcpTranscriptCache, mcpUsage } from "@/lib/db/schema";
 import { McpServiceError } from "./errors";
 import { getTranscriptPage } from "./transcript";
+import { normalizeVideoReference } from "./video-reference";
 
 const minuteMs = 60_000;
 const dayMs = 86_400_000;
@@ -110,6 +111,7 @@ const handler = createMcpHandler((requestContext) => {
           "success",
           !result.next_cursor,
           !cursor,
+          result.video_id,
         );
         return response;
       } catch (error) {
@@ -120,6 +122,7 @@ const handler = createMcpHandler((requestContext) => {
             error.code,
             false,
             !cursor && error.code !== "INVALID_VIDEO_REFERENCE",
+            requestVideoId(video),
           );
           return serviceErrorResult(error);
         }
@@ -133,13 +136,22 @@ const handler = createMcpHandler((requestContext) => {
               : /transcript|caption/i.test(message)
                 ? new McpServiceError("CAPTIONS_UNAVAILABLE")
                 : new McpServiceError("TEMPORARY_PROVIDER_FAILURE", true, 30);
-        await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code, false, !cursor);
+        await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code, false, !cursor, requestVideoId(video));
         return serviceErrorResult(mapped);
       }
     },
   );
   return server;
 });
+
+function requestVideoId(video?: string) {
+  if (!video) return null;
+  try {
+    return normalizeVideoReference(video);
+  } catch {
+    return null;
+  }
+}
 
 function serviceErrorResult(error: McpServiceError) {
   const data = {
@@ -161,6 +173,7 @@ async function recordRequestMetric(
   outcome: string,
   transcriptComplete = false,
   providerAttempt = false,
+  videoId: string | null = null,
 ) {
   if (!keyId) return;
   try {
@@ -172,6 +185,7 @@ async function recordRequestMetric(
       outcome,
       providerAttempt: providerAttempt ? 1 : 0,
       transcriptComplete: transcriptComplete ? 1 : 0,
+      videoId,
     });
   } catch {
     // Metrics must not stop transcript delivery.

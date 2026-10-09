@@ -38,7 +38,7 @@ function NewKey({ token, name }: { token: string; name: string }) {
   return (
     <div className="border border-[#2a2d34] border-l-2 border-l-[#e28fab] bg-[#0b0c0f]">
       <div className="flex items-center justify-between gap-4 border-b border-[#2a2d34] bg-[#16181c] px-4 py-2">
-        <span className="truncate text-xs text-[#8c95a1] sm:text-sm">{name} · simpan sekarang, tidak tampil lagi</span>
+        <span className="truncate text-xs text-[#8c95a1] sm:text-sm">{name} · hanya tampil sekali</span>
         <button
           type="button"
           onClick={copy}
@@ -95,7 +95,7 @@ export function ApiKeysManager({ keys }: ApiKeysManagerProps) {
           name="name"
           required
           maxLength={60}
-          placeholder="Nama key, mis. Claude Code di laptop"
+          placeholder="Nama key"
           className={`min-h-12 w-full min-w-0 border border-[#2a2d34] bg-[#0b0c0f] px-4 text-base text-[#e8ebef] placeholder:text-[#6f7782] ${focusRing}`}
         />
         <button

@@ -24,7 +24,7 @@ export default function PrivacyPolicy() {
       </Row>
 
       <Row label="API key dan penggunaan">
-        <p>Vidiopintar tidak menyimpan API key lengkap. Sistem menyimpan hash key, prefix, nama key, akun pemilik key, waktu pencabutan, jumlah permintaan, dan jumlah byte keluaran. Key lengkap hanya tampil sekali, saat key dibuat.</p>
+        <p>Vidiopintar tidak menyimpan API key lengkap. Sistem menyimpan hash key, prefix, nama key, akun pemilik key, waktu pencabutan, jumlah permintaan, dan jumlah byte keluaran. Untuk riwayat di dashboard, sistem juga mencatat waktu, ID video, hasil, dan durasi setiap permintaan selama 90 hari. Key lengkap hanya tampil sekali, saat key dibuat.</p>
       </Row>
 
       <Row label="Cache transkrip">
