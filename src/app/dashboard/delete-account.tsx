@@ -38,7 +38,7 @@ export function DeleteAccount() {
         <button
           type="button"
           disabled={isDeleting}
-          className="cursor-pointer text-sm text-[#8c95a1] underline decoration-[#484a52] underline-offset-4 hover:text-white disabled:opacity-50"
+          className="cursor-pointer text-sm text-site-text-muted underline decoration-site-line-strong underline-offset-4 hover:text-site-text disabled:opacity-50"
         >
           {isDeleting ? "Menghapus..." : "Hapus akun dan semua key"}
         </button>

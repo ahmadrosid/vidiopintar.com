@@ -11,10 +11,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const user = await getCurrentUser();
 
   return (
-    <div className="min-h-screen bg-[#131518] font-mono text-[#c3c9d1] md:flex">
+    <div className="min-h-screen bg-site-bg font-mono text-site-text-2 md:flex">
       <DashboardSidebar email={user.email} />
       <main className="min-w-0 flex-1">
-        <div className="w-full max-w-4xl px-6 py-10 md:px-12 md:py-16">{children}</div>
+        <div className="w-full px-6 py-10 md:px-12 md:py-16">{children}</div>
       </main>
     </div>
   );

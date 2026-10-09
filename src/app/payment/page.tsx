@@ -1,3 +1,5 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, Alert01Icon } from "@hugeicons/core-free-icons";
 import Link from 'next/link'
 import { CopyButton } from '@/components/ui/copy-button'
 import { WhatsAppConfirmButton } from '@/components/payment/whatsapp-confirm-button'
@@ -5,8 +7,6 @@ import { transactionsRepository } from '@/lib/db/repository/transactions'
 import { getCurrentUser } from '@/lib/auth'
 import { getPaymentSettings, PLAN_CONFIGS } from '@/lib/validations/payment'
 import { UserPlanService } from '@/lib/user-plan-service'
-import { ChevronLeft, AlertTriangle } from 'lucide-react'
-
 interface PaymentPageProps {
   searchParams: Promise<{ plan?: string }>
 }
@@ -94,7 +94,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
             <div className="mx-auto max-w-lg">
                 <div className="mb-6">
                     <Link href="/dashboard/billing" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
-                        <ChevronLeft className="size-4" />
+                        <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" />
                         Tagihan
                     </Link>
                 </div>
@@ -107,7 +107,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                     <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-md p-4 mb-6">
                         <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 mt-0.5">
-                                <AlertTriangle className="size-5 text-red-600 dark:text-red-400" />
+                                <HugeiconsIcon icon={Alert01Icon} className="size-5 text-red-600 dark:text-red-400" />
                             </div>
                             <div className="text-sm">
                                 <p className="font-medium text-red-900 dark:text-red-100 mb-1">Active Subscription Found</p>

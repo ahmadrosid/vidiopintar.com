@@ -1,10 +1,8 @@
 "use client";
 
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AlertCircleIcon, CreditCardIcon, Clock01Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CreditCard, Clock } from "lucide-react";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
 
 interface Transaction {
@@ -35,15 +33,16 @@ interface PendingPaymentAlertProps {
 }
 
 function formatAmount(amount: number, currency: string) {
-  return `${currency} ${amount.toLocaleString()}`;
+  return `${currency} ${amount.toLocaleString("en-US")}`;
 }
 
 function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  return new Date(date).toLocaleDateString("id-ID", {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
   });
 }
 
@@ -51,13 +50,13 @@ function getTimeRemaining(expiresAt: Date) {
   const now = new Date();
   const timeLeft = new Date(expiresAt).getTime() - now.getTime();
   const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
-  
-  if (hoursLeft < 0) return "Expired";
-  if (hoursLeft < 1) return "Less than 1 hour";
-  if (hoursLeft < 24) return `${hoursLeft} hours left`;
-  
+
+  if (hoursLeft < 0) return "Kedaluwarsa";
+  if (hoursLeft < 1) return "Kurang dari 1 jam";
+  if (hoursLeft < 24) return `${hoursLeft} jam lagi`;
+
   const daysLeft = Math.floor(hoursLeft / 24);
-  return `${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
+  return `${daysLeft} hari lagi`;
 }
 
 export function PendingPaymentAlert({ transactions, currentPaymentSettings }: PendingPaymentAlertProps) {
@@ -89,76 +88,60 @@ export function PendingPaymentAlert({ transactions, currentPaymentSettings }: Pe
 
   return (
     <>
-      <Card className="border-none bg-orange-50 dark:bg-orange-950 rounded-xs">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <div className="flex-shrink-0">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
-                <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+      <div className="border border-site-line border-l-2 border-l-site-accent bg-site-panel p-6">
+        <div className="flex items-start gap-4">
+          <HugeiconsIcon icon={AlertCircleIcon} className="mt-1 size-5 shrink-0 text-site-accent" />
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-wrap items-center gap-3">
+              <h3 className="font-display text-xl font-bold tracking-tight text-site-text">Selesaikan pembayaran</h3>
+              <span className="border border-site-accent px-2 py-0.5 text-xs text-site-accent">
+                {localTransactions.length} menunggu
+              </span>
+            </div>
+
+            <p className="mb-4 text-sm text-site-text-2">
+              Kamu memiliki {localTransactions.length} pembayaran yang tertunda. Selesaikan langganan untuk mengakses semua fitur.
+            </p>
+
+            <div className="mb-4 grid grid-cols-1 gap-4 border-t border-site-line-soft pt-4 text-sm sm:grid-cols-3">
+              <div>
+                <p className="text-site-text-muted">Paket</p>
+                <p className="capitalize text-site-text">{latestTransaction.planType}</p>
+              </div>
+              <div>
+                <p className="text-site-text-muted">Jumlah</p>
+                <p className="text-site-text">{formatAmount(latestTransaction.amount, latestTransaction.currency)}</p>
+              </div>
+              <div>
+                <p className="text-site-text-muted">{latestTransaction.expiresAt ? "Berakhir" : "Dibuat"}</p>
+                <p className="flex items-center gap-1 text-site-text">
+                  <HugeiconsIcon icon={Clock01Icon} className="size-3 text-site-text-muted" />
+                  {latestTransaction.expiresAt
+                    ? getTimeRemaining(latestTransaction.expiresAt)
+                    : formatDate(latestTransaction.createdAt)}
+                </p>
               </div>
             </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <h3 className="font-semibold text-orange-900 dark:text-orange-100">
-                  {"Selesaikan Pembayaran"}
-                </h3>
-                <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                  {localTransactions.length} {"menunggu"}
-                </Badge>
-              </div>
-              
-              <p className="text-sm text-orange-800 dark:text-orange-200 mb-4">
-                Kamu memiliki {localTransactions.length} pembayaran yang tertunda. Selesaikan langganan untuk mengakses semua fitur.
-              </p>
 
-              {/* Latest transaction details */}
-              <div className="bg-white dark:bg-gray-900 rounded-lg p-4 mb-4 border border-orange-200 dark:border-orange-800">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400">{"Paket"}</p>
-                    <p className="font-medium capitalize">{latestTransaction.planType} Plan</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400">{"Jumlah"}</p>
-                    <p className="font-medium">{formatAmount(latestTransaction.amount, latestTransaction.currency)}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {latestTransaction.expiresAt ? "Berakhir" : "Dibuat"}
-                    </p>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3 text-gray-500" />
-                      <p className="font-medium">
-                        {latestTransaction.expiresAt 
-                          ? getTimeRemaining(latestTransaction.expiresAt)
-                          : formatDate(latestTransaction.createdAt)
-                        }
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={() => handleCompletePayment(latestTransaction)}
+                className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover"
+              >
+                <HugeiconsIcon icon={CreditCardIcon} className="size-4" />
+                {latestTransaction.status === "waiting_confirmation" ? "Lihat status" : "Selesaikan pembayaran"}
+              </button>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  onClick={() => handleCompletePayment(latestTransaction)}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  {latestTransaction.status === 'waiting_confirmation' ? "Lihat Status" : "Selesaikan Pembayaran"}
-                </Button>
-                
-                {localTransactions.length > 1 && (
-                  <p className="text-xs text-orange-700 dark:text-orange-300 flex items-center">
-                    + {localTransactions.length - 1} transaksi tertunda lainnya di riwayat bawah
-                  </p>
-                )}
-              </div>
+              {localTransactions.length > 1 && (
+                <p className="text-xs text-site-text-muted">
+                  + {localTransactions.length - 1} transaksi tertunda lainnya di riwayat bawah
+                </p>
+              )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <TransactionDetailDialog
         transaction={selectedTransaction}

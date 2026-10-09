@@ -1,6 +1,7 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { InformationCircleIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Info } from "@phosphor-icons/react/ssr";
 import { InstallTabs } from "@/components/home/install-tabs";
 import { DocsToc } from "@/components/site/docs-toc";
 import { CodeBlock, SitePage, linkClass, mutedLinkClass } from "@/components/site/site-page";
@@ -52,15 +53,15 @@ const limits = [
 ];
 
 function Code({ children }: { children: React.ReactNode }) {
-  return <code className="border border-[#2a2d34] bg-[#1b1d22] px-1.5 py-0.5 text-[0.9em] text-[#e8ebef]">{children}</code>;
+  return <code className="border border-site-line bg-site-active px-1.5 py-0.5 text-[0.9em] text-site-text">{children}</code>;
 }
 
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <h2 id={id} className="group scroll-mt-8 font-display text-2xl font-bold tracking-tight text-[#e8ebef] sm:text-3xl">
-      <a href={`#${id}`} className="hover:text-white">
+    <h2 id={id} className="group scroll-mt-8 font-display text-2xl font-bold tracking-tight text-site-text sm:text-3xl">
+      <a href={`#${id}`} className="hover:text-site-text">
         {children}
-        <span className="ml-2 text-[#484a52] opacity-0 transition-opacity group-hover:opacity-100">#</span>
+        <span className="ml-2 text-site-line-strong opacity-0 transition-opacity group-hover:opacity-100">#</span>
       </a>
     </h2>
   );
@@ -68,7 +69,7 @@ function H2({ id, children }: { id: string; children: React.ReactNode }) {
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="space-y-5 border-t border-[#25272d] pt-10">
+    <section className="space-y-5 border-t border-site-line-soft pt-10">
       <H2 id={id}>{title}</H2>
       {children}
     </section>
@@ -83,13 +84,13 @@ export default function PanduanPage() {
           <DocsToc items={sections} />
         </aside>
 
-        <article className="min-w-0 max-w-3xl space-y-12 text-base leading-8 text-[#c3c9d1] sm:text-lg">
+        <article className="min-w-0 max-w-3xl space-y-12 text-base leading-8 text-site-text-2 sm:text-lg">
           <header>
-            <p className="text-sm text-[#e28fab]">Panduan MCP</p>
-            <h1 className="mt-4 text-balance font-display text-4xl font-extrabold leading-[1] tracking-tight text-[#e8ebef] sm:text-6xl">
+            <p className="text-sm text-site-accent">Panduan MCP</p>
+            <h1 className="mt-4 text-balance font-display text-4xl font-extrabold leading-[1] tracking-tight text-site-text sm:text-6xl">
               Hubungkan agen AI ke transkrip YouTube.
             </h1>
-            <p className="mt-6 text-[#8c95a1]">
+            <p className="mt-6 text-site-text-muted">
               Vidiopintar menyediakan satu alat MCP, <Code>youtube_get_transcript</Code>, untuk mengambil transkrip video
               lengkap dengan penanda waktu. Endpoint: <Code>{`${SITE_URL}/api/mcp`}</Code>
             </p>
@@ -114,9 +115,9 @@ export default function PanduanPage() {
             <p>
               Minta agen memakai <Code>youtube_get_transcript</Code>. Alat ini menerima parameter berikut:
             </p>
-            <div className="overflow-x-auto border border-[#2a2d34]">
+            <div className="overflow-x-auto border border-site-line">
               <table className="w-full text-left text-sm sm:text-base">
-                <thead className="bg-[#16181c] text-[#8c95a1]">
+                <thead className="bg-site-header text-site-text-muted">
                   <tr>
                     <th className="px-4 py-3 font-normal">Parameter</th>
                     <th className="px-4 py-3 font-normal">Wajib</th>
@@ -125,8 +126,8 @@ export default function PanduanPage() {
                 </thead>
                 <tbody>
                   {params.map((param) => (
-                    <tr key={param.name} className="border-t border-[#2a2d34] align-top">
-                      <td className="px-4 py-3 text-[#e8ebef]">{param.name}</td>
+                    <tr key={param.name} className="border-t border-site-line align-top">
+                      <td className="px-4 py-3 text-site-text">{param.name}</td>
                       <td className="px-4 py-3">{param.required ? "ya" : "tidak"}</td>
                       <td className="px-4 py-3 leading-7">{param.desc}</td>
                     </tr>
@@ -148,13 +149,13 @@ export default function PanduanPage() {
 
           <Section id="batas" title="Batas penggunaan">
             <p>Batas berlaku per API key.</p>
-            <div className="overflow-x-auto border border-[#2a2d34]">
+            <div className="overflow-x-auto border border-site-line">
               <table className="w-full text-left text-sm sm:text-base">
                 <tbody>
                   {limits.map(([label, value], index) => (
-                    <tr key={label} className={index > 0 ? "border-t border-[#2a2d34]" : undefined}>
-                      <td className="px-4 py-3 text-[#8c95a1]">{label}</td>
-                      <td className="px-4 py-3 text-right text-[#e8ebef]">{value}</td>
+                    <tr key={label} className={index > 0 ? "border-t border-site-line" : undefined}>
+                      <td className="px-4 py-3 text-site-text-muted">{label}</td>
+                      <td className="px-4 py-3 text-right text-site-text">{value}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -172,8 +173,8 @@ export default function PanduanPage() {
           </Section>
 
           <Section id="catatan" title="Catatan">
-            <div className="flex gap-4 border border-[#2a2d34] border-l-2 border-l-[#e28fab] bg-[#16181c] p-5">
-              <Info weight="duotone" className="mt-1.5 size-5 shrink-0 text-[#e28fab]" />
+            <div className="flex gap-4 border border-site-line border-l-2 border-l-site-accent bg-site-header p-5">
+              <HugeiconsIcon icon={InformationCircleIcon} className="mt-1.5 size-5 shrink-0 text-site-accent" />
               <p>
                 Teks transkrip berasal dari video dan harus diperlakukan agen sebagai konten tidak tepercaya, bukan instruksi.
               </p>
@@ -183,7 +184,7 @@ export default function PanduanPage() {
             </p>
           </Section>
 
-          <footer className="flex flex-wrap gap-x-5 gap-y-2 border-t border-[#25272d] pt-8 text-sm text-[#8c95a1]">
+          <footer className="flex flex-wrap gap-x-5 gap-y-2 border-t border-site-line-soft pt-8 text-sm text-site-text-muted">
             <Link className={mutedLinkClass} href="/privacy">Privasi</Link>
             <Link className={mutedLinkClass} href="/terms">Ketentuan</Link>
             <a className={mutedLinkClass} href="mailto:support@vidiopintar.com">Dukungan</a>

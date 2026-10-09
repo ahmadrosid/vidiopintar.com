@@ -100,8 +100,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className="dark">
+    <html lang="id" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function apply(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}document.documentElement.classList.toggle("dark",t?t==="dark":m.matches)}apply();m.addEventListener("change",apply)})();`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(organizationSchema) }}

@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-export const linkClass = "text-[#e8ebef] underline decoration-[#e28fab] underline-offset-4 hover:text-[#f2b2c4]";
-export const mutedLinkClass = "underline decoration-[#484a52] underline-offset-4 hover:text-white";
+export const linkClass = "text-site-text underline decoration-site-accent underline-offset-4 hover:text-site-accent-hover";
+export const mutedLinkClass = "underline decoration-site-line-strong underline-offset-4 hover:text-site-text";
 
 export function SitePage({
   children,
@@ -14,21 +15,24 @@ export function SitePage({
   wide?: boolean;
 }) {
   return (
-    <main className="relative min-h-screen overflow-x-clip bg-[#131518] font-mono text-[#c3c9d1]">
+    <main className="relative min-h-screen overflow-x-clip bg-site-bg font-mono text-site-text-2">
       {backdrop && (
         <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-0 overflow-hidden">
           {/* Never narrower than 900px so the art still covers the hero on phones. */}
           <div className="relative left-1/2 w-[max(100vw,900px)] -translate-x-1/2">{backdrop}</div>
           {/* Fade the art's bottom edge into the page. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#131518]/50 via-[#131518]/10 to-[#131518]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-site-bg/50 via-site-bg/10 to-site-bg" />
           {/* Darken only behind the header and headline so the text reads while the art stays vivid. */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_40%_25%,rgba(19,21,24,0.95)_0%,rgba(19,21,24,0.8)_45%,transparent_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_55%_at_40%_25%,rgb(var(--site-bg-rgb)/0.95)_0%,rgb(var(--site-bg-rgb)/0.8)_45%,transparent_100%)]" />
         </div>
       )}
       <div className={`relative z-10 mx-auto w-full px-6 py-10 ${wide ? "max-w-6xl" : "max-w-4xl"}`}>
         <header className="flex items-baseline justify-between text-base">
-          <Link href="/" className="text-[#e8ebef] hover:text-white">vidiopintar</Link>
-          <Link href="/panduan" className="text-sm text-[#8c95a1] hover:text-white">Panduan</Link>
+          <Link href="/" className="text-site-text hover:text-site-text">vidiopintar</Link>
+          <div className="flex items-center gap-6">
+            <Link href="/panduan" className="text-sm text-site-text-muted hover:text-site-text">Panduan</Link>
+            <ThemeToggle className="inline-flex items-center text-site-text-muted hover:text-site-text" />
+          </div>
         </header>
         {children}
       </div>
@@ -39,8 +43,8 @@ export function SitePage({
 export function PageTitle({ children, meta }: { children: React.ReactNode; meta?: React.ReactNode }) {
   return (
     <div className="mb-16 mt-16 sm:mt-24">
-      <h1 className="font-display text-balance text-5xl font-extrabold leading-[0.95] tracking-tight text-[#e8ebef] [text-shadow:0_2px_24px_rgba(19,21,24,0.95),0_0_8px_rgba(19,21,24,0.8)] sm:text-7xl lg:text-8xl">{children}</h1>
-      {meta && <p className="mt-6 text-sm text-[#6f7782]">{meta}</p>}
+      <h1 className="font-display text-balance text-5xl font-extrabold leading-[0.95] tracking-tight text-site-text [text-shadow:0_2px_24px_rgb(var(--site-bg-rgb)/0.95),0_0_8px_rgb(var(--site-bg-rgb)/0.8)] sm:text-7xl lg:text-8xl">{children}</h1>
+      {meta && <p className="mt-6 text-sm text-site-text-faint">{meta}</p>}
     </div>
   );
 }
@@ -59,13 +63,13 @@ export function Row({
 }) {
   return (
     <section
-      className={`grid grid-cols-[minmax(0,1fr)] gap-4 border-t border-[#25272d] py-10 ${wide ? "md:gap-6" : "md:grid-cols-[12rem_minmax(0,1fr)] md:gap-8"}`}
+      className={`grid grid-cols-[minmax(0,1fr)] gap-4 border-t border-site-line-soft py-10 ${wide ? "md:gap-6" : "md:grid-cols-[12rem_minmax(0,1fr)] md:gap-8"}`}
     >
-      <h2 className="flex items-center gap-2.5 self-start font-display text-xl font-bold tracking-tight text-[#e8ebef]">
-        {icon && <span className="text-[#e28fab] [&>svg]:size-6">{icon}</span>}
+      <h2 className="flex items-center gap-2.5 self-start font-display text-xl font-bold tracking-tight text-site-text">
+        {icon && <span className="text-site-accent [&>svg]:size-6">{icon}</span>}
         {label}
       </h2>
-      <div className="min-w-0 space-y-3 text-base leading-8 text-[#c3c9d1] sm:text-lg">{children}</div>
+      <div className="min-w-0 space-y-3 text-base leading-8 text-site-text-2 sm:text-lg">{children}</div>
     </section>
   );
 }
@@ -73,8 +77,8 @@ export function Row({
 export function Stat({ value, unit }: { value: string; unit: string }) {
   return (
     <div>
-      <p className="font-display text-4xl font-extrabold leading-none tracking-tight text-[#e8ebef] sm:text-5xl">{value}</p>
-      <p className="mt-2 text-sm text-[#8c95a1] sm:text-base">{unit}</p>
+      <p className="font-display text-4xl font-extrabold leading-none tracking-tight text-site-text sm:text-5xl">{value}</p>
+      <p className="mt-2 text-sm text-site-text-muted sm:text-base">{unit}</p>
     </div>
   );
 }
@@ -100,9 +104,9 @@ export function SeeAlso({ links }: { links: { href: string; label: string }[] })
 
 export function CodeBlock({ label, children }: { label: string; children: string }) {
   return (
-    <div className="border border-[#2a2d34] bg-[#0b0c0f]">
-      <p className="border-b border-[#2a2d34] bg-[#16181c] px-4 py-2 text-xs text-[#8c95a1] sm:text-sm">{label}</p>
-      <pre className="overflow-x-auto p-5 text-sm leading-7 text-[#e8ebef] sm:text-base">{children}</pre>
+    <div className="border border-site-line bg-site-panel">
+      <p className="border-b border-site-line bg-site-header px-4 py-2 text-xs text-site-text-muted sm:text-sm">{label}</p>
+      <pre className="overflow-x-auto p-5 text-sm leading-7 text-site-text sm:text-base">{children}</pre>
     </div>
   );
 }

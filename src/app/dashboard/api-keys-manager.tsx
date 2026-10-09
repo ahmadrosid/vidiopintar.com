@@ -1,8 +1,9 @@
 "use client";
 
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, Copy01Icon } from "@hugeicons/core-free-icons";
 import { useActionState, useState, useTransition } from "react";
 import { format } from "date-fns";
-import { Check, Copy } from "@phosphor-icons/react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +21,7 @@ interface ApiKeysManagerProps {
   keys: Array<{ id: string; name: string; prefix: string; createdAt: Date; requestsToday: number; requestsPerDay: number }>;
 }
 
-const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab]";
+const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
 
 function NewKey({ token, name }: { token: string; name: string }) {
   const [copied, setCopied] = useState(false);
@@ -36,19 +37,19 @@ function NewKey({ token, name }: { token: string; name: string }) {
   };
 
   return (
-    <div className="border border-[#2a2d34] border-l-2 border-l-[#e28fab] bg-[#0b0c0f]">
-      <div className="flex items-center justify-between gap-4 border-b border-[#2a2d34] bg-[#16181c] px-4 py-2">
-        <span className="truncate text-xs text-[#8c95a1] sm:text-sm">{name} · hanya tampil sekali</span>
+    <div className="border border-site-line border-l-2 border-l-site-accent bg-site-panel">
+      <div className="flex items-center justify-between gap-4 border-b border-site-line bg-site-header px-4 py-2">
+        <span className="truncate text-xs text-site-text-muted sm:text-sm">{name} · hanya tampil sekali</span>
         <button
           type="button"
           onClick={copy}
-          className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-[#8c95a1] hover:text-white sm:text-sm ${focusRing}`}
+          className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-site-text-muted hover:text-site-text sm:text-sm ${focusRing}`}
         >
-          {copied ? <Check className="size-4 text-[#e28fab]" /> : <Copy className="size-4" />}
+          {copied ? <HugeiconsIcon icon={CheckIcon} className="size-4 text-site-accent" /> : <HugeiconsIcon icon={Copy01Icon} className="size-4" />}
           {copied ? "Tersalin" : "Salin"}
         </button>
       </div>
-      <p className="break-all p-5 text-sm leading-7 text-[#e8ebef] sm:text-base">{token}</p>
+      <p className="break-all p-5 text-sm leading-7 text-site-text sm:text-base">{token}</p>
     </div>
   );
 }
@@ -62,7 +63,7 @@ function RevokeButton({ id, name }: { id: string; name: string }) {
         <button
           type="button"
           disabled={pending}
-          className={`shrink-0 cursor-pointer text-sm text-[#8c95a1] underline decoration-[#484a52] underline-offset-4 hover:text-white disabled:opacity-50 ${focusRing}`}
+          className={`shrink-0 cursor-pointer text-sm text-site-text-muted underline decoration-site-line-strong underline-offset-4 hover:text-site-text disabled:opacity-50 ${focusRing}`}
         >
           {pending ? "Mencabut..." : "Cabut"}
         </button>
@@ -96,31 +97,31 @@ export function ApiKeysManager({ keys }: ApiKeysManagerProps) {
           required
           maxLength={60}
           placeholder="Nama key"
-          className={`min-h-12 w-full min-w-0 border border-[#2a2d34] bg-[#0b0c0f] px-4 text-base text-[#e8ebef] placeholder:text-[#6f7782] ${focusRing}`}
+          className={`min-h-12 w-full min-w-0 border border-site-line bg-site-panel px-4 text-base text-site-text placeholder:text-site-text-faint ${focusRing}`}
         />
         <button
           type="submit"
           disabled={pending}
-          className={`inline-flex min-h-12 shrink-0 cursor-pointer items-center justify-center bg-[#e28fab] px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-[#f2b2c4] disabled:opacity-60 ${focusRing}`}
+          className={`inline-flex min-h-12 shrink-0 cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:opacity-60 ${focusRing}`}
         >
           {pending ? "Membuat..." : "Buat key"}
         </button>
       </form>
-      {state.status === "error" && <p className="text-sm text-[#f2b2c4]">{state.message}</p>}
+      {state.status === "error" && <p className="text-sm text-site-accent-hover">{state.message}</p>}
       {state.status === "created" && <NewKey token={state.token} name={state.name} />}
 
       {keys.length === 0 ? (
-        <p className="text-[#6f7782]">Belum ada key aktif.</p>
+        <p className="text-site-text-faint">Belum ada key aktif.</p>
       ) : (
-        <ul className="border border-[#2a2d34]">
+        <ul className="border border-site-line">
           {keys.map((key, index) => (
             <li
               key={key.id}
-              className={`flex items-center gap-4 px-4 py-3 ${index > 0 ? "border-t border-[#2a2d34]" : ""}`}
+              className={`flex items-center gap-4 px-4 py-3 ${index > 0 ? "border-t border-site-line" : ""}`}
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[#e8ebef]">{key.name}</p>
-                <p className="truncate text-sm text-[#8c95a1]">
+                <p className="truncate text-site-text">{key.name}</p>
+                <p className="truncate text-sm text-site-text-muted">
                   {key.prefix} · {format(key.createdAt, "d MMM yyyy")} · {key.requestsToday}/{key.requestsPerDay} hari ini
                 </p>
               </div>

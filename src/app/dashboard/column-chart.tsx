@@ -23,7 +23,6 @@ const HEIGHT = 200;
 const PAD = { top: 12, right: 8, bottom: 28, left: 52 };
 const GAP = 2;
 const MAX_BAR = 24;
-const RADIUS = 4;
 
 function niceMax(value: number) {
   if (value <= 0) return 1;
@@ -32,10 +31,9 @@ function niceMax(value: number) {
   return step * magnitude;
 }
 
-// A column with a 4px rounded top and a square base.
-function topRoundedRect(x: number, y: number, width: number, height: number) {
-  const r = Math.min(RADIUS, width / 2, height);
-  return `M${x},${y + height}V${y + r}Q${x},${y} ${x + r},${y}H${x + width - r}Q${x + width},${y} ${x + width},${y + r}V${y + height}Z`;
+// A square-cornered column.
+function rect(x: number, y: number, width: number, height: number) {
+  return `M${x},${y}H${x + width}V${y + height}H${x},Z`;
 }
 
 export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
@@ -80,9 +78,9 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
   return (
     <figure className="space-y-3">
       <figcaption className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <span className="text-sm text-[#e8ebef]">{title}</span>
+        <span className="text-sm text-site-text">{title}</span>
         {series.length > 1 && (
-          <span className="flex gap-4 text-xs text-[#8c95a1]">
+          <span className="flex gap-4 text-xs text-site-text-muted">
             {series.map((item) => (
               <span key={item.key} className="inline-flex items-center gap-1.5">
                 <span aria-hidden className="size-2.5" style={{ background: item.color }} />
@@ -104,12 +102,12 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
             onKeyDown={onKeyDown}
             onBlur={() => setActive(null)}
             onPointerLeave={() => setActive(null)}
-            className="block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e28fab]"
+            className="block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-site-accent"
           >
             {ticks.map((tick) => (
               <g key={tick}>
                 <line x1={PAD.left} x2={chartWidth - PAD.right} y1={y(tick)} y2={y(tick)} stroke="#25272d" strokeWidth={1} />
-                <text x={PAD.left - 8} y={y(tick)} dy="0.32em" textAnchor="end" className="fill-[#6f7782] text-[11px] tabular-nums">
+                <text x={PAD.left - 8} y={y(tick)} dy="0.32em" textAnchor="end" className="fill-site-text-faint text-[11px] tabular-nums">
                   {format(tick)}
                 </text>
               </g>
@@ -131,7 +129,7 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
                     const height = Math.max(1, bottom - top);
                     const isTop = segmentIndex === segments.length - 1;
                     return isTop ? (
-                      <path key={item.key} d={topRoundedRect(x, bottom - height, barW, height)} fill={item.color} />
+                      <path key={item.key} d={rect(x, bottom - height, barW, height)} fill={item.color} />
                     ) : (
                       <rect key={item.key} x={x} y={bottom - height} width={barW} height={height} fill={item.color} />
                     );
@@ -155,7 +153,7 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
                   x={PAD.left + band * (index + 0.5)}
                   y={HEIGHT - 8}
                   textAnchor={position === 0 ? "start" : position === 2 ? "end" : "middle"}
-                  className="fill-[#6f7782] text-[11px]"
+                  className="fill-site-text-faint text-[11px]"
                 >
                   {points[index].label}
                 </text>
@@ -163,7 +161,7 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
             )}
 
             {empty && (
-              <text x={PAD.left + plotW / 2} y={PAD.top + plotH / 2} textAnchor="middle" className="fill-[#6f7782] text-xs">
+              <text x={PAD.left + plotW / 2} y={PAD.top + plotH / 2} textAnchor="middle" className="fill-site-text-faint text-xs">
                 Belum ada data
               </text>
             )}
@@ -173,44 +171,20 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
         {activePoint && (
           <div
             role="status"
-            className="pointer-events-none absolute top-0 z-10 min-w-36 -translate-x-1/2 border border-[#2a2d34] bg-[#16181c] px-3 py-2 text-xs shadow-lg"
+            className="pointer-events-none absolute top-0 z-10 min-w-36 -translate-x-1/2 border border-site-line bg-site-header px-3 py-2 text-xs shadow-lg"
             style={{ left: tooltipLeft }}
           >
-            <p className="mb-1.5 text-[#8c95a1]">{activePoint.label}</p>
+            <p className="mb-1.5 text-site-text-muted">{activePoint.label}</p>
             {series.map((item) => (
               <p key={item.key} className="flex items-center gap-2">
                 <span aria-hidden className="h-0.5 w-3" style={{ background: item.color }} />
-                <span className="font-semibold text-[#e8ebef] tabular-nums">{format(activePoint.values[item.key] ?? 0)}</span>
-                <span className="text-[#8c95a1]">{item.label}</span>
+                <span className="font-semibold text-site-text tabular-nums">{format(activePoint.values[item.key] ?? 0)}</span>
+                <span className="text-site-text-muted">{item.label}</span>
               </p>
             ))}
           </div>
         )}
       </div>
-
-      <details className="text-xs text-[#8c95a1]">
-        <summary className="cursor-pointer hover:text-white">Tabel</summary>
-        <table className="mt-2 w-full text-left tabular-nums">
-          <thead>
-            <tr>
-              <th className="py-1 font-normal">Tanggal</th>
-              {series.map((item) => (
-                <th key={item.key} className="py-1 text-right font-normal">{item.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point) => (
-              <tr key={point.label} className="border-t border-[#25272d]">
-                <td className="py-1">{point.label}</td>
-                {series.map((item) => (
-                  <td key={item.key} className="py-1 text-right text-[#c3c9d1]">{format(point.values[item.key] ?? 0)}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </details>
     </figure>
   );
 }

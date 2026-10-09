@@ -1,7 +1,7 @@
 "use client"
 
-import { Check, Copy } from "lucide-react"
-
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, Copy01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils"
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard"
 import { Button } from "@/components/ui/button"
@@ -28,14 +28,14 @@ export function CopyButton({ content, copyMessage, label, className }: CopyButto
       onClick={handleCopy}
     >
       <div className="absolute inset-0 flex items-center justify-start p-1">
-        <Check
+        <HugeiconsIcon icon={CheckIcon}
           className={cn(
             "size-3 transition-transform ease-in-out", className,
             isCopied ? "scale-100" : "scale-0"
           )}
         />
       </div>
-      <Copy
+      <HugeiconsIcon icon={Copy01Icon}
         className={cn(
           "size-3 transition-transform ease-in-out", className,
           isCopied ? "scale-0" : "scale-100"

@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckmarkCircle02Icon, HistoryIcon, GaugeIcon, Key01Icon, UserCircleIcon, AlertCircleIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { CheckCircle, ClockCounterClockwise, Gauge, Key, UserCircle, WarningCircle } from "@phosphor-icons/react/ssr";
 import { Row, Stat } from "@/components/site/site-page";
 import { getCurrentUser } from "@/lib/auth";
 import { ANALYTICS_RANGES, getUserMcpAnalytics, type AnalyticsRange, type HistoryStatus } from "@/lib/mcp/analytics";
@@ -41,8 +42,8 @@ const formatMegabytes = (bytes: number) => `${decimalFormat.format(bytes / 1_000
 const formatDuration = (ms: number) => (ms < 1000 ? `${ms} ms` : `${decimalFormat.format(ms / 1000)} dtk`);
 
 function chipClass(selected: boolean) {
-  return `inline-flex min-h-9 items-center border px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab] ${
-    selected ? "border-[#e28fab] bg-[#2d1f2a] text-[#e8ebef]" : "border-[#2a2d34] text-[#8c95a1] hover:border-[#484a52] hover:text-[#e8ebef]"
+  return `inline-flex min-h-9 items-center border px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent ${
+    selected ? "border-site-accent bg-site-accent-soft text-site-text" : "border-site-line text-site-text-muted hover:border-site-line-strong hover:text-site-text"
   }`;
 }
 
@@ -81,7 +82,7 @@ export default async function DashboardPage({
       </nav>
 
       <div className="[&>section:first-child]:border-t-0">
-        <Row label="Pemakaian" icon={<Gauge weight="duotone" />} wide>
+        <Row label="Pemakaian" icon={<HugeiconsIcon icon={GaugeIcon} />} wide>
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
             <Stat value={numberFormat.format(totals.requests)} unit="permintaan" />
             <Stat value={successRate === null ? "–" : `${successRate}%`} unit="berhasil" />
@@ -94,7 +95,7 @@ export default async function DashboardPage({
           </div>
         </Row>
 
-        <Row label="Riwayat" icon={<ClockCounterClockwise weight="duotone" />} wide>
+        <Row label="Riwayat" icon={<HugeiconsIcon icon={HistoryIcon} />} wide>
           <nav aria-label="Filter hasil" className="flex flex-wrap gap-2">
             {statusFilters.map((item) => (
               <Link
@@ -108,11 +109,11 @@ export default async function DashboardPage({
             ))}
           </nav>
           {history.length === 0 ? (
-            <p className="text-[#6f7782]">Belum ada permintaan.</p>
+            <p className="text-site-text-faint">Belum ada permintaan.</p>
           ) : (
-            <div className="overflow-x-auto border border-[#2a2d34]">
+            <div className="overflow-x-auto border border-site-line">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#16181c] text-[#8c95a1]">
+                <thead className="bg-site-header text-site-text-muted">
                   <tr>
                     <th className="px-4 py-2.5 font-normal">Waktu</th>
                     <th className="px-4 py-2.5 font-normal">Hasil</th>
@@ -124,13 +125,13 @@ export default async function DashboardPage({
                 <tbody>
                   {history.map((row) => {
                     const ok = row.outcome === "success";
-                    const Icon = ok ? CheckCircle : WarningCircle;
+                    const Icon = ok ? CheckmarkCircle02Icon : AlertCircleIcon;
                     return (
-                      <tr key={row.id} className="border-t border-[#2a2d34]">
-                        <td className="whitespace-nowrap px-4 py-2.5 text-[#8c95a1] tabular-nums">{timeLabel.format(row.createdAt)}</td>
-                        <td className="whitespace-nowrap px-4 py-2.5 text-[#e8ebef]">
+                      <tr key={row.id} className="border-t border-site-line">
+                        <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{timeLabel.format(row.createdAt)}</td>
+                        <td className="whitespace-nowrap px-4 py-2.5 text-site-text">
                           <span className="inline-flex items-center gap-2">
-                            <Icon weight="fill" className="size-4 shrink-0" style={{ color: ok ? SUCCESS : FAILED }} />
+                            <HugeiconsIcon icon={Icon} className="size-4 shrink-0" style={{ color: ok ? SUCCESS : FAILED }} />
                             {outcomeLabels[row.outcome] ?? row.outcome}
                           </span>
                         </td>
@@ -140,16 +141,16 @@ export default async function DashboardPage({
                               href={`https://www.youtube.com/watch?v=${row.videoId}`}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[#c3c9d1] underline decoration-[#484a52] underline-offset-4 hover:text-white"
+                              className="text-site-text-2 underline decoration-site-line-strong underline-offset-4 hover:text-site-text"
                             >
                               {row.videoId}
                             </a>
                           ) : (
-                            <span className="text-[#6f7782]">–</span>
+                            <span className="text-site-text-faint">–</span>
                           )}
                         </td>
-                        <td className="max-w-40 truncate px-4 py-2.5 text-[#8c95a1]">{row.keyName}</td>
-                        <td className="whitespace-nowrap px-4 py-2.5 text-right text-[#8c95a1] tabular-nums">{formatDuration(row.durationMs)}</td>
+                        <td className="max-w-40 truncate px-4 py-2.5 text-site-text-muted">{row.keyName}</td>
+                        <td className="whitespace-nowrap px-4 py-2.5 text-right text-site-text-muted tabular-nums">{formatDuration(row.durationMs)}</td>
                       </tr>
                     );
                   })}
@@ -157,17 +158,17 @@ export default async function DashboardPage({
               </table>
             </div>
           )}
-          {history.length === 50 && <p className="text-sm text-[#6f7782]">50 permintaan terbaru</p>}
+          {history.length === 50 && <p className="text-sm text-site-text-faint">50 permintaan terbaru</p>}
         </Row>
 
-        <Row label="API key" icon={<Key weight="duotone" />}>
-          <p className="text-sm text-[#6f7782]">
+        <Row label="API key" icon={<HugeiconsIcon icon={Key01Icon} />}>
+          <p className="text-sm text-site-text-faint">
             {keys.length}/{MAX_ACTIVE_KEYS_PER_USER} aktif
           </p>
           <ApiKeysManager keys={keys} />
         </Row>
 
-        <Row label="Akun" icon={<UserCircle weight="duotone" />}>
+        <Row label="Akun" icon={<HugeiconsIcon icon={UserCircleIcon} />}>
           <DeleteAccount />
         </Row>
       </div>

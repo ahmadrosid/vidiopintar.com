@@ -35,8 +35,8 @@ export function DocsToc({ items }: { items: TocItem[] }) {
 
   return (
     <nav aria-label="Daftar isi" className="sticky top-10">
-      <p className="text-sm text-[#6f7782]">Di halaman ini</p>
-      <ul className="mt-4 space-y-1 border-l border-[#25272d] text-sm">
+      <p className="text-sm text-site-text-faint">Di halaman ini</p>
+      <ul className="mt-4 space-y-1 border-l border-site-line-soft text-sm">
         {items.map((item) => {
           const isActive = item.id === active;
           return (
@@ -47,8 +47,8 @@ export function DocsToc({ items }: { items: TocItem[] }) {
                 aria-current={isActive ? "location" : undefined}
                 className={`-ml-px block border-l-2 py-1.5 pl-4 transition-colors duration-200 ${
                   isActive
-                    ? "border-[#e28fab] text-[#e8ebef]"
-                    : "border-transparent text-[#8c95a1] hover:border-[#484a52] hover:text-white"
+                    ? "border-site-accent text-site-text"
+                    : "border-transparent text-site-text-muted hover:border-site-line-strong hover:text-site-text"
                 }`}
               >
                 {item.title}

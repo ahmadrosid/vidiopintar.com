@@ -1,16 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { formatDisplayDateTime } from "@/lib/utils";
 
@@ -41,21 +31,19 @@ interface TransactionHistoryProps {
   currentPaymentSettings: PaymentSettings | null;
 }
 
-function getStatusColor(status: string) {
-  switch (status) {
-    case 'confirmed':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-    case 'pending':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-    case 'waiting_confirmation':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-    case 'expired':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    case 'cancelled':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-  }
+const statusLabels: Record<string, string> = {
+  confirmed: "Berhasil",
+  pending: "Menunggu",
+  waiting_confirmation: "Menunggu konfirmasi",
+  expired: "Kedaluwarsa",
+  cancelled: "Dibatalkan",
+};
+
+// Pending states get the accent so they stand out; everything else stays neutral.
+function getStatusClass(status: string) {
+  return status === "pending" || status === "waiting_confirmation"
+    ? "border-site-accent text-site-accent"
+    : "border-site-line text-site-text-muted";
 }
 
 function formatAmount(amount: number, currency: string) {
@@ -75,8 +63,11 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
     (t) => transactionOverrides[t.id] ?? t
   );
 
+  const isPending = (transaction: Transaction) =>
+    transaction.status === "pending" || transaction.status === "waiting_confirmation";
+
   const handleTransactionClick = (transaction: Transaction) => {
-    if (transaction.status === 'pending' || transaction.status === 'waiting_confirmation') {
+    if (isPending(transaction)) {
       setSelectedTransaction(transaction);
       setIsDialogOpen(true);
     }
@@ -93,74 +84,51 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
   };
 
   if (localTransactions.length === 0) {
-    return (
-      <Card className="shadow-none border-none rounded-xs">
-        <CardHeader>
-          <CardTitle className="text-lg">Transaction History</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-center py-8">
-            No transactions found.
-          </p>
-        </CardContent>
-      </Card>
-    );
+    return <p className="text-site-text-muted">Belum ada transaksi.</p>;
   }
 
   return (
-    <Card className="shadow-none border-none rounded-xs">
-      <CardHeader>
-        <CardTitle className="text-lg">Transaction History</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Plan</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead>Confirmed</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+    <>
+      <div className="overflow-x-auto border border-site-line">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-site-header text-site-text-muted">
+            <tr>
+              <th className="px-4 py-2.5 font-normal">Paket</th>
+              <th className="px-4 py-2.5 font-normal">Jumlah</th>
+              <th className="px-4 py-2.5 font-normal">Status</th>
+              <th className="px-4 py-2.5 font-normal">Dibuat</th>
+              <th className="px-4 py-2.5 font-normal">Dikonfirmasi</th>
+            </tr>
+          </thead>
+          <tbody>
             {localTransactions.map((transaction) => (
-              <TableRow 
+              <tr
                 key={transaction.id}
-                className={(transaction.status === 'pending' || transaction.status === 'waiting_confirmation') ? 'cursor-pointer' : ''}
                 onClick={() => handleTransactionClick(transaction)}
+                className={`border-t border-site-line ${isPending(transaction) ? "cursor-pointer hover:bg-site-header" : ""}`}
               >
-                <TableCell className="font-medium capitalize">
-                  {transaction.planType} Plan
-                </TableCell>
-                <TableCell className="font-medium">
+                <td className="whitespace-nowrap px-4 py-2.5 capitalize text-site-text">{transaction.planType}</td>
+                <td className="whitespace-nowrap px-4 py-2.5 text-site-text tabular-nums">
                   {formatAmount(transaction.amount, transaction.currency)}
-                </TableCell>
-                <TableCell>
-                  <Badge
-                    variant="secondary"
-                    className={getStatusColor(transaction.status)}
-                  >
-                    {transaction.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(transaction.createdAt)}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {transaction.confirmedAt ? formatDate(transaction.confirmedAt) : '-'}
-                </TableCell>
-              </TableRow>
+                </td>
+                <td className="whitespace-nowrap px-4 py-2.5">
+                  <span className={`border px-2 py-0.5 text-xs ${getStatusClass(transaction.status)}`}>
+                    {statusLabels[transaction.status] ?? transaction.status}
+                  </span>
+                </td>
+                <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{formatDate(transaction.createdAt)}</td>
+                <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">
+                  {transaction.confirmedAt ? formatDate(transaction.confirmedAt) : "–"}
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-        
-        {localTransactions.some(t => t.status === 'pending' || t.status === 'waiting_confirmation') && (
-          <p className="text-xs text-muted-foreground mt-4 text-center">
-            Click on pending or waiting confirmation transactions to view details
-          </p>
-        )}
-      </CardContent>
+          </tbody>
+        </table>
+      </div>
+
+      {localTransactions.some(isPending) && (
+        <p className="mt-4 text-xs text-site-text-faint">Klik transaksi yang menunggu untuk melihat detail.</p>
+      )}
 
       {currentPaymentSettings && (
         <TransactionDetailDialog
@@ -171,6 +139,6 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
           currentPaymentSettings={currentPaymentSettings}
         />
       )}
-    </Card>
+    </>
   );
 }

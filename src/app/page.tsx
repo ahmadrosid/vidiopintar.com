@@ -1,8 +1,9 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowUpRight01Icon, CheckIcon, FunctionIcon, GaugeIcon, ShieldCheckIcon, TerminalIcon } from "@hugeicons/core-free-icons";
 import type { Metadata } from "next";
 import { InstallTabs } from "@/components/home/install-tabs";
 import { KyotoDusk } from "@/components/home/kyoto-dusk";
 import Link from "next/link";
-import { ArrowUpRight, Check, Function as FunctionIcon, Gauge, ShieldCheck, TerminalWindow } from "@phosphor-icons/react/ssr";
 import { PageTitle, Row, SeeAlso, SitePage, Stat } from "@/components/site/site-page";
 import { SITE_URL } from "@/lib/geo/site";
 
@@ -34,39 +35,39 @@ export default function Page() {
   return (
     <SitePage backdrop={<KyotoDusk />}>
       <PageTitle>
-        <span className="text-[#e28fab]">vidiopintar</span> — transkrip YouTube untuk agen AI.
+        <span className="text-site-accent">vidiopintar</span> — transkrip YouTube untuk agen AI.
       </PageTitle>
 
       <div className="-mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
         <Link
           href="/dashboard"
-          className="inline-flex min-h-12 items-center gap-2 bg-[#e28fab] px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-[#f2b2c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab]"
+          className="inline-flex min-h-12 items-center gap-2 bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent"
         >
-          Buat API key <ArrowUpRight weight="bold" className="size-5" />
+          Buat API key <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-5" />
         </Link>
-        <Link href="/panduan" className="text-base text-[#c3c9d1] underline decoration-[#484a52] underline-offset-4 hover:text-white">
+        <Link href="/panduan" className="text-base text-site-text-2 underline decoration-site-line-strong underline-offset-4 hover:text-site-text">
           Panduan
         </Link>
       </div>
 
       <div className="mt-16 sm:mt-20 lg:mt-24 [&>section:first-child]:border-t-0">
-        <Row label="Pasang" icon={<TerminalWindow weight="duotone" />} wide>
+        <Row label="Pasang" icon={<HugeiconsIcon icon={TerminalIcon} />} wide>
           <InstallTabs />
         </Row>
 
-        <Row label="Alat" icon={<FunctionIcon weight="duotone" />}>
+        <Row label="Alat" icon={<HugeiconsIcon icon={FunctionIcon} />}>
           <p>
-            <span className="text-[#e8ebef]">youtube_get_transcript</span>
-            <span className="text-[#6f7782]">(video, language?, cursor?)</span>
+            <span className="text-site-text">youtube_get_transcript</span>
+            <span className="text-site-text-faint">(video, language?, cursor?)</span>
           </p>
-          <p className="text-[#8c95a1]">URL atau ID video. Mendukung watch, youtu.be, shorts, dan embed.</p>
-          <div className="mt-5! border border-[#2a2d34] bg-[#0b0c0f]">
-            <p className="border-b border-[#2a2d34] bg-[#16181c] px-4 py-2 text-xs text-[#8c95a1] sm:text-sm">respons</p>
-            <pre className="overflow-x-auto p-5 text-sm leading-7 text-[#e8ebef] sm:text-base">{response}</pre>
+          <p className="text-site-text-muted">URL atau ID video. Mendukung watch, youtu.be, shorts, dan embed.</p>
+          <div className="mt-5! border border-site-line bg-site-panel">
+            <p className="border-b border-site-line bg-site-header px-4 py-2 text-xs text-site-text-muted sm:text-sm">respons</p>
+            <pre className="overflow-x-auto p-5 text-sm leading-7 text-site-text sm:text-base">{response}</pre>
           </div>
         </Row>
 
-        <Row label="Batas" icon={<Gauge weight="duotone" />}>
+        <Row label="Batas" icon={<HugeiconsIcon icon={GaugeIcon} />}>
           <div className="grid grid-cols-3 gap-6">
             <Stat value="30" unit="permintaan / menit" />
             <Stat value="1.000" unit="permintaan / hari" />
@@ -74,11 +75,11 @@ export default function Page() {
           </div>
         </Row>
 
-        <Row label="Privasi" icon={<ShieldCheck weight="duotone" />}>
+        <Row label="Privasi" icon={<HugeiconsIcon icon={ShieldCheckIcon} />}>
           <ul className="space-y-2">
             {["Prompt dan percakapan agen tidak disimpan.", "API key disimpan sebagai hash."].map((item) => (
               <li key={item} className="flex items-start gap-3">
-                <Check weight="bold" className="mt-2 size-4 shrink-0 text-[#e28fab]" />
+                <HugeiconsIcon icon={CheckIcon} className="mt-2 size-4 shrink-0 text-site-accent" />
                 {item}
               </li>
             ))}

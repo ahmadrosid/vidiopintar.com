@@ -1,7 +1,8 @@
 "use client";
 
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckIcon, Copy01Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
-import { Check, Copy } from "@phosphor-icons/react";
 import {
   AntigravityIcon,
   ClaudeCodeIcon,
@@ -163,10 +164,10 @@ export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
               setActive(id);
               setCopied(false);
             }}
-            className={`inline-flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-2 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab] sm:text-base ${stacked ? "" : "md:w-full"} ${
+            className={`inline-flex min-h-12 cursor-pointer items-center gap-3 border px-4 py-2 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent sm:text-base ${stacked ? "" : "md:w-full"} ${
               id === active
-                ? "border-[#e28fab] bg-[#2d1f2a] text-[#e8ebef]"
-                : "border-[#2a2d34] text-[#8c95a1] hover:border-[#484a52] hover:text-[#e8ebef]"
+                ? "border-site-accent bg-site-accent-soft text-site-text"
+                : "border-site-line text-site-text-muted hover:border-site-line-strong hover:text-site-text"
             }`}
           >
             <Icon className="size-4 shrink-0" />
@@ -175,19 +176,19 @@ export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
         ))}
       </div>
 
-      <div role="tabpanel" className="flex min-w-0 flex-col border border-[#2a2d34] bg-[#0b0c0f]">
-        <div className="flex items-center justify-between gap-4 border-b border-[#2a2d34] bg-[#16181c] px-4 py-2">
-          <span className="truncate text-xs text-[#8c95a1] sm:text-sm">{client.where}</span>
+      <div role="tabpanel" className="flex min-w-0 flex-col border border-site-line bg-site-panel">
+        <div className="flex items-center justify-between gap-4 border-b border-site-line bg-site-header px-4 py-2">
+          <span className="truncate text-xs text-site-text-muted sm:text-sm">{client.where}</span>
           <button
             type="button"
             onClick={copy}
-            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-[#8c95a1] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab] sm:text-sm"
+            className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-site-text-muted hover:text-site-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent sm:text-sm"
           >
-            {copied ? <Check className="size-4 text-[#e28fab]" /> : <Copy className="size-4" />}
+            {copied ? <HugeiconsIcon icon={CheckIcon} className="size-4 text-site-accent" /> : <HugeiconsIcon icon={Copy01Icon} className="size-4" />}
             {copied ? "Tersalin" : "Salin"}
           </button>
         </div>
-        <pre className="flex-1 overflow-x-auto p-5 text-sm leading-7 text-[#e8ebef] sm:text-base">
+        <pre className="flex-1 overflow-x-auto p-5 text-sm leading-7 text-site-text sm:text-base">
           <code>{client.code}</code>
         </pre>
       </div>

@@ -42,6 +42,23 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-site-bg: var(--site-bg);
+  --color-site-deep: var(--site-deep);
+  --color-site-panel: var(--site-panel);
+  --color-site-header: var(--site-header);
+  --color-site-active: var(--site-active);
+  --color-site-line: var(--site-line);
+  --color-site-line-soft: var(--site-line-soft);
+  --color-site-line-strong: var(--site-line-strong);
+  --color-site-text: var(--site-text);
+  --color-site-text-2: var(--site-text-2);
+  --color-site-text-muted: var(--site-text-muted);
+  --color-site-text-faint: var(--site-text-faint);
+  --color-site-accent: var(--site-accent);
+  --color-site-accent-hover: var(--site-accent-hover);
+  --color-site-accent-fill: var(--site-accent-fill);
+  --color-site-accent-fill-hover: var(--site-accent-fill-hover);
+  --color-site-accent-soft: var(--site-accent-soft);
   --radius-xs: 6px;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -152,3 +169,46 @@
 .scrollbar-hidden > div::-webkit-scrollbar {
   display: none;
 }
+
+:root {
+  --site-bg: #f6f5f1;
+  --site-deep: #ecebe6;
+  --site-panel: #ffffff;
+  --site-header: #e9e7e1;
+  --site-active: #e1dfd8;
+  --site-line: #d6d2c8;
+  --site-line-soft: #e3e0d8;
+  --site-line-strong: #a9a497;
+  --site-text: #1c1e22;
+  --site-text-2: #3b3f47;
+  --site-text-muted: #5f6470;
+  --site-text-faint: #6b707a;
+  --site-accent: #a83f67;
+  --site-accent-hover: #8f2f55;
+  --site-accent-fill: #e28fab;
+  --site-accent-fill-hover: #efa0bd;
+  --site-accent-soft: #fbe6ee;
+  --site-bg-rgb: 246 245 241;
+}
+
+.dark {
+  --site-bg: #131518;
+  --site-deep: #0f1114;
+  --site-panel: #0b0c0f;
+  --site-header: #16181c;
+  --site-active: #1b1d22;
+  --site-line: #2a2d34;
+  --site-line-soft: #25272d;
+  --site-line-strong: #484a52;
+  --site-text: #e8ebef;
+  --site-text-2: #c3c9d1;
+  --site-text-muted: #8c95a1;
+  --site-text-faint: #6f7782;
+  --site-accent: #e28fab;
+  --site-accent-hover: #f2b2c4;
+  --site-accent-fill: #e28fab;
+  --site-accent-fill-hover: #f2b2c4;
+  --site-accent-soft: #2d1f2a;
+  --site-bg-rgb: 19 21 24;
+}
+

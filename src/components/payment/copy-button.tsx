@@ -1,8 +1,8 @@
 'use client';
 
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon, CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
 import { useState } from 'react';
-import { Copy, CheckCircle } from 'lucide-react';
-
 interface CopyButtonProps {
   text: string;
   fieldId: string;
@@ -25,11 +25,11 @@ export function CopyButton({ text, fieldId }: CopyButtonProps) {
     >
       {copiedField === fieldId ? (
         <>
-          <CheckCircle className="size-4" /> {"Disalin!"}
+          <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4" /> {"Disalin!"}
         </>
       ) : (
         <>
-          <Copy className="size-4" /> {"Salin"}
+          <HugeiconsIcon icon={Copy01Icon} className="size-4" /> {"Salin"}
         </>
       )}
     </button>

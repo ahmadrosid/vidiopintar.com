@@ -1,5 +1,6 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon, CheckmarkCircle02Icon, AlertCircleIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { CaretLeft, CaretRight, CheckCircle, WarningCircle } from "@phosphor-icons/react/ssr";
 import { getCurrentUser } from "@/lib/auth";
 import { getUserMcpLogs, LOG_PAGE_SIZE } from "@/lib/mcp/analytics";
 import { outcomeLabels } from "@/lib/mcp/outcomes";
@@ -29,8 +30,8 @@ function isOutcomeFilter(value: string | undefined): value is string {
   return value === "all" || value === "failed" || (value !== undefined && Object.hasOwn(outcomeLabels, value));
 }
 
-const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e28fab]";
-const filterItem = "cursor-pointer rounded-none text-[#c3c9d1] focus:bg-[#2d1f2a] focus:text-[#e8ebef]";
+const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
+const filterItem = "cursor-pointer rounded-none text-site-text-2 focus:bg-site-accent-soft focus:text-site-text";
 
 export default async function LogsPage({
   searchParams,
@@ -56,15 +57,15 @@ export default async function LogsPage({
 
       <form action="/dashboard/logs" className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="min-w-0 flex-1">
-          <label htmlFor="log-outcome" className="mb-2 block text-sm text-[#8c95a1]">Hasil</label>
+          <label htmlFor="log-outcome" className="mb-2 block text-sm text-site-text-muted">Hasil</label>
           <Select name="outcome" defaultValue={outcome}>
             <SelectTrigger
               id="log-outcome"
-              className={`min-h-12 w-full cursor-pointer rounded-none border-[#2a2d34] bg-[#0b0c0f] px-4 text-base text-[#e8ebef] ${focusRing}`}
+              className={`min-h-12 w-full cursor-pointer rounded-none border-site-line bg-site-panel px-4 text-base text-site-text ${focusRing}`}
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-none border-[#2a2d34] bg-[#16181c] text-[#e8ebef]">
+            <SelectContent className="rounded-none border-site-line bg-site-header text-site-text">
               <SelectItem value="all" className={filterItem}>Semua</SelectItem>
               <SelectItem value="success" className={filterItem}>Berhasil</SelectItem>
               <SelectItem value="failed" className={filterItem}>Semua error</SelectItem>
@@ -78,22 +79,22 @@ export default async function LogsPage({
         </div>
         <button
           type="submit"
-          className={`inline-flex min-h-12 cursor-pointer items-center justify-center bg-[#e28fab] px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-[#f2b2c4] ${focusRing}`}
+          className={`inline-flex min-h-12 cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover ${focusRing}`}
         >
           Terapkan
         </button>
       </form>
 
-      <p className="mb-4 text-sm text-[#8c95a1] tabular-nums">
+      <p className="mb-4 text-sm text-site-text-muted tabular-nums">
         {numberFormat.format(total)} permintaan · halaman {numberFormat.format(page + 1)} dari {numberFormat.format(totalPages)}
       </p>
 
       {rows.length === 0 ? (
-        <p className="text-[#6f7782]">Belum ada log untuk filter ini.</p>
+        <p className="text-site-text-faint">Belum ada log untuk filter ini.</p>
       ) : (
-        <div className="overflow-x-auto border border-[#2a2d34]">
+        <div className="overflow-x-auto border border-site-line">
           <table className="w-full text-left text-sm">
-            <thead className="bg-[#16181c] text-[#8c95a1]">
+            <thead className="bg-site-header text-site-text-muted">
               <tr>
                 <th className="px-4 py-2.5 font-normal">Waktu</th>
                 <th className="px-4 py-2.5 font-normal">Status</th>
@@ -105,16 +106,16 @@ export default async function LogsPage({
             <tbody>
               {rows.map((row) => {
                 const ok = row.outcome === "success";
-                const Icon = ok ? CheckCircle : WarningCircle;
+                const Icon = ok ? CheckmarkCircle02Icon : AlertCircleIcon;
                 return (
-                  <tr key={row.id} className="border-t border-[#2a2d34]">
-                    <td className="whitespace-nowrap px-4 py-2.5 text-[#8c95a1] tabular-nums">{timeLabel.format(row.createdAt)}</td>
+                  <tr key={row.id} className="border-t border-site-line">
+                    <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{timeLabel.format(row.createdAt)}</td>
                     <td className="whitespace-nowrap px-4 py-2.5">
-                      <span className="inline-flex items-center gap-2 text-[#e8ebef]">
-                        <Icon weight="fill" className="size-4 shrink-0" style={{ color: ok ? SUCCESS : FAILED }} />
+                      <span className="inline-flex items-center gap-2 text-site-text">
+                        <HugeiconsIcon icon={Icon} className="size-4 shrink-0" style={{ color: ok ? SUCCESS : FAILED }} />
                         {outcomeLabels[row.outcome] ?? row.outcome}
                       </span>
-                      {!ok && <span className="block text-xs text-[#6f7782]">{row.outcome}</span>}
+                      {!ok && <span className="block text-xs text-site-text-faint">{row.outcome}</span>}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2.5">
                       {row.videoId ? (
@@ -122,16 +123,16 @@ export default async function LogsPage({
                           href={`https://www.youtube.com/watch?v=${row.videoId}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-[#c3c9d1] underline decoration-[#484a52] underline-offset-4 hover:text-white"
+                          className="text-site-text-2 underline decoration-site-line-strong underline-offset-4 hover:text-site-text"
                         >
                           {row.videoId}
                         </a>
                       ) : (
-                        <span className="text-[#6f7782]">–</span>
+                        <span className="text-site-text-faint">–</span>
                       )}
                     </td>
-                    <td className="max-w-40 truncate px-4 py-2.5 text-[#8c95a1]">{row.keyName}</td>
-                    <td className="whitespace-nowrap px-4 py-2.5 text-right text-[#8c95a1] tabular-nums">{formatDuration(row.durationMs)}</td>
+                    <td className="max-w-40 truncate px-4 py-2.5 text-site-text-muted">{row.keyName}</td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-right text-site-text-muted tabular-nums">{formatDuration(row.durationMs)}</td>
                   </tr>
                 );
               })}
@@ -145,9 +146,9 @@ export default async function LogsPage({
           {page > 0 ? (
             <Link
               href={pageHref(page - 1)}
-              className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 text-[#8c95a1] hover:text-white ${focusRing}`}
+              className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 text-site-text-muted hover:text-site-text ${focusRing}`}
             >
-              <CaretLeft className="size-4" /> Sebelumnya
+              <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" /> Sebelumnya
             </Link>
           ) : (
             <span />
@@ -155,9 +156,9 @@ export default async function LogsPage({
           {page + 1 < totalPages ? (
             <Link
               href={pageHref(page + 1)}
-              className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 text-[#8c95a1] hover:text-white ${focusRing}`}
+              className={`inline-flex min-h-11 cursor-pointer items-center gap-1.5 text-site-text-muted hover:text-site-text ${focusRing}`}
             >
-              Berikutnya <CaretRight className="size-4" />
+              Berikutnya <HugeiconsIcon icon={ArrowRight01Icon} className="size-4" />
             </Link>
           ) : (
             <span />
