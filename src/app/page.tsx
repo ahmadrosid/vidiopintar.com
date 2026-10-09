@@ -80,7 +80,8 @@ export default function Page() {
             {[
               "Prompt dan percakapan agen tidak disimpan.",
               "API key disimpan sebagai hash.",
-              "Riwayat permintaan di dashboard disimpan selama 90 hari.",
+              "Riwayat permintaan di dashboard (ID video, hasil, durasi) disimpan selama 90 hari.",
+              "Transkrip disimpan di cache selama tujuh hari.",
             ].map((item) => (
               <li key={item} className="flex items-start gap-3">
                 <HugeiconsIcon icon={CheckIcon} className="mt-2 size-4 shrink-0 text-site-accent" />
