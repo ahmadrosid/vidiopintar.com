@@ -9,24 +9,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CopyButton } from "@/components/payment/copy-button";
+import { CopyButton } from "@/components/ui/copy-button";
 import { formatDisplayDateTime } from "@/lib/utils";
 import { transactionStatusLabel } from "@/lib/transaction-status-labels";
-import { planTypeLabel } from "@/lib/plan-labels";
 
 const planNames = new Map<string, string>([
-  ["monthly", "Paket bulanan"],
-  ["yearly", "Paket tahunan"],
+  ["monthly", "Paket Bulanan"],
+  ["yearly", "Paket Tahunan"],
 ]);
 
-function getStatusClass(status: string) {
-  return status === "pending" || status === "waiting_confirmation"
-    ? "border-site-accent text-site-accent"
-    : "border-site-line text-site-text-muted";
-}
-
 function formatAmount(amount: number, currency: string) {
-  return `${currency} ${amount.toLocaleString("en-US")}`;
+  return `${currency} ${amount.toLocaleString("id-ID")}`;
 }
 
 function formatDate(date: Date) {
@@ -65,6 +58,20 @@ interface TransactionDetailDialogProps {
 
 const ctaClass =
   "inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:cursor-not-allowed disabled:opacity-50";
+
+function DetailRow({ label, value, copyValue }: { label: string; value: string; copyValue?: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 border-t border-site-line-soft py-4">
+      <div className="min-w-0">
+        <p className="text-xs text-site-text-muted">{label}</p>
+        <p className="truncate font-mono text-site-text">{value}</p>
+      </div>
+      {copyValue && (
+        <CopyButton content={copyValue} copyMessage={"Disalin!"} label="Salin" className="text-site-text-muted" />
+      )}
+    </div>
+  );
+}
 
 export function TransactionDetailDialog({
   transaction,
@@ -133,48 +140,28 @@ export function TransactionDetailDialog({
   };
 
   const planName = planNames.get(currentTransaction.planType) ?? currentTransaction.planType;
+  const amountLabel = formatAmount(currentTransaction.amount, currentTransaction.currency);
 
-  const whatsappMessage = `Halo, saya sudah melakukan transfer untuk ${planName} sebesar ${formatAmount(currentTransaction.amount, currentTransaction.currency)}.\n\nReferensi Transaksi: ${currentTransaction.transactionReference}\n\nMohon konfirmasi pembayaran saya.`;
+  const whatsappMessage = `Halo, saya sudah melakukan transfer untuk ${planName} sebesar ${amountLabel}.\n\nReferensi Transaksi: ${currentTransaction.transactionReference}\n\nMohon konfirmasi pembayaran saya.`;
   const whatsappUrl = `https://wa.me/${bankDetails.whatsappPhone}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md rounded-none border-site-line bg-site-panel font-mono text-site-text">
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl font-extrabold tracking-tight text-site-text">Detail transaksi</DialogTitle>
+          <DialogTitle className="font-display text-2xl font-extrabold tracking-tight text-site-text">Selesaikan transaksi</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-site-text-muted">Paket</span>
-              <span className="capitalize text-site-text">{planTypeLabel(currentTransaction.planType)}</span>
-            </div>
-
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-site-text-muted">Jumlah</span>
-              <span className="text-site-text">{formatAmount(currentTransaction.amount, currentTransaction.currency)}</span>
-            </div>
-
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-site-text-muted">Status</span>
-              <span className={`border px-2 py-0.5 text-xs ${getStatusClass(currentTransaction.status)}`}>
-                {transactionStatusLabel(currentTransaction.status)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-site-text-muted">Dibuat</span>
-              <span className="text-site-text-2">{formatDate(currentTransaction.createdAt)}</span>
-            </div>
-
-            {currentTransaction.expiresAt && currentTransaction.status === 'pending' && (
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-site-text-muted">Berakhir</span>
-                <span className="text-site-text-2">{formatDate(currentTransaction.expiresAt)}</span>
-              </div>
-            )}
+          <div className="flex items-baseline justify-between gap-4">
+            <p className="text-sm text-site-text-muted">{planName}</p>
+            <p className="font-display text-3xl font-extrabold tracking-tight text-site-text">{amountLabel}</p>
           </div>
+
+          <p className="text-sm text-site-text-muted">
+            {transactionStatusLabel(currentTransaction.status)} · Dibuat {formatDate(currentTransaction.createdAt)}
+            {currentTransaction.expiresAt && currentTransaction.status === 'pending' && ` · Berakhir ${formatDate(currentTransaction.expiresAt)}`}
+          </p>
 
           {currentTransaction.status === 'waiting_confirmation' && (
             <div className="flex items-start gap-3 border border-site-line bg-site-header p-4 text-sm">
@@ -190,44 +177,17 @@ export function TransactionDetailDialog({
 
           {currentTransaction.status === 'pending' && (
             <>
-              <div className="space-y-4 border-t border-site-line pt-4 text-sm">
-                <h3 className="font-display text-lg font-bold text-site-text">Informasi pembayaran</h3>
-                <div>
-                  <p className="mb-1 text-xs text-site-text-muted">Nama bank</p>
-                  <p className="text-site-text">{bankDetails.bankName}</p>
-                </div>
-
-                <div>
-                  <p className="mb-1 text-xs text-site-text-muted">Nama rekening</p>
-                  <p className="text-site-text">{bankDetails.accountName}</p>
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="mb-1 text-xs text-site-text-muted">Nomor rekening</p>
-                    <p className="text-site-text">{bankDetails.accountNumber}</p>
-                  </div>
-                  <CopyButton text={bankDetails.accountNumber} fieldId="account" />
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="mb-1 text-xs text-site-text-muted">Jumlah transfer</p>
-                    <p className="text-site-text">{formatAmount(currentTransaction.amount, currentTransaction.currency)}</p>
-                  </div>
-                  <CopyButton text={currentTransaction.amount.toString()} fieldId="amount" />
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="mb-1 text-xs text-site-text-muted">Referensi</p>
-                    <p className="text-site-text">{currentTransaction.transactionReference}</p>
-                  </div>
-                  <CopyButton text={currentTransaction.transactionReference} fieldId="reference" />
-                </div>
+              <div>
+                <DetailRow label="Bank" value={`${bankDetails.bankName} · ${bankDetails.accountName}`} />
+                <DetailRow label="Rekening" value={bankDetails.accountNumber} copyValue={bankDetails.accountNumber} />
+                <DetailRow label="Referensi" value={currentTransaction.transactionReference} copyValue={currentTransaction.transactionReference} />
               </div>
 
-              <div className="border-t border-site-line pt-4">
+              <p className="text-sm text-site-text-2">
+                Transfer tepat {amountLabel} dan tulis kode referensi di berita transfer.
+              </p>
+
+              <div className="space-y-3">
                 <a
                   href={whatsappUrl}
                   target="_blank"
@@ -236,9 +196,9 @@ export function TransactionDetailDialog({
                   aria-disabled={isUpdating}
                   className={ctaClass}
                 >
-                  {isUpdating ? "Memperbarui..." : "Konfirmasi pembayaran lewat WhatsApp"}
+                  {isUpdating ? "Memperbarui..." : "Saya sudah transfer"}
                 </a>
-                <p className="mt-2 text-center text-xs text-site-text-faint">Kirim konfirmasi setelah transfer</p>
+                <p className="text-center text-xs text-site-text-muted">Kami verifikasi dan aktifkan langganan dalam 24 jam.</p>
               </div>
             </>
           )}
