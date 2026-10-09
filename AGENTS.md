@@ -8,6 +8,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Git workflow
+
+- Commit and push directly to `main`. Do not create feature branches unless the user asks for one.
+
 ## Before pushing
 
 - Pass `npm run lint`, `npm run knip`, and `npx tsc --noEmit -p .`.
