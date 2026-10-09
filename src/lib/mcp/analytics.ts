@@ -21,6 +21,8 @@ type HistoryRow = {
   durationMs: number;
 };
 
+export const DASHBOARD_HISTORY_LIMIT = 25;
+
 export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange, status: HistoryStatus) {
   const today = Math.floor(Date.now() / dayMs) * dayMs;
   const start = today - (range - 1) * dayMs;
@@ -66,7 +68,7 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
         ),
       )
       .orderBy(desc(mcpRequestMetrics.createdAt))
-      .limit(50),
+      .limit(DASHBOARD_HISTORY_LIMIT),
   ]);
 
   const outcomes = new Map(outcomesByDay.map((row) => [Number(row.day), row]));

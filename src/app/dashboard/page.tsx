@@ -3,7 +3,7 @@ import { ArrowUpRight01Icon, CheckmarkCircle02Icon, HistoryIcon, GaugeIcon, User
 import Link from "next/link";
 import { Row, Stat } from "@/components/site/site-page";
 import { getCurrentUser } from "@/lib/auth";
-import { ANALYTICS_RANGES, getUserMcpAnalytics, type AnalyticsRange, type HistoryStatus } from "@/lib/mcp/analytics";
+import { ANALYTICS_RANGES, DASHBOARD_HISTORY_LIMIT, getUserMcpAnalytics, type AnalyticsRange, type HistoryStatus } from "@/lib/mcp/analytics";
 import { outcomeLabel } from "@/lib/mcp/outcomes";
 import { ColumnChart, type ChartSeries } from "./column-chart";
 import { DashboardTitle } from "./dashboard-sidebar";
@@ -165,7 +165,7 @@ export default async function DashboardPage({
               </table>
             </div>
           )}
-          {history.length === 50 && <p className="text-sm text-site-text-faint">50 permintaan terbaru</p>}
+          {history.length === DASHBOARD_HISTORY_LIMIT && <p className="text-sm text-site-text-faint">{DASHBOARD_HISTORY_LIMIT} permintaan terbaru</p>}
         </Row>
 
         <Row label="Akun" icon={<HugeiconsIcon icon={UserCircleIcon} />}>
