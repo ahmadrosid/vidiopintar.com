@@ -165,7 +165,8 @@ export default function PanduanPage() {
 
           <Section id="privasi" title="Privasi">
             <p>
-              Layanan hanya menyimpan hash API key. Hash dihapus saat key dicabut. MCP menerima video, bahasa, dan cursor.
+              Layanan menyimpan hash API key, prefix, nama key, dan jumlah penggunaan. Riwayat permintaan di dashboard
+              disimpan selama 90 hari. Hash key dihapus saat key dicabut. MCP menerima video, bahasa, dan cursor.
               Layanan tidak menyimpan prompt atau percakapan agen. Detail lengkap ada di{" "}
               <Link className={linkClass} href="/privacy">kebijakan privasi</Link>.
             </p>
