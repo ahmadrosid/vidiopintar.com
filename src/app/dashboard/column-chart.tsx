@@ -106,7 +106,7 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
           >
             {ticks.map((tick) => (
               <g key={tick}>
-                <line x1={PAD.left} x2={chartWidth - PAD.right} y1={y(tick)} y2={y(tick)} stroke="#25272d" strokeWidth={1} />
+                <line x1={PAD.left} x2={chartWidth - PAD.right} y1={y(tick)} y2={y(tick)} className="stroke-site-line" strokeWidth={1} />
                 <text x={PAD.left - 8} y={y(tick)} dy="0.32em" textAnchor="end" className="fill-site-text-faint text-[11px] tabular-nums">
                   {format(tick)}
                 </text>

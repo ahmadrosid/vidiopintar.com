@@ -54,6 +54,10 @@ function formatDate(date: Date) {
   return formatDisplayDateTime(date);
 }
 
+// Day only, e.g. "9 Okt 2026", so the column stays short.
+const formatDay = (date: Date | string | number) =>
+  new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" });
+
 export function TransactionHistory({ transactions, currentPaymentSettings }: TransactionHistoryProps) {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -116,7 +120,7 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
                     {statusLabels[transaction.status] ?? transaction.status}
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{formatDate(transaction.createdAt)}</td>
+                <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{formatDay(transaction.createdAt)}</td>
                 <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">
                   {transaction.confirmedAt ? formatDate(transaction.confirmedAt) : "–"}
                 </td>

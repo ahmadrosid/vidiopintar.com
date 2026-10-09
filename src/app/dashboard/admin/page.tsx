@@ -1,9 +1,9 @@
 import { requireAdmin } from "@/lib/auth-admin";
 import { transactionsRepository } from "@/lib/db/repository/transactions";
-import { formatDisplayDateTime } from "@/lib/utils";
 import { Stat } from "@/components/site/site-page";
 import { DashboardTitle } from "../dashboard-sidebar";
-import { cancelTransactionAction, confirmTransactionAction } from "./actions";
+import { cancelTransactionAction } from "./actions";
+import { ConfirmTransactionButton } from "./confirm-transaction-button";
 
 export const metadata = {
   title: "Admin",
@@ -19,6 +19,10 @@ const statusLabels: Record<string, string> = {
 };
 
 const openStatuses = ["pending", "waiting_confirmation"];
+
+// Day only, e.g. "9 Okt 2026", so the column stays short.
+const formatDay = (date: Date | string | number) =>
+  new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" });
 
 const amountFormat = (amount: number, currency: string) => `${currency} ${amount.toLocaleString("en-US")}`;
 
@@ -78,17 +82,17 @@ export default async function AdminPage() {
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">
-                      {formatDisplayDateTime(transaction.createdAt ?? new Date(0))}
+                      {formatDay(transaction.createdAt ?? new Date(0))}
                     </td>
                     <td className="whitespace-nowrap px-4 py-2.5">
                       {isOpen ? (
                         <div className="flex gap-2">
-                          <form action={confirmTransactionAction}>
-                            <input type="hidden" name="id" value={transaction.id} />
-                            <button type="submit" className={`${buttonClass} bg-site-accent-fill text-[#0d0f12] hover:bg-site-accent-fill-hover`}>
-                              Konfirmasi
-                            </button>
-                          </form>
+                          <ConfirmTransactionButton
+                            transactionId={transaction.id}
+                            reference={transaction.transactionReference}
+                            amountLabel={amountFormat(transaction.amount, transaction.currency)}
+                            email={transaction.user?.email ?? "–"}
+                          />
                           <form action={cancelTransactionAction}>
                             <input type="hidden" name="id" value={transaction.id} />
                             <button type="submit" className={`${buttonClass} border border-site-line text-site-text-2 hover:border-site-line-strong`}>

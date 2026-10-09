@@ -2,7 +2,7 @@
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CheckIcon, Copy01Icon } from "@hugeicons/core-free-icons";
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { format } from "date-fns";
 import {
   AlertDialog,
@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { createKeyAction, revokeKeyAction, type CreateKeyState } from "./actions";
 
 interface ApiKeysManagerProps {
@@ -86,28 +87,54 @@ function RevokeButton({ id, name }: { id: string; name: string }) {
 
 export function ApiKeysManager({ keys }: ApiKeysManagerProps) {
   const [state, formAction, pending] = useActionState<CreateKeyState, FormData>(createKeyAction, { status: "idle" });
+  const [open, setOpen] = useState(false);
+
+  // Close the dialog once a key is created; errors keep it open so the user can fix the name.
+  useEffect(() => {
+    if (state.status === "created") setOpen(false);
+  }, [state]);
 
   return (
     <div className="space-y-5 pt-2">
-      <form action={formAction} className="flex flex-col gap-3 sm:flex-row">
-        <label htmlFor="key-name" className="sr-only">Nama key</label>
-        <input
-          id="key-name"
-          name="name"
-          required
-          maxLength={60}
-          placeholder="Nama key"
-          className={`min-h-12 w-full min-w-0 border border-site-line bg-site-panel px-4 text-base text-site-text placeholder:text-site-text-faint ${focusRing}`}
-        />
-        <button
-          type="submit"
-          disabled={pending}
-          className={`inline-flex min-h-12 shrink-0 cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:opacity-60 ${focusRing}`}
-        >
-          {pending ? "Membuat..." : "Buat key"}
-        </button>
-      </form>
-      {state.status === "error" && <p className="text-sm text-site-accent-hover">{state.message}</p>}
+      <div className="flex justify-end">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              className={`inline-flex min-h-12 cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover ${focusRing}`}
+            >
+              Buat key
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md rounded-none border-site-line bg-site-panel font-mono text-site-text">
+            <DialogHeader>
+              <DialogTitle className="font-display text-2xl font-extrabold tracking-tight text-site-text">Buat API key</DialogTitle>
+              <DialogDescription className="text-site-text-2">
+                Beri nama agar mudah dikenali. Key hanya ditampilkan sekali setelah dibuat.
+              </DialogDescription>
+            </DialogHeader>
+            <form action={formAction} className="flex flex-col gap-3">
+              <label htmlFor="key-name" className="text-sm text-site-text-muted">Nama key</label>
+              <input
+                id="key-name"
+                name="name"
+                required
+                maxLength={60}
+                placeholder="Contoh: Produksi"
+                className={`min-h-12 w-full min-w-0 border border-site-line bg-site-bg px-4 text-base text-site-text placeholder:text-site-text-faint ${focusRing}`}
+              />
+              {state.status === "error" && <p className="text-sm text-site-accent-hover">{state.message}</p>}
+              <button
+                type="submit"
+                disabled={pending}
+                className={`inline-flex min-h-12 w-full cursor-pointer items-center justify-center bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover disabled:opacity-60 ${focusRing}`}
+              >
+                {pending ? "Membuat..." : "Buat key"}
+              </button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
       {state.status === "created" && <NewKey token={state.token} name={state.name} />}
 
       {keys.length === 0 ? (

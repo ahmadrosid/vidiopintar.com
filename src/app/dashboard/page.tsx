@@ -1,12 +1,10 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon, HistoryIcon, GaugeIcon, Key01Icon, UserCircleIcon, AlertCircleIcon } from "@hugeicons/core-free-icons";
+import { ArrowUpRight01Icon, CheckmarkCircle02Icon, HistoryIcon, GaugeIcon, UserCircleIcon, AlertCircleIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { Row, Stat } from "@/components/site/site-page";
 import { getCurrentUser } from "@/lib/auth";
 import { ANALYTICS_RANGES, getUserMcpAnalytics, type AnalyticsRange, type HistoryStatus } from "@/lib/mcp/analytics";
-import { listUserMcpKeys, MAX_ACTIVE_KEYS_PER_USER } from "@/lib/mcp/keys";
 import { outcomeLabels } from "@/lib/mcp/outcomes";
-import { ApiKeysManager } from "./api-keys-manager";
 import { ColumnChart, type ChartSeries } from "./column-chart";
 import { DashboardTitle } from "./dashboard-sidebar";
 import { DeleteAccount } from "./delete-account";
@@ -57,10 +55,7 @@ export default async function DashboardPage({
     `/dashboard?${new URLSearchParams({ range: String(next.range ?? range), status: next.status ?? status })}`;
 
   const user = await getCurrentUser();
-  const [keys, { totals, daily, history }] = await Promise.all([
-    listUserMcpKeys(user.id),
-    getUserMcpAnalytics(user.id, range, status),
-  ]);
+  const { totals, daily, history } = await getUserMcpAnalytics(user.id, range, status);
   const successRate = totals.requests ? Math.round((totals.success / totals.requests) * 100) : null;
   const points = daily.map((point) => ({
     label: dayLabel.format(point.day),
@@ -71,13 +66,22 @@ export default async function DashboardPage({
     <>
       <DashboardTitle>Dashboard</DashboardTitle>
 
-      <nav aria-label="Rentang waktu" className="mb-2 flex flex-wrap gap-2">
-        {ANALYTICS_RANGES.map((value) => (
-          <Link key={value} href={href({ range: value })} aria-current={value === range ? "true" : undefined} className={chipClass(value === range)}>
-            {value} hari
-          </Link>
-        ))}
-      </nav>
+      <div className="mb-2 flex flex-wrap items-center gap-4">
+        <Link
+          href="/dashboard/api-keys"
+          className="inline-flex min-h-10 cursor-pointer items-center gap-2 bg-site-accent-fill px-5 font-display text-base font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent"
+        >
+          Buat API key
+          <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-4" />
+        </Link>
+        <nav aria-label="Rentang waktu" className="mb-2 flex flex-wrap gap-2">
+          {ANALYTICS_RANGES.map((value) => (
+            <Link key={value} href={href({ range: value })} aria-current={value === range ? "true" : undefined} className={chipClass(value === range)}>
+              {value} hari
+            </Link>
+          ))}
+        </nav>
+      </div>
 
       <div className="[&>section:first-child]:border-t-0">
         <Row label="Pemakaian" icon={<HugeiconsIcon icon={GaugeIcon} />} wide>
@@ -156,13 +160,6 @@ export default async function DashboardPage({
             </div>
           )}
           {history.length === 50 && <p className="text-sm text-site-text-faint">50 permintaan terbaru</p>}
-        </Row>
-
-        <Row label="API key" icon={<HugeiconsIcon icon={Key01Icon} />}>
-          <p className="text-sm text-site-text-faint">
-            {keys.length}/{MAX_ACTIVE_KEYS_PER_USER} aktif
-          </p>
-          <ApiKeysManager keys={keys} />
         </Row>
 
         <Row label="Akun" icon={<HugeiconsIcon icon={UserCircleIcon} />}>
