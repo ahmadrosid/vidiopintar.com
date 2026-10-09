@@ -121,7 +121,7 @@ export function TransactionDetailDialog({
             {currentTransaction.expiresAt && currentTransaction.status === 'pending' && ` · Berakhir ${formatDate(currentTransaction.expiresAt)}`}
           </p>
 
-          {currentTransaction.status === 'pending' && (
+          {(currentTransaction.status === 'pending' || currentTransaction.status === 'waiting_confirmation') && (
             <>
               <div>
                 <DetailRow label="Bank" value={`${bankDetails.bankName} · ${bankDetails.accountName}`} />
