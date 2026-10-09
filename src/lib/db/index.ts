@@ -38,11 +38,13 @@ function getDrizzle() {
   return global.drizzleDb;
 }
 
+// SAFETY: the proxy target is never read; every property access is forwarded to the drizzle instance.
 export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
-  get(_target, prop, receiver) {
+  get(_target, prop) {
     const instance = getDrizzle();
-    const value = Reflect.get(instance, prop, receiver);
+    // SAFETY: callers only read drizzle's own API, so prop names a key of the drizzle instance.
+    const value = instance[prop as keyof typeof instance];
 
-    return typeof value === "function" ? value.bind(instance) : value;
+    return value instanceof Function ? value.bind(instance) : value;
   },
 });
