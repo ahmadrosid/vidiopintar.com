@@ -56,19 +56,19 @@ export class TranscriptRetryableError extends Error {
 }
 
 function decodeHtmlEntities(text: string): string {
-  const named: Record<string, string> = {
-    "&amp;": "&",
-    "&lt;": "<",
-    "&gt;": ">",
-    "&quot;": '"',
-    "&apos;": "'",
-    "&#39;": "'",
-    "&nbsp;": " ",
-  };
+  const named = new Map<string, string>([
+    ["&amp;", "&"],
+    ["&lt;", "<"],
+    ["&gt;", ">"],
+    ["&quot;", '"'],
+    ["&apos;", "'"],
+    ["&#39;", "'"],
+    ["&nbsp;", " "],
+  ]);
 
   const once = (value: string) =>
     value
-      .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => named[match] ?? match)
+      .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (match) => named.get(match) ?? match)
       .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
       .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
 

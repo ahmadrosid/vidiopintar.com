@@ -104,11 +104,13 @@ function getExpectedAmount(planType: PlanType): number {
   return PLAN_CONFIGS[planType].amount;
 }
 
-export function validateAmountMatchesPlan(planType: PlanType, amount: number): {
+export interface AmountValidation {
   isValid: boolean;
   expectedAmount?: number;
   error?: string;
-} {
+}
+
+export function validateAmountMatchesPlan(planType: PlanType, amount: number): AmountValidation {
   const expectedAmount = getExpectedAmount(planType);
   
   if (amount !== expectedAmount) {
