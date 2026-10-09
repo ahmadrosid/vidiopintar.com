@@ -70,8 +70,8 @@ export default function Page() {
 
         <Row label="Batas" icon={<HugeiconsIcon icon={GaugeIcon} />}>
           <div className="grid grid-cols-2 gap-6">
-            <Stat value="30" unit="permintaan / menit" />
-            <Stat value="1.000" unit="permintaan / hari" />
+            <Stat value="1.000" unit="panggilan MCP / bulan" />
+            <Stat value="12.000" unit="panggilan MCP / tahun" />
           </div>
         </Row>
 
