@@ -9,7 +9,7 @@ import { SITE_URL } from "@/lib/geo/site";
 
 export const metadata: Metadata = {
   title: "Panduan MCP Vidiopintar",
-  description: "Panduan menghubungkan MCP transkrip YouTube Vidiopintar ke agen AI.",
+  description: "Panduan menghubungkan MCP transkrip YouTube Vidiopintar ke AI Agent.",
   alternates: { canonical: `${SITE_URL}/panduan` },
 };
 
@@ -88,7 +88,7 @@ export default function PanduanPage() {
           <header>
             <p className="text-sm text-site-accent">Panduan MCP</p>
             <h1 className="mt-4 text-balance font-display text-4xl font-extrabold leading-[1] tracking-tight text-site-text sm:text-6xl">
-              Hubungkan agen AI ke transkrip YouTube.
+              Hubungkan AI Agent ke transkrip YouTube.
             </h1>
             <p className="mt-6 text-site-text-muted">
               Vidiopintar menyediakan satu alat MCP, <Code>youtube_get_transcript</Code>, untuk mengambil transkrip video

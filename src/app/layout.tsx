@@ -30,7 +30,7 @@ const organizationSchema = {
   name: SITE_NAME,
   url: SITE_URL,
   logo: OG_IMAGE,
-  description: "Layanan MCP untuk mengambil transkrip YouTube bagi agen AI.",
+  description: "Layanan MCP untuk mengambil transkrip YouTube bagi AI Agent.",
   sameAs: [
     "https://github.com/ahmadrosid/vidiopintar.com",
     "https://twitter.com/ahmadrosid",
@@ -47,18 +47,18 @@ const websiteSchema = {
   "@type": "WebSite",
   name: SITE_NAME,
   url: SITE_URL,
-  description: "Layanan MCP untuk mengambil transkrip YouTube bagi agen AI.",
+  description: "Layanan MCP untuk mengambil transkrip YouTube bagi AI Agent.",
 };
 
 export const metadata: Metadata = {
   title: {
-    default: "Transkrip YouTube untuk Agen AI | Vidiopintar",
+    default: "Transkrip YouTube untuk AI Agent | Vidiopintar",
     template: "%s | Vidiopintar",
   },
   description:
     "Satu alat MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
   openGraph: {
-    title: "Transkrip YouTube untuk Agen AI | Vidiopintar",
+    title: "Transkrip YouTube untuk AI Agent | Vidiopintar",
     description:
       "Satu alat MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
     url: SITE_URL,
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Transkrip YouTube untuk Agen AI | Vidiopintar",
+    title: "Transkrip YouTube untuk AI Agent | Vidiopintar",
     description:
       "Satu alat MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
     images: [OG_IMAGE],
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
   keywords: [
     "YouTube transcript",
     "MCP transkrip YouTube",
-    "agen AI",
+    "AI Agent",
   ],
   authors: [{ name: SITE_NAME }],
   metadataBase: new URL(SITE_URL),

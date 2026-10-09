@@ -18,7 +18,7 @@ function links(): string {
 
 function homeMarkdown(): string {
   return [
-    pageHeader(SITE_NAME, "/", "MCP hosted untuk mengambil transkrip YouTube bagi agen AI."),
+    pageHeader(SITE_NAME, "/", "MCP hosted untuk mengambil transkrip YouTube bagi AI Agent."),
     "Vidiopintar menyediakan satu alat MCP, `youtube_get_transcript`. Alat ini mengembalikan segmen transkrip bertimestamp dan metadata video jika tersedia.",
     "",
     "## Mulai",
@@ -33,7 +33,7 @@ function homeMarkdown(): string {
 
 function mcpMarkdown(): string {
   return [
-    pageHeader("Panduan MCP Vidiopintar", "/panduan", "Hubungkan agen AI ke alat transkrip YouTube."),
+    pageHeader("Panduan MCP Vidiopintar", "/panduan", "Hubungkan AI Agent ke alat transkrip YouTube."),
     "Endpoint: `https://vidiopintar.com/api/mcp`",
     "",
     "Autentikasi memakai header `Authorization: Bearer <API_KEY>`. Masuk, lalu buat key di https://vidiopintar.com/dashboard. Key lengkap hanya tampil sekali, saat key dibuat.",
@@ -115,7 +115,7 @@ export function getMarkdownForPath(rawPath: string): string | null {
 export function buildLlmsTxt(): string {
   return `# ${SITE_NAME}
 
-> MCP hosted untuk mengambil transkrip YouTube bagi agen AI.
+> MCP hosted untuk mengambil transkrip YouTube bagi AI Agent.
 
 ## Layanan
 - Satu alat: \`youtube_get_transcript\`

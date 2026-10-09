@@ -8,12 +8,12 @@ import { PageTitle, Row, SeeAlso, SitePage, Stat } from "@/components/site/site-
 import { SITE_URL } from "@/lib/geo/site";
 
 export const metadata: Metadata = {
-  title: "Transkrip YouTube untuk Agen AI",
-  description: "MCP (Model Context Protocol) untuk memberi agen AI (AI agent) akses ke transkrip YouTube dengan penanda waktu.",
+  title: "Transkrip YouTube untuk AI Agent",
+  description: "MCP (Model Context Protocol) untuk memberi AI Agent akses ke transkrip YouTube dengan penanda waktu.",
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title: "Transkrip YouTube untuk Agen AI | Vidiopintar",
-    description: "MCP (Model Context Protocol) untuk memberi agen AI (AI agent) akses ke transkrip YouTube dengan penanda waktu.",
+    title: "Transkrip YouTube untuk AI Agent | Vidiopintar",
+    description: "MCP (Model Context Protocol) untuk memberi AI Agent akses ke transkrip YouTube dengan penanda waktu.",
     url: SITE_URL,
     siteName: "Vidiopintar",
     locale: "id_ID",
@@ -34,10 +34,8 @@ const response = `{
 export default function Page() {
   return (
     <SitePage backdrop={<KyotoDusk />}>
-      <PageTitle
-        meta="MCP (Model Context Protocol) untuk memberi agen AI (AI agent) akses ke transkrip YouTube dengan penanda waktu."
-      >
-        <span className="text-site-accent">vidiopintar</span> — transkrip YouTube untuk agen AI.
+      <PageTitle>
+        <span className="text-site-accent">vidiopintar</span> — transkrip YouTube untuk AI Agent.
       </PageTitle>
 
       <div className="-mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
@@ -54,6 +52,7 @@ export default function Page() {
 
       <div className="mt-16 sm:mt-20 lg:mt-24 [&>section:first-child]:border-t-0">
         <Row label="Pasang" icon={<HugeiconsIcon icon={TerminalIcon} />} wide>
+          <p className="text-site-text-2">MCP (Model Context Protocol) untuk memberi AI Agent akses ke transkrip YouTube dengan penanda waktu.</p>
           <InstallTabs />
         </Row>
 
