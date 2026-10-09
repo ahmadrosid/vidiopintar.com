@@ -21,7 +21,6 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
 
-    // Users can only view their own transactions
     if (transaction.userId !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -56,7 +55,6 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
     }
 
-    // Users can only cancel their own pending transactions
     if (transaction.userId !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -65,12 +63,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Transaction cannot be modified' }, { status: 400 });
     }
 
-    // Users can cancel or mark as waiting confirmation, but cannot directly confirm
     if (status === 'confirmed') {
       return NextResponse.json({ error: 'Users cannot confirm transactions' }, { status: 403 });
     }
 
-    // Users can only set waiting_confirmation from pending status
     if (status === 'waiting_confirmation' && transaction.status !== 'pending') {
       return NextResponse.json({ error: 'Can only mark pending transactions as waiting confirmation' }, { status: 400 });
     }

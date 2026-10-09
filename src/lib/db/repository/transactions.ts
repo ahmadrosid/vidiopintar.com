@@ -9,7 +9,7 @@ class TransactionsRepository {
       .insert(transactions)
       .values({
         ...data,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       })
       .returning();
     

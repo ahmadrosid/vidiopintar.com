@@ -1,4 +1,3 @@
-// Brand marks from @lobehub/icons-static-svg (MIT); the pi mark is pi.dev's own favicon.
 import type { SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;

@@ -30,7 +30,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = createTransactionSchema.parse(body);
     
-    // Validate amount matches plan pricing
     const amountValidation = validateAmountMatchesPlan(validatedData.planType, validatedData.amount);
 
     if (!amountValidation.isValid) {
@@ -49,10 +48,9 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    // Check for recent transactions (rate limiting)
     const recentTransactions = await transactionsRepository.getRecentTransactionsByUserId(
       user.id, 
-      24 * 60 * 60 * 1000 // 24 hours in milliseconds
+      24 * 60 * 60 * 1000
     );
     
     if (recentTransactions.length >= PAYMENT_LIMITS.MAX_TRANSACTIONS_PER_USER_PER_DAY) {
@@ -134,7 +132,7 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100); // Cap at 100
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
 
     const transactions = await transactionsRepository.getByUserId(user.id, limit);
     

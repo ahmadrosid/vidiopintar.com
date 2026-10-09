@@ -1,4 +1,3 @@
-// Vendored from ESLint Stylistic; see UPSTREAM.md and LICENSE in this directory.
 import type { ESTree, Context as RuleContext, SourceCode, Token as SyntaxToken, Comment, CreateRule, Location } from '@oxlint/plugins'
 type ASTNode = ESTree.Node
 type Token = SyntaxToken | Comment
@@ -155,7 +154,6 @@ function isBlockLikeStatement(
   node: ASTNode,
   sourceCode: SourceCode,
 ): boolean {
-  // do-while with a block is a block-like statement.
   if (
     node.type === 'DoWhileStatement'
     && node.body.type === 'BlockStatement'
@@ -170,7 +168,6 @@ function isBlockLikeStatement(
   if (isIIFEStatement(node))
     return true
 
-  // Checks the last token is a closing brace of blocks.
   const lastToken = sourceCode.getLastToken(node, isNotSemicolonToken)
   const belongingNode
     = lastToken && isClosingBraceToken(lastToken)
@@ -346,7 +343,6 @@ function getReportLoc(node: ASTNode, sourceCode: SourceCode): Location {
  * @private
  */
 function verifyForAny(): void {
-  // Empty
 }
 
 /**
@@ -599,7 +595,6 @@ return {
     },
     fixable: 'whitespace',
     hasSuggestions: false,
-    // This is intentionally an array schema as you can pass 0..n config objects
     schema: {
       $defs: {
         paddingType: {
@@ -832,10 +827,8 @@ return {
         return
       }
 
-      // Save this node as the current previous statement.
       const prevNode = scopeInfo!.prevNode
 
-      // Verify.
       if (prevNode)
         pendingPairs.push({ prevNode, nextNode: node })
 

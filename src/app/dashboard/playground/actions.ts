@@ -17,7 +17,6 @@ const inputSchema = z.object({
   cursor: z.string().max(2048).optional(),
 });
 
-// Runs the same transcript pipeline as the MCP tool, for the signed-in user, without an API key.
 export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>): Promise<PlaygroundResult> {
   const user = await getCurrentUser();
   const parsed = inputSchema.safeParse(input);
@@ -31,7 +30,6 @@ export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>):
       video: parsed.data.video ?? "",
       language: parsed.data.language,
       cursor: parsed.data.cursor,
-      // Cursors are encrypted with this value, so each user's cursors only work for that user.
       token: `playground:${user.id}`,
     });
 

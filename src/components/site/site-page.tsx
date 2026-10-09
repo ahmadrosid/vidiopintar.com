@@ -12,7 +12,6 @@ export function SitePage({
 }: {
   children: React.ReactNode;
   backdrop?: React.ReactNode;
-  // Wider container for pages with a sidebar, like the docs.
   wide?: boolean;
 }) {
   return (
@@ -84,7 +83,6 @@ export function Row({
 }: {
   label: string;
   icon?: React.ReactNode;
-  // Stack the heading above full-width content instead of using the side label column.
   wide?: boolean;
   children: React.ReactNode;
 }) {

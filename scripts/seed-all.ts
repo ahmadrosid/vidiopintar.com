@@ -20,7 +20,6 @@ async function seedAll() {
   }
 }
 
-// Run if called directly
 if (require.main === module) {
   seedAll()
     .then(() => {

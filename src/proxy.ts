@@ -126,7 +126,6 @@ export const proxy = clerkMiddleware(
 
 export const config = {
   matcher: [
-    // Omit html? so /index.html.md is not treated as a static asset
     "/((?!_next|[^?]*\\.(?:css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
     "/__clerk/:path*",

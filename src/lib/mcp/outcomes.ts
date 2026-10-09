@@ -1,4 +1,3 @@
-// Human-readable labels for the outcome values stored on each MCP request.
 export const outcomeLabels = {
   success: "Berhasil",
   INVALID_VIDEO_REFERENCE: "Video tidak valid",

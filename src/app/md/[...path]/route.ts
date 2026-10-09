@@ -22,7 +22,6 @@ export async function GET(_request: Request, context: RouteContext) {
   const { path: segments = [] } = await context.params;
   const joined = segments.join("/");
 
-  // Support /index.html.md and /index.md for the homepage
   if (joined === "index.html" || joined === "index") {
     const body = getMarkdownForPath("/");
 

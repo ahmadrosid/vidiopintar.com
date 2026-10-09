@@ -25,7 +25,6 @@ async function cleanupExpiredMcpData(now: number) {
     await db.delete(mcpUsage).where(lt(mcpUsage.periodStart, now - 90 * dayMs));
     await db.delete(mcpApiKeys).where(lt(mcpApiKeys.revokedAt, new Date(now - 90 * dayMs)));
   } catch {
-    // Cleanup must not stop authenticated transcript requests.
   }
 }
 
@@ -195,7 +194,6 @@ async function recordRequestMetric(
       videoId,
     });
   } catch {
-    // Metrics must not stop transcript delivery.
   }
 }
 

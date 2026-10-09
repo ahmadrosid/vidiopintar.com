@@ -2,7 +2,6 @@ import { paymentSettingsRepository } from '../src/lib/db/repository/payment-sett
 
 async function seedPaymentSettings() {
   try {
-    // Check if settings already exist
     const existingSettings = await paymentSettingsRepository.getActive();
     
     if (existingSettings) {
@@ -10,7 +9,6 @@ async function seedPaymentSettings() {
       return;
     }
 
-    // Create default payment settings
     const defaultSettings = {
       bankName: 'BNI',
       bankAccountNumber: '1229085831',
@@ -26,7 +24,6 @@ async function seedPaymentSettings() {
   }
 }
 
-// Run if called directly
 if (require.main === module) {
   seedPaymentSettings()
     .then(() => {

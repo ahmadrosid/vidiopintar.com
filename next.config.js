@@ -1,4 +1,3 @@
-// Keep server action IDs stable across deploys/restarts when no explicit key is set.
 if (
   !process.env.NEXT_SERVER_ACTIONS_ENCRYPTION_KEY &&
   process.env.CLERK_SECRET_KEY
@@ -9,8 +8,6 @@ if (
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Required for Clerk + Server Actions when using a custom local host
-  // (https://vidiopintar.local) instead of localhost.
   allowedDevOrigins: ['vidiopintar.local', 'https://vidiopintar.local'],
   images: {
     remotePatterns: [
@@ -32,7 +29,6 @@ const nextConfig = {
       { source: '/faq', destination: '/panduan', permanent: true },
       { source: '/changelogs', destination: '/panduan', permanent: true },
       { source: '/rss.xml', destination: '/panduan', permanent: true },
-      // The video-learning app was removed; send old app URLs to the MCP dashboard.
       { source: '/profile/billing', destination: '/dashboard/billing', permanent: true },
       { source: '/:path(home|explore|library|notes|profile)/:rest*', destination: '/dashboard', permanent: true },
       { source: '/:path(watch|video|shared)/:rest*', destination: '/', permanent: true },

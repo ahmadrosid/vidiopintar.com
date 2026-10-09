@@ -1,4 +1,3 @@
-// Local replacements for the upstream helper imports. See UPSTREAM.md.
 import type { ESTree, SourceCode, Token as SyntaxToken, Comment, Location } from "@oxlint/plugins";
 
 type Token = SyntaxToken | Comment;

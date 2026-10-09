@@ -132,7 +132,6 @@ export async function getTranscriptPage(input: {
           eq(mcpTranscriptCache.language, response.language),
         ));
     } catch {
-      // The title is optional; transcript delivery must continue when oEmbed is unavailable.
     }
   }
 

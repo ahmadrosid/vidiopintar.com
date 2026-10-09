@@ -32,7 +32,6 @@ interface TransactionHistoryProps {
   currentPaymentSettings: PaymentSettings | null;
 }
 
-// Pending states get the accent so they stand out; everything else stays neutral.
 function getStatusClass(status: string) {
   return status === "pending" || status === "waiting_confirmation"
     ? "border-site-accent text-site-accent"
@@ -47,7 +46,6 @@ function formatDate(date: Date) {
   return formatDisplayDateTime(date);
 }
 
-// Day only, e.g. "9 Okt 2026", so the column stays short.
 const formatDay = (date: Date | string | number) =>
   new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" });
 

@@ -101,7 +101,6 @@ export function TransactionDetailDialog({
       onTransactionUpdate?.(updatedTransaction);
     } catch (error) {
       console.error('Error updating transaction:', error);
-      // TODO: Add error handling/toast notification
     } finally {
       setIsUpdating(false);
     }
@@ -115,7 +114,6 @@ export function TransactionDetailDialog({
 
   if (!currentTransaction) return null;
 
-  // Use stored bank details for transaction integrity, current WhatsApp number for an up-to-date contact
   let storedPaymentSettings: any = null;
 
   try {

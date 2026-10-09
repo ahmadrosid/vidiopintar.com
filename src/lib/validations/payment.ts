@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Plan configuration with pricing
 export const PLAN_CONFIGS = {
   monthly: {
     name: 'Monthly Plan',
@@ -40,14 +39,12 @@ export function getPaymentSettings() {
   };
 }
 
-// Global payment limits
 export const PAYMENT_LIMITS = {
-  MIN_AMOUNT: 1000, // IDR 1,000 minimum
-  MAX_AMOUNT: 10000000, // IDR 10,000,000 maximum
+  MIN_AMOUNT: 1000,
+  MAX_AMOUNT: 10000000,
   MAX_TRANSACTIONS_PER_USER_PER_DAY: 5,
 } as const;
 
-// Transaction creation schema
 export const createTransactionSchema = z.object({
   planType: z.enum(['monthly', 'yearly'], {
     message: 'Plan type must be either monthly or yearly',
@@ -68,7 +65,6 @@ export const createTransactionSchema = z.object({
 
 type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
 
-// Payment settings schema
 export const paymentSettingsSchema = z.object({
   bankName: z.string()
     .min(1, 'Bank name is required')
@@ -93,7 +89,6 @@ export const paymentSettingsSchema = z.object({
 
 type PaymentSettingsInput = z.infer<typeof paymentSettingsSchema>;
 
-// Update payment settings schema (allows partial updates)
 export const updatePaymentSettingsSchema = paymentSettingsSchema.partial().extend({
   id: z.uuid('Invalid payment settings ID'),
 });

@@ -20,13 +20,13 @@ const PLAN_LIMITS: Record<UserPlan, PlanLimits> = {
     unlimited: false,
   },
   monthly: {
-    videosPerDay: -1, // unlimited
-    messagesPerVideo: -1, // unlimited
+    videosPerDay: -1,
+    messagesPerVideo: -1,
     unlimited: true,
   },
   yearly: {
-    videosPerDay: -1, // unlimited
-    messagesPerVideo: -1, // unlimited
+    videosPerDay: -1,
+    messagesPerVideo: -1,
     unlimited: true,
   },
 };
@@ -36,26 +36,23 @@ export class UserPlanService {
    * Get user's current active plan
    */
   static async getCurrentPlan(userId: string): Promise<UserPlan> {
-    // Check for active subscription transactions
     const confirmedTransaction = await transactionsRepository.getRecentTransactionsByUserId(
       userId, 
-      365 * 24 * 60 * 60 * 1000 // 365 days in milliseconds to cover yearly plans
+      365 * 24 * 60 * 60 * 1000
     );
 
-    // Find the most recent confirmed transaction within subscription period
     const activeTransaction = confirmedTransaction.find(tx => {
       if (tx.status !== 'confirmed' || !tx.confirmedAt) return false;
       
       const confirmedDate = new Date(tx.confirmedAt);
       const now = new Date();
       
-      // Check if subscription is still active based on plan type
       if (tx.planType === 'monthly') {
-        const expiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+        const expiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
         return now <= expiry;
       } else if (tx.planType === 'yearly') {
-        const expiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000); // 365 days
+        const expiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000);
 
         return now <= expiry;
       }
@@ -171,26 +168,23 @@ export class UserPlanService {
       return { hasActive: false };
     }
 
-    // Get recent transactions to check for active subscriptions
     const recentTransactions = await transactionsRepository.getRecentTransactionsByUserId(
       userId, 
-      365 * 24 * 60 * 60 * 1000 // 1 year in milliseconds to cover yearly plans
+      365 * 24 * 60 * 60 * 1000
     );
 
-    // Find active subscription for the specific plan type
     const activeTransaction = recentTransactions.find(tx => {
       if (tx.status !== 'confirmed' || !tx.confirmedAt || tx.planType !== planType) return false;
       
       const confirmedDate = new Date(tx.confirmedAt);
       const now = new Date();
       
-      // Check if subscription is still active based on plan type
       if (tx.planType === 'monthly') {
-        const expiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
+        const expiry = new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
         return now <= expiry;
       } else if (tx.planType === 'yearly') {
-        const expiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000); // 365 days
+        const expiry = new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000);
 
         return now <= expiry;
       }

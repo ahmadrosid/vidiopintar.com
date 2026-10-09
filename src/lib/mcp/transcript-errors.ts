@@ -6,7 +6,6 @@ import {
 } from "youtube-transcript-plus";
 import { McpServiceError } from "./errors";
 
-// Maps any error from the transcript pipeline to the public error code shown to callers.
 export function toServiceError(error: Error): McpServiceError {
   if (error instanceof McpServiceError) return error;
 

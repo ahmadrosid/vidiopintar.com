@@ -89,7 +89,6 @@ export function ApiKeysManager({ keys }: ApiKeysManagerProps) {
   const [state, formAction, pending] = useActionState<CreateKeyState, FormData>(createKeyAction, { status: "idle" });
   const [open, setOpen] = useState(false);
 
-  // Close the dialog once a key is created; errors keep it open so the user can fix the name.
   useEffect(() => {
     if (state.status === "created") setOpen(false);
   }, [state]);

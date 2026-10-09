@@ -7,7 +7,6 @@ type TocItem = { id: string; title: string };
 export function DocsToc({ items }: { items: TocItem[] }) {
   const [active, setActive] = useState(items[0]?.id);
 
-  // Highlight the section whose heading most recently crossed the top third of the viewport.
   useEffect(() => {
     const headings = items
       .map((item) => document.getElementById(item.id))

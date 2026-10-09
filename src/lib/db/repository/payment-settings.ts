@@ -14,7 +14,6 @@ class PaymentSettingsRepository {
   }
 
   async create(data: Omit<NewPaymentSettings, 'id' | 'createdAt' | 'updatedAt'>): Promise<PaymentSettings> {
-    // Deactivate all existing settings first
     await db
       .update(paymentSettings)
       .set({ 
@@ -54,7 +53,6 @@ class PaymentSettingsRepository {
   }
 
   async setActive(id: string): Promise<PaymentSettings | null> {
-    // Deactivate all first
     await db
       .update(paymentSettings)
       .set({ 
@@ -62,7 +60,6 @@ class PaymentSettingsRepository {
         updatedAt: new Date()
       });
 
-    // Activate the selected one
     const result = await db
       .update(paymentSettings)
       .set({ 

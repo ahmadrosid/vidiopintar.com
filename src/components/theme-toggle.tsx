@@ -5,7 +5,6 @@ import { Moon01Icon, Sun01Icon } from "@hugeicons/core-free-icons";
 
 const STORAGE_KEY = "theme";
 
-// Flips the `dark` class on <html> and saves the choice; until the user picks, the OS setting applies.
 export function ThemeToggle({ label, className = "" }: { label?: string; className?: string }) {
   const toggle = () => {
     const next = !document.documentElement.classList.contains("dark");
@@ -14,7 +13,6 @@ export function ThemeToggle({ label, className = "" }: { label?: string; classNa
     try {
       localStorage.setItem(STORAGE_KEY, next ? "dark" : "light");
     } catch {
-      // Private windows can block storage; the theme still changes for this page view.
     }
   };
 

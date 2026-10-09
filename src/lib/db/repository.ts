@@ -12,22 +12,18 @@ import {
 } from "./schema/videos"
 
 
-// Types for users
 export type User = InferSelectModel<typeof user>
 
 type NewUser = InferInsertModel<typeof user>
 
-// Types for user_videos
 export type UserVideo = InferSelectModel<typeof userVideos>
 
 export type NewUserVideo = InferInsertModel<typeof userVideos>
 
-// Types for shared_videos
 type SharedVideo = InferSelectModel<typeof sharedVideos>
 
 type NewSharedVideo = InferInsertModel<typeof sharedVideos>
 
-// Infer types from Drizzle schema
 type Video = InferSelectModel<typeof videos>
 
 type NewVideo = InferInsertModel<typeof videos>

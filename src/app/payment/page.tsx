@@ -62,7 +62,6 @@ async function getPaymentContext(
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
     const { plan } = await searchParams
 
-    // Validate plan parameter
     const validPlan = plan && (plan === 'monthly' || plan === 'yearly') ? plan : 'monthly';
     const currentPlan = getPlanDetails(validPlan);
     const paymentSettings = getPaymentSettings();
@@ -83,7 +82,6 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
         .replace('{planName}', currentPlan.name)
         .replace('{planPrice}', currentPlan.price)
 
-    // Add transaction reference if available
     if (transaction?.transactionReference) {
         whatsappMessage += `\n\nReferensi Transaksi: ${transaction.transactionReference}`
     }

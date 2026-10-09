@@ -13,7 +13,6 @@ export const metadata = {
 
 const openStatuses = ["pending", "waiting_confirmation"];
 
-// Day only, e.g. "9 Okt 2026", so the column stays short.
 const formatDay = (date: Date | string | number) =>
   new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" });
 

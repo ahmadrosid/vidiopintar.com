@@ -6,7 +6,6 @@ import { transactionsRepository } from "@/lib/db/repository/transactions";
 
 const openStatuses = ["pending", "waiting_confirmation"];
 
-// Confirming a transaction is what activates the plan, so only admins can do it.
 export async function confirmTransactionAction(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("id") ?? "");

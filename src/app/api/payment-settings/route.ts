@@ -21,7 +21,6 @@ export async function GET() {
       return NextResponse.json(null);
     }
 
-    // Log successful fetch (but don't include sensitive data)
     paymentLogger.info('Payment settings fetched', {
       settingsId: settings.id,
       hasActiveSettings: true,

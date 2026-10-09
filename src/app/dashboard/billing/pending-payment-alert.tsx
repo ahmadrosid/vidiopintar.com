@@ -86,7 +86,6 @@ export function PendingPaymentAlert({ transactions, currentPaymentSettings }: Pe
     );
   };
 
-  // Show the most recent pending transaction prominently
   const latestTransaction = localTransactions[0];
 
   return (

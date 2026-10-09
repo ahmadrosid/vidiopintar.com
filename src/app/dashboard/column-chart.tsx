@@ -38,7 +38,6 @@ function niceMax(value: number) {
   return step * magnitude;
 }
 
-// A square-cornered column.
 function rect(x: number, y: number, width: number, height: number) {
   return `M${x},${y}H${x + width}V${y + height}H${x},Z`;
 }
@@ -46,7 +45,6 @@ function rect(x: number, y: number, width: number, height: number) {
 export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
   const format = formatters[unit];
   const wrapRef = useRef<HTMLDivElement>(null);
-  // Unknown until measured, so the server render never assumes a width that could overflow.
   const [width, setWidth] = useState<number | null>(null);
   const [active, setActive] = useState<number | null>(null);
 
@@ -63,7 +61,6 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
 
   const totals = points.map((point) => series.reduce((sum, item) => sum + (point.values[item.key] ?? 0), 0));
   const empty = totals.every((total) => total === 0);
-  // Counts get at least 0 / 1 / 2 so the middle tick is never a fraction of a request.
   const yMax = Math.max(niceMax(Math.max(...totals, 0)), unit === "count" ? 2 : 0);
   const chartWidth = width ?? 0;
   const plotW = chartWidth - PAD.left - PAD.right;
@@ -135,7 +132,6 @@ export function ColumnChart({ title, series, points, unit }: ColumnChartProps) {
                   {segments.map(({ item, value }, segmentIndex) => {
                     const bottom = y(base);
                     base += value;
-                    // Leave a 2px surface gap above every segment that has one stacked on it.
                     const top = y(base) + (segmentIndex < segments.length - 1 ? GAP : 0);
                     const height = Math.max(1, bottom - top);
                     const isTop = segmentIndex === segments.length - 1;

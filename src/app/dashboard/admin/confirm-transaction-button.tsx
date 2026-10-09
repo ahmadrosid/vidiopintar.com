@@ -14,7 +14,6 @@ interface ConfirmTransactionButtonProps {
 const buttonClass =
   "inline-flex min-h-10 cursor-pointer items-center justify-center px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
 
-// Confirming activates the user's plan, so ask once more before submitting.
 export function ConfirmTransactionButton({ transactionId, reference, amountLabel, email }: ConfirmTransactionButtonProps) {
   const [open, setOpen] = useState(false);
 

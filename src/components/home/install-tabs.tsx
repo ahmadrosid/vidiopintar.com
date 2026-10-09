@@ -130,7 +130,6 @@ pi mcp add vidiopintar --url ${endpoint} \\
   },
 ];
 
-// `stacked` puts the agent list above the snippet, for narrow columns like the docs.
 export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
   const [active, setActive] = useState(clients[0].id);
   const [copied, setCopied] = useState(false);

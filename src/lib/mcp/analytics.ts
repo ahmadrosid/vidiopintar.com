@@ -21,13 +21,11 @@ type HistoryRow = {
   durationMs: number;
 };
 
-// Days are UTC, matching the "day" quota window in authenticateMcpRequest.
 export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange, status: HistoryStatus) {
   const today = Math.floor(Date.now() / dayMs) * dayMs;
   const start = today - (range - 1) * dayMs;
   const ownKey = eq(mcpApiKeys.userId, userId);
   const inRange = gte(mcpRequestMetrics.createdAt, new Date(start));
-  // Inline the constant: a bound parameter can make SQLite divide as REAL and skip the floor.
   const dayExpr = sql<number>`(${mcpRequestMetrics.createdAt} / ${sql.raw(String(dayMs))}) * ${sql.raw(String(dayMs))}`;
 
   const [outcomesByDay, bytesByDay, history] = await Promise.all([
@@ -83,7 +81,6 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
   const success = daily.reduce((total, point) => total + point.success, 0);
   const failed = daily.reduce((total, point) => total + point.failed, 0);
 
-  // Median latency of successful calls, read as the middle row so we never load every duration.
   const [median] = success
     ? await db
         .select({ durationMs: mcpRequestMetrics.durationMs })
@@ -110,7 +107,6 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
 
 export const LOG_PAGE_SIZE = 50;
 
-// "all", "success", "failed" (any error), or one specific outcome code.
 export async function getUserMcpLogs(userId: string, outcome: string, page: number) {
   const ownKey = eq(mcpApiKeys.userId, userId);
 

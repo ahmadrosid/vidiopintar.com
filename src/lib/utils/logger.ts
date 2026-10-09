@@ -1,7 +1,6 @@
 import { headers } from 'next/headers';
 import { z } from 'zod';
 
-// Sensitive fields that should be redacted from logs
 const SENSITIVE_FIELDS = [
   'password',
   'token',
@@ -11,11 +10,10 @@ const SENSITIVE_FIELDS = [
   'bankAccountName',
   'whatsappPhoneNumber',
   'paymentSettings',
-  'email', // Partially redact emails
-  'ipAddress', // Partially redact IPs
+  'email',
+  'ipAddress',
 ];
 
-// Fields to completely exclude from logs
 const EXCLUDED_FIELDS = [
   'authorization',
   'cookie',
@@ -46,7 +44,7 @@ function redactTail(value: string) {
  * Sanitizes an object by redacting sensitive fields
  */
 function sanitizeObject(input: JsonValue, depth = 0): JsonValue {
-  if (depth > 5) return '[Max Depth Reached]'; // Prevent infinite recursion
+  if (depth > 5) return '[Max Depth Reached]';
 
   if (input === null || input === undefined) return input;
 
@@ -76,25 +74,20 @@ function sanitizeObject(input: JsonValue, depth = 0): JsonValue {
     const lowerKey = key.toLowerCase();
     const stringValue = asString(value);
 
-    // Exclude sensitive fields entirely
     if (EXCLUDED_FIELDS.some(field => lowerKey.includes(field))) {
       continue;
     }
 
-    // Redact sensitive fields
     if (SENSITIVE_FIELDS.some(field => lowerKey.includes(field))) {
       if (stringValue === undefined) {
         sanitized[key] = '[REDACTED]';
       } else if (lowerKey.includes('email')) {
-        // Partially redact email
         const [local, domain = ''] = stringValue.split('@');
         sanitized[key] = redactEmail(local, domain);
       } else if (lowerKey.includes('ip')) {
-        // Partially redact IP address
         const parts = stringValue.split('.');
         sanitized[key] = parts.length === 4 ? `${parts[0]}.${parts[1]}.***.***.` : '***';
       } else if (lowerKey.includes('bankaccount') || lowerKey.includes('phone')) {
-        // Redact bank account and phone numbers, keeping the last four characters
         sanitized[key] = redactTail(stringValue);
       } else {
         sanitized[key] = '[REDACTED]';
@@ -115,10 +108,9 @@ export async function getSanitizedRequestMetadata(request: Request) {
   
   return {
     method: request.method,
-    url: new URL(request.url).pathname, // Only path, no query params
+    url: new URL(request.url).pathname,
     userAgent: headersList.get('user-agent')?.substring(0, 200) || 'unknown',
     timestamp: new Date().toISOString(),
-    // Don't log full IP, just first two octets for geographic info
     ipHint: headersList.get('x-forwarded-for')?.split(',')[0]?.split('.').slice(0, 2).join('.') + '.***' || 'unknown',
   };
 }

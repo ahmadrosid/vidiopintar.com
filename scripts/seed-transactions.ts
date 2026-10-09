@@ -4,7 +4,6 @@ import { user } from '../src/lib/db/schema/auth';
 
 async function seedTransactions() {
   try {
-    // Check if transactions already exist
     const existingTransactions = await transactionsRepository.getAll(1);
     
     if (existingTransactions.length > 0) {
@@ -12,7 +11,6 @@ async function seedTransactions() {
       return;
     }
 
-    // Get existing users from database
     const users = await db.select().from(user).limit(5);
     
     if (users.length === 0) {
@@ -21,7 +19,6 @@ async function seedTransactions() {
     }
 
     const sampleTransactions = [
-      // Confirmed monthly transaction
       {
         userId: users[0].id,
         planType: 'monthly' as const,
@@ -29,10 +26,9 @@ async function seedTransactions() {
         currency: 'IDR',
         status: 'confirmed' as const,
         paymentMethod: 'bank_transfer',
-        confirmedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+        confirmedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       },
       
-      // Pending yearly transaction
       {
         userId: users[0].id,
         planType: 'yearly' as const,
@@ -42,7 +38,6 @@ async function seedTransactions() {
         paymentMethod: 'bank_transfer',
       },
       
-      // Confirmed yearly transaction for different user
       {
         userId: users[1]?.id || users[0].id,
         planType: 'yearly' as const,
@@ -50,10 +45,9 @@ async function seedTransactions() {
         currency: 'IDR',
         status: 'confirmed' as const,
         paymentMethod: 'bank_transfer',
-        confirmedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+        confirmedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
       },
       
-      // Cancelled transaction
       {
         userId: users[1]?.id || users[0].id,
         planType: 'monthly' as const,
@@ -63,7 +57,6 @@ async function seedTransactions() {
         paymentMethod: 'bank_transfer',
       },
       
-      // Another pending monthly transaction
       {
         userId: users[2]?.id || users[0].id,
         planType: 'monthly' as const,
@@ -73,7 +66,6 @@ async function seedTransactions() {
         paymentMethod: 'bank_transfer',
       },
 
-      // Expired transaction
       {
         userId: users[2]?.id || users[0].id,
         planType: 'monthly' as const,
@@ -87,7 +79,6 @@ async function seedTransactions() {
     console.log(`Creating ${sampleTransactions.length} sample transactions...`);
 
     for (const transactionData of sampleTransactions) {
-      // Generate unique reference for each transaction
       const transactionReference = await transactionsRepository.generateUniqueReference();
       
       const transaction = await transactionsRepository.create({
@@ -102,7 +93,6 @@ async function seedTransactions() {
         ipAddress: '127.0.0.1',
       });
 
-      // Update status and confirmed date if needed
       if (transactionData.status !== 'pending' && transactionData.confirmedAt) {
         await transactionsRepository.updateStatus(
           transaction.id, 
@@ -125,7 +115,6 @@ async function seedTransactions() {
   }
 }
 
-// Run if called directly
 if (require.main === module) {
   seedTransactions()
     .then(() => {
