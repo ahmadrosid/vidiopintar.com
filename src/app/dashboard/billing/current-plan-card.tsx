@@ -30,9 +30,7 @@ const planDetails = {
     period: "per bulan",
     features: [
       "1.000 panggilan MCP",
-      "Pemrosesan video tanpa batas",
-      "Wawasan bertenaga AI",
-      "Ringkasan instan",
+      "Transkrip video tanpa batas",
       "Dukungan email",
     ],
   },
@@ -42,9 +40,7 @@ const planDetails = {
     period: "per tahun",
     features: [
       "12.000 panggilan MCP",
-      "Pemrosesan video tanpa batas",
-      "Wawasan bertenaga AI",
-      "Ringkasan instan",
+      "Transkrip video tanpa batas",
       "Dukungan email",
       "Dukungan prioritas",
     ],
