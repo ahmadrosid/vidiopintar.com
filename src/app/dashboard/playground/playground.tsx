@@ -76,10 +76,10 @@ const jsonToken =
   /("(?:\\.|[^"\\])*")(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g;
 
 const jsonTokenClass = {
-  key: "text-[#8a3b5c]",
-  string: "text-[#2f6b4f]",
-  number: "text-[#9a6a1f]",
-  keyword: "text-[#3b5b9a]",
+  key: "text-[#8a3b5c] dark:text-[#e28fb0]",
+  string: "text-[#2f6b4f] dark:text-[#7fd1a6]",
+  number: "text-[#9a6a1f] dark:text-[#e5b25f]",
+  keyword: "text-[#3b5b9a] dark:text-[#8fb0ea]",
 } as const;
 
 function JsonView({ value }: { value: unknown }) {
@@ -119,7 +119,7 @@ function JsonView({ value }: { value: unknown }) {
 
 function StatBox({ value, label }: { value: string; label: string }) {
   return (
-    <div className="border border-site-line bg-white p-4">
+    <div className="border border-site-line bg-site-panel p-4">
       <p className="font-display text-2xl font-extrabold leading-none tracking-tight text-site-text">
         {value}
       </p>
@@ -292,7 +292,7 @@ export function Playground() {
       {state.status === "success" && stats && (
         <>
           <div className="flex flex-col gap-4 lg:flex-row">
-            <div className="flex flex-1 flex-col gap-5 border border-site-line bg-white p-5 sm:flex-row">
+            <div className="flex flex-1 flex-col gap-5 border border-site-line bg-site-panel p-5 sm:flex-row">
               {state.page.metadata?.thumbnail_url && (
                 <Image
                   src={state.page.metadata.thumbnail_url}
@@ -394,7 +394,7 @@ export function Playground() {
             </div>
 
             {showRaw ? (
-              <pre className="max-h-[32rem] overflow-auto bg-white p-5 text-sm leading-7 text-site-text-2">
+              <pre className="max-h-[32rem] overflow-auto bg-site-panel p-5 text-sm leading-7 text-site-text-2">
                 <JsonView value={state.page} />
               </pre>
             ) : visibleSegments.length === 0 ? (
