@@ -33,7 +33,6 @@
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tailwindcss/postcss": "^4.1.4",
     "ascii.rest": "github:bas3line/ascii",
-    "better-sqlite3": "^12.11.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -54,7 +53,6 @@
   "devDependencies": {
     "@oxlint/plugins": "1.87.0",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/bun": "^1.2.9",
     "@types/node": "^20",
     "@types/react": "19.3.0",
