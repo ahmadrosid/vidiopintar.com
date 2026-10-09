@@ -1,16 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
 import { and, eq, isNull, lt, sql } from "drizzle-orm";
-import {
-  YoutubeTranscriptDisabledError,
-  YoutubeTranscriptNotAvailableError,
-  YoutubeTranscriptTooManyRequestError,
-  YoutubeTranscriptVideoUnavailableError,
-} from "youtube-transcript-plus";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { mcpApiKeys, mcpRequestMetrics, mcpTranscriptCache, mcpUsage } from "@/lib/db/schema";
 import { McpServiceError } from "./errors";
+import { toServiceError } from "./transcript-errors";
 import { getTranscriptPage } from "./transcript";
 import { normalizeVideoReference } from "./video-reference";
 
@@ -126,16 +121,7 @@ const handler = createMcpHandler((requestContext) => {
           );
           return serviceErrorResult(error);
         }
-        const message = error instanceof Error ? error.message : "";
-        const mapped = error instanceof YoutubeTranscriptVideoUnavailableError
-          ? new McpServiceError("VIDEO_UNAVAILABLE")
-          : error instanceof YoutubeTranscriptDisabledError || error instanceof YoutubeTranscriptNotAvailableError
-            ? new McpServiceError("CAPTIONS_UNAVAILABLE")
-            : error instanceof YoutubeTranscriptTooManyRequestError || /temporar|rate.?limit/i.test(message)
-              ? new McpServiceError("TEMPORARY_PROVIDER_FAILURE", true, 30)
-              : /transcript|caption/i.test(message)
-                ? new McpServiceError("CAPTIONS_UNAVAILABLE")
-                : new McpServiceError("TEMPORARY_PROVIDER_FAILURE", true, 30);
+        const mapped = toServiceError(error);
         await recordRequestMetric(requestContext.authInfo?.clientId ?? "", startedAt, mapped.code, false, !cursor, requestVideoId(video));
         return serviceErrorResult(mapped);
       }

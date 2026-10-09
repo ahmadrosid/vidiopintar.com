@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
-import { BookOpen, CreditCard, Key, SignOut, UserCircle } from "@phosphor-icons/react";
+import { BookOpen, CreditCard, Key, Play, SignOut, UserCircle } from "@phosphor-icons/react";
 
 const links = [
   { href: "/dashboard", label: "Dashboard", Icon: Key },
+  { href: "/dashboard/playground", label: "Playground", Icon: Play },
   { href: "/dashboard/billing", label: "Tagihan", Icon: CreditCard },
   { href: "/panduan", label: "Panduan", Icon: BookOpen },
 ];

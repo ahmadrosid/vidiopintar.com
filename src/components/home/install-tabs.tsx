@@ -10,6 +10,7 @@ import {
   GrokIcon,
   HermesIcon,
   OpenAIIcon,
+  OpenClawIcon,
   PiIcon,
 } from "@/components/home/client-icons";
 
@@ -73,6 +74,24 @@ bearer_token_env_var = "VIDIOPINTAR_API_KEY"`,
     url: "${endpoint}"
     headers:
       Authorization: "Bearer <API_KEY>"`,
+  },
+  {
+    id: "openclaw",
+    label: "OpenClaw",
+    Icon: OpenClawIcon,
+    where: "~/.openclaw/openclaw.json",
+    code: `// export VIDIOPINTAR_API_KEY=<API_KEY>
+{
+  mcp: {
+    servers: {
+      vidiopintar: {
+        url: "${endpoint}",
+        transport: "streamable-http",
+        headers: { Authorization: "Bearer \${VIDIOPINTAR_API_KEY}" },
+      },
+    },
+  },
+}`,
   },
   {
     id: "openai",
