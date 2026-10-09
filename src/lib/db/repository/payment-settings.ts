@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '../index';
 import { paymentSettings, type PaymentSettings, type NewPaymentSettings } from '../schema/payment-settings';
 
-export class PaymentSettingsRepository {
+class PaymentSettingsRepository {
   async getActive(): Promise<PaymentSettings | null> {
     const result = await db
       .select()

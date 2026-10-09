@@ -9,7 +9,7 @@ export interface StoredTranscriptSegment {
   isChapterStart: boolean;
 }
 
-export function timeStringToSeconds(time: string): number {
+function timeStringToSeconds(time: string): number {
   const parts = time.split(":").map(Number);
 
   if (parts.length === 3) {

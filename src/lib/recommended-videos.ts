@@ -6,7 +6,7 @@ export type RecommendedVideo = {
   duration?: string;
 };
 
-export const RECOMMENDED_VIDEOS: RecommendedVideo[] = [
+const RECOMMENDED_VIDEOS: RecommendedVideo[] = [
   {
     youtubeId: "bSDprg24pEA",
     title: "How To Learn Any Skill So Fast It Feels Illegal",

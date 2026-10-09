@@ -1,1 +1,4 @@
-{}
+{
+  "entry": ["scripts/**/*.{ts,mjs}", "src/**/*.test.ts"],
+  "ignore": ["tools/oxlint/**"]
+}

@@ -50,7 +50,7 @@ const footerLinks = [
   { href: "mailto:support@vidiopintar.com", label: "Dukungan" },
 ];
 
-export function SiteFooter() {
+function SiteFooter() {
   return (
     <footer className="mt-24 border-t border-site-line-soft pt-8 text-sm text-site-text-muted">
       <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-3">

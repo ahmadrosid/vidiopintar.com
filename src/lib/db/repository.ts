@@ -17,7 +17,7 @@ export { TokenUsageRepository } from "./repository/token-usage"
 // Types for users
 export type User = InferSelectModel<typeof user>
 
-export type NewUser = InferInsertModel<typeof user>
+type NewUser = InferInsertModel<typeof user>
 
 // Types for user_videos
 export type UserVideo = InferSelectModel<typeof userVideos>
@@ -25,26 +25,26 @@ export type UserVideo = InferSelectModel<typeof userVideos>
 export type NewUserVideo = InferInsertModel<typeof userVideos>
 
 // Types for shared_videos
-export type SharedVideo = InferSelectModel<typeof sharedVideos>
+type SharedVideo = InferSelectModel<typeof sharedVideos>
 
-export type NewSharedVideo = InferInsertModel<typeof sharedVideos>
+type NewSharedVideo = InferInsertModel<typeof sharedVideos>
 
 // Infer types from Drizzle schema
 export type Video = InferSelectModel<typeof videos>
 
 export type NewVideo = InferInsertModel<typeof videos>
 
-export type Message = InferSelectModel<typeof messages>
+type Message = InferSelectModel<typeof messages>
 
-export type NewMessage = InferInsertModel<typeof messages>
+type NewMessage = InferInsertModel<typeof messages>
 
-export type Note = InferSelectModel<typeof notes>
+type Note = InferSelectModel<typeof notes>
 
-export type NewNote = InferInsertModel<typeof notes>
+type NewNote = InferInsertModel<typeof notes>
 
-export type Feedback = InferSelectModel<typeof feedback>
+type Feedback = InferSelectModel<typeof feedback>
 
-export type NewFeedback = InferInsertModel<typeof feedback>
+type NewFeedback = InferInsertModel<typeof feedback>
 
 const SEARCH_RESULT_LIMIT = 8
 
@@ -148,7 +148,7 @@ export const VideoRepository = {
   },
 }
 
-export const MessageRepository = {
+const MessageRepository = {
   async getByUserVideoId(userVideoId: number): Promise<Message[]> {
     return await db
       .select()
@@ -173,7 +173,7 @@ export const MessageRepository = {
   },
 }
 
-export const NoteRepository = {
+const NoteRepository = {
   async getByUserVideoId(userVideoId: number): Promise<Note[]> {
     return await db
       .select()
@@ -458,7 +458,7 @@ export const TranscriptCacheRepository = {
   },
 }
 
-export const SharedVideoRepository = {
+const SharedVideoRepository = {
   async create(sharedVideo: NewSharedVideo): Promise<SharedVideo> {
     const result = await db.insert(sharedVideos).values(sharedVideo).returning()
 
@@ -545,7 +545,7 @@ export const UserRepository = {
   },
 }
 
-export const FeedbackRepository = {
+const FeedbackRepository = {
   async create(feedbackData: NewFeedback): Promise<Feedback> {
     const result = await db.insert(feedback).values(feedbackData).returning()
 

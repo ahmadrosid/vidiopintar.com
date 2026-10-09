@@ -20,13 +20,13 @@ export const PLAN_CONFIGS = {
 
 export type PlanType = keyof typeof PLAN_CONFIGS;
 
-export const BANK_TRANSFER_DETAILS = {
+const BANK_TRANSFER_DETAILS = {
   bankName: 'BNI',
   bankAccountNumber: '1229085831',
   bankAccountName: 'Ahmad Rosid',
 } as const;
 
-export const PAYMENT_CONTACT_CONFIG = {
+const PAYMENT_CONTACT_CONFIG = {
   whatsappPhoneNumber: '6281234567890',
   whatsappMessageTemplate:
     'Halo, saya sudah melakukan transfer untuk {planName} sebesar {planPrice}. Mohon konfirmasi pembayaran saya.',
@@ -66,7 +66,7 @@ export const createTransactionSchema = z.object({
   paymentSettings: z.string().optional(),
 });
 
-export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
+type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
 
 // Payment settings schema
 export const paymentSettingsSchema = z.object({
@@ -91,16 +91,16 @@ export const paymentSettingsSchema = z.object({
     .max(1000, 'WhatsApp message template cannot exceed 1000 characters'),
 });
 
-export type PaymentSettingsInput = z.infer<typeof paymentSettingsSchema>;
+type PaymentSettingsInput = z.infer<typeof paymentSettingsSchema>;
 
 // Update payment settings schema (allows partial updates)
 export const updatePaymentSettingsSchema = paymentSettingsSchema.partial().extend({
   id: z.uuid('Invalid payment settings ID'),
 });
 
-export type UpdatePaymentSettingsInput = z.infer<typeof updatePaymentSettingsSchema>;
+type UpdatePaymentSettingsInput = z.infer<typeof updatePaymentSettingsSchema>;
 
-export function getExpectedAmount(planType: PlanType): number {
+function getExpectedAmount(planType: PlanType): number {
   return PLAN_CONFIGS[planType].amount;
 }
 

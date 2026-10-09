@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 export type ChartSeries = { key: string; label: string; color: string };
 
-export type ChartPoint = { label: string; values: Record<string, number> };
+type ChartPoint = { label: string; values: Record<string, number> };
 
 interface ColumnChartProps {
   title: string;

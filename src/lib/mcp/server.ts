@@ -29,7 +29,7 @@ async function cleanupExpiredMcpData(now: number) {
   }
 }
 
-export async function authenticateMcpRequest(request: Request) {
+async function authenticateMcpRequest(request: Request) {
   const token = request.headers.get("authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];
 
   if (!token || !/^vpt_live_[A-Za-z0-9_-]{43}$/.test(token)) return null;

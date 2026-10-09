@@ -23,7 +23,7 @@ export function serializeJsonLd(data: unknown): string {
 }
 
 /** Strip common XSS vectors from trusted static HTML before rendering. */
-export function sanitizeHtml(html: string): string {
+function sanitizeHtml(html: string): string {
   return html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
@@ -32,14 +32,14 @@ export function sanitizeHtml(html: string): string {
 }
 
 /** Shared date format options for consistent SSR/client rendering. */
-export const DISPLAY_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
+const DISPLAY_DATE_OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",
   month: "short",
   day: "numeric",
   timeZone: "UTC",
 };
 
-export const DISPLAY_DATETIME_OPTIONS: Intl.DateTimeFormatOptions = {
+const DISPLAY_DATETIME_OPTIONS: Intl.DateTimeFormatOptions = {
   year: "numeric",
   month: "short",
   day: "numeric",

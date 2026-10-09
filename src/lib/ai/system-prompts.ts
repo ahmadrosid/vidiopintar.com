@@ -258,7 +258,7 @@ Format output kamu dengan struktur markdown ini persis:
 `;
 }
 
-export function getSystemPrompt(language: Language, params: SystemPromptParams): string {
+function getSystemPrompt(language: Language, params: SystemPromptParams): string {
   switch (language) {
     case 'id':
       return generateIndonesianPrompt(params);
@@ -410,7 +410,7 @@ Kembalikan JSON dengan array "questions" berisi tepat 5 objek. Setiap objek puny
 Tulis semua konten dalam Bahasa Indonesia.`;
 }
 
-export function getQuizPrompt(language: Language): string {
+function getQuizPrompt(language: Language): string {
   switch (language) {
     case 'id':
       return generateIndonesianQuizPrompt();

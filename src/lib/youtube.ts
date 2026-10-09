@@ -23,7 +23,7 @@ function pickThumbnailUrl(
   return thumbnails && "high" in thumbnails ? thumbnails.high?.url ?? null : null;
 }
 
-export async function generateUserVideoSummary(
+async function generateUserVideoSummary(
   video: Video,
   segments: StoredTranscriptSegment[],
   userVideoId?: number,
@@ -76,7 +76,7 @@ export async function fetchVideoFromOEmbed(videoId: string) {
   };
 }
 
-export async function fetchVideoDetails(videoId: string) {
+async function fetchVideoDetails(videoId: string) {
   try {
     const user = await getCurrentUser();
     let existingVideo = await VideoRepository.getByYoutubeId(videoId);
@@ -144,7 +144,7 @@ export async function fetchVideoDetails(videoId: string) {
   }
 }
 
-export async function fetchVideoTranscript(videoId: string) {
+async function fetchVideoTranscript(videoId: string) {
   try {
     const user = await getCurrentUser();
 
@@ -229,7 +229,7 @@ export async function fetchVideoTranscript(videoId: string) {
   }
 }
 
-export async function generateQuickStartQuestions(
+async function generateQuickStartQuestions(
   transcriptSegments: Array<{ text: string }>,
   videoTitle?: string,
   videoDescription?: string,

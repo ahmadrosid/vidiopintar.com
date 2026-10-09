@@ -10,9 +10,9 @@ export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
 
 export type HistoryStatus = "all" | "success" | "failed";
 
-export type DailyPoint = { day: number; success: number; failed: number; bytes: number };
+type DailyPoint = { day: number; success: number; failed: number; bytes: number };
 
-export type HistoryRow = {
+type HistoryRow = {
   id: string;
   createdAt: Date;
   keyName: string;

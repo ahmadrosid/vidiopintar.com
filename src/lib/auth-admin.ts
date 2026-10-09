@@ -6,7 +6,7 @@ export function isUserAdmin(user: any): boolean {
     return user.email === env.ADMIN_MASTER_EMAIL;
 }
 
-export async function getCurrentUserWithAdminCheck() {
+async function getCurrentUserWithAdminCheck() {
     const user = await getCurrentUser();
 
     return {

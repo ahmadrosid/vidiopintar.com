@@ -13,7 +13,7 @@ export interface TokenUsageData {
   requestDuration?: number;
 }
 
-export async function trackTokenUsage(data: TokenUsageData) {
+async function trackTokenUsage(data: TokenUsageData) {
   const totalTokens = data.inputTokens + data.outputTokens;
   const costs = calculateTokenCost(data.provider, data.model, data.inputTokens, data.outputTokens);
   
@@ -41,7 +41,7 @@ export async function trackTokenUsage(data: TokenUsageData) {
 }
 
 // Helper function to create a token tracker for streamText
-export function createStreamTokenTracker(baseData: Omit<TokenUsageData, 'inputTokens' | 'outputTokens'>) {
+function createStreamTokenTracker(baseData: Omit<TokenUsageData, 'inputTokens' | 'outputTokens'>) {
   return {
     onFinish: async (result: any) => {
       if (result.usage) {

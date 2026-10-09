@@ -17,7 +17,9 @@
     "db:verify": "bun scripts/verify-sqlite.ts",
     "db:tables": "bun scripts/db-tables.ts",
     "mcp:key": "node scripts/mcp-key.mjs",
-    "doctor": "npx react-doctor@latest"
+    "doctor": "npx react-doctor@latest",
+    "lint": "oxlint src",
+    "knip": "knip"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.45",
@@ -53,6 +55,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@oxlint/plugins": "1.87.0",
     "@tailwindcss/typography": "^0.5.16",
     "@types/better-sqlite3": "^7.6.13",
     "@types/bun": "^1.2.9",
@@ -61,6 +64,8 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "drizzle-kit": "^0.31.2",
+    "knip": "^6.40.0",
+    "oxlint": "1.87.0",
     "pg": "^8.22.0",
     "typescript": "^5"
   },

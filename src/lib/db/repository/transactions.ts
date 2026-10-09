@@ -3,7 +3,7 @@ import { db } from '../index';
 import { transactions, type Transaction, type NewTransaction, type TransactionStatus } from '../schema/transactions';
 import { user } from '../schema/auth';
 
-export class TransactionsRepository {
+class TransactionsRepository {
   async create(data: Omit<NewTransaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<Transaction> {
     const result = await db
       .insert(transactions)

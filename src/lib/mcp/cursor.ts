@@ -1,7 +1,7 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 import { McpServiceError } from "./errors";
 
-export const CURSOR_TTL_MS = 15 * 60 * 1000;
+const CURSOR_TTL_MS = 15 * 60 * 1000;
 
 export interface TranscriptCursor {
   videoId: string;

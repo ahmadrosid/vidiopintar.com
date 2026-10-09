@@ -21,7 +21,7 @@ export function markdownUrlFor(path: string): string {
   return `${absoluteUrl(path)}.md`;
 }
 
-export function truncateDescription(text: string, max = 155): string {
+function truncateDescription(text: string, max = 155): string {
   const normalized = text.replace(/\s+/g, " ").trim();
 
   if (normalized.length <= max) return normalized;
