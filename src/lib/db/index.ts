@@ -1,45 +1,40 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import { createClient, type Client } from "@libsql/client";
+import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import * as schema from "./schema";
-import { resolveDatabasePath } from "./database-path";
+import { resolveDatabaseConfig } from "./database-path";
 
 declare global {
-  var sqliteDb: Database.Database | undefined;
-  var drizzleDb: ReturnType<typeof drizzle<typeof schema>> | undefined;
+  var libsqlClient: Client | undefined;
+  var drizzleDb: LibSQLDatabase<typeof schema> | undefined;
 }
 
-function createDatabase(): Database.Database {
-  const dbPath = resolveDatabasePath();
-  mkdirSync(path.dirname(dbPath), { recursive: true });
+function getClient(): Client {
+  if (!global.libsqlClient) {
+    const config = resolveDatabaseConfig();
 
-  const sqlite = new Database(dbPath);
-  sqlite.pragma("journal_mode = WAL");
-  sqlite.pragma("busy_timeout = 5000");
-  sqlite.pragma("foreign_keys = ON");
+    if (config.url.startsWith("file:")) {
+      // data/ is gitignored, so a fresh clone has no directory for the local file yet.
+      mkdirSync(path.dirname(config.url.slice("file:".length)), { recursive: true });
+    }
 
-  return sqlite;
-}
-
-function getSqlite(): Database.Database {
-  if (!global.sqliteDb) {
-    global.sqliteDb = createDatabase();
+    global.libsqlClient = createClient(config);
   }
 
-  return global.sqliteDb;
+  return global.libsqlClient;
 }
 
 function getDrizzle() {
   if (!global.drizzleDb) {
-    global.drizzleDb = drizzle(getSqlite(), { schema });
+    global.drizzleDb = drizzle(getClient(), { schema });
   }
 
   return global.drizzleDb;
 }
 
 // SAFETY: the proxy target is never read; every property access is forwarded to the drizzle instance.
-export const db = new Proxy({} as ReturnType<typeof drizzle<typeof schema>>, {
+export const db = new Proxy({} as LibSQLDatabase<typeof schema>, {
   get(_target, prop) {
     const instance = getDrizzle();
     // SAFETY: callers only read drizzle's own API, so prop names a key of the drizzle instance.

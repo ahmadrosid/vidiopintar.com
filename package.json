@@ -24,6 +24,7 @@
     "@clerk/ui": "^1.24.2",
     "@hugeicons/core-free-icons": "^4.3.5",
     "@hugeicons/react": "^1.1.10",
+    "@libsql/client": "^0.18.0",
     "@modelcontextprotocol/server": "^2.3.1",
     "@radix-ui/react-alert-dialog": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.14",

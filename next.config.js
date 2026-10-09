@@ -34,7 +34,7 @@ const nextConfig = {
       { source: '/:path(watch|video|shared)/:rest*', destination: '/', permanent: true },
     ]
   },
-  serverExternalPackages: ['better-sqlite3'],
+  serverExternalPackages: ['@libsql/client'],
   experimental: {
     optimizePackageImports: [
       '@clerk/ui',

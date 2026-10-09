@@ -15,6 +15,8 @@ export const env = createEnv({
           ? "/data/vidiopintar.db"
           : "./data/vidiopintar.db",
       ),
+    TURSO_DATABASE_URL: z.string().min(1).optional(),
+    TURSO_AUTH_TOKEN: z.string().min(1).optional(),
     ADMIN_MASTER_EMAIL: z.email(),
     YOUTUBE_API_KEY: z.string().min(1).optional(),
   },

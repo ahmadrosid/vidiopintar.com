@@ -1,9 +1,9 @@
-import Database from "better-sqlite3";
+import { createClient } from "@libsql/client";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 
-const { resolveDatabasePath } = require("../src/lib/db/resolve-database-path.js");
+const { resolveDatabaseConfig } = require("../src/lib/db/resolve-database-path.js");
 
 const args = process.argv.slice(2);
 
@@ -22,12 +22,13 @@ if (!Number.isInteger(days) || days < 1 || days > 90) {
 }
 
 
-const db = new Database(resolveDatabasePath(), { readonly: true });
+const db = createClient(resolveDatabaseConfig());
 
 try {
   const since = Date.now() - days * 86_400_000;
 
-  const rows = db.prepare(`
+  const { rows } = await db.execute({
+    sql: `
     WITH first_success AS (
       SELECT key_id, MIN(created_at) AS created_at
       FROM mcp_request_metrics
@@ -41,7 +42,9 @@ try {
     LEFT JOIN first_success AS fs ON fs.key_id = m.key_id
     WHERE m.created_at >= ?
     ORDER BY m.created_at
-  `).all(since);
+  `,
+    args: [since],
+  });
 
   const successRows = rows.filter((row) => row.outcome === "success");
   const providerRows = rows.filter((row) => row.provider_attempt === 1);

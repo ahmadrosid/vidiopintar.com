@@ -28,4 +28,21 @@ function resolveDatabasePath() {
   return path.join(process.cwd(), "data", path.basename(configured));
 }
 
-module.exports = { resolveDatabasePath };
+/**
+ * Resolves the libSQL connection config.
+ *
+ * Vercel has no persistent disk, so production points TURSO_DATABASE_URL at a
+ * hosted Turso database. Without it, the app falls back to the local SQLite file.
+ */
+function resolveDatabaseConfig() {
+  if (process.env.TURSO_DATABASE_URL) {
+    return {
+      url: process.env.TURSO_DATABASE_URL,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    };
+  }
+
+  return { url: `file:${resolveDatabasePath()}` };
+}
+
+module.exports = { resolveDatabaseConfig };

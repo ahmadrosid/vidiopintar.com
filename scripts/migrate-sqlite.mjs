@@ -1,14 +1,17 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import { migrate } from "drizzle-orm/libsql/migrator";
+import { createRequire } from "node:module";
 import path from "node:path";
 
-const databasePath = process.env.SQLITE_DATABASE_PATH ?? "/data/vidiopintar.db";
+const require = createRequire(import.meta.url);
 
-const sqlite = new Database(databasePath);
+const { resolveDatabaseConfig } = require("../src/lib/db/resolve-database-path.js");
+
+const client = createClient(resolveDatabaseConfig());
 
 try {
-  migrate(drizzle(sqlite), { migrationsFolder: path.join(process.cwd(), "src/drizzle") });
+  await migrate(drizzle(client), { migrationsFolder: path.join(process.cwd(), "src/drizzle") });
 } finally {
-  sqlite.close();
+  client.close();
 }

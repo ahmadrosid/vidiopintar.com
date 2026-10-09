@@ -1,1 +1,1 @@
-export { resolveDatabasePath } from "./resolve-database-path.js";
+export { resolveDatabaseConfig } from "./resolve-database-path.js";
