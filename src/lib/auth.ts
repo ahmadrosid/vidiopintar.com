@@ -4,24 +4,19 @@ import { user } from "@/lib/db/schema/auth";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { cache } from "react";
+import { z } from "zod";
 import type { User } from "@/lib/db/repository";
 
-function getEmailFromSessionClaims(
-  sessionClaims: Record<string, unknown> | null | undefined,
-): string | null {
-  if (!sessionClaims) return null;
-  const email = sessionClaims.email;
+const clerkRateLimitErrorSchema = z.object({ status: z.literal(429) });
 
-  return typeof email === "string" ? email : null;
-}
+const sessionEmailSchema = z.object({ email: z.string() });
 
-function isClerkRateLimitError(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "status" in error &&
-    (error as { status: number }).status === 429
-  );
+type SessionClaims = Awaited<ReturnType<typeof clerkAuth>>["sessionClaims"];
+
+function getEmailFromSessionClaims(sessionClaims: SessionClaims): string | null {
+  const parsed = sessionEmailSchema.safeParse(sessionClaims);
+
+  return parsed.success ? parsed.data.email : null;
 }
 
 async function findUserByEmail(email: string): Promise<User | null> {
@@ -101,7 +96,7 @@ const syncUserFromClerk = cache(async (): Promise<User | null> => {
 
     return createUserFromClerkProfile(userId, clerkUser);
   } catch (error) {
-    if (isClerkRateLimitError(error) && emailFromClaims) {
+    if (clerkRateLimitErrorSchema.safeParse(error).success && emailFromClaims) {
       const existingByEmail = await findUserByEmail(emailFromClaims);
 
       if (existingByEmail) return existingByEmail;
