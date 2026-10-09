@@ -1,7 +1,6 @@
 import { transactionsRepository } from '@/lib/db/repository/transactions';
 import { UserVideoRepository } from '@/lib/db/repository';
 import { UsageEventRepository } from '@/lib/db/repository/usage-events';
-import { QuizRepository } from '@/lib/db/repository/quizzes';
 
 export type UserPlan = 'free' | 'monthly' | 'yearly';
 
@@ -129,54 +128,6 @@ export class UserPlanService {
   }
 
   /**
-   * Check if user can send a chat message for a specific video
-   */
-  static async canSendMessage(userId: string, userVideoId: number): Promise<{
-    canSend: boolean;
-    currentPlan: UserPlan;
-    reason?: string;
-    messagesUsed?: number;
-    messageLimit?: number;
-  }> {
-    const currentPlan = await this.getCurrentPlan(userId);
-    const limits = this.getPlanLimits(currentPlan);
-
-    if (limits.unlimited) {
-      return { canSend: true, currentPlan };
-    }
-
-    const userVideo = await UserVideoRepository.getById(userVideoId);
-
-    if (!userVideo || userVideo.userId !== userId) {
-      return { canSend: false, currentPlan, reason: 'unauthorized' };
-    }
-
-    const messagesUsed = await UsageEventRepository.countChatMessages(
-      userId,
-      userVideo.youtubeId,
-    );
-
-    const messageLimit = limits.messagesPerVideo;
-
-    if (messagesUsed >= messageLimit) {
-      return {
-        canSend: false,
-        currentPlan,
-        reason: 'message_limit_reached',
-        messagesUsed,
-        messageLimit,
-      };
-    }
-
-    return {
-      canSend: true,
-      currentPlan,
-      messagesUsed,
-      messageLimit,
-    };
-  }
-
-  /**
    * Get user's current usage stats
    */
   static async getUserUsageStats(userId: string) {
@@ -288,82 +239,5 @@ export class UserPlanService {
     }
 
     return { canPurchase: true };
-  }
-
-  static async getQuizEntitlements(userId: string): Promise<{
-    currentPlan: UserPlan;
-    canGenerate: boolean;
-    canRetry: boolean;
-    upgradeRequired: boolean;
-    trialUsed: boolean;
-    hasCompletedAttempt: boolean;
-  }> {
-    const currentPlan = await this.getCurrentPlan(userId);
-    const limits = this.getPlanLimits(currentPlan);
-
-    const [trialUsed, hasCompletedAttempt] = await Promise.all([
-      UsageEventRepository.hasQuizGenerated(userId),
-      QuizRepository.hasCompletedAttemptForUser(userId),
-    ]);
-
-    if (limits.unlimited) {
-      return {
-        currentPlan,
-        canGenerate: true,
-        canRetry: true,
-        upgradeRequired: false,
-        trialUsed,
-        hasCompletedAttempt,
-      };
-    }
-
-    const canGenerate = !trialUsed;
-    const canRetry = !hasCompletedAttempt;
-    const upgradeRequired = trialUsed && hasCompletedAttempt;
-
-    return {
-      currentPlan,
-      canGenerate,
-      canRetry,
-      upgradeRequired,
-      trialUsed,
-      hasCompletedAttempt,
-    };
-  }
-
-  static async canGenerateQuiz(userId: string): Promise<{
-    allowed: boolean;
-    currentPlan: UserPlan;
-    reason?: 'upgrade_required' | 'trial_used';
-  }> {
-    const entitlements = await this.getQuizEntitlements(userId);
-
-    if (entitlements.canGenerate) {
-      return { allowed: true, currentPlan: entitlements.currentPlan };
-    }
-
-    return {
-      allowed: false,
-      currentPlan: entitlements.currentPlan,
-      reason: 'trial_used',
-    };
-  }
-
-  static async canRetryQuiz(userId: string): Promise<{
-    allowed: boolean;
-    currentPlan: UserPlan;
-    reason?: 'upgrade_required';
-  }> {
-    const entitlements = await this.getQuizEntitlements(userId);
-
-    if (entitlements.canRetry) {
-      return { allowed: true, currentPlan: entitlements.currentPlan };
-    }
-
-    return {
-      allowed: false,
-      currentPlan: entitlements.currentPlan,
-      reason: 'upgrade_required',
-    };
   }
 }

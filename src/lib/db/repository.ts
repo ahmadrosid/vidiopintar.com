@@ -1,6 +1,5 @@
 import { db } from "@/lib/db/index"
 import { and, desc, eq, InferInsertModel, InferSelectModel, or, sql } from "drizzle-orm"
-import { messages } from "./schema/messages"
 import { notes } from "./schema/notes"
 import { user } from "./schema/auth"
 import {
@@ -12,7 +11,6 @@ import {
   videos,
 } from "./schema/videos"
 
-export { TokenUsageRepository } from "./repository/token-usage"
 
 // Types for users
 export type User = InferSelectModel<typeof user>
@@ -30,13 +28,11 @@ type SharedVideo = InferSelectModel<typeof sharedVideos>
 type NewSharedVideo = InferInsertModel<typeof sharedVideos>
 
 // Infer types from Drizzle schema
-export type Video = InferSelectModel<typeof videos>
+type Video = InferSelectModel<typeof videos>
 
-export type NewVideo = InferInsertModel<typeof videos>
+type NewVideo = InferInsertModel<typeof videos>
 
-type Message = InferSelectModel<typeof messages>
 
-type NewMessage = InferInsertModel<typeof messages>
 
 type Note = InferSelectModel<typeof notes>
 
@@ -57,7 +53,7 @@ function containsPattern(query: string): string {
   return `%${escapeLikePattern(query.toLowerCase())}%`
 }
 
-export const VideoRepository = {
+const VideoRepository = {
   async getAllForUserWithDetails(userId: string) {
     return await db
       .select({
@@ -145,31 +141,6 @@ export const VideoRepository = {
     }
 
     await db.delete(videos).where(eq(videos.id, id))
-  },
-}
-
-const MessageRepository = {
-  async getByUserVideoId(userVideoId: number): Promise<Message[]> {
-    return await db
-      .select()
-      .from(messages)
-      .where(eq(messages.userVideoId, userVideoId))
-      .orderBy(messages.timestamp)
-  },
-
-  async create(message: NewMessage): Promise<Message> {
-    const result = await db.insert(messages).values(message).returning()
-
-    return result[0]
-  },
-
-  async countUserMessages(userVideoId: number): Promise<number> {
-    const result = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(messages)
-      .where(and(eq(messages.userVideoId, userVideoId), eq(messages.role, 'user')))
-
-    return result[0]?.count ?? 0
   },
 }
 
@@ -370,9 +341,6 @@ export const UserVideoRepository = {
       .orderBy(desc(userVideos.createdAt))
   },
 
-  async clearMessages(userVideoId: number): Promise<void> {
-    await db.delete(messages).where(eq(messages.userVideoId, userVideoId))
-  },
 }
 
 export const TranscriptRepository = {
@@ -518,7 +486,7 @@ const SharedVideoRepository = {
   },
 }
 
-export const UserRepository = {
+const UserRepository = {
   async getById(id: string): Promise<User | undefined> {
     const result = await db.select().from(user).where(eq(user.id, id))
 

@@ -22,7 +22,6 @@
     "knip": "knip"
   },
   "dependencies": {
-    "@ai-sdk/deepseek": "^1.0.45",
     "@clerk/nextjs": "^7.5.13",
     "@clerk/ui": "^1.24.2",
     "@hugeicons/core-free-icons": "^4.3.5",
@@ -34,7 +33,6 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tailwindcss/postcss": "^4.1.4",
-    "ai": "^5.0.210",
     "ascii.rest": "github:bas3line/ascii",
     "better-sqlite3": "^12.11.1",
     "class-variance-authority": "^0.7.1",

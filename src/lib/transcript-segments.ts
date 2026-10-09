@@ -52,48 +52,6 @@ export function transcriptApiSegmentsToStored(
 
 const TIMED_TRANSCRIPT_MAX_CHARS = 48_000;
 
-export function formatTimedTranscriptForChat(
-  segments: StoredTranscriptSegment[],
-  maxChars: number = TIMED_TRANSCRIPT_MAX_CHARS,
-): string {
-  if (segments.length === 0) return "";
-
-  const formatLine = (segment: StoredTranscriptSegment) => {
-    const seconds = timeStringToSeconds(segment.start);
-
-    return `[${seconds}s] ${segment.text}`;
-  };
-
-  let lines = segments.map(formatLine);
-  let joined = lines.join("\n");
-
-  if (joined.length <= maxChars) {
-    return joined;
-  }
-
-  let step = 2;
-
-  while (step < segments.length) {
-    lines = [];
-
-    for (let index = 0; index < segments.length; index++) {
-      if (index === 0 || index % step === 0 || index === segments.length - 1) {
-        lines.push(formatLine(segments[index]));
-      }
-    }
-
-    joined = lines.join("\n");
-
-    if (joined.length <= maxChars) {
-      return joined;
-    }
-
-    step += 1;
-  }
-
-  return joined.slice(0, maxChars);
-}
-
 export function storedSegmentsToTranscriptApi(
   videoId: string,
   segments: StoredTranscriptSegment[],
