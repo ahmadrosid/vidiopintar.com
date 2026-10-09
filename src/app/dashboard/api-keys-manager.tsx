@@ -28,6 +28,7 @@ import {
   revokeKeyAction,
   type CreateKeyState,
 } from "./actions";
+import { InstallTabs } from "@/components/home/install-tabs";
 
 interface ApiKeysManagerProps {
   keys: Array<{
@@ -132,6 +133,9 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
     if (state.status === "created") setOpen(false);
   }, [state]);
 
+  // The full key is only known right after creation; the server stores a hash.
+  const createdToken = state.status === "created" ? state.token : undefined;
+
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-4 text-base leading-8 text-site-text-2 sm:text-lg">
@@ -230,6 +234,24 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
           </table>
         </div>
       )}
+
+      <div className="mt-3 space-y-4">
+        <h3 className="font-display text-lg font-bold tracking-tight text-site-text">
+          Cara menghubungkan MCP
+        </h3>
+        <p className="text-sm leading-7 text-site-text-2">
+          {createdToken ? (
+            "Salinan di bawah sudah berisi key baru. Tampilan hanya menampilkan sebagian key."
+          ) : (
+            <>
+              Pilih klien Anda, salin konfigurasinya, lalu ganti{" "}
+              <code className="text-site-text">&lt;API_KEY&gt;</code> dengan key
+              Anda.
+            </>
+          )}
+        </p>
+        <InstallTabs stacked apiKey={createdToken} />
+      </div>
     </div>
   );
 }

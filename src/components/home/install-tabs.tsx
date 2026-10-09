@@ -130,14 +130,31 @@ pi mcp add vidiopintar --url ${endpoint} \\
   },
 ];
 
-export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
+const keyPlaceholder = "<API_KEY>";
+
+// Shows only the key prefix; the full key is kept for copying.
+const redactKey = (key: string) => `${key.slice(0, 9)}${"•".repeat(24)}`;
+
+export function InstallTabs({
+  stacked = false,
+  apiKey,
+}: {
+  stacked?: boolean;
+  apiKey?: string;
+}) {
   const [active, setActive] = useState(clients[0].id);
   const [copied, setCopied] = useState(false);
   const client = clients.find((item) => item.id === active) ?? clients[0];
+  const shownCode = apiKey
+    ? client.code.replaceAll(keyPlaceholder, redactKey(apiKey))
+    : client.code;
+  const copyCode = apiKey
+    ? client.code.replaceAll(keyPlaceholder, apiKey)
+    : client.code;
 
   const copy = async () => {
     try {
-      await navigator.clipboard.writeText(client.code);
+      await navigator.clipboard.writeText(copyCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -146,7 +163,9 @@ export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
   };
 
   return (
-    <div className={`grid gap-4 ${stacked ? "" : "md:grid-cols-[13rem_minmax(0,1fr)] md:gap-6"}`}>
+    <div
+      className={`grid gap-4 ${stacked ? "" : "md:grid-cols-[13rem_minmax(0,1fr)] md:gap-6"}`}
+    >
       <div
         role="tablist"
         aria-label="Klien MCP"
@@ -175,20 +194,32 @@ export function InstallTabs({ stacked = false }: { stacked?: boolean }) {
         ))}
       </div>
 
-      <div role="tabpanel" className="flex min-w-0 flex-col border border-site-line bg-site-panel">
+      <div
+        role="tabpanel"
+        className="flex min-w-0 flex-col border border-site-line bg-site-panel"
+      >
         <div className="flex items-center justify-between gap-4 border-b border-site-line bg-site-header px-4 py-2">
-          <span className="truncate text-xs text-site-text-muted sm:text-sm">{client.where}</span>
+          <span className="truncate text-xs text-site-text-muted sm:text-sm">
+            {client.where}
+          </span>
           <button
             type="button"
             onClick={copy}
             className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-site-text-muted hover:text-site-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent sm:text-sm"
           >
-            {copied ? <HugeiconsIcon icon={CheckIcon} className="size-4 text-site-accent" /> : <HugeiconsIcon icon={Copy01Icon} className="size-4" />}
+            {copied ? (
+              <HugeiconsIcon
+                icon={CheckIcon}
+                className="size-4 text-site-accent"
+              />
+            ) : (
+              <HugeiconsIcon icon={Copy01Icon} className="size-4" />
+            )}
             {copied ? "Tersalin" : "Salin"}
           </button>
         </div>
         <pre className="flex-1 overflow-x-auto p-5 text-sm leading-7 text-site-text sm:text-base">
-          <code>{client.code}</code>
+          <code>{shownCode}</code>
         </pre>
       </div>
     </div>
