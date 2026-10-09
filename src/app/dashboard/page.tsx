@@ -4,6 +4,7 @@ import { Row, Stat } from "@/components/site/site-page";
 import { getCurrentUser } from "@/lib/auth";
 import { ANALYTICS_RANGES, getUserMcpAnalytics, type AnalyticsRange, type HistoryStatus } from "@/lib/mcp/analytics";
 import { listUserMcpKeys, MAX_ACTIVE_KEYS_PER_USER } from "@/lib/mcp/keys";
+import { outcomeLabels } from "@/lib/mcp/outcomes";
 import { ApiKeysManager } from "./api-keys-manager";
 import { ColumnChart, type ChartSeries } from "./column-chart";
 import { DashboardTitle } from "./dashboard-sidebar";
@@ -18,18 +19,6 @@ const requestSeries: ChartSeries[] = [
   { key: "failed", label: "Gagal", color: FAILED },
 ];
 const bytesSeries: ChartSeries[] = [{ key: "bytes", label: "Transkrip", color: SUCCESS }];
-
-const outcomeLabels: Record<string, string> = {
-  success: "Berhasil",
-  INVALID_VIDEO_REFERENCE: "Video tidak valid",
-  CAPTIONS_UNAVAILABLE: "Tanpa transkrip",
-  VIDEO_UNAVAILABLE: "Video tidak tersedia",
-  INVALID_CURSOR: "Cursor kedaluwarsa",
-  INVALID_CREDENTIALS: "Key tidak valid",
-  USAGE_LIMIT_EXCEEDED: "Batas tercapai",
-  TEMPORARY_PROVIDER_FAILURE: "Gangguan YouTube",
-  SERVICE_MISCONFIGURED: "Gangguan layanan",
-};
 
 const statusFilters: { value: HistoryStatus; label: string }[] = [
   { value: "all", label: "Semua" },

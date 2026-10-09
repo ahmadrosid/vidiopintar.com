@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, ne, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, ne, sql, sum } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { mcpApiKeys, mcpRequestMetrics, mcpUsage } from "@/lib/db/schema";
 
@@ -101,4 +101,43 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
     },
     history: history satisfies HistoryRow[],
   };
+}
+
+export const LOG_PAGE_SIZE = 50;
+
+// "all", "success", "failed" (any error), or one specific outcome code.
+export async function getUserMcpLogs(userId: string, outcome: string, page: number) {
+  const ownKey = eq(mcpApiKeys.userId, userId);
+  const outcomeFilter =
+    outcome === "all"
+      ? undefined
+      : outcome === "failed"
+        ? ne(mcpRequestMetrics.outcome, "success")
+        : eq(mcpRequestMetrics.outcome, outcome);
+  const where = and(ownKey, outcomeFilter);
+
+  const [rows, [{ total }]] = await Promise.all([
+    db
+      .select({
+        id: mcpRequestMetrics.id,
+        createdAt: mcpRequestMetrics.createdAt,
+        keyName: mcpApiKeys.name,
+        videoId: mcpRequestMetrics.videoId,
+        outcome: mcpRequestMetrics.outcome,
+        durationMs: mcpRequestMetrics.durationMs,
+      })
+      .from(mcpRequestMetrics)
+      .innerJoin(mcpApiKeys, eq(mcpApiKeys.id, mcpRequestMetrics.keyId))
+      .where(where)
+      .orderBy(desc(mcpRequestMetrics.createdAt), desc(mcpRequestMetrics.id))
+      .limit(LOG_PAGE_SIZE)
+      .offset(page * LOG_PAGE_SIZE),
+    db
+      .select({ total: count() })
+      .from(mcpRequestMetrics)
+      .innerJoin(mcpApiKeys, eq(mcpApiKeys.id, mcpRequestMetrics.keyId))
+      .where(where),
+  ]);
+
+  return { rows, total: Number(total) };
 }
