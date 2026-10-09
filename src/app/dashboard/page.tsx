@@ -117,7 +117,7 @@ export default async function DashboardPage({
           {history.length === 0 ? (
             <p className="text-site-text-faint">Belum ada permintaan.</p>
           ) : (
-            <div className="overflow-x-auto border border-site-line">
+            <div className="overflow-x-auto border border-site-line bg-white">
               <table className="w-full text-left text-sm">
                 <thead className="bg-site-header text-site-text-muted">
                   <tr>

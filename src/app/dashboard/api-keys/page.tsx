@@ -10,7 +10,7 @@ export default async function ApiKeysPage() {
   const keys = await listUserMcpKeys(user.id);
 
   return (
-    <div className="bg-white">
+    <>
       <DashboardTitle meta="Buat dan cabut API key untuk menghubungkan AI Agent ke Vidiopintar. Key hanya ditampilkan sekali saat dibuat.">
         API key
       </DashboardTitle>
@@ -35,6 +35,6 @@ export default async function ApiKeysPage() {
           />
         </section>
       </div>
-    </div>
+    </>
   );
 }

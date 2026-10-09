@@ -106,7 +106,7 @@ export default async function LogsPage({
       {rows.length === 0 ? (
         <p className="text-site-text-faint">Belum ada log untuk filter ini.</p>
       ) : (
-        <div className="overflow-x-auto border border-site-line">
+        <div className="overflow-x-auto border border-site-line bg-white">
           <table className="w-full text-left text-sm">
             <thead className="bg-site-header text-site-text-muted">
               <tr>
