@@ -71,16 +71,16 @@ npm run mcp:key -- revoke "vpt_live_AbCdEfG..."
 
 The create command prints a prefix and the full key once. The prefix is the first 16 characters of the key followed by `...`. Use the prefix to revoke the key. Creating a new key and revoking the old one rotates access.
 
-In the Docker container, run the same script with Node:
+Against production, run the same script with the Turso variables set (for example from `.env.local`), so it writes to the hosted database:
 
 ```bash
-docker exec -it <container> node scripts/mcp-key.mjs create "Agent name"
-docker exec -it <container> node scripts/mcp-key.mjs revoke "vpt_live_AbCdEfG..."
+node --env-file=.env.local scripts/mcp-key.mjs create "Agent name"
+node --env-file=.env.local scripts/mcp-key.mjs revoke "vpt_live_AbCdEfG..."
 ```
 
 ## Local development
 
-Requirements: Node.js 22, npm, and Bun. The app uses SQLite.
+Requirements: Node.js 22, npm, and Bun. Local development uses a SQLite file through libSQL; production uses Turso.
 
 ```bash
 cp .env.example .env
@@ -109,21 +109,19 @@ bun test
 npx drizzle-kit check
 ```
 
-## Docker
+## Deployment
 
-The container runs database migrations at startup. Build and run it with a persistent data directory:
+The app runs on Vercel and stores data in Turso (hosted libSQL). Vercel's filesystem is ephemeral, so the database must not be a local file in production.
+
+Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in the Vercel project. Migrations do not run automatically, so apply them after each schema change:
 
 ```bash
-docker build -t vidiopintar .
-docker run --rm -p 3000:3000 --env-file .env \
-  -v "$PWD/data:/data" \
-  -e SQLITE_DATABASE_PATH=/data/vidiopintar.db \
-  vidiopintar
+node --env-file=.env.local scripts/migrate-sqlite.mjs
 ```
 
-The health check is at `/api/health`. It returns `200` when the database responds and `500` otherwise.
+Deploy with the Vercel CLI (`vercel deploy --prod`). Pushes to `main` do not trigger a deploy on their own.
 
-Pushing to `main` builds and publishes the image to `ghcr.io/ahmadrosid/vidiopintar.com:latest`. The workflow does not deploy the image to a production host.
+The health check is at `/api/health`. It returns `200` when the database responds and `500` otherwise.
 
 ## License
 

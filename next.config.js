@@ -21,7 +21,6 @@ const nextConfig = {
       { protocol: 'https', hostname: 'scontent-sin2-1.cdninstagram.com' },
     ],
   },
-  output: 'standalone',
   async redirects() {
     return [
       { source: '/mcp', destination: '/panduan', permanent: true },

@@ -7,10 +7,9 @@ const DEVELOPMENT_DATABASE_PATH = "./data/vidiopintar.db";
 /**
  * Resolves the SQLite database file path.
  *
- * In production containers the app runs as a non-root user from /app, which is
- * not writable. A relative path like ./data/vidiopintar.db (common in .env for
- * local dev) would resolve to /app/data and fail with EACCES when passed via
- * --env-file during docker run.
+ * Production uses Turso (see resolveDatabaseConfig), so this path only applies
+ * to local development and one-off scripts. A relative path is resolved against
+ * ./data so it always lands in a writable location.
  */
 function resolveDatabasePath() {
   const configured =
