@@ -13,10 +13,10 @@ import { CopyButton } from "@/components/payment/copy-button";
 import { formatDisplayDateTime } from "@/lib/utils";
 import { transactionStatusLabel } from "@/lib/transaction-status-labels";
 
-const planDetails = {
-  monthly: { name: "Paket bulanan" },
-  yearly: { name: "Paket tahunan" }
-};
+const planNames = new Map<string, string>([
+  ["monthly", "Paket bulanan"],
+  ["yearly", "Paket tahunan"],
+]);
 
 function getStatusClass(status: string) {
   return status === "pending" || status === "waiting_confirmation"
@@ -133,9 +133,9 @@ export function TransactionDetailDialog({
     whatsappPhone: currentPaymentSettings.whatsappPhoneNumber
   };
 
-  const currentPlan = planDetails[currentTransaction.planType as keyof typeof planDetails] || { name: currentTransaction.planType };
+  const planName = planNames.get(currentTransaction.planType) ?? currentTransaction.planType;
 
-  const whatsappMessage = `Halo, saya sudah melakukan transfer untuk ${currentPlan.name} sebesar ${formatAmount(currentTransaction.amount, currentTransaction.currency)}.\n\nReferensi Transaksi: ${currentTransaction.transactionReference}\n\nMohon konfirmasi pembayaran saya.`;
+  const whatsappMessage = `Halo, saya sudah melakukan transfer untuk ${planName} sebesar ${formatAmount(currentTransaction.amount, currentTransaction.currency)}.\n\nReferensi Transaksi: ${currentTransaction.transactionReference}\n\nMohon konfirmasi pembayaran saya.`;
   const whatsappUrl = `https://wa.me/${bankDetails.whatsappPhone}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (

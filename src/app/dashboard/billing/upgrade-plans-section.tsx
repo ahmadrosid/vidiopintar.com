@@ -12,6 +12,8 @@ import {
 import Link from "next/link";
 import { formatDisplayDate } from "@/lib/utils";
 
+type PlanId = "monthly" | "yearly";
+
 interface UpgradePlansSectionProps {
   currentPlan: "free" | "monthly" | "yearly";
   activeSubscriptions: Record<string, ActiveSubscription>;
@@ -65,7 +67,7 @@ export function UpgradePlansSection({
   currentPlan,
   activeSubscriptions,
 }: UpgradePlansSectionProps) {
-  const getAvailableUpgrades = () => {
+  const getAvailableUpgrades = (): PlanId[] => {
     if (currentPlan === "yearly" && activeSubscriptions.yearly) {
       return [];
     }
@@ -109,7 +111,7 @@ export function UpgradePlansSection({
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           {availableUpgrades.map((planId) => {
-            const plan = planDetails[planId as keyof typeof planDetails];
+            const plan = planDetails[planId];
             const active = activeSubscriptions[plan.id];
 
             return (
