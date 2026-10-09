@@ -12,6 +12,7 @@ import {
 import { CopyButton } from "@/components/payment/copy-button";
 import { formatDisplayDateTime } from "@/lib/utils";
 import { transactionStatusLabel } from "@/lib/transaction-status-labels";
+import { planTypeLabel } from "@/lib/plan-labels";
 
 const planNames = new Map<string, string>([
   ["monthly", "Paket bulanan"],
@@ -147,7 +148,7 @@ export function TransactionDetailDialog({
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between gap-4">
               <span className="text-site-text-muted">Paket</span>
-              <span className="capitalize text-site-text">{currentTransaction.planType}</span>
+              <span className="capitalize text-site-text">{planTypeLabel(currentTransaction.planType)}</span>
             </div>
 
             <div className="flex items-center justify-between gap-4">

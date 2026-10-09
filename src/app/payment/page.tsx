@@ -12,19 +12,18 @@ interface PaymentPageProps {
   searchParams: Promise<{ plan?: string }>
 }
 
-const PLAN_PERIODS = {
-  monthly: 'per month',
-  yearly: 'per year',
+const PLAN_NAMES = {
+  monthly: 'Paket Bulanan',
+  yearly: 'Paket Tahunan',
 } as const;
 
 function getPlanDetails(validPlan: 'monthly' | 'yearly') {
   const config = PLAN_CONFIGS[validPlan];
 
   return {
-    name: config.name,
-    price: `IDR ${config.amount.toLocaleString()}`,
+    name: PLAN_NAMES[validPlan],
+    price: `IDR ${config.amount.toLocaleString('id-ID')}`,
     amount: config.amount,
-    period: PLAN_PERIODS[validPlan],
   };
 }
 
@@ -56,7 +55,21 @@ async function getPaymentContext(
         console.error('Error handling transaction:', error);
     }
 
-    return { transaction, existingTransaction, canPurchaseCheck };
+    return { transaction, canPurchaseCheck };
+}
+
+function DetailRow({ label, value, copyValue }: { label: string; value: string; copyValue?: string }) {
+    return (
+        <div className="flex items-center justify-between gap-4 border-t border-site-line-soft py-4">
+            <div className="min-w-0">
+                <p className="text-xs text-site-text-muted">{label}</p>
+                <p className="truncate font-mono text-site-text">{value}</p>
+            </div>
+            {copyValue && (
+                <CopyButton content={copyValue} copyMessage={"Disalin!"} label="Salin" className="text-site-text-muted" />
+            )}
+        </div>
+    )
 }
 
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
@@ -66,7 +79,7 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
     const currentPlan = getPlanDetails(validPlan);
     const paymentSettings = getPaymentSettings();
 
-    const { transaction, existingTransaction, canPurchaseCheck } = await getPaymentContext(
+    const { transaction, canPurchaseCheck } = await getPaymentContext(
         validPlan,
         currentPlan,
         paymentSettings,
@@ -78,53 +91,55 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
         accountName: paymentSettings.bankAccountName,
     }
 
+    const reference = transaction?.transactionReference;
+
     let whatsappMessage = paymentSettings.whatsappMessageTemplate
         .replace('{planName}', currentPlan.name)
         .replace('{planPrice}', currentPlan.price)
 
-    if (transaction?.transactionReference) {
-        whatsappMessage += `\n\nReferensi Transaksi: ${transaction.transactionReference}`
+    if (reference) {
+        whatsappMessage += `\n\nReferensi Transaksi: ${reference}`
     }
-    
+
     const whatsappPhone = paymentSettings.whatsappPhoneNumber;
     const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(whatsappMessage)}`
 
     return (
-        <div className="min-h-screen bg-background py-12 px-4">
+        <div className="min-h-screen bg-site-bg px-6 py-10 font-mono text-site-text-2">
             <div className="mx-auto max-w-lg">
                 <div className="mb-6">
-                    <Link href="/dashboard/billing" className="text-foreground hover:underline hover:text-accent transition-colors inline-flex gap-2 items-center">
+                    <Link href="/dashboard/billing" className="inline-flex items-center gap-2 text-sm text-site-text-muted transition-colors hover:text-site-text">
                         <HugeiconsIcon icon={ArrowLeft01Icon} className="size-4" />
                         Tagihan
                     </Link>
                 </div>
-                <div className="text-center mb-8">
-                    <h1 className="text-xl font-medium mb-2">{"Selesaikan Pembayaran"}</h1>
-                    <p className="text-sm text-muted-foreground">{"Transfer ke rekening di bawah, lalu konfirmasi via WhatsApp"}</p>
+                <div className="mb-10 mt-10">
+                    <h1 className="font-display text-4xl font-extrabold leading-none tracking-tight text-site-text sm:text-5xl">{"Selesaikan Pembayaran"}</h1>
+                    <p className="text-sm text-site-text-muted">{"Transfer ke rekening di bawah, lalu konfirmasi via WhatsApp"}</p>
                 </div>
 
                 {canPurchaseCheck && !canPurchaseCheck.canPurchase && canPurchaseCheck.reason === 'already_have_active_subscription' && (
-                    <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-md p-4 mb-6">
+                    <div className="mb-6 border border-site-line border-l-2 border-l-site-accent bg-site-panel p-5">
                         <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 mt-0.5">
-                                <HugeiconsIcon icon={Alert01Icon} className="size-5 text-red-600 dark:text-red-400" />
+                                <HugeiconsIcon icon={Alert01Icon} className="size-5 text-site-accent" />
                             </div>
                             <div className="text-sm">
-                                <p className="font-medium text-red-900 dark:text-red-100 mb-1">Active Subscription Found</p>
-                                <p className="text-red-800 dark:text-red-200 mb-3">
-                                    You already have an active {currentPlan.name} subscription. You cannot purchase the same plan while it's still active.
+                                <p className="mb-1 font-semibold text-site-text">Langganan aktif ditemukan</p>
+                                <p className="mb-3 text-site-text-2">
+                                    Kamu sudah punya {currentPlan.name} yang masih aktif. Paket yang sama belum bisa dibeli sampai masa aktifnya habis.
                                 </p>
                                 {canPurchaseCheck.activeSubscription && (
-                                    <p className="text-xs text-red-700 dark:text-red-300">
-                                        Your current subscription expires on: {canPurchaseCheck.activeSubscription.expiresAt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+                                    <p className="text-xs text-site-text-muted">
+                                        Berakhir pada {canPurchaseCheck.activeSubscription.expiresAt.toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" })}
                                     </p>
                                 )}
                                 <div className="mt-4">
-                                    <Link 
-                                        href="/dashboard/billing" 
-                                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-md hover:bg-red-200 dark:text-red-200 dark:bg-red-800 dark:border-red-600 dark:hover:bg-red-700 transition-colors"
+                                    <Link
+                                        href="/dashboard/billing"
+                                        className="inline-flex min-h-10 items-center border border-site-line px-4 text-sm font-semibold text-site-text transition-colors hover:border-site-line-strong"
                                     >
-                                        View My Subscription
+                                        Lihat langganan saya
                                     </Link>
                                 </div>
                             </div>
@@ -132,59 +147,32 @@ export default async function PaymentPage({ searchParams }: PaymentPageProps) {
                     </div>
                 )}
 
-                {existingTransaction && (
-                    <p className="text-sm text-muted-foreground text-center mb-6">
-                        {"Menampilkan pembayaran tertunda untuk paket ini."}
-                    </p>
-                )}
-
                 {(!canPurchaseCheck || canPurchaseCheck.canPurchase) && (
-                <div className="bg-card border rounded-lg p-6 space-y-6">
-                    <div className="flex items-baseline justify-between">
-                        <h2 className="font-medium">{currentPlan.name}</h2>
-                        <p className="text-lg font-semibold">{currentPlan.price}</p>
+                <div className="border border-site-line bg-site-panel p-5 sm:p-6">
+                    <div className="flex items-baseline justify-between gap-4">
+                        <p className="text-sm text-site-text-muted">{currentPlan.name}</p>
+                        <p className="font-display text-3xl font-extrabold tracking-tight text-site-text">{currentPlan.price}</p>
                     </div>
 
-                    <p className="text-sm text-muted-foreground">
-                        {bankDetails.bankName} · {bankDetails.accountName}
+                    <div className="mt-6">
+                        <DetailRow label="Bank" value={`${bankDetails.bankName} · ${bankDetails.accountName}`} />
+                        <DetailRow label="Rekening" value={bankDetails.accountNumber} copyValue={bankDetails.accountNumber} />
+                        {reference && <DetailRow label="Referensi" value={reference} copyValue={reference} />}
+                    </div>
+
+                    <p className="mt-6 text-sm text-site-text-2">
+                        {reference
+                            ? `Transfer tepat ${currentPlan.price} dan tulis kode referensi di berita transfer.`
+                            : `Transfer tepat ${currentPlan.price}.`}
                     </p>
 
-                    <div className="space-y-3 text-sm">
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="min-w-0">
-                                <p className="text-xs text-muted-foreground">{"Rekening"}</p>
-                                <p className="font-mono truncate">{bankDetails.accountNumber}</p>
-                            </div>
-                            <CopyButton content={bankDetails.accountNumber} copyMessage={"Disalin!"} />
-                        </div>
-
-                        <div className="flex items-center justify-between gap-4">
-                            <div>
-                                <p className="text-xs text-muted-foreground">{"Jumlah"}</p>
-                                <p className="font-medium">{currentPlan.price}</p>
-                            </div>
-                            <CopyButton content={currentPlan.price.split(' ')[1]} copyMessage={"Disalin!"} />
-                        </div>
-
-                        {transaction?.transactionReference && (
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="min-w-0">
-                                    <p className="text-xs text-muted-foreground">{"Referensi"}</p>
-                                    <p className="font-mono truncate">{transaction.transactionReference}</p>
-                                </div>
-                                <CopyButton content={transaction.transactionReference} copyMessage={"Disalin!"} />
-                            </div>
-                        )}
-                    </div>
-
-                    <p className="text-sm text-muted-foreground">{"Transfer jumlah yang tepat, lalu konfirmasi pembayaran via WhatsApp."}</p>
-
-                    <div className="space-y-3 text-center">
-                        <WhatsAppConfirmButton 
+                    <div className="mt-6 space-y-3">
+                        <WhatsAppConfirmButton
                             whatsappUrl={whatsappUrl}
                             transactionId={transaction?.id}
+                            label="Saya sudah transfer"
                         />
-                        <p className="text-xs text-muted-foreground">{"Kami akan verifikasi dan aktifkan langganan dalam 24 jam"}</p>
+                        <p className="text-center text-xs text-site-text-muted">Kami verifikasi dan aktifkan langganan dalam 24 jam.</p>
                     </div>
                 </div>
                 )}

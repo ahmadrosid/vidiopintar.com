@@ -30,6 +30,7 @@ const planDetails = {
     popular: false,
     originalPrice: undefined,
     features: [
+      "1.000 panggilan MCP",
       "Pemrosesan video tanpa batas",
       "Wawasan bertenaga AI",
       "Ringkasan instan",
@@ -46,6 +47,7 @@ const planDetails = {
     description: "Nilai terbaik untuk pembelajar yang berkomitmen",
     popular: true,
     features: [
+      "12.000 panggilan MCP",
       "Pemrosesan video tanpa batas",
       "Wawasan bertenaga AI",
       "Ringkasan instan",
@@ -98,7 +100,7 @@ export function UpgradePlansSection({
             return (
               <div
                 key={planId}
-                className={`flex flex-col gap-6 border bg-site-bg p-6 ${plan.popular ? "border-site-accent" : "border-site-line"}`}
+                className={`flex flex-col gap-6 border bg-site-panel p-6 ${plan.popular ? "border-site-accent" : "border-site-line"}`}
               >
                 {plan.popular && (
                   <span className="self-start bg-site-accent-soft px-2 py-1 text-xs text-site-accent">Paling populer</span>

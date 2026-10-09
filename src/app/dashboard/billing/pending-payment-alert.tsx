@@ -4,6 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { AlertCircleIcon, CreditCardIcon, Clock01Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
+import { planTypeLabel } from "@/lib/plan-labels";
 
 interface Transaction {
   id: string;
@@ -108,7 +109,7 @@ export function PendingPaymentAlert({ transactions, currentPaymentSettings }: Pe
             <div className="mb-4 grid grid-cols-1 gap-4 border-t border-site-line-soft pt-4 text-sm sm:grid-cols-3">
               <div>
                 <p className="text-site-text-muted">Paket</p>
-                <p className="capitalize text-site-text">{latestTransaction.planType}</p>
+                <p className="capitalize text-site-text">{planTypeLabel(latestTransaction.planType)}</p>
               </div>
               <div>
                 <p className="text-site-text-muted">Jumlah</p>

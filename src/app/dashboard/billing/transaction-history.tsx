@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { formatDisplayDateTime } from "@/lib/utils";
 import { transactionStatusLabel } from "@/lib/transaction-status-labels";
+import { planTypeLabel } from "@/lib/plan-labels";
 
 interface Transaction {
   id: string;
@@ -107,7 +108,7 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
                 }}
                 className={`border-t border-site-line ${isPending(transaction) ? "cursor-pointer hover:bg-site-header" : ""}`}
               >
-                <td className="whitespace-nowrap px-4 py-2.5 capitalize text-site-text">{transaction.planType}</td>
+                <td className="whitespace-nowrap px-4 py-2.5 capitalize text-site-text">{planTypeLabel(transaction.planType)}</td>
                 <td className="whitespace-nowrap px-4 py-2.5 text-site-text tabular-nums">
                   {formatAmount(transaction.amount, transaction.currency)}
                 </td>

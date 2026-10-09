@@ -10,16 +10,8 @@ interface SubscriptionDetails {
 }
 
 interface CurrentPlanCardProps {
-  currentPlan: 'free' | 'monthly' | 'yearly';
+  currentPlan: 'monthly' | 'yearly';
   subscriptionDetails?: SubscriptionDetails | null;
-}
-
-interface PlanDetail {
-  name: string;
-  price: string;
-  period: string;
-  features: string[];
-  note?: string;
 }
 
 function getDaysUntilExpiry(date: Date) {
@@ -31,19 +23,13 @@ function getDaysUntilExpiry(date: Date) {
   return daysDiff;
 }
 
-const planDetails: Record<CurrentPlanCardProps['currentPlan'], PlanDetail> = {
-  free: {
-    name: "Gratis",
-    price: "IDR 0",
-    period: "tanpa langganan",
-    features: ["2 video per hari"],
-    note: "Playground dan API key tersedia untuk paket berbayar.",
-  },
+const planDetails = {
   monthly: {
     name: "Bulanan",
     price: "IDR 50,000",
     period: "per bulan",
     features: [
+      "1.000 panggilan MCP",
       "Pemrosesan video tanpa batas",
       "Wawasan bertenaga AI",
       "Ringkasan instan",
@@ -55,6 +41,7 @@ const planDetails: Record<CurrentPlanCardProps['currentPlan'], PlanDetail> = {
     price: "IDR 500,000",
     period: "per tahun",
     features: [
+      "12.000 panggilan MCP",
       "Pemrosesan video tanpa batas",
       "Wawasan bertenaga AI",
       "Ringkasan instan",
@@ -69,7 +56,7 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
   const daysLeft = subscriptionDetails ? getDaysUntilExpiry(subscriptionDetails.expiresAt) : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 border border-site-line bg-site-panel p-5 sm:p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-display text-4xl font-extrabold leading-none tracking-tight text-site-text sm:text-5xl">{plan.price}</p>
@@ -77,8 +64,6 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
         </div>
         <span className="border border-site-accent px-3 py-1 text-sm text-site-accent">{plan.name}</span>
       </div>
-
-      {plan.note && <p className="text-sm text-site-text-muted">{plan.note}</p>}
 
       {subscriptionDetails && (
         <div className="border border-site-line bg-site-panel p-4 text-sm">
