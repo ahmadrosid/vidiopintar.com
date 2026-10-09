@@ -26,7 +26,8 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
   const start = today - (range - 1) * dayMs;
   const ownKey = eq(mcpApiKeys.userId, userId);
   const inRange = gte(mcpRequestMetrics.createdAt, new Date(start));
-  const dayExpr = sql<number>`(${mcpRequestMetrics.createdAt} / ${sql.raw(String(dayMs))}) * ${sql.raw(String(dayMs))}`;
+  // CAST truncates the division to whole days, so the floor holds with the constant bound as a parameter.
+  const dayExpr = sql<number>`CAST(${mcpRequestMetrics.createdAt} / ${dayMs} AS INTEGER) * ${dayMs}`;
 
   const [outcomesByDay, bytesByDay, history] = await Promise.all([
     db

@@ -33,6 +33,14 @@ function isOutcomeFilter(value: string | undefined): value is string {
   return value === "all" || value === "failed" || (value !== undefined && Object.hasOwn(outcomeLabels, value));
 }
 
+const tableHeaders = [
+  { label: "Waktu", align: "" },
+  { label: "Status", align: "" },
+  { label: "Video", align: "" },
+  { label: "Key", align: "" },
+  { label: "Durasi", align: "text-right" },
+];
+
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
 
 const filterItem = "cursor-pointer rounded-none text-site-text-2 focus:bg-site-accent-soft focus:text-site-text";
@@ -102,11 +110,11 @@ export default async function LogsPage({
           <table className="w-full text-left text-sm">
             <thead className="bg-site-header text-site-text-muted">
               <tr>
-                <th className="px-4 py-2.5 font-normal">Waktu</th>
-                <th className="px-4 py-2.5 font-normal">Status</th>
-                <th className="px-4 py-2.5 font-normal">Video</th>
-                <th className="px-4 py-2.5 font-normal">Key</th>
-                <th className="px-4 py-2.5 text-right font-normal">Durasi</th>
+                {tableHeaders.map((header) => (
+                  <th key={header.label} className={`px-4 py-2.5 font-normal ${header.align}`}>
+                    {header.label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>

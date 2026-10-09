@@ -173,8 +173,8 @@ export function Playground() {
             </pre>
           ) : (
             <ol className="max-h-[32rem] overflow-y-auto p-2">
-              {state.segments.map((segment, index) => (
-                <li key={`${segment.start}-${index}`} className="flex gap-4 px-3 py-1.5 text-sm leading-6 sm:text-base">
+              {state.segments.map((segment) => (
+                <li key={`${segment.start}-${segment.text}`} className="flex gap-4 px-3 py-1.5 text-sm leading-6 sm:text-base">
                   <span className="w-14 shrink-0 tabular-nums text-site-accent">{formatTimestamp(segment.start)}</span>
                   <span className="min-w-0 text-site-text-2">{segment.text}</span>
                 </li>

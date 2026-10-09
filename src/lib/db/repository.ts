@@ -1,10 +1,9 @@
 import { db } from "@/lib/db/index"
-import { and, desc, eq, InferInsertModel, InferSelectModel } from "drizzle-orm"
+import { eq, InferSelectModel } from "drizzle-orm"
 import { user } from "./schema/auth"
 import {
   transcriptCache,
   transcriptSegments,
-  userVideos,
 } from "./schema/videos"
 
 

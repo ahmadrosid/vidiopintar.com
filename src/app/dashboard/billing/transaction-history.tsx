@@ -99,7 +99,12 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
             {localTransactions.map((transaction) => (
               <tr
                 key={transaction.id}
+                role={isPending(transaction) ? "button" : undefined}
+                tabIndex={isPending(transaction) ? 0 : undefined}
                 onClick={() => handleTransactionClick(transaction)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") handleTransactionClick(transaction);
+                }}
                 className={`border-t border-site-line ${isPending(transaction) ? "cursor-pointer hover:bg-site-header" : ""}`}
               >
                 <td className="whitespace-nowrap px-4 py-2.5 capitalize text-site-text">{transaction.planType}</td>
