@@ -42,7 +42,6 @@ const footerLinks = [
   { href: "/panduan", label: "Panduan" },
   { href: "/privacy", label: "Privasi" },
   { href: "/terms", label: "Ketentuan" },
-  { href: "/api/health", label: "Status" },
   { href: "mailto:support@vidiopintar.com", label: "Dukungan" },
 ];
 
