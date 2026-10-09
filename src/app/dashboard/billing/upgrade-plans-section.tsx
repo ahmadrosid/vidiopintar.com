@@ -1,14 +1,7 @@
 "use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckIcon, CrownIcon, SparklesIcon, Alert01Icon, ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { CheckIcon, CrownIcon, Alert01Icon, ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { formatDisplayDate } from "@/lib/utils";
 
@@ -25,7 +18,7 @@ interface ActiveSubscription {
 }
 
 const ctaClass =
-  "inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
+  "inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 bg-site-accent-fill px-6 font-display text-lg font-bold text-[#0d0f12] transition-colors hover:bg-site-accent-fill-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent";
 
 const planDetails = {
   monthly: {
@@ -94,22 +87,10 @@ export function UpgradePlansSection({
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <button type="button" className={`${ctaClass} w-auto`}>
-          <HugeiconsIcon icon={SparklesIcon} className="size-4" />
-          Upgrade paket
-        </button>
-      </DialogTrigger>
-      <DialogContent className={`max-h-[90vh] w-full overflow-y-auto rounded-none border-site-line bg-site-panel font-mono text-site-text ${availableUpgrades.length > 1 ? "max-w-4xl!" : "max-w-xl!"}`}>
-        <DialogHeader>
-          <DialogTitle className="font-display text-4xl font-extrabold tracking-tight text-site-text">
-            Upgrade paket
-          </DialogTitle>
-          <p className="pt-2 text-sm text-site-text-muted">Dapatkan akses ke lebih banyak fitur dan buka potensi penuh kamu.</p>
-        </DialogHeader>
+    <div className="space-y-6">
+      <p className="text-sm text-site-text-muted">Dapatkan akses ke lebih banyak fitur dan buka potensi penuh kamu.</p>
 
-        <div className={`mt-6 grid gap-4 ${availableUpgrades.length > 1 ? "md:grid-cols-2" : ""}`}>
+      <div className={`grid gap-4 ${availableUpgrades.length > 1 ? "md:grid-cols-2" : ""}`}>
           {availableUpgrades.map((planId) => {
             const plan = planDetails[planId];
             const active = activeSubscriptions[plan.id];
@@ -157,7 +138,7 @@ export function UpgradePlansSection({
                       </button>
                     </div>
                   ) : (
-                    <Link href={`/payment?plan=${plan.id}`} className={ctaClass}>
+                    <Link href={`/payment?plan=${plan.id}`} className={`${ctaClass} w-full`}>
                       Upgrade ke {plan.name}
                       <HugeiconsIcon icon={ArrowUpRight01Icon} className="size-4" />
                     </Link>
@@ -166,8 +147,7 @@ export function UpgradePlansSection({
               </div>
             );
           })}
-        </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

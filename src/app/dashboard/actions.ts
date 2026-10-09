@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { createUserMcpKey, MAX_ACTIVE_KEYS_PER_USER, revokeUserMcpKey } from "@/lib/mcp/keys";
+import { UserPlanService } from "@/lib/user-plan-service";
 
 export type CreateKeyState =
   | { status: "idle" }
@@ -14,6 +15,11 @@ const nameSchema = z.string().trim().min(1, "Nama key wajib diisi.").max(60, "Na
 
 export async function createKeyAction(_prev: CreateKeyState, formData: FormData): Promise<CreateKeyState> {
   const user = await getCurrentUser();
+
+  if ((await UserPlanService.getCurrentPlan(user.id)) === "free") {
+    return { status: "error", message: "Buat API key butuh paket berbayar. Pilih paket di halaman billing." };
+  }
+
   const parsed = nameSchema.safeParse(formData.get("name") ?? "");
 
   if (!parsed.success) {

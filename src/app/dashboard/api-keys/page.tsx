@@ -2,11 +2,14 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { ShieldKeyIcon } from "@hugeicons/core-free-icons";
 import { getCurrentUser } from "@/lib/auth";
 import { listUserMcpKeys, MAX_ACTIVE_KEYS_PER_USER } from "@/lib/mcp/keys";
+import { UserPlanService } from "@/lib/user-plan-service";
 import { ApiKeysManager } from "../api-keys-manager";
 import { DashboardTitle } from "../dashboard-sidebar";
+import { UpgradePrompt } from "../upgrade-prompt";
 
 export default async function ApiKeysPage() {
   const user = await getCurrentUser();
+  const plan = await UserPlanService.getCurrentPlan(user.id);
   const keys = await listUserMcpKeys(user.id);
 
   return (
@@ -17,6 +20,9 @@ export default async function ApiKeysPage() {
 
       <div className="[&>section:first-child]:border-t-0">
         <section className="border-t border-site-line-soft py-10">
+          {plan === "free" ? (
+            <UpgradePrompt feature="Membuat API key" />
+          ) : (
           <ApiKeysManager
             keys={keys}
             header={
@@ -33,6 +39,7 @@ export default async function ApiKeysPage() {
               </>
             }
           />
+          )}
         </section>
       </div>
     </>

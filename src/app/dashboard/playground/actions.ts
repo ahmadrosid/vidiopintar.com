@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { toServiceError } from "@/lib/mcp/transcript-errors";
 import { getTranscriptPage } from "@/lib/mcp/transcript";
+import { UserPlanService } from "@/lib/user-plan-service";
 
 type TranscriptPage = Awaited<ReturnType<typeof getTranscriptPage>>;
 
@@ -19,6 +20,11 @@ const inputSchema = z.object({
 
 export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>): Promise<PlaygroundResult> {
   const user = await getCurrentUser();
+
+  if ((await UserPlanService.getCurrentPlan(user.id)) === "free") {
+    return { ok: false, code: "PLAN_REQUIRED", message: "Playground butuh paket berbayar. Pilih paket di halaman billing.", retryable: false };
+  }
+
   const parsed = inputSchema.safeParse(input);
 
   if (!parsed.success) {
