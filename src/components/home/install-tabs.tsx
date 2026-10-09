@@ -145,9 +145,11 @@ export function InstallTabs({
   const [active, setActive] = useState(clients[0].id);
   const [copied, setCopied] = useState(false);
   const client = clients.find((item) => item.id === active) ?? clients[0];
+
   const shownCode = apiKey
     ? client.code.replaceAll(keyPlaceholder, redactKey(apiKey))
     : client.code;
+
   const copyCode = apiKey
     ? client.code.replaceAll(keyPlaceholder, apiKey)
     : client.code;

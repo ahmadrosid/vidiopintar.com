@@ -93,6 +93,7 @@ function JsonView({ value }: { value: unknown }) {
     if (index > last) nodes.push(text.slice(last, index));
 
     const [token, string, colon, keyword] = match;
+
     const className = string
       ? colon
         ? jsonTokenClass.key
@@ -185,11 +186,13 @@ export function Playground() {
     if (state.status !== "success") return null;
 
     const { segments } = state;
+
     const words = segments.reduce(
       (total, segment) =>
         total + segment.text.split(/\s+/).filter(Boolean).length,
       0,
     );
+
     const duration = segments.reduce(
       (max, segment) => Math.max(max, segment.start + segment.duration),
       0,

@@ -134,8 +134,10 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
     createKeyAction,
     { status: "idle" },
   );
+
   const [open, setOpen] = useState(false);
   // Holds the new key while the dialog shows its setup view; cleared when the dialog reopens.
+
   const [created, setCreated] = useState<{
     token: string;
     name: string;
@@ -148,6 +150,7 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
 
   const changeOpen = (next: boolean) => {
     setOpen(next);
+
     if (next) setCreated(null);
   };
 
