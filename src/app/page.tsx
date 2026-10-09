@@ -9,11 +9,11 @@ import { SITE_URL } from "@/lib/geo/site";
 
 export const metadata: Metadata = {
   title: "Transkrip YouTube untuk Agen AI",
-  description: "MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
+  description: "MCP (Model Context Protocol) untuk memberi agen AI (AI agent) akses ke transkrip YouTube dengan penanda waktu.",
   alternates: { canonical: SITE_URL },
   openGraph: {
     title: "Transkrip YouTube untuk Agen AI | Vidiopintar",
-    description: "MCP untuk mengambil transkrip YouTube dengan penanda waktu.",
+    description: "MCP (Model Context Protocol) untuk memberi agen AI (AI agent) akses ke transkrip YouTube dengan penanda waktu.",
     url: SITE_URL,
     siteName: "Vidiopintar",
     locale: "id_ID",
@@ -34,7 +34,9 @@ const response = `{
 export default function Page() {
   return (
     <SitePage backdrop={<KyotoDusk />}>
-      <PageTitle>
+      <PageTitle
+        meta="MCP (Model Context Protocol) untuk memberi agen AI (AI agent) akses ke transkrip YouTube dengan penanda waktu."
+      >
         <span className="text-site-accent">vidiopintar</span> — transkrip YouTube untuk agen AI.
       </PageTitle>
 

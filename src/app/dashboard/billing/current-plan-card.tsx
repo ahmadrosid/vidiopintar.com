@@ -27,12 +27,7 @@ const planDetails = {
     name: "Gratis",
     price: "Gratis",
     period: "selamanya",
-    features: [
-      "2 video per hari",
-      "Wawasan AI dasar",
-      "Ringkasan sederhana",
-      "Dukungan komunitas",
-    ],
+    features: [] as string[],
   },
   monthly: {
     name: "Bulanan",
@@ -84,17 +79,19 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
         </div>
       )}
 
-      <div>
-        <p className="mb-3 text-sm text-site-text-muted">Fitur paket</p>
-        <ul className="grid gap-2 md:grid-cols-2">
-          {plan.features.map((feature) => (
-            <li key={feature} className="flex items-center gap-2 text-site-text">
-              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 shrink-0 text-site-accent" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {plan.features.length > 0 && (
+        <div>
+          <p className="mb-3 text-sm text-site-text-muted">Fitur paket</p>
+          <ul className="grid gap-2 md:grid-cols-2">
+            {plan.features.map((feature) => (
+              <li key={feature} className="flex items-center gap-2 text-site-text">
+                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 shrink-0 text-site-accent" />
+                {feature}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
