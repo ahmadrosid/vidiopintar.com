@@ -49,3 +49,4 @@ data/*.db-shm
 *.db-shm
 docs/
 data/
+.env*
