@@ -69,9 +69,11 @@ export default async function BillingPage() {
       )}
 
       <div className="[&>section:first-child]:border-t-0">
-        <Row label="Paket saat ini" icon={<HugeiconsIcon icon={CrownIcon} />} wide>
-          <CurrentPlanCard currentPlan={currentPlan} subscriptionDetails={subscriptionDetails} />
-        </Row>
+        {currentPlan !== "free" && (
+          <Row label="Paket saat ini" icon={<HugeiconsIcon icon={CrownIcon} />} wide>
+            <CurrentPlanCard currentPlan={currentPlan} subscriptionDetails={subscriptionDetails} />
+          </Row>
+        )}
 
         <Row label="Upgrade" icon={<HugeiconsIcon icon={SparklesIcon} />} wide>
           <UpgradePlansSection currentPlan={currentPlan} activeSubscriptions={activeSubscriptions} />

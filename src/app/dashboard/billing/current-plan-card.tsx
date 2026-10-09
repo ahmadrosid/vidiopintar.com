@@ -10,7 +10,7 @@ interface SubscriptionDetails {
 }
 
 interface CurrentPlanCardProps {
-  currentPlan: 'free' | 'monthly' | 'yearly';
+  currentPlan: 'monthly' | 'yearly';
   subscriptionDetails?: SubscriptionDetails | null;
 }
 
@@ -23,12 +23,6 @@ function getDaysUntilExpiry(date: Date) {
 }
 
 const planDetails = {
-  free: {
-    name: "Gratis",
-    price: "Gratis",
-    period: "selamanya",
-    features: [] as string[],
-  },
   monthly: {
     name: "Bulanan",
     price: "IDR 50,000",
