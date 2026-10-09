@@ -1,4 +1,5 @@
 import { headers } from 'next/headers';
+import { z } from 'zod';
 
 // Sensitive fields that should be redacted from logs
 const SENSITIVE_FIELDS = [
@@ -21,60 +22,80 @@ const EXCLUDED_FIELDS = [
   'x-api-key',
 ];
 
+type JsonValue = string | number | boolean | null | undefined | JsonValue[] | { [key: string]: JsonValue };
+
+const jsonValue: z.ZodType<JsonValue> = z.lazy(() =>
+  z.union([z.string(), z.number(), z.boolean(), z.null(), z.undefined(), z.array(jsonValue), z.record(z.string(), jsonValue)]),
+);
+
+function asString(value: JsonValue): string | undefined {
+  const parsed = z.string().safeParse(value);
+
+  return parsed.success ? parsed.data : undefined;
+}
+
+function redactEmail(local: string, domain: string) {
+  return local.length > 2 ? `${local.substring(0, 2)}***@${domain}` : `***@${domain}`;
+}
+
+function redactTail(value: string) {
+  return value.length > 4 ? `***${value.slice(-4)}` : '***';
+}
+
 /**
  * Sanitizes an object by redacting sensitive fields
  */
-function sanitizeObject(obj: any, depth = 0): any {
+function sanitizeObject(input: JsonValue, depth = 0): JsonValue {
   if (depth > 5) return '[Max Depth Reached]'; // Prevent infinite recursion
-  
-  if (obj === null || obj === undefined) return obj;
-  
-  if (typeof obj === 'string') {
-    return obj.length > 1000 ? obj.substring(0, 1000) + '...[truncated]' : obj;
+
+  if (input === null || input === undefined) return input;
+
+  const text = asString(input);
+
+  if (text !== undefined) {
+    return text.length > 1000 ? text.substring(0, 1000) + '...[truncated]' : text;
   }
-  
-  if (typeof obj !== 'object') return obj;
-  
-  if (Array.isArray(obj)) {
-    return obj.length > 10 
-      ? [...obj.slice(0, 10), `...[${obj.length - 10} more items]`]
-      : obj.map(item => sanitizeObject(item, depth + 1));
+
+  const list = z.array(jsonValue).safeParse(input);
+
+  if (list.success) {
+    const items = list.data;
+
+    return items.length > 10
+      ? [...items.slice(0, 10), `...[${items.length - 10} more items]`]
+      : items.map((item) => sanitizeObject(item, depth + 1));
   }
-  
-  const sanitized: any = {};
-  
-  for (const [key, value] of Object.entries(obj)) {
+
+  const record = z.record(z.string(), jsonValue).safeParse(input);
+
+  if (!record.success) return input;
+
+  const sanitized: Record<string, JsonValue> = {};
+
+  for (const [key, value] of Object.entries(record.data)) {
     const lowerKey = key.toLowerCase();
-    
+    const stringValue = asString(value);
+
     // Exclude sensitive fields entirely
     if (EXCLUDED_FIELDS.some(field => lowerKey.includes(field))) {
       continue;
     }
-    
+
     // Redact sensitive fields
     if (SENSITIVE_FIELDS.some(field => lowerKey.includes(field))) {
-      if (lowerKey.includes('email') && typeof value === 'string') {
+      if (stringValue === undefined) {
+        sanitized[key] = '[REDACTED]';
+      } else if (lowerKey.includes('email')) {
         // Partially redact email
-        const [local, domain] = value.split('@');
-        sanitized[key] = local.length > 2 
-          ? `${local.substring(0, 2)}***@${domain}`
-          : `***@${domain}`;
-      } else if (lowerKey.includes('ip') && typeof value === 'string') {
+        const [local, domain = ''] = stringValue.split('@');
+        sanitized[key] = redactEmail(local, domain);
+      } else if (lowerKey.includes('ip')) {
         // Partially redact IP address
-        const parts = value.split('.');
-        sanitized[key] = parts.length === 4 
-          ? `${parts[0]}.${parts[1]}.***.***.`
-          : '***';
-      } else if (lowerKey.includes('bankaccount') && typeof value === 'string') {
-        // Redact bank account info
-        sanitized[key] = value.length > 4 
-          ? `***${value.slice(-4)}`
-          : '***';
-      } else if (lowerKey.includes('phone') && typeof value === 'string') {
-        // Redact phone number
-        sanitized[key] = value.length > 4 
-          ? `***${value.slice(-4)}`
-          : '***';
+        const parts = stringValue.split('.');
+        sanitized[key] = parts.length === 4 ? `${parts[0]}.${parts[1]}.***.***.` : '***';
+      } else if (lowerKey.includes('bankaccount') || lowerKey.includes('phone')) {
+        // Redact bank account and phone numbers, keeping the last four characters
+        sanitized[key] = redactTail(stringValue);
       } else {
         sanitized[key] = '[REDACTED]';
       }
@@ -82,7 +103,7 @@ function sanitizeObject(obj: any, depth = 0): any {
       sanitized[key] = sanitizeObject(value, depth + 1);
     }
   }
-  
+
   return sanitized;
 }
 
