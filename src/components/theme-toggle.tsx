@@ -76,7 +76,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
       >
         <SelectTrigger
           aria-label="Tema"
-          className={`min-w-36 cursor-pointer rounded-md border-site-line bg-site-panel px-3 text-sm text-site-text ${focusRing}`}
+          className={`min-w-36 cursor-pointer rounded-md border-site-line bg-site-panel px-3 text-sm text-site-text shadow-none dark:shadow-sm ${focusRing}`}
         >
           <SelectValue />
         </SelectTrigger>
