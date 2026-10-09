@@ -4,18 +4,11 @@ import { Stat } from "@/components/site/site-page";
 import { DashboardTitle } from "../dashboard-sidebar";
 import { cancelTransactionAction } from "./actions";
 import { ConfirmTransactionButton } from "./confirm-transaction-button";
+import { transactionStatusLabel } from "@/lib/transaction-status-labels";
 
 export const metadata = {
   title: "Admin",
   robots: { index: false, follow: false },
-};
-
-const statusLabels: Record<string, string> = {
-  confirmed: "Berhasil",
-  pending: "Menunggu",
-  waiting_confirmation: "Menunggu konfirmasi",
-  expired: "Kedaluwarsa",
-  cancelled: "Dibatalkan",
 };
 
 const openStatuses = ["pending", "waiting_confirmation"];
@@ -79,7 +72,7 @@ export default async function AdminPage() {
                           isOpen ? "border-site-accent text-site-accent" : "border-site-line text-site-text-muted"
                         }`}
                       >
-                        {statusLabels[transaction.status] ?? transaction.status}
+                        {transactionStatusLabel(transaction.status)}
                       </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">

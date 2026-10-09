@@ -3,7 +3,7 @@ import { ArrowLeft01Icon, ArrowRight01Icon, CheckmarkCircle02Icon, AlertCircleIc
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { getUserMcpLogs, LOG_PAGE_SIZE } from "@/lib/mcp/analytics";
-import { outcomeLabels } from "@/lib/mcp/outcomes";
+import { outcomeLabel, outcomeLabels } from "@/lib/mcp/outcomes";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DashboardTitle } from "../dashboard-sidebar";
 
@@ -77,7 +77,7 @@ export default async function LogsPage({
               <SelectItem value="failed" className={filterItem}>Semua error</SelectItem>
               {errorCodes.map((code) => (
                 <SelectItem key={code} value={code} className={filterItem}>
-                  {outcomeLabels[code]}
+                  {outcomeLabel(code)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -120,7 +120,7 @@ export default async function LogsPage({
                     <td className="whitespace-nowrap px-4 py-2.5">
                       <span className="inline-flex items-center gap-2 text-site-text">
                         <HugeiconsIcon icon={Icon} className="size-4 shrink-0" style={{ color: ok ? SUCCESS : FAILED }} />
-                        {outcomeLabels[row.outcome] ?? row.outcome}
+                        {outcomeLabel(row.outcome)}
                       </span>
                       {!ok && <span className="block text-xs text-site-text-faint">{row.outcome}</span>}
                     </td>

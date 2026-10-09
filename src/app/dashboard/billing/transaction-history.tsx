@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TransactionDetailDialog } from "./transaction-detail-dialog";
 import { formatDisplayDateTime } from "@/lib/utils";
+import { transactionStatusLabel } from "@/lib/transaction-status-labels";
 
 interface Transaction {
   id: string;
@@ -30,14 +31,6 @@ interface TransactionHistoryProps {
   transactions: Transaction[];
   currentPaymentSettings: PaymentSettings | null;
 }
-
-const statusLabels: Record<string, string> = {
-  confirmed: "Berhasil",
-  pending: "Menunggu",
-  waiting_confirmation: "Menunggu konfirmasi",
-  expired: "Kedaluwarsa",
-  cancelled: "Dibatalkan",
-};
 
 // Pending states get the accent so they stand out; everything else stays neutral.
 function getStatusClass(status: string) {
@@ -117,7 +110,7 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
                 </td>
                 <td className="whitespace-nowrap px-4 py-2.5">
                   <span className={`border px-2 py-0.5 text-xs ${getStatusClass(transaction.status)}`}>
-                    {statusLabels[transaction.status] ?? transaction.status}
+                    {transactionStatusLabel(transaction.status)}
                   </span>
                 </td>
                 <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{formatDay(transaction.createdAt)}</td>

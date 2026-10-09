@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Row, Stat } from "@/components/site/site-page";
 import { getCurrentUser } from "@/lib/auth";
 import { ANALYTICS_RANGES, getUserMcpAnalytics, type AnalyticsRange, type HistoryStatus } from "@/lib/mcp/analytics";
-import { outcomeLabels } from "@/lib/mcp/outcomes";
+import { outcomeLabel } from "@/lib/mcp/outcomes";
 import { ColumnChart, type ChartSeries } from "./column-chart";
 import { DashboardTitle } from "./dashboard-sidebar";
 import { DeleteAccount } from "./delete-account";
@@ -139,7 +139,7 @@ export default async function DashboardPage({
                         <td className="whitespace-nowrap px-4 py-2.5 text-site-text">
                           <span className="inline-flex items-center gap-2">
                             <HugeiconsIcon icon={Icon} className="size-4 shrink-0" style={{ color: ok ? SUCCESS : FAILED }} />
-                            {outcomeLabels[row.outcome] ?? row.outcome}
+                            {outcomeLabel(row.outcome)}
                           </span>
                         </td>
                         <td className="whitespace-nowrap px-4 py-2.5">

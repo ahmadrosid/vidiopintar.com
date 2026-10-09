@@ -11,18 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { CopyButton } from "@/components/payment/copy-button";
 import { formatDisplayDateTime } from "@/lib/utils";
+import { transactionStatusLabel } from "@/lib/transaction-status-labels";
 
 const planDetails = {
   monthly: { name: "Paket bulanan" },
   yearly: { name: "Paket tahunan" }
-};
-
-const statusLabels: Record<string, string> = {
-  confirmed: "Berhasil",
-  pending: "Menunggu",
-  waiting_confirmation: "Menunggu konfirmasi",
-  expired: "Kedaluwarsa",
-  cancelled: "Dibatalkan",
 };
 
 function getStatusClass(status: string) {
@@ -167,7 +160,7 @@ export function TransactionDetailDialog({
             <div className="flex items-center justify-between gap-4">
               <span className="text-site-text-muted">Status</span>
               <span className={`border px-2 py-0.5 text-xs ${getStatusClass(currentTransaction.status)}`}>
-                {statusLabels[currentTransaction.status] ?? currentTransaction.status}
+                {transactionStatusLabel(currentTransaction.status)}
               </span>
             </div>
 
