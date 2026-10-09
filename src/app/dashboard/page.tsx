@@ -1,9 +1,22 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowUpRight01Icon, CheckmarkCircle02Icon, HistoryIcon, GaugeIcon, UserCircleIcon, AlertCircleIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowUpRight01Icon,
+  CheckmarkCircle02Icon,
+  HistoryIcon,
+  GaugeIcon,
+  UserCircleIcon,
+  AlertCircleIcon,
+} from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { Row, Stat } from "@/components/site/site-page";
 import { getCurrentUser } from "@/lib/auth";
-import { ANALYTICS_RANGES, DASHBOARD_HISTORY_LIMIT, getUserMcpAnalytics, type AnalyticsRange, type HistoryStatus } from "@/lib/mcp/analytics";
+import {
+  ANALYTICS_RANGES,
+  DASHBOARD_HISTORY_LIMIT,
+  getUserMcpAnalytics,
+  type AnalyticsRange,
+  type HistoryStatus,
+} from "@/lib/mcp/analytics";
 import { outcomeLabel } from "@/lib/mcp/outcomes";
 import { ColumnChart, type ChartSeries } from "./column-chart";
 import { DashboardTitle } from "./dashboard-sidebar";
@@ -24,11 +37,19 @@ const statusFilters: { value: HistoryStatus; label: string }[] = [
   { value: "failed", label: "Gagal" },
 ];
 
+const cardClass = "border border-site-line bg-site-panel p-5 sm:p-6";
+
 const numberFormat = new Intl.NumberFormat("id-ID");
 
-const decimalFormat = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 });
+const decimalFormat = new Intl.NumberFormat("id-ID", {
+  maximumFractionDigits: 1,
+});
 
-const dayLabel = new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", timeZone: "UTC" });
+const dayLabel = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "short",
+  timeZone: "UTC",
+});
 
 const timeLabel = new Intl.DateTimeFormat("id-ID", {
   day: "numeric",
@@ -38,11 +59,14 @@ const timeLabel = new Intl.DateTimeFormat("id-ID", {
   timeZone: "Asia/Jakarta",
 });
 
-const formatDuration = (ms: number) => (ms < 1000 ? `${ms} ms` : `${decimalFormat.format(ms / 1000)} dtk`);
+const formatDuration = (ms: number) =>
+  ms < 1000 ? `${ms} ms` : `${decimalFormat.format(ms / 1000)} dtk`;
 
 function chipClass(selected: boolean) {
   return `inline-flex min-h-9 items-center border px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-site-accent ${
-    selected ? "border-site-accent bg-site-accent-soft text-site-text" : "border-site-line text-site-text-muted hover:border-site-line-strong hover:text-site-text"
+    selected
+      ? "border-site-accent bg-site-accent-soft text-site-text"
+      : "border-site-line text-site-text-muted hover:border-site-line-strong hover:text-site-text"
   }`;
 }
 
@@ -52,19 +76,35 @@ export default async function DashboardPage({
   searchParams: Promise<{ range?: string; status?: string }>;
 }) {
   const params = await searchParams;
-  const range: AnalyticsRange = ANALYTICS_RANGES.find((value) => String(value) === params.range) ?? 30;
-  const status: HistoryStatus = statusFilters.find((item) => item.value === params.status)?.value ?? "all";
+
+  const range: AnalyticsRange =
+    ANALYTICS_RANGES.find((value) => String(value) === params.range) ?? 30;
+
+  const status: HistoryStatus =
+    statusFilters.find((item) => item.value === params.status)?.value ?? "all";
 
   const href = (next: { range?: AnalyticsRange; status?: HistoryStatus }) =>
     `/dashboard?${new URLSearchParams({ range: String(next.range ?? range), status: next.status ?? status })}`;
 
   const user = await getCurrentUser();
-  const { totals, daily, history } = await getUserMcpAnalytics(user.id, range, status);
-  const successRate = totals.requests ? Math.round((totals.success / totals.requests) * 100) : null;
+
+  const { totals, daily, history } = await getUserMcpAnalytics(
+    user.id,
+    range,
+    status,
+  );
+
+  const successRate = totals.requests
+    ? Math.round((totals.success / totals.requests) * 100)
+    : null;
 
   const points = daily.map((point) => ({
     label: dayLabel.format(point.day),
-    values: { success: point.success, failed: point.failed, bytes: point.bytes },
+    values: {
+      success: point.success,
+      failed: point.failed,
+      bytes: point.bytes,
+    },
   }));
 
   return (
@@ -81,7 +121,12 @@ export default async function DashboardPage({
         </Link>
         <nav aria-label="Rentang waktu" className="flex flex-wrap gap-2">
           {ANALYTICS_RANGES.map((value) => (
-            <Link key={value} href={href({ range: value })} aria-current={value === range ? "true" : undefined} className={chipClass(value === range)}>
+            <Link
+              key={value}
+              href={href({ range: value })}
+              aria-current={value === range ? "true" : undefined}
+              className={chipClass(value === range)}
+            >
               {value} hari
             </Link>
           ))}
@@ -90,14 +135,40 @@ export default async function DashboardPage({
 
       <div className="[&>section:first-child]:border-t-0">
         <Row label="Pemakaian" icon={<HugeiconsIcon icon={GaugeIcon} />} wide>
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-            <Stat value={numberFormat.format(totals.requests)} unit="permintaan" />
-            <Stat value={successRate === null ? "–" : `${successRate}%`} unit="berhasil" />
-            <Stat value={numberFormat.format(totals.failed)} unit="gagal" />
-            <Stat value={totals.medianMs === null ? "–" : formatDuration(totals.medianMs)} unit="median durasi" />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className={cardClass}>
+              <Stat
+                value={numberFormat.format(totals.requests)}
+                unit="permintaan"
+              />
+            </div>
+            <div className={cardClass}>
+              <Stat
+                value={successRate === null ? "–" : `${successRate}%`}
+                unit="berhasil"
+              />
+            </div>
+            <div className={cardClass}>
+              <Stat value={numberFormat.format(totals.failed)} unit="gagal" />
+            </div>
+            <div className={cardClass}>
+              <Stat
+                value={
+                  totals.medianMs === null
+                    ? "–"
+                    : formatDuration(totals.medianMs)
+                }
+                unit="median durasi"
+              />
+            </div>
           </div>
-          <div className="pt-6">
-            <ColumnChart title="Permintaan per hari" series={requestSeries} points={points} unit="count" />
+          <div className={cardClass}>
+            <ColumnChart
+              title="Permintaan per hari"
+              series={requestSeries}
+              points={points}
+              unit="count"
+            />
           </div>
         </Row>
 
@@ -125,7 +196,9 @@ export default async function DashboardPage({
                     <th className="px-4 py-2.5 font-normal">Hasil</th>
                     <th className="px-4 py-2.5 font-normal">Video</th>
                     <th className="px-4 py-2.5 font-normal">Key</th>
-                    <th className="px-4 py-2.5 text-right font-normal">Durasi</th>
+                    <th className="px-4 py-2.5 text-right font-normal">
+                      Durasi
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -135,10 +208,16 @@ export default async function DashboardPage({
 
                     return (
                       <tr key={row.id} className="border-t border-site-line">
-                        <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{timeLabel.format(row.createdAt)}</td>
+                        <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">
+                          {timeLabel.format(row.createdAt)}
+                        </td>
                         <td className="whitespace-nowrap px-4 py-2.5 text-site-text">
                           <span className="inline-flex items-center gap-2">
-                            <HugeiconsIcon icon={Icon} className="size-4 shrink-0" style={{ color: ok ? SUCCESS : FAILED }} />
+                            <HugeiconsIcon
+                              icon={Icon}
+                              className="size-4 shrink-0"
+                              style={{ color: ok ? SUCCESS : FAILED }}
+                            />
                             {outcomeLabel(row.outcome)}
                           </span>
                         </td>
@@ -156,8 +235,12 @@ export default async function DashboardPage({
                             <span className="text-site-text-faint">–</span>
                           )}
                         </td>
-                        <td className="max-w-40 truncate px-4 py-2.5 text-site-text-muted">{row.keyName}</td>
-                        <td className="whitespace-nowrap px-4 py-2.5 text-right text-site-text-muted tabular-nums">{formatDuration(row.durationMs)}</td>
+                        <td className="max-w-40 truncate px-4 py-2.5 text-site-text-muted">
+                          {row.keyName}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-2.5 text-right text-site-text-muted tabular-nums">
+                          {formatDuration(row.durationMs)}
+                        </td>
                       </tr>
                     );
                   })}
@@ -165,7 +248,11 @@ export default async function DashboardPage({
               </table>
             </div>
           )}
-          {history.length === DASHBOARD_HISTORY_LIMIT && <p className="text-sm text-site-text-faint">{DASHBOARD_HISTORY_LIMIT} permintaan terbaru</p>}
+          {history.length === DASHBOARD_HISTORY_LIMIT && (
+            <p className="text-sm text-site-text-faint">
+              {DASHBOARD_HISTORY_LIMIT} permintaan terbaru
+            </p>
+          )}
         </Row>
 
         <Row label="Akun" icon={<HugeiconsIcon icon={UserCircleIcon} />}>
