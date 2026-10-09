@@ -51,6 +51,7 @@ describe("transcript cursors", () => {
   });
 
   test("rejects an unsupported cursor version", () => {
+    // SAFETY: the version is deliberately wrong so decodeCursor must reject it; the shape is otherwise valid.
     const encoded = encodeCursor("vpt_live_test", { ...cursor, v: 2 } as typeof cursor);
     expect(() => decodeCursor("vpt_live_test", encoded)).toThrow(McpServiceError);
   });

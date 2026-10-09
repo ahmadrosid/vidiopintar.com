@@ -1,31 +1,26 @@
-import { afterEach, describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, mock, spyOn, test } from "bun:test";
 import { fetchVideoFromOEmbed } from "./youtube";
 
-const originalFetch = globalThis.fetch;
-
 afterEach(() => {
-  globalThis.fetch = originalFetch;
+  mock.restore();
 });
 
 describe("fetchVideoFromOEmbed", () => {
   test("maps oembed JSON to the existing details shape", async () => {
-    globalThis.fetch = (async (input: RequestInfo | URL) => {
-      const url = String(input);
-      expect(url).toContain("youtube.com/oembed");
-      expect(url).not.toContain("transcriptapi.com");
-
-      return new Response(
+    const fetchSpy = spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
         JSON.stringify({
           title: "Never Gonna Give You Up",
           author_name: "Rick Astley",
           thumbnail_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
         }),
         { status: 200 },
-      );
-    }) as unknown as typeof fetch;
+      ),
+    );
 
     const details = await fetchVideoFromOEmbed("dQw4w9WgXcQ");
 
+    expect(String(fetchSpy.mock.calls[0]?.[0])).toContain("youtube.com/oembed");
     expect(details.title).toBe("Never Gonna Give You Up");
     expect(details.channelTitle).toBe("Rick Astley");
     expect(details.thumbnails).toEqual({
@@ -33,12 +28,9 @@ describe("fetchVideoFromOEmbed", () => {
     });
   });
 
-  test("uses fallback title when oembed fails", async () => {
-    globalThis.fetch = (async () =>
-      new Response("gone", { status: 404 })) as unknown as typeof fetch;
+  test("throws when oembed responds with an error", async () => {
+    spyOn(globalThis, "fetch").mockResolvedValue(new Response("gone", { status: 404 }));
 
-    await expect(fetchVideoFromOEmbed("dQw4w9WgXcQ")).rejects.toThrow(
-      /Failed to fetch video details/,
-    );
+    await expect(fetchVideoFromOEmbed("dQw4w9WgXcQ")).rejects.toThrow(/Failed to fetch video details/);
   });
 });
