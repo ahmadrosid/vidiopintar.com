@@ -241,7 +241,7 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
       {keys.length === 0 ? (
         <p className="text-site-text-faint">Belum ada key aktif.</p>
       ) : (
-        <div className="overflow-x-auto border border-site-line bg-white">
+        <div className="overflow-x-auto border border-site-line bg-site-panel">
           <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
             <thead className="bg-site-header text-site-text-muted">
               <tr>
