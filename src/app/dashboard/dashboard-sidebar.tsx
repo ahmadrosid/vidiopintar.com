@@ -58,7 +58,7 @@ export function DashboardSidebar({ email, isAdmin }: { email: string; isAdmin: b
 
       <div className="hidden border-t border-site-line-soft px-2 py-4 md:block">
         <p className="truncate px-4 pb-3 text-xs text-site-text-faint" title={email}>{email}</p>
-        <ThemeToggle label="Tema" className={`${itemBase} ${itemIdle} w-full`} />
+        <div className="px-4 pb-3"><ThemeToggle className="w-full" /></div>
         <button type="button" onClick={() => openUserProfile()} className={`${itemBase} ${itemIdle} w-full`}>
           <HugeiconsIcon icon={UserCircleIcon} className="size-[18px]" />
           Akun

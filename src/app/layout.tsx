@@ -104,7 +104,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function apply(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}document.documentElement.classList.toggle("dark",t?t==="dark":m.matches)}apply();m.addEventListener("change",apply)})();`,
+            __html: `(function(){var m=window.matchMedia("(prefers-color-scheme: dark)");function apply(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}document.documentElement.classList.toggle("dark",t==="dark"||(t!=="light"&&m.matches))}apply();m.addEventListener("change",apply)})();`,
           }}
         />
         <script
