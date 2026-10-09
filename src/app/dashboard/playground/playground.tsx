@@ -47,9 +47,11 @@ export function Playground() {
     startTransition(async () => {
       const startedAt = performance.now();
 
+      const trimmedLanguage = language.trim();
+
       const input = cursor
         ? { cursor }
-        : { video: video.trim(), ...(language.trim() ? { language: language.trim() } : {}) };
+        : { video: video.trim(), language: trimmedLanguage || undefined };
 
       try {
         const result = await fetchTranscriptAction(input);
