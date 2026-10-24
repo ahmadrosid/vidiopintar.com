@@ -6,8 +6,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { user } from "./auth";
 
-const timestampMs = (name: string) =>
-  integer(name, { mode: "timestamp_ms" });
+const timestampMs = (name: string) => integer(name, { mode: "timestamp_ms" });
 
 export const videos = sqliteTable("videos", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -49,9 +48,9 @@ export const userVideos = sqliteTable(
   (table) => [
     uniqueIndex("user_videos_user_id_youtube_id_idx").on(
       table.userId,
-      table.youtubeId
+      table.youtubeId,
     ),
-  ]
+  ],
 );
 
 export const sharedVideos = sqliteTable("shared_videos", {
@@ -66,37 +65,6 @@ export const sharedVideos = sqliteTable("shared_videos", {
   ownerId: text("owner_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  createdAt: timestampMs("created_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-  updatedAt: timestampMs("updated_at")
-    .$defaultFn(() => new Date())
-    .notNull(),
-});
-
-export const transcriptSegments = sqliteTable("transcript_segments", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  videoId: text("video_id").notNull(),
-  start: text("start").notNull(),
-  end: text("end").notNull(),
-  text: text("text").notNull(),
-  isChapterStart: integer("is_chapter_start", { mode: "boolean" }).notNull(),
-});
-
-export const transcriptCache = sqliteTable("transcript_cache", {
-  videoId: text("video_id").primaryKey(),
-  response: text("response", { mode: "json" }).$type<{
-    video_id: string;
-    language: string;
-    transcript: Array<{ text: string; start: number; duration: number }>;
-    metadata?: {
-      title?: string;
-      author_name?: string;
-      author_url?: string;
-      thumbnail_url?: string;
-    };
-  }>(),
-  unavailable: integer("unavailable", { mode: "boolean" }).default(false).notNull(),
   createdAt: timestampMs("created_at")
     .$defaultFn(() => new Date())
     .notNull(),

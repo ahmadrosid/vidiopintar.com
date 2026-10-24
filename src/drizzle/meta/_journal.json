@@ -71,6 +71,13 @@
       "when": 1791482658801,
       "tag": "0009_mcp_request_video",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1792835212247,
+      "tag": "0010_drop_legacy_transcript_tables",
+      "breakpoints": true
     }
   ]
 }
