@@ -17,7 +17,11 @@ const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 const PAGE_BYTES = 24_000;
 
-export function paginateTranscript<T>(segments: T[], offset: number, maxBytes: number) {
+export function paginateTranscript<T>(
+  segments: T[],
+  offset: number,
+  maxBytes: number,
+) {
   let end = offset;
   let bytes = 0;
 
@@ -32,53 +36,69 @@ export function paginateTranscript<T>(segments: T[], offset: number, maxBytes: n
   return { segments: segments.slice(offset, end), nextOffset: end, bytes };
 }
 
+async function findCachedTranscript(
+  videoId: string,
+  language: string,
+): Promise<TranscriptApiResponse | undefined> {
+  const cached = await db.query.mcpTranscriptCache.findFirst({
+    where: and(
+      eq(mcpTranscriptCache.videoId, videoId),
+      eq(mcpTranscriptCache.language, language),
+      gt(mcpTranscriptCache.expiresAt, new Date()),
+    ),
+  });
+
+  return cached?.response;
+}
+
 export async function getTranscriptPage(input: {
   video?: string;
   language?: string;
   cursor?: string;
   token: string;
-}): Promise<{ video_id: string; language: string; title?: string; metadata?: TranscriptApiResponse["metadata"]; transcript: TranscriptApiResponse["transcript"]; next_cursor?: string }> {
-  const cursor = input.cursor ? decodeCursor(input.token, input.cursor) : undefined;
+}): Promise<{
+  video_id: string;
+  language: string;
+  title?: string;
+  metadata?: TranscriptApiResponse["metadata"];
+  transcript: TranscriptApiResponse["transcript"];
+  next_cursor?: string;
+}> {
+  const cursor = input.cursor
+    ? decodeCursor(input.token, input.cursor)
+    : undefined;
+
   const videoId = cursor?.videoId ?? normalizeVideoReference(input.video ?? "");
   let response: TranscriptApiResponse | undefined;
 
   if (cursor) {
     if (
-      (input.video && normalizeVideoReference(input.video) !== cursor.videoId) ||
-      (input.language && !cursor.language.toLowerCase().startsWith(input.language.toLowerCase()))
+      (input.video &&
+        normalizeVideoReference(input.video) !== cursor.videoId) ||
+      (input.language &&
+        !cursor.language.toLowerCase().startsWith(input.language.toLowerCase()))
     ) {
       throw new McpServiceError("INVALID_CURSOR");
     }
 
-    const cached = await db.query.mcpTranscriptCache.findFirst({
-      where: and(
-        eq(mcpTranscriptCache.videoId, videoId),
-        eq(mcpTranscriptCache.language, cursor.language),
-        gt(mcpTranscriptCache.expiresAt, new Date()),
-      ),
-    });
+    response = await findCachedTranscript(videoId, cursor.language);
 
-    if (!cached) throw new McpServiceError("INVALID_CURSOR");
-    response = cached.response;
+    if (!response) throw new McpServiceError("INVALID_CURSOR");
 
     if (transcriptSnapshot(response.transcript) !== cursor.snapshot) {
       throw new McpServiceError("INVALID_CURSOR");
     }
   } else {
-    const tracks = await listLanguages(videoId, { retries: 2, retryDelay: 750 });
+    const tracks = await listLanguages(videoId, {
+      retries: 2,
+      retryDelay: 750,
+    });
+
     const track = pickCaptionTrack(tracks, input.language);
 
     if (!track) throw new McpServiceError("CAPTIONS_UNAVAILABLE");
 
-    const cached = await db.query.mcpTranscriptCache.findFirst({
-      where: and(
-        eq(mcpTranscriptCache.videoId, videoId),
-        eq(mcpTranscriptCache.language, track.languageCode),
-        gt(mcpTranscriptCache.expiresAt, new Date()),
-      ),
-    });
-
-    response = cached?.response;
+    response = await findCachedTranscript(videoId, track.languageCode);
 
     if (!response) {
       const fetched = await fetchTranscript(videoId, {
@@ -95,21 +115,23 @@ export async function getTranscriptPage(input: {
         metadata: mapVideoDetails(fetched.videoDetails),
       };
 
-      if (!response.transcript.length) throw new McpServiceError("CAPTIONS_UNAVAILABLE");
-      await db.insert(mcpTranscriptCache).values({
-        videoId,
-        language: track.languageCode,
-        response,
-        expiresAt: new Date(Date.now() + CACHE_TTL_MS),
-        updatedAt: new Date(),
-      }).onConflictDoUpdate({
-        target: [mcpTranscriptCache.videoId, mcpTranscriptCache.language],
-        set: {
+      if (!response.transcript.length)
+        throw new McpServiceError("CAPTIONS_UNAVAILABLE");
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + CACHE_TTL_MS);
+      await db
+        .insert(mcpTranscriptCache)
+        .values({
+          videoId,
+          language: track.languageCode,
           response,
-          expiresAt: new Date(Date.now() + CACHE_TTL_MS),
-          updatedAt: new Date(),
-        },
-      });
+          expiresAt,
+          updatedAt: now,
+        })
+        .onConflictDoUpdate({
+          target: [mcpTranscriptCache.videoId, mcpTranscriptCache.language],
+          set: { response, expiresAt, updatedAt: now },
+        });
     }
   }
 
@@ -125,14 +147,16 @@ export async function getTranscriptPage(input: {
           thumbnail_url: details.thumbnails.high?.url,
         },
       };
-      await db.update(mcpTranscriptCache)
+      await db
+        .update(mcpTranscriptCache)
         .set({ response, updatedAt: new Date() })
-        .where(and(
-          eq(mcpTranscriptCache.videoId, videoId),
-          eq(mcpTranscriptCache.language, response.language),
-        ));
-    } catch {
-    }
+        .where(
+          and(
+            eq(mcpTranscriptCache.videoId, videoId),
+            eq(mcpTranscriptCache.language, response.language),
+          ),
+        );
+    } catch {}
   }
 
   const snapshot = transcriptSnapshot(response.transcript);
@@ -160,14 +184,15 @@ export async function getTranscriptPage(input: {
     title,
     metadata,
     transcript: page.segments,
-    next_cursor: end < response.transcript.length
-      ? encodeCursor(input.token, {
-          videoId,
-          language: response.language,
-          snapshot,
-          offset: end,
-          expiresAt: Date.now() + 15 * 60 * 1000,
-        })
-      : undefined,
+    next_cursor:
+      end < response.transcript.length
+        ? encodeCursor(input.token, {
+            videoId,
+            language: response.language,
+            snapshot,
+            offset: end,
+            expiresAt: Date.now() + 15 * 60 * 1000,
+          })
+        : undefined,
   };
 }
