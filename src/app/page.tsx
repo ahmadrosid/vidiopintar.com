@@ -99,7 +99,7 @@ export default function Page() {
               <p className="text-sm text-site-text-muted">per bulan</p>
               <ul className="mt-4 flex-1 space-y-2 text-base leading-7">
                 <li>1.000 panggilan MCP</li>
-                <li>Transkrip video tanpa batas</li>
+                <li>Semua bahasa transkrip yang tersedia</li>
                 <li>Dukungan email</li>
               </ul>
               <Link
@@ -120,7 +120,7 @@ export default function Page() {
               </p>
               <ul className="mt-4 flex-1 space-y-2 text-base leading-7">
                 <li>12.000 panggilan MCP</li>
-                <li>Transkrip video tanpa batas</li>
+                <li>Semua bahasa transkrip yang tersedia</li>
                 <li>Dukungan email dan prioritas</li>
               </ul>
               <Link

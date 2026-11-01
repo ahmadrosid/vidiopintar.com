@@ -5,6 +5,7 @@ export type McpErrorCode =
   | "INVALID_CURSOR"
   | "INVALID_CREDENTIALS"
   | "USAGE_LIMIT_EXCEEDED"
+  | "PLAN_REQUIRED"
   | "TEMPORARY_PROVIDER_FAILURE"
   | "SERVICE_MISCONFIGURED";
 
@@ -14,7 +15,9 @@ const messages: Record<McpErrorCode, string> = {
   VIDEO_UNAVAILABLE: "Video ini tidak tersedia di YouTube.",
   INVALID_CURSOR: "Cursor sudah tidak berlaku. Mulai lagi dari awal.",
   INVALID_CREDENTIALS: "API key tidak valid atau sudah dicabut.",
-  USAGE_LIMIT_EXCEEDED: "Batas penggunaan API key ini sudah tercapai.",
+  USAGE_LIMIT_EXCEEDED: "Batas penggunaan sudah tercapai.",
+  PLAN_REQUIRED:
+    "Paket berbayar Anda sudah berakhir. Perpanjang paket di halaman billing.",
   TEMPORARY_PROVIDER_FAILURE:
     "YouTube sedang membatasi permintaan. Coba lagi beberapa saat lagi.",
   SERVICE_MISCONFIGURED: "Layanan transkrip sedang mengalami gangguan.",

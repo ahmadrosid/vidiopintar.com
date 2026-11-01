@@ -1,20 +1,30 @@
-import { index, integer, primaryKey, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  index,
+  integer,
+  primaryKey,
+  sqliteTable,
+  text,
+} from "drizzle-orm/sqlite-core";
 import { user } from "./auth";
 
 const timestampMs = (name: string) => integer(name, { mode: "timestamp_ms" });
 
-export const mcpApiKeys = sqliteTable("mcp_api_keys", {
-  id: text("id").primaryKey(),
-  userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  prefix: text("prefix").notNull().unique(),
-  keyHash: text("key_hash").notNull().unique(),
-  requestsPerMinute: integer("requests_per_minute").notNull().default(30),
-  requestsPerDay: integer("requests_per_day").notNull().default(1000),
-  bytesPerDay: integer("bytes_per_day").notNull().default(10_000_000),
-  createdAt: timestampMs("created_at").notNull(),
-  revokedAt: timestampMs("revoked_at"),
-}, (table) => [index("mcp_api_keys_user_id_idx").on(table.userId)]);
+export const mcpApiKeys = sqliteTable(
+  "mcp_api_keys",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    prefix: text("prefix").notNull().unique(),
+    keyHash: text("key_hash").notNull().unique(),
+    requestsPerMinute: integer("requests_per_minute").notNull().default(30),
+    requestsPerDay: integer("requests_per_day").notNull().default(1000),
+    bytesPerDay: integer("bytes_per_day").notNull().default(10_000_000),
+    createdAt: timestampMs("created_at").notNull(),
+    revokedAt: timestampMs("revoked_at"),
+  },
+  (table) => [index("mcp_api_keys_user_id_idx").on(table.userId)],
+);
 
 export const mcpUsage = sqliteTable(
   "mcp_usage",
@@ -34,6 +44,21 @@ export const mcpUsage = sqliteTable(
   ],
 );
 
+// MCP transcript calls per user per paid period (keyed by the period start),
+// summed across all of the user's keys.
+export const mcpPlanUsage = sqliteTable(
+  "mcp_plan_usage",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    periodStart: integer("period_start").notNull(),
+    calls: integer("calls").notNull().default(0),
+    updatedAt: timestampMs("updated_at").notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.periodStart] })],
+);
+
 export const mcpRequestMetrics = sqliteTable(
   "mcp_request_metrics",
   {
@@ -50,7 +75,10 @@ export const mcpRequestMetrics = sqliteTable(
   },
   (table) => [
     index("mcp_request_metrics_created_at_idx").on(table.createdAt),
-    index("mcp_request_metrics_key_created_idx").on(table.keyId, table.createdAt),
+    index("mcp_request_metrics_key_created_idx").on(
+      table.keyId,
+      table.createdAt,
+    ),
   ],
 );
 
