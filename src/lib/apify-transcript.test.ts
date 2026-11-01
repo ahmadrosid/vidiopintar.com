@@ -12,41 +12,71 @@ describe("transcriptLanguages", () => {
 describe("mapApifyItem", () => {
   test("maps segments and video details", () => {
     const mapped = mapApifyItem("abc", {
-      languageCode: "en",
-      transcript: [{ text: "Hello", start: 0.04, duration: 3.3 }],
-      videoDetails: {
-        title: "Title",
-        author: "Author",
-        channelId: "UC123",
-        thumbnail: { thumbnails: [{ url: "small" }, { url: "large" }] },
-      },
+      ok: true,
+      language: "en",
+      segments: [{ text: "Hello", start: 1.36, duration: 1.68 }],
+      title: "Title",
+      channelName: "Author",
+      channelUrl: "https://www.youtube.com/channel/UC123",
+      thumbnailUrl: "thumb.jpg",
     });
 
     expect(mapped).toEqual({
       video_id: "abc",
       language: "en",
-      transcript: [{ text: "Hello", start: 0.04, duration: 3.3 }],
+      transcript: [{ text: "Hello", start: 1.36, duration: 1.68 }],
       metadata: {
         title: "Title",
         author_name: "Author",
         author_url: "https://www.youtube.com/channel/UC123",
-        thumbnail_url: "large",
+        thumbnail_url: "thumb.jpg",
       },
     });
+  });
+
+  test("decodes HTML entities in segment text", () => {
+    const mapped = mapApifyItem("abc", {
+      language: "en",
+      segments: [{ text: "Tom &amp; Jerry it&#39;s", start: 0, duration: 1 }],
+    });
+
+    expect(mapped.transcript[0].text).toBe("Tom & Jerry it's");
   });
 
   test("throws CAPTIONS_UNAVAILABLE when there is no transcript", () => {
     expect(() => mapApifyItem("abc", undefined)).toThrow(
       expect.objectContaining({ code: "CAPTIONS_UNAVAILABLE" }),
     );
+    expect(() => mapApifyItem("abc", { language: "en", segments: [] })).toThrow(
+      expect.objectContaining({ code: "CAPTIONS_UNAVAILABLE" }),
+    );
+  });
+
+  test("maps the actor's not-found diagnostic to VIDEO_UNAVAILABLE", () => {
     expect(() =>
-      mapApifyItem("abc", { languageCode: "en", transcript: [] }),
+      mapApifyItem("abc", {
+        ok: false,
+        errorCode: "NOT_FOUND",
+        error:
+          "The requested item does not exist, or is private, deleted or suspended.",
+        details: "VIDEO_UNAVAILABLE: This video is unavailable",
+      }),
+    ).toThrow(expect.objectContaining({ code: "VIDEO_UNAVAILABLE" }));
+  });
+
+  test("maps caption errors that mention unavailable to CAPTIONS_UNAVAILABLE", () => {
+    expect(() =>
+      mapApifyItem("abc", {
+        ok: false,
+        error: "Transcript is unavailable for this video",
+      }),
     ).toThrow(expect.objectContaining({ code: "CAPTIONS_UNAVAILABLE" }));
   });
 
   test("maps proxy bandwidth errors to SERVICE_MISCONFIGURED", () => {
     expect(() =>
       mapApifyItem("abc", {
+        ok: false,
         error:
           "Proxy responded with 402 Payment Required: Bandwidth limit reached. Please upgrade to continue using the proxy.",
       }),
@@ -54,14 +84,8 @@ describe("mapApifyItem", () => {
   });
 
   test("maps unknown run errors to a retryable failure", () => {
-    expect(() => mapApifyItem("abc", { error: "socket hang up" })).toThrow(
-      expect.objectContaining({ code: "TEMPORARY_PROVIDER_FAILURE" }),
-    );
-  });
-
-  test("maps unavailable-video errors", () => {
     expect(() =>
-      mapApifyItem("abc", { error: "Video is unavailable" }),
-    ).toThrow(expect.objectContaining({ code: "VIDEO_UNAVAILABLE" }));
+      mapApifyItem("abc", { ok: false, error: "socket hang up" }),
+    ).toThrow(expect.objectContaining({ code: "TEMPORARY_PROVIDER_FAILURE" }));
   });
 });

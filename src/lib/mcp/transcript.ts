@@ -15,6 +15,7 @@ import {
   type TranscriptApiResponse,
 } from "@/lib/transcript-api";
 import { McpServiceError } from "./errors";
+import { toServiceError } from "./transcript-errors";
 import { decodeCursor, encodeCursor, transcriptSnapshot } from "./cursor";
 import { normalizeVideoReference } from "./video-reference";
 
@@ -56,7 +57,10 @@ async function findCachedTranscript(
   return cached?.response;
 }
 
-async function saveCachedTranscript(response: TranscriptApiResponse) {
+async function saveCachedTranscript(
+  response: TranscriptApiResponse,
+  language = response.language,
+) {
   const now = new Date();
   const expiresAt = new Date(now.getTime() + CACHE_TTL_MS);
 
@@ -64,7 +68,7 @@ async function saveCachedTranscript(response: TranscriptApiResponse) {
     .insert(mcpTranscriptCache)
     .values({
       videoId: response.video_id,
-      language: response.language,
+      language,
       response,
       expiresAt,
       updatedAt: now,
@@ -73,6 +77,69 @@ async function saveCachedTranscript(response: TranscriptApiResponse) {
       target: [mcpTranscriptCache.videoId, mcpTranscriptCache.language],
       set: { response, expiresAt, updatedAt: now },
     });
+}
+
+async function fetchFromYoutube(
+  videoId: string,
+  language?: string,
+): Promise<TranscriptApiResponse> {
+  const tracks = await listLanguages(videoId, {
+    retries: 2,
+    retryDelay: 750,
+  });
+
+  const track = pickCaptionTrack(tracks, language);
+
+  if (!track) throw new McpServiceError("CAPTIONS_UNAVAILABLE");
+
+  const cached = await findCachedTranscript(videoId, track.languageCode);
+
+  if (cached) return cached;
+
+  const fetched = await fetchTranscript(videoId, {
+    retries: 2,
+    retryDelay: 750,
+    lang: track.languageCode,
+    videoDetails: true,
+  });
+
+  const response: TranscriptApiResponse = {
+    video_id: videoId,
+    language: track.languageCode,
+    transcript: mapTranscriptSegments(fetched.segments),
+    metadata: mapVideoDetails(fetched.videoDetails),
+  };
+
+  if (!response.transcript.length) {
+    throw new McpServiceError("CAPTIONS_UNAVAILABLE");
+  }
+
+  await saveCachedTranscript(response);
+
+  return response;
+}
+
+async function fetchFromApify(
+  videoId: string,
+  language?: string,
+): Promise<TranscriptApiResponse> {
+  const languages = transcriptLanguages(language);
+  const cached = await findCachedTranscript(videoId, languages[0]);
+
+  if (cached) return cached;
+
+  const response = await fetchApifyTranscript(videoId, languages);
+
+  await saveCachedTranscript(response);
+
+  // Apify may return a different language than requested (fallback, or
+  // "en-US" for "en"). Also cache under the requested code so the next
+  // lookup hits instead of starting another paid run.
+  if (response.language !== languages[0]) {
+    await saveCachedTranscript(response, languages[0]);
+  }
+
+  return response;
 }
 
 export async function getTranscriptPage(input: {
@@ -112,45 +179,18 @@ export async function getTranscriptPage(input: {
     if (transcriptSnapshot(response.transcript) !== cursor.snapshot) {
       throw new McpServiceError("INVALID_CURSOR");
     }
-  } else if (isApifyConfigured()) {
-    const languages = transcriptLanguages(input.language);
-
-    response = await findCachedTranscript(videoId, languages[0]);
-
-    if (!response) {
-      response = await fetchApifyTranscript(videoId, languages);
-      await saveCachedTranscript(response);
-    }
   } else {
-    const tracks = await listLanguages(videoId, {
-      retries: 2,
-      retryDelay: 750,
-    });
+    try {
+      response = await fetchFromYoutube(videoId, input.language);
+    } catch (error) {
+      // Fall back to the paid Apify actor only when YouTube is blocking or
+      // rate-limiting us. Missing captions or videos won't change via Apify.
+      const blocked =
+        error instanceof Error &&
+        toServiceError(error).code === "TEMPORARY_PROVIDER_FAILURE";
 
-    const track = pickCaptionTrack(tracks, input.language);
-
-    if (!track) throw new McpServiceError("CAPTIONS_UNAVAILABLE");
-
-    response = await findCachedTranscript(videoId, track.languageCode);
-
-    if (!response) {
-      const fetched = await fetchTranscript(videoId, {
-        retries: 2,
-        retryDelay: 750,
-        lang: track.languageCode,
-        videoDetails: true,
-      });
-
-      response = {
-        video_id: videoId,
-        language: track.languageCode,
-        transcript: mapTranscriptSegments(fetched.segments),
-        metadata: mapVideoDetails(fetched.videoDetails),
-      };
-
-      if (!response.transcript.length)
-        throw new McpServiceError("CAPTIONS_UNAVAILABLE");
-      await saveCachedTranscript(response);
+      if (!blocked || !isApifyConfigured()) throw error;
+      response = await fetchFromApify(videoId, input.language);
     }
   }
 

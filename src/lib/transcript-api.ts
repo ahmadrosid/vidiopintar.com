@@ -24,7 +24,7 @@ export interface TranscriptApiResponse {
   metadata?: TranscriptApiMetadata;
 }
 
-function decodeHtmlEntities(text: string): string {
+export function decodeHtmlEntities(text: string): string {
   const named = new Map<string, string>([
     ["&amp;", "&"],
     ["&lt;", "<"],

@@ -1,33 +1,33 @@
 import { z } from "zod";
 import { env } from "@/lib/env/server";
 import { McpServiceError } from "@/lib/mcp/errors";
-import type { TranscriptApiResponse } from "@/lib/transcript-api";
+import {
+  decodeHtmlEntities,
+  type TranscriptApiResponse,
+} from "@/lib/transcript-api";
 
-// https://apify.com/supreme_coder/youtube-transcript-scraper
-const ACTOR_ID = "supreme_coder~youtube-transcript-scraper";
+// https://apify.com/dami_studio/youtube-transcript-bulk-scraper
+// Picked on 2026-11-01 as the cheapest working actor: about $0.0009 per
+// transcript on the Free plan, and failed videos are not charged.
+const ACTOR_ID = "dami_studio~youtube-transcript-bulk-scraper";
 
 const RUN_TIMEOUT_SECONDS = 90;
 
 const itemSchema = z.object({
-  languageCode: z.string().optional(),
-  transcript: z
+  ok: z.boolean().optional(),
+  language: z.string().optional(),
+  segments: z
     .array(
       z.object({ text: z.string(), start: z.number(), duration: z.number() }),
     )
     .optional(),
-  videoDetails: z
-    .object({
-      title: z.string().optional(),
-      author: z.string().optional(),
-      channelId: z.string().optional(),
-      thumbnail: z
-        .object({
-          thumbnails: z.array(z.object({ url: z.string() })).optional(),
-        })
-        .optional(),
-    })
-    .optional(),
+  title: z.string().optional(),
+  channelName: z.string().optional(),
+  channelUrl: z.string().optional(),
+  thumbnailUrl: z.string().optional(),
+  errorCode: z.string().optional(),
   error: z.string().optional(),
+  details: z.string().optional(),
 });
 
 type ApifyTranscriptItem = z.infer<typeof itemSchema>;
@@ -54,12 +54,16 @@ function apifyItemError(message: string): McpServiceError {
     return new McpServiceError("SERVICE_MISCONFIGURED");
   }
 
-  if (/unavailable|private|removed|not exist/i.test(message)) {
-    return new McpServiceError("VIDEO_UNAVAILABLE");
-  }
-
+  // Check captions first: "Transcript is unavailable" means the video plays
+  // but has no captions, not that the video is gone.
   if (/transcript|caption|subtitle/i.test(message)) {
     return new McpServiceError("CAPTIONS_UNAVAILABLE");
+  }
+
+  if (
+    /unavailable|private|removed|deleted|not.?found|not exist/i.test(message)
+  ) {
+    return new McpServiceError("VIDEO_UNAVAILABLE");
   }
 
   console.error(`Apify transcript run error: ${message}`);
@@ -71,37 +75,32 @@ export function mapApifyItem(
   videoId: string,
   item: ApifyTranscriptItem | undefined,
 ): TranscriptApiResponse {
-  if (item?.error) {
-    throw apifyItemError(item.error);
+  if (item && (item.ok === false || item.error)) {
+    throw apifyItemError(
+      [item.errorCode, item.error, item.details].filter(Boolean).join(": "),
+    );
   }
 
-  const segments = item?.transcript ?? [];
+  const segments = item?.segments ?? [];
 
-  if (!item?.languageCode || segments.length === 0) {
+  if (!item?.language || segments.length === 0) {
     throw new McpServiceError("CAPTIONS_UNAVAILABLE");
   }
 
-  const details = item.videoDetails;
-  const thumbnails = details?.thumbnail?.thumbnails;
-
   return {
     video_id: videoId,
-    language: item.languageCode,
+    language: item.language,
     transcript: segments.map(({ text, start, duration }) => ({
-      text,
+      text: decodeHtmlEntities(text),
       start,
       duration,
     })),
-    metadata: details
-      ? {
-          title: details.title,
-          author_name: details.author,
-          author_url: details.channelId
-            ? `https://www.youtube.com/channel/${details.channelId}`
-            : undefined,
-          thumbnail_url: thumbnails?.at(-1)?.url,
-        }
-      : undefined,
+    metadata: {
+      title: item.title,
+      author_name: item.channelName,
+      author_url: item.channelUrl,
+      thumbnail_url: item.thumbnailUrl,
+    },
   };
 }
 
@@ -125,9 +124,9 @@ export async function fetchApifyTranscript(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        urls: [{ url: `https://www.youtube.com/watch?v=${videoId}` }],
-        outputFormat: "json",
+        videoUrls: [`https://www.youtube.com/watch?v=${videoId}`],
         languages,
+        maxItems: 1,
       }),
       signal: AbortSignal.timeout((RUN_TIMEOUT_SECONDS + 10) * 1000),
       cache: "no-store",
