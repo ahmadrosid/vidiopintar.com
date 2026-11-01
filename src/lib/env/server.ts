@@ -1,6 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-import 'dotenv/config';
+import "dotenv/config";
 
 export const env = createEnv({
   server: {
@@ -19,6 +19,7 @@ export const env = createEnv({
     TURSO_AUTH_TOKEN: z.string().min(1).optional(),
     ADMIN_MASTER_EMAIL: z.email(),
     YOUTUBE_API_KEY: z.string().min(1).optional(),
+    APIFY_API_TOKEN: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().min(1).default("http://localhost:3000"),

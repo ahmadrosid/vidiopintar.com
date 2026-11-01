@@ -4,6 +4,11 @@ import { db } from "@/lib/db";
 import { mcpTranscriptCache } from "@/lib/db/schema";
 import { fetchVideoFromOEmbed } from "@/lib/youtube";
 import {
+  fetchApifyTranscript,
+  isApifyConfigured,
+  transcriptLanguages,
+} from "@/lib/apify-transcript";
+import {
   mapTranscriptSegments,
   mapVideoDetails,
   pickCaptionTrack,
@@ -51,6 +56,25 @@ async function findCachedTranscript(
   return cached?.response;
 }
 
+async function saveCachedTranscript(response: TranscriptApiResponse) {
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + CACHE_TTL_MS);
+
+  await db
+    .insert(mcpTranscriptCache)
+    .values({
+      videoId: response.video_id,
+      language: response.language,
+      response,
+      expiresAt,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: [mcpTranscriptCache.videoId, mcpTranscriptCache.language],
+      set: { response, expiresAt, updatedAt: now },
+    });
+}
+
 export async function getTranscriptPage(input: {
   video?: string;
   language?: string;
@@ -88,6 +112,15 @@ export async function getTranscriptPage(input: {
     if (transcriptSnapshot(response.transcript) !== cursor.snapshot) {
       throw new McpServiceError("INVALID_CURSOR");
     }
+  } else if (isApifyConfigured()) {
+    const languages = transcriptLanguages(input.language);
+
+    response = await findCachedTranscript(videoId, languages[0]);
+
+    if (!response) {
+      response = await fetchApifyTranscript(videoId, languages);
+      await saveCachedTranscript(response);
+    }
   } else {
     const tracks = await listLanguages(videoId, {
       retries: 2,
@@ -117,21 +150,7 @@ export async function getTranscriptPage(input: {
 
       if (!response.transcript.length)
         throw new McpServiceError("CAPTIONS_UNAVAILABLE");
-      const now = new Date();
-      const expiresAt = new Date(now.getTime() + CACHE_TTL_MS);
-      await db
-        .insert(mcpTranscriptCache)
-        .values({
-          videoId,
-          language: track.languageCode,
-          response,
-          expiresAt,
-          updatedAt: now,
-        })
-        .onConflictDoUpdate({
-          target: [mcpTranscriptCache.videoId, mcpTranscriptCache.language],
-          set: { response, expiresAt, updatedAt: now },
-        });
+      await saveCachedTranscript(response);
     }
   }
 
