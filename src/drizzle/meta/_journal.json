@@ -78,6 +78,13 @@
       "when": 1792835212247,
       "tag": "0010_drop_legacy_transcript_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1793535665415,
+      "tag": "0011_mcp_plan_usage",
+      "breakpoints": true
     }
   ]
 }

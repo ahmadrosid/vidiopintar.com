@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CheckmarkCircle02Icon, Clock01Icon } from "@hugeicons/core-free-icons";
@@ -10,7 +10,7 @@ interface SubscriptionDetails {
 }
 
 interface CurrentPlanCardProps {
-  currentPlan: 'monthly' | 'yearly';
+  currentPlan: "monthly" | "yearly";
   subscriptionDetails?: SubscriptionDetails | null;
 }
 
@@ -30,7 +30,7 @@ const planDetails = {
     period: "per bulan",
     features: [
       "1.000 panggilan MCP",
-      "Transkrip video tanpa batas",
+      "Semua bahasa transkrip yang tersedia",
       "Dukungan email",
     ],
   },
@@ -40,35 +40,52 @@ const planDetails = {
     period: "per tahun",
     features: [
       "12.000 panggilan MCP",
-      "Transkrip video tanpa batas",
+      "Semua bahasa transkrip yang tersedia",
       "Dukungan email",
       "Dukungan prioritas",
     ],
   },
 };
 
-export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPlanCardProps) {
+export function CurrentPlanCard({
+  currentPlan,
+  subscriptionDetails,
+}: CurrentPlanCardProps) {
   const plan = planDetails[currentPlan];
-  const daysLeft = subscriptionDetails ? getDaysUntilExpiry(subscriptionDetails.expiresAt) : 0;
+
+  const daysLeft = subscriptionDetails
+    ? getDaysUntilExpiry(subscriptionDetails.expiresAt)
+    : 0;
 
   return (
     <div className="space-y-6 border border-site-line bg-site-panel p-5 sm:p-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-display text-4xl font-extrabold leading-none tracking-tight text-site-text sm:text-5xl">{plan.price}</p>
+          <p className="font-display text-4xl font-extrabold leading-none tracking-tight text-site-text sm:text-5xl">
+            {plan.price}
+          </p>
           <p className="mt-2 text-sm text-site-text-muted">{plan.period}</p>
         </div>
-        <span className="border border-site-accent px-3 py-1 text-sm text-site-accent">{plan.name}</span>
+        <span className="border border-site-accent px-3 py-1 text-sm text-site-accent">
+          {plan.name}
+        </span>
       </div>
 
       {subscriptionDetails && (
         <div className="border border-site-line bg-site-panel p-4 text-sm">
           <div className="mb-2 flex items-center gap-2 text-site-text">
-            <HugeiconsIcon icon={Clock01Icon} className="size-4 text-site-accent" />
+            <HugeiconsIcon
+              icon={Clock01Icon}
+              className="size-4 text-site-accent"
+            />
             <span className="font-semibold">Status langganan</span>
           </div>
-          <p className="text-site-text-2">Berakhir pada {formatDisplayDate(subscriptionDetails.expiresAt)}</p>
-          <p className="mt-1 text-site-text-muted">{daysLeft > 0 ? `${daysLeft} hari lagi` : "Sudah berakhir"}</p>
+          <p className="text-site-text-2">
+            Berakhir pada {formatDisplayDate(subscriptionDetails.expiresAt)}
+          </p>
+          <p className="mt-1 text-site-text-muted">
+            {daysLeft > 0 ? `${daysLeft} hari lagi` : "Sudah berakhir"}
+          </p>
         </div>
       )}
 
@@ -77,8 +94,14 @@ export function CurrentPlanCard({ currentPlan, subscriptionDetails }: CurrentPla
           <p className="mb-3 text-sm text-site-text-muted">Fitur paket</p>
           <ul className="grid gap-2 md:grid-cols-2">
             {plan.features.map((feature) => (
-              <li key={feature} className="flex items-center gap-2 text-site-text">
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 shrink-0 text-site-accent" />
+              <li
+                key={feature}
+                className="flex items-center gap-2 text-site-text"
+              >
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  className="size-4 shrink-0 text-site-accent"
+                />
                 {feature}
               </li>
             ))}

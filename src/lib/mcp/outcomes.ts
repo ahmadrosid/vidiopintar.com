@@ -6,6 +6,7 @@ export const outcomeLabels = {
   INVALID_CURSOR: "Cursor kedaluwarsa",
   INVALID_CREDENTIALS: "Key tidak valid",
   USAGE_LIMIT_EXCEEDED: "Batas tercapai",
+  PLAN_REQUIRED: "Paket berakhir",
   TEMPORARY_PROVIDER_FAILURE: "Gangguan YouTube",
   SERVICE_MISCONFIGURED: "Gangguan layanan",
 } satisfies Record<string, string>;
