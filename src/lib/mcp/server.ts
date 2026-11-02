@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
-import { and, eq, isNull, lt, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, lt, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import {
@@ -133,9 +133,12 @@ const handler = createMcpHandler((requestContext) => {
     },
     async ({ video, language, cursor }) => {
       const startedAt = Date.now();
+      let refundPlanCall: (() => Promise<void>) | undefined;
 
       try {
-        await consumePlanCall(requestContext.authInfo?.clientId ?? "");
+        refundPlanCall = await consumePlanCall(
+          requestContext.authInfo?.clientId ?? "",
+        );
 
         const result = await getTranscriptPage({
           video: video ?? "",
@@ -164,6 +167,9 @@ const handler = createMcpHandler((requestContext) => {
 
         return response;
       } catch (error) {
+        // Failed calls don't count against the plan.
+        await refundPlanCall?.();
+
         if (error instanceof McpServiceError) {
           await recordRequestMetric(
             requestContext.authInfo?.clientId ?? "",
@@ -257,8 +263,12 @@ async function recordRequestMetric(
  * summed across all of the user's keys for the current paid period, and
  * stop working once the plan expires. Keys without an owner are operator
  * keys made with scripts/mcp-key.mjs and are not plan-limited.
+ *
+ * Returns a function that gives the call back, for when the request fails.
  */
-async function consumePlanCall(keyId: string) {
+async function consumePlanCall(
+  keyId: string,
+): Promise<(() => Promise<void>) | undefined> {
   const key = await db.query.mcpApiKeys.findFirst({
     where: eq(mcpApiKeys.id, keyId),
   });
@@ -293,6 +303,24 @@ async function consumePlanCall(keyId: string) {
     .returning({ calls: mcpPlanUsage.calls });
 
   if (!usage) throw new McpServiceError("USAGE_LIMIT_EXCEEDED");
+
+  const userId = key.userId;
+  const periodStart = subscription.startsAt.getTime();
+
+  return async () => {
+    try {
+      await db
+        .update(mcpPlanUsage)
+        .set({ calls: sql`${mcpPlanUsage.calls} - 1`, updatedAt: new Date() })
+        .where(
+          and(
+            eq(mcpPlanUsage.userId, userId),
+            eq(mcpPlanUsage.periodStart, periodStart),
+            gt(mcpPlanUsage.calls, 0),
+          ),
+        );
+    } catch {}
+  };
 }
 
 async function addOutputUsage(keyId: string, bytes: number) {

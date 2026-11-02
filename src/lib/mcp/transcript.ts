@@ -1,5 +1,9 @@
 import { and, eq, gt } from "drizzle-orm";
-import { fetchTranscript, listLanguages } from "youtube-transcript-plus";
+import {
+  fetchTranscript,
+  listLanguages,
+  YoutubeTranscriptNotAvailableError,
+} from "youtube-transcript-plus";
 import { db } from "@/lib/db";
 import { mcpTranscriptCache } from "@/lib/db/schema";
 import { fetchVideoFromOEmbed } from "@/lib/youtube";
@@ -79,14 +83,41 @@ async function saveCachedTranscript(
     });
 }
 
+/** YouTube itself failed in a way Apify might get around (blocking, rate limits). */
+class YoutubeBlockedError extends Error {
+  constructor(readonly original: Error) {
+    super(original.message);
+  }
+}
+
+// Only wrap calls to YouTube here, so cache or DB errors never start a paid
+// Apify run.
+async function callYoutube<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    // From datacenter IPs (Vercel) YouTube answers with a "confirm you're
+    // not a bot" page, which the library reports as NotAvailable. Videos
+    // that really have no captions throw YoutubeTranscriptDisabledError.
+    if (
+      error instanceof YoutubeTranscriptNotAvailableError ||
+      (error instanceof Error &&
+        toServiceError(error).code === "TEMPORARY_PROVIDER_FAILURE")
+    ) {
+      throw new YoutubeBlockedError(error);
+    }
+
+    throw error;
+  }
+}
+
 async function fetchFromYoutube(
   videoId: string,
   language?: string,
 ): Promise<TranscriptApiResponse> {
-  const tracks = await listLanguages(videoId, {
-    retries: 2,
-    retryDelay: 750,
-  });
+  const tracks = await callYoutube(() =>
+    listLanguages(videoId, { retries: 2, retryDelay: 750 }),
+  );
 
   const track = pickCaptionTrack(tracks, language);
 
@@ -96,12 +127,14 @@ async function fetchFromYoutube(
 
   if (cached) return cached;
 
-  const fetched = await fetchTranscript(videoId, {
-    retries: 2,
-    retryDelay: 750,
-    lang: track.languageCode,
-    videoDetails: true,
-  });
+  const fetched = await callYoutube(() =>
+    fetchTranscript(videoId, {
+      retries: 2,
+      retryDelay: 750,
+      lang: track.languageCode,
+      videoDetails: true,
+    }),
+  );
 
   const response: TranscriptApiResponse = {
     video_id: videoId,
@@ -132,14 +165,22 @@ async function fetchFromApify(
 
   await saveCachedTranscript(response);
 
-  // Apify may return a different language than requested (fallback, or
-  // "en-US" for "en"). Also cache under the requested code so the next
-  // lookup hits instead of starting another paid run.
-  if (response.language !== languages[0]) {
+  // Apify may return a regional variant ("en-US" for "en"). Also cache it
+  // under the requested code so the next lookup hits instead of starting
+  // another paid run. Skip this when Apify fell back to another language,
+  // or later requests for that code would get the wrong language.
+  if (
+    response.language !== languages[0] &&
+    baseLanguage(response.language) === baseLanguage(languages[0])
+  ) {
     await saveCachedTranscript(response, languages[0]);
   }
 
   return response;
+}
+
+function baseLanguage(code: string) {
+  return code.toLowerCase().split(/[-_]/)[0];
 }
 
 export async function getTranscriptPage(input: {
@@ -185,11 +226,9 @@ export async function getTranscriptPage(input: {
     } catch (error) {
       // Fall back to the paid Apify actor only when YouTube is blocking or
       // rate-limiting us. Missing captions or videos won't change via Apify.
-      const blocked =
-        error instanceof Error &&
-        toServiceError(error).code === "TEMPORARY_PROVIDER_FAILURE";
+      if (!(error instanceof YoutubeBlockedError)) throw error;
 
-      if (!blocked || !isApifyConfigured()) throw error;
+      if (!isApifyConfigured()) throw error.original;
       response = await fetchFromApify(videoId, input.language);
     }
   }
