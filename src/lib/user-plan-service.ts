@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { transactionsRepository } from "@/lib/db/repository/transactions";
-import { UsageEventRepository } from "@/lib/db/repository/usage-events";
 
 export type UserPlan = "free" | "monthly" | "yearly";
 
@@ -22,30 +21,18 @@ const PLAN_PERIOD_MS: Record<PaidPlan, number> = {
 };
 
 export interface PlanLimits {
-  videosPerDay: number;
-  messagesPerVideo: number;
-  unlimited: boolean;
   /** MCP transcript calls allowed per paid period, across all of a user's keys. */
   mcpCallsPerPeriod: number;
 }
 
 const PLAN_LIMITS: Record<UserPlan, PlanLimits> = {
   free: {
-    videosPerDay: 2,
-    messagesPerVideo: 10,
-    unlimited: false,
     mcpCallsPerPeriod: 0,
   },
   monthly: {
-    videosPerDay: -1,
-    messagesPerVideo: -1,
-    unlimited: true,
     mcpCallsPerPeriod: 1_000,
   },
   yearly: {
-    videosPerDay: -1,
-    messagesPerVideo: -1,
-    unlimited: true,
     mcpCallsPerPeriod: 12_000,
   },
 };
@@ -99,92 +86,6 @@ export class UserPlanService {
    */
   static getPlanLimits(plan: UserPlan): PlanLimits {
     return PLAN_LIMITS[plan];
-  }
-
-  /**
-   * Check if user can add a new video based on their plan limits
-   */
-  static async canAddVideo(
-    userId: string,
-    youtubeId?: string,
-  ): Promise<{
-    canAdd: boolean;
-    currentPlan: UserPlan;
-    reason?: string;
-    videosUsedToday?: number;
-    dailyLimit?: number;
-  }> {
-    const currentPlan = await this.getCurrentPlan(userId);
-    const limits = this.getPlanLimits(currentPlan);
-
-    if (limits.unlimited) {
-      return {
-        canAdd: true,
-        currentPlan,
-      };
-    }
-
-    const videosUsedToday =
-      await UsageEventRepository.countVideosAddedToday(userId);
-
-    const dailyLimit = limits.videosPerDay;
-
-    if (
-      youtubeId &&
-      (await UsageEventRepository.hasVideoAddedToday(userId, youtubeId))
-    ) {
-      return {
-        canAdd: true,
-        currentPlan,
-        videosUsedToday,
-        dailyLimit,
-      };
-    }
-
-    if (videosUsedToday >= dailyLimit) {
-      return {
-        canAdd: false,
-        currentPlan,
-        reason: "daily_limit_reached",
-        videosUsedToday,
-        dailyLimit,
-      };
-    }
-
-    return {
-      canAdd: true,
-      currentPlan,
-      videosUsedToday,
-      dailyLimit,
-    };
-  }
-
-  /**
-   * Get user's current usage stats
-   */
-  static async getUserUsageStats(userId: string) {
-    const currentPlan = await this.getCurrentPlan(userId);
-    const limits = this.getPlanLimits(currentPlan);
-
-    if (limits.unlimited) {
-      return {
-        currentPlan,
-        unlimited: true,
-        videosUsedToday: 0,
-        dailyLimit: -1,
-      };
-    }
-
-    const videosUsedToday =
-      await UsageEventRepository.countVideosAddedToday(userId);
-
-    return {
-      currentPlan,
-      unlimited: false,
-      videosUsedToday,
-      dailyLimit: limits.videosPerDay,
-      messagesPerVideo: limits.messagesPerVideo,
-    };
   }
 
   /**
