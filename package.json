@@ -13,7 +13,6 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:tables": "bun scripts/db-tables.ts",
     "mcp:key": "node scripts/mcp-key.mjs",
     "doctor": "npx react-doctor@latest",
     "lint": "oxlint src",

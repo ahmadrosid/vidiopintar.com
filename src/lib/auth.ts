@@ -13,7 +13,9 @@ const sessionEmailSchema = z.object({ email: z.string() });
 
 type SessionClaims = Awaited<ReturnType<typeof clerkAuth>>["sessionClaims"];
 
-function getEmailFromSessionClaims(sessionClaims: SessionClaims): string | null {
+function getEmailFromSessionClaims(
+  sessionClaims: SessionClaims,
+): string | null {
   const parsed = sessionEmailSchema.safeParse(sessionClaims);
 
   return parsed.success ? parsed.data.email : null;
@@ -105,10 +107,6 @@ const syncUserFromClerk = cache(async (): Promise<User | null> => {
     throw error;
   }
 });
-
-export async function getOptionalUser(): Promise<User | null> {
-  return syncUserFromClerk();
-}
 
 export async function getCurrentUser(): Promise<User> {
   const dbUser = await syncUserFromClerk();

@@ -99,10 +99,8 @@ npm run dev
 
 Set the required service credentials in `.env`:
 
-- `API_X_HEADER_API_KEY` — required by the server environment schema.
 - `ADMIN_MASTER_EMAIL` — the account email that can access the admin dashboard.
 - Clerk keys (`CLERK_SECRET_KEY` and `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`) — required for sign-in and the dashboard. `@clerk/nextjs` reads these from the environment.
-- `YOUTUBE_API_KEY` — optional.
 - `APIFY_API_TOKEN` — optional. When set, transcripts fall back to the Apify actor [`dami_studio/youtube-transcript-bulk-scraper`](https://apify.com/dami_studio/youtube-transcript-bulk-scraper) whenever YouTube blocks or rate-limits direct fetches. Direct fetches stay free; each Apify fallback costs about $0.0009 per transcript.
 
 The local database defaults to `./data/vidiopintar.db`. The app serves on `http://localhost:3000` by default.

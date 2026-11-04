@@ -4,8 +4,6 @@ import "dotenv/config";
 
 export const env = createEnv({
   server: {
-    API_BASE_URL: z.url().default("https://api.ahmadrosid.com"),
-    API_X_HEADER_API_KEY: z.string().min(1),
     NODE_ENV: z.string().min(1),
     SQLITE_DATABASE_PATH: z
       .string()
@@ -18,7 +16,6 @@ export const env = createEnv({
     TURSO_DATABASE_URL: z.string().min(1).optional(),
     TURSO_AUTH_TOKEN: z.string().min(1).optional(),
     ADMIN_MASTER_EMAIL: z.email(),
-    YOUTUBE_API_KEY: z.string().min(1).optional(),
     APIFY_API_TOKEN: z.string().min(1).optional(),
   },
   client: {
