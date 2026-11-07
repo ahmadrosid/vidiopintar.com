@@ -12,6 +12,7 @@ import {
   HermesIcon,
   OpenAIIcon,
   OpenClawIcon,
+  OpenCodeIcon,
   PiIcon,
 } from "@/components/home/client-icons";
 
@@ -47,6 +48,23 @@ bearer_token_env_var = "VIDIOPINTAR_API_KEY"`,
     "vidiopintar": {
       "url": "${endpoint}",
       "headers": { "Authorization": "Bearer <API_KEY>" }
+    }
+  }
+}`,
+  },
+  {
+    id: "opencode",
+    label: "OpenCode",
+    Icon: OpenCodeIcon,
+    where: "~/.config/opencode/opencode.json",
+    code: `{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "vidiopintar": {
+      "type": "remote",
+      "url": "${endpoint}",
+      "headers": { "Authorization": "Bearer <API_KEY>" },
+      "enabled": true
     }
   }
 }`,
