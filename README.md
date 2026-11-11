@@ -28,6 +28,24 @@ Configure an MCP client that supports Streamable HTTP with a bearer API key:
 }
 ```
 
+For [OpenCode](https://opencode.ai), add it to `~/.config/opencode/opencode.json` (or `opencode.json` in a project):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "vidiopintar": {
+      "type": "remote",
+      "url": "https://vidiopintar.com/api/mcp",
+      "headers": {
+        "Authorization": "Bearer <API_KEY>"
+      },
+      "enabled": true
+    }
+  }
+}
+```
+
 Create a key at [`/dashboard/api-keys`](https://vidiopintar.com/dashboard/api-keys). Each account can have up to five active keys. The full key is shown once when created. Store it as a secret. For questions or key-related requests, contact [support@vidiopintar.com](mailto:support@vidiopintar.com).
 
 ## Tool
