@@ -90,7 +90,7 @@ async function authenticateMcpRequest(request: Request) {
   await recordUsage("minute", minute, key.requestsPerMinute);
   await recordUsage("day", day, key.requestsPerDay);
 
-  return { id: key.id, token, key };
+  return { id: key.id, token };
 }
 
 const handler = createMcpHandler((requestContext) => {
@@ -238,9 +238,9 @@ async function recordRequestMetric(
   keyId: string,
   startedAt: number,
   outcome: string,
-  transcriptComplete = false,
-  providerAttempt = false,
-  videoId: string | null = null,
+  transcriptComplete: boolean,
+  providerAttempt: boolean,
+  videoId: string | null,
 ) {
   if (!keyId) return;
 

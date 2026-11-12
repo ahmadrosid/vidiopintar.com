@@ -5,19 +5,19 @@ import { user } from "@/lib/db/schema/auth";
 import { eq } from "drizzle-orm";
 
 export async function DELETE() {
+  // Outside the try: getCurrentUser redirects signed-out users, and that redirect must not be caught.
+  const currentUser = await getCurrentUser();
+
   try {
-    const currentUser = await getCurrentUser();
-
-    if (!currentUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await db.delete(user).where(eq(user.id, currentUser.id));
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to delete user:", error);
 
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

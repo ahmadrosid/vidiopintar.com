@@ -1,4 +1,9 @@
-import { absoluteUrl, markdownUrlFor, SITE_NAME, SITE_URL } from "@/lib/geo/site";
+import {
+  absoluteUrl,
+  markdownUrlFor,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/geo/site";
 
 function pageHeader(title: string, path: string, summary: string): string {
   return `# ${title}\n\n> ${summary}\n\n- HTML: ${absoluteUrl(path)}\n- Markdown: ${markdownUrlFor(path)}\n`;
@@ -18,7 +23,11 @@ function links(): string {
 
 function homeMarkdown(): string {
   return [
-    pageHeader(SITE_NAME, "/", "MCP hosted untuk mengambil transkrip YouTube bagi AI Agent."),
+    pageHeader(
+      SITE_NAME,
+      "/",
+      "MCP hosted untuk mengambil transkrip YouTube bagi AI Agent.",
+    ),
     "Vidiopintar menyediakan satu alat MCP, `youtube_get_transcript`. Alat ini mengembalikan segmen transkrip bertimestamp dan metadata video jika tersedia.",
     "",
     "## Mulai",
@@ -33,7 +42,11 @@ function homeMarkdown(): string {
 
 function mcpMarkdown(): string {
   return [
-    pageHeader("Panduan MCP Vidiopintar", "/panduan", "Hubungkan AI Agent ke alat transkrip YouTube."),
+    pageHeader(
+      "Panduan MCP Vidiopintar",
+      "/panduan",
+      "Hubungkan AI Agent ke alat transkrip YouTube.",
+    ),
     "Endpoint: `https://vidiopintar.com/api/mcp`",
     "",
     "Autentikasi memakai header `Authorization: Bearer <API_KEY>`. Masuk, lalu buat key di https://vidiopintar.com/dashboard. Key lengkap hanya tampil sekali, saat key dibuat.",
@@ -60,7 +73,11 @@ function mcpMarkdown(): string {
 
 function privacyMarkdown(): string {
   return [
-    pageHeader("Kebijakan Privasi — Vidiopintar", "/privacy", "Data yang diproses oleh layanan MCP transkrip YouTube."),
+    pageHeader(
+      "Kebijakan Privasi — Vidiopintar",
+      "/privacy",
+      "Data yang diproses oleh layanan MCP transkrip YouTube.",
+    ),
     "MCP memproses API key, URL atau ID video, kode bahasa, dan cursor untuk memenuhi permintaan transkrip.",
     "",
     "## Data dan masa simpan",
@@ -81,7 +98,11 @@ function privacyMarkdown(): string {
 
 function termsMarkdown(): string {
   return [
-    pageHeader("Ketentuan Layanan — Vidiopintar", "/terms", "Ketentuan akses untuk MCP transkrip YouTube."),
+    pageHeader(
+      "Ketentuan Layanan — Vidiopintar",
+      "/terms",
+      "Ketentuan akses untuk MCP transkrip YouTube.",
+    ),
     "Vidiopintar menyediakan MCP untuk mengambil caption YouTube. Saat ini tidak ada biaya untuk akses.",
     "",
     "Jaga kerahasiaan API key. Anda bertanggung jawab atas permintaan yang memakai key Anda. Batas awal per key adalah 30 permintaan per menit, 1.000 permintaan per hari, dan 10.000.000 byte keluaran per hari.",
@@ -94,7 +115,7 @@ function termsMarkdown(): string {
   ].join("\n");
 }
 
-export function normalizePath(rawPath: string): string {
+function normalizePath(rawPath: string): string {
   let path = rawPath.trim();
 
   if (!path.startsWith("/")) path = `/${path}`;
@@ -108,12 +129,16 @@ export function normalizePath(rawPath: string): string {
 
 export function getMarkdownForPath(rawPath: string): string | null {
   switch (normalizePath(rawPath)) {
-    case "/": return homeMarkdown();
+    case "/":
+      return homeMarkdown();
     case "/panduan":
-    case "/mcp": return mcpMarkdown();
-    case "/privacy": return privacyMarkdown();
-    case "/terms": return termsMarkdown();
-    default: return null;
+      return mcpMarkdown();
+    case "/privacy":
+      return privacyMarkdown();
+    case "/terms":
+      return termsMarkdown();
+    default:
+      return null;
   }
 }
 

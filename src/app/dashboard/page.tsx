@@ -103,7 +103,6 @@ export default async function DashboardPage({
     values: {
       success: point.success,
       failed: point.failed,
-      bytes: point.bytes,
     },
   }));
 
@@ -167,7 +166,6 @@ export default async function DashboardPage({
               title="Permintaan per hari"
               series={requestSeries}
               points={points}
-              unit="count"
             />
           </div>
         </Row>

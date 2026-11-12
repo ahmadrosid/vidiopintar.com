@@ -191,7 +191,7 @@ export function TrendChart({ title, series, points, unit }: TrendChartProps) {
               </g>
             ))}
 
-            {!empty && series.length > 0 && (
+            {!empty && (
               <path
                 d={`${smoothPath(points.map((point, index): [number, number] => [x(index), y(point.values[primary.key] ?? 0)]))}L${x(points.length - 1)},${baseY}L${x(0)},${baseY}Z`}
                 fill={`url(#${gradientId})`}

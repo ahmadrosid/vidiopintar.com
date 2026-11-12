@@ -10,7 +10,7 @@ type TranscriptPage = Awaited<ReturnType<typeof getTranscriptPage>>;
 
 export type PlaygroundResult =
   | { ok: true; page: TranscriptPage }
-  | { ok: false; code: string; message: string; retryable: boolean };
+  | { ok: false; code: string; message: string };
 
 const inputSchema = z.object({
   video: z.string().max(2048).optional(),
@@ -18,17 +18,28 @@ const inputSchema = z.object({
   cursor: z.string().max(2048).optional(),
 });
 
-export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>): Promise<PlaygroundResult> {
+export async function fetchTranscriptAction(
+  input: z.infer<typeof inputSchema>,
+): Promise<PlaygroundResult> {
   const user = await getCurrentUser();
 
   if ((await UserPlanService.getCurrentPlan(user.id)) === "free") {
-    return { ok: false, code: "PLAN_REQUIRED", message: "Playground butuh paket berbayar. Pilih paket di halaman billing.", retryable: false };
+    return {
+      ok: false,
+      code: "PLAN_REQUIRED",
+      message:
+        "Playground butuh paket berbayar. Pilih paket di halaman billing.",
+    };
   }
 
   const parsed = inputSchema.safeParse(input);
 
   if (!parsed.success) {
-    return { ok: false, code: "INVALID_VIDEO_REFERENCE", message: "Masukkan URL YouTube atau ID video yang valid.", retryable: false };
+    return {
+      ok: false,
+      code: "INVALID_VIDEO_REFERENCE",
+      message: "Masukkan URL YouTube atau ID video yang valid.",
+    };
   }
 
   try {
@@ -41,8 +52,10 @@ export async function fetchTranscriptAction(input: z.infer<typeof inputSchema>):
 
     return { ok: true, page };
   } catch (error) {
-    const mapped = toServiceError(error instanceof Error ? error : new Error(String(error)));
+    const mapped = toServiceError(
+      error instanceof Error ? error : new Error(String(error)),
+    );
 
-    return { ok: false, code: mapped.code, message: mapped.message, retryable: mapped.retryable };
+    return { ok: false, code: mapped.code, message: mapped.message };
   }
 }

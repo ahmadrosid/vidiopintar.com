@@ -1,6 +1,6 @@
-import { and, count, desc, eq, gte, ne, sql, sum } from "drizzle-orm";
+import { and, count, desc, eq, gte, ne, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { mcpApiKeys, mcpRequestMetrics, mcpUsage } from "@/lib/db/schema";
+import { mcpApiKeys, mcpRequestMetrics } from "@/lib/db/schema";
 
 const dayMs = 86_400_000;
 
@@ -10,7 +10,7 @@ export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
 
 export type HistoryStatus = "all" | "success" | "failed";
 
-type DailyPoint = { day: number; success: number; failed: number; bytes: number };
+type DailyPoint = { day: number; success: number; failed: number };
 
 type HistoryRow = {
   id: string;
@@ -23,7 +23,11 @@ type HistoryRow = {
 
 export const DASHBOARD_HISTORY_LIMIT = 25;
 
-export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange, status: HistoryStatus) {
+export async function getUserMcpAnalytics(
+  userId: string,
+  range: AnalyticsRange,
+  status: HistoryStatus,
+) {
   const today = Math.floor(Date.now() / dayMs) * dayMs;
   const start = today - (range - 1) * dayMs;
   const ownKey = eq(mcpApiKeys.userId, userId);
@@ -31,7 +35,7 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
   // CAST truncates the division to whole days, so the floor holds with the constant bound as a parameter.
   const dayExpr = sql<number>`CAST(${mcpRequestMetrics.createdAt} / ${dayMs} AS INTEGER) * ${dayMs}`;
 
-  const [outcomesByDay, bytesByDay, history] = await Promise.all([
+  const [outcomesByDay, history] = await Promise.all([
     db
       .select({
         day: dayExpr,
@@ -42,12 +46,6 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
       .innerJoin(mcpApiKeys, eq(mcpApiKeys.id, mcpRequestMetrics.keyId))
       .where(and(ownKey, inRange))
       .groupBy(dayExpr),
-    db
-      .select({ day: mcpUsage.periodStart, bytes: sum(mcpUsage.outputBytes).mapWith(Number) })
-      .from(mcpUsage)
-      .innerJoin(mcpApiKeys, eq(mcpApiKeys.id, mcpUsage.keyId))
-      .where(and(ownKey, eq(mcpUsage.window, "day"), gte(mcpUsage.periodStart, start)))
-      .groupBy(mcpUsage.periodStart),
     db
       .select({
         id: mcpRequestMetrics.id,
@@ -63,8 +61,12 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
         and(
           ownKey,
           inRange,
-          status === "success" ? eq(mcpRequestMetrics.outcome, "success") : undefined,
-          status === "failed" ? ne(mcpRequestMetrics.outcome, "success") : undefined,
+          status === "success"
+            ? eq(mcpRequestMetrics.outcome, "success")
+            : undefined,
+          status === "failed"
+            ? ne(mcpRequestMetrics.outcome, "success")
+            : undefined,
         ),
       )
       .orderBy(desc(mcpRequestMetrics.createdAt))
@@ -72,13 +74,16 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
   ]);
 
   const outcomes = new Map(outcomesByDay.map((row) => [Number(row.day), row]));
-  const bytes = new Map(bytesByDay.map((row) => [Number(row.day), row.bytes]));
 
   const daily: DailyPoint[] = Array.from({ length: range }, (_, index) => {
     const day = start + index * dayMs;
     const row = outcomes.get(day);
 
-    return { day, success: Number(row?.success ?? 0), failed: Number(row?.failed ?? 0), bytes: bytes.get(day) ?? 0 };
+    return {
+      day,
+      success: Number(row?.success ?? 0),
+      failed: Number(row?.failed ?? 0),
+    };
   });
 
   const success = daily.reduce((total, point) => total + point.success, 0);
@@ -101,7 +106,6 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
       requests: success + failed,
       success,
       failed,
-      bytes: daily.reduce((total, point) => total + point.bytes, 0),
       medianMs: median?.durationMs ?? null,
     },
     history: history satisfies HistoryRow[],
@@ -110,7 +114,11 @@ export async function getUserMcpAnalytics(userId: string, range: AnalyticsRange,
 
 export const LOG_PAGE_SIZE = 50;
 
-export async function getUserMcpLogs(userId: string, outcome: string, page: number) {
+export async function getUserMcpLogs(
+  userId: string,
+  outcome: string,
+  page: number,
+) {
   const ownKey = eq(mcpApiKeys.userId, userId);
 
   const outcomeFilter =

@@ -25,10 +25,7 @@ export interface PlanLimits {
   mcpCallsPerPeriod: number;
 }
 
-const PLAN_LIMITS: Record<UserPlan, PlanLimits> = {
-  free: {
-    mcpCallsPerPeriod: 0,
-  },
+const PLAN_LIMITS: Record<PaidPlan, PlanLimits> = {
   monthly: {
     mcpCallsPerPeriod: 1_000,
   },
@@ -84,75 +81,42 @@ export class UserPlanService {
   /**
    * Get plan limits for a specific plan
    */
-  static getPlanLimits(plan: UserPlan): PlanLimits {
+  static getPlanLimits(plan: PaidPlan): PlanLimits {
     return PLAN_LIMITS[plan];
   }
 
   /**
-   * Check if user has an active subscription for a specific plan type
+   * Get when the user's subscription to a specific paid plan expires,
+   * or null when they have no active subscription to that plan.
    */
-  static async hasActiveSubscription(
+  static async getActivePlanExpiry(
     userId: string,
-    planType: UserPlan,
-  ): Promise<{
-    hasActive: boolean;
-    expiresAt?: Date;
-    transaction?: any;
-  }> {
-    if (planType === "free") {
-      return { hasActive: false };
-    }
-
+    planType: PaidPlan,
+  ): Promise<Date | null> {
     const recentTransactions =
       await transactionsRepository.getRecentTransactionsByUserId(
         userId,
-        365 * 24 * 60 * 60 * 1000,
+        PLAN_PERIOD_MS.yearly,
       );
 
-    const activeTransaction = recentTransactions.find((tx) => {
+    const now = Date.now();
+
+    for (const tx of recentTransactions) {
       if (
         tx.status !== "confirmed" ||
         !tx.confirmedAt ||
         tx.planType !== planType
       )
-        return false;
+        continue;
 
-      const confirmedDate = new Date(tx.confirmedAt);
-      const now = new Date();
+      const expiresAt = new Date(
+        new Date(tx.confirmedAt).getTime() + PLAN_PERIOD_MS[planType],
+      );
 
-      if (tx.planType === "monthly") {
-        const expiry = new Date(
-          confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000,
-        );
-
-        return now <= expiry;
-      } else if (tx.planType === "yearly") {
-        const expiry = new Date(
-          confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000,
-        );
-
-        return now <= expiry;
-      }
-
-      return false;
-    });
-
-    if (activeTransaction) {
-      const confirmedDate = new Date(activeTransaction.confirmedAt!);
-
-      const expiresAt =
-        activeTransaction.planType === "monthly"
-          ? new Date(confirmedDate.getTime() + 30 * 24 * 60 * 60 * 1000)
-          : new Date(confirmedDate.getTime() + 365 * 24 * 60 * 60 * 1000);
-
-      return {
-        hasActive: true,
-        expiresAt,
-        transaction: activeTransaction,
-      };
+      if (now <= expiresAt.getTime()) return expiresAt;
     }
 
-    return { hasActive: false };
+    return null;
   }
 
   /**
@@ -160,35 +124,12 @@ export class UserPlanService {
    */
   static async canPurchasePlan(
     userId: string,
-    planType: UserPlan,
-  ): Promise<{
-    canPurchase: boolean;
-    reason?: string;
-    activeSubscription?: {
-      planType: UserPlan;
-      expiresAt: Date;
-    };
-  }> {
-    if (planType === "free") {
-      return { canPurchase: false, reason: "free_plan_cannot_be_purchased" };
-    }
+    planType: PaidPlan,
+  ): Promise<{ canPurchase: true } | { canPurchase: false; expiresAt: Date }> {
+    const expiresAt = await this.getActivePlanExpiry(userId, planType);
 
-    const activeSubscriptionCheck = await this.hasActiveSubscription(
-      userId,
-      planType,
-    );
-
-    if (activeSubscriptionCheck.hasActive) {
-      return {
-        canPurchase: false,
-        reason: "already_have_active_subscription",
-        activeSubscription: {
-          planType,
-          expiresAt: activeSubscriptionCheck.expiresAt!,
-        },
-      };
-    }
-
-    return { canPurchase: true };
+    return expiresAt
+      ? { canPurchase: false, expiresAt }
+      : { canPurchase: true };
   }
 }

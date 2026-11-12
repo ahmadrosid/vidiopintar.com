@@ -3,7 +3,7 @@ import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import * as schema from "./schema";
-import { resolveDatabaseConfig } from "./database-path";
+import { resolveDatabaseConfig } from "./resolve-database-path.js";
 
 declare global {
   var libsqlClient: Client | undefined;
@@ -16,7 +16,9 @@ function getClient(): Client {
 
     if (config.url.startsWith("file:")) {
       // data/ is gitignored, so a fresh clone has no directory for the local file yet.
-      mkdirSync(path.dirname(config.url.slice("file:".length)), { recursive: true });
+      mkdirSync(path.dirname(config.url.slice("file:".length)), {
+        recursive: true,
+      });
     }
 
     global.libsqlClient = createClient(config);

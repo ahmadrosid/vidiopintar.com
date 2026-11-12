@@ -9,19 +9,27 @@ import { McpServiceError } from "./errors";
 export function toServiceError(error: Error): McpServiceError {
   if (error instanceof McpServiceError) return error;
 
-  if (error instanceof YoutubeTranscriptVideoUnavailableError) return new McpServiceError("VIDEO_UNAVAILABLE");
+  if (error instanceof YoutubeTranscriptVideoUnavailableError)
+    return new McpServiceError("VIDEO_UNAVAILABLE");
 
-  if (error instanceof YoutubeTranscriptDisabledError || error instanceof YoutubeTranscriptNotAvailableError) {
+  if (
+    error instanceof YoutubeTranscriptDisabledError ||
+    error instanceof YoutubeTranscriptNotAvailableError
+  ) {
     return new McpServiceError("CAPTIONS_UNAVAILABLE");
   }
 
-  const message = error instanceof Error ? error.message : "";
+  const { message } = error;
 
-  if (error instanceof YoutubeTranscriptTooManyRequestError || /temporar|rate.?limit/i.test(message)) {
+  if (
+    error instanceof YoutubeTranscriptTooManyRequestError ||
+    /temporar|rate.?limit/i.test(message)
+  ) {
     return new McpServiceError("TEMPORARY_PROVIDER_FAILURE", true, 30);
   }
 
-  if (/transcript|caption/i.test(message)) return new McpServiceError("CAPTIONS_UNAVAILABLE");
+  if (/transcript|caption/i.test(message))
+    return new McpServiceError("CAPTIONS_UNAVAILABLE");
 
   return new McpServiceError("TEMPORARY_PROVIDER_FAILURE", true, 30);
 }

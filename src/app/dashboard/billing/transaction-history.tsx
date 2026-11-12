@@ -11,7 +11,7 @@ interface Transaction {
   planType: string;
   amount: number;
   currency: string;
-  status: 'pending' | 'waiting_confirmation' | 'confirmed' | 'expired' | 'cancelled';
+  status: string;
   transactionReference: string;
   createdAt: Date;
   confirmedAt?: Date | null;
@@ -20,21 +20,19 @@ interface Transaction {
 }
 
 interface PaymentSettings {
-  id: string;
   bankName: string;
   bankAccountNumber: string;
   bankAccountName: string;
   whatsappPhoneNumber: string;
-  whatsappMessageTemplate: string;
 }
 
 interface TransactionHistoryProps {
   transactions: Transaction[];
-  currentPaymentSettings: PaymentSettings | null;
+  currentPaymentSettings: PaymentSettings;
 }
 
 function getStatusClass(status: string) {
-  return status === "pending" || status === "waiting_confirmation"
+  return status === "pending"
     ? "border-site-accent text-site-accent"
     : "border-site-line text-site-text-muted";
 }
@@ -48,19 +46,24 @@ function formatDate(date: Date) {
 }
 
 const formatDay = (date: Date | string | number) =>
-  new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta" });
+  new Date(date).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  });
 
-export function TransactionHistory({ transactions, currentPaymentSettings }: TransactionHistoryProps) {
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+export function TransactionHistory({
+  transactions,
+  currentPaymentSettings,
+}: TransactionHistoryProps) {
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [transactionOverrides, setTransactionOverrides] = useState<Record<string, Transaction>>({});
-
-  const localTransactions = transactions.map(
-    (t) => transactionOverrides[t.id] ?? t
-  );
 
   const isPending = (transaction: Transaction) =>
-    transaction.status === "pending" || transaction.status === "waiting_confirmation";
+    transaction.status === "pending";
 
   const handleTransactionClick = (transaction: Transaction) => {
     if (isPending(transaction)) {
@@ -69,17 +72,7 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
     }
   };
 
-  const handleTransactionUpdate = (updatedTransaction: Transaction) => {
-    setTransactionOverrides((prev) => ({
-      ...prev,
-      [updatedTransaction.id]: updatedTransaction,
-    }));
-    setSelectedTransaction((prev) =>
-      prev?.id === updatedTransaction.id ? updatedTransaction : prev
-    );
-  };
-
-  if (localTransactions.length === 0) {
+  if (transactions.length === 0) {
     return <p className="text-site-text-muted">Belum ada transaksi.</p>;
   }
 
@@ -97,29 +90,38 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
             </tr>
           </thead>
           <tbody>
-            {localTransactions.map((transaction) => (
+            {transactions.map((transaction) => (
               <tr
                 key={transaction.id}
                 role={isPending(transaction) ? "button" : undefined}
                 tabIndex={isPending(transaction) ? 0 : undefined}
                 onClick={() => handleTransactionClick(transaction)}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") handleTransactionClick(transaction);
+                  if (event.key === "Enter")
+                    handleTransactionClick(transaction);
                 }}
                 className={`border-t border-site-line ${isPending(transaction) ? "cursor-pointer hover:bg-site-header" : ""}`}
               >
-                <td className="whitespace-nowrap px-4 py-2.5 capitalize text-site-text">{planTypeLabel(transaction.planType)}</td>
+                <td className="whitespace-nowrap px-4 py-2.5 capitalize text-site-text">
+                  {planTypeLabel(transaction.planType)}
+                </td>
                 <td className="whitespace-nowrap px-4 py-2.5 text-site-text tabular-nums">
                   {formatAmount(transaction.amount, transaction.currency)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-2.5">
-                  <span className={`border px-2 py-0.5 text-xs ${getStatusClass(transaction.status)}`}>
+                  <span
+                    className={`border px-2 py-0.5 text-xs ${getStatusClass(transaction.status)}`}
+                  >
                     {transactionStatusLabel(transaction.status)}
                   </span>
                 </td>
-                <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">{formatDay(transaction.createdAt)}</td>
                 <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">
-                  {transaction.confirmedAt ? formatDate(transaction.confirmedAt) : "–"}
+                  {formatDay(transaction.createdAt)}
+                </td>
+                <td className="whitespace-nowrap px-4 py-2.5 text-site-text-muted tabular-nums">
+                  {transaction.confirmedAt
+                    ? formatDate(transaction.confirmedAt)
+                    : "–"}
                 </td>
               </tr>
             ))}
@@ -127,19 +129,18 @@ export function TransactionHistory({ transactions, currentPaymentSettings }: Tra
         </table>
       </div>
 
-      {localTransactions.some(isPending) && (
-        <p className="mt-4 text-xs text-site-text-faint">Klik transaksi yang menunggu untuk melihat detail.</p>
+      {transactions.some(isPending) && (
+        <p className="mt-4 text-xs text-site-text-faint">
+          Klik transaksi yang menunggu untuk melihat detail.
+        </p>
       )}
 
-      {currentPaymentSettings && (
-        <TransactionDetailDialog
-          transaction={selectedTransaction}
-          isOpen={isDialogOpen}
-          onClose={() => setIsDialogOpen(false)}
-          onTransactionUpdate={handleTransactionUpdate}
-          currentPaymentSettings={currentPaymentSettings}
-        />
-      )}
+      <TransactionDetailDialog
+        transaction={selectedTransaction}
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        currentPaymentSettings={currentPaymentSettings}
+      />
     </>
   );
 }

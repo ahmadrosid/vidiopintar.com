@@ -4,26 +4,10 @@ import "dotenv/config";
 
 export const env = createEnv({
   server: {
-    NODE_ENV: z.string().min(1),
-    SQLITE_DATABASE_PATH: z
-      .string()
-      .min(1)
-      .default(
-        process.env.NODE_ENV === "production"
-          ? "/data/vidiopintar.db"
-          : "./data/vidiopintar.db",
-      ),
-    TURSO_DATABASE_URL: z.string().min(1).optional(),
-    TURSO_AUTH_TOKEN: z.string().min(1).optional(),
     ADMIN_MASTER_EMAIL: z.email(),
     APIFY_API_TOKEN: z.string().min(1).optional(),
   },
-  client: {
-    NEXT_PUBLIC_SITE_URL: z.string().min(1).default("http://localhost:3000"),
-  },
   emptyStringAsUndefined: true,
-  experimental__runtimeEnv: {
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-  },
+  experimental__runtimeEnv: {},
   skipValidation: true,
 });
