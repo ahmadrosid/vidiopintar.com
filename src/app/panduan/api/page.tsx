@@ -140,13 +140,7 @@ const limits = [
   ["Data transkrip per hari", "10 MB"],
 ];
 
-function Table({
-  head,
-  rows,
-}: {
-  head?: string[];
-  rows: (string | React.ReactNode)[][];
-}) {
+function Table({ head, rows }: { head?: string[]; rows: string[][] }) {
   return (
     <div className="overflow-x-auto border border-site-line">
       <table className="w-full text-left text-sm sm:text-base">
@@ -164,7 +158,7 @@ function Table({
         <tbody>
           {rows.map((row, index) => (
             <tr
-              key={index}
+              key={row.join("|")}
               className={
                 head || index > 0
                   ? "border-t border-site-line align-top"
@@ -173,7 +167,7 @@ function Table({
             >
               {row.map((cell, cellIndex) => (
                 <td
-                  key={cellIndex}
+                  key={cell}
                   className={
                     cellIndex === 0
                       ? "px-4 py-3 whitespace-nowrap text-site-text"
