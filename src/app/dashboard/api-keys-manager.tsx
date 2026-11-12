@@ -28,6 +28,7 @@ import {
   revokeKeyAction,
   type CreateKeyState,
 } from "./actions";
+import Link from "next/link";
 import { InstallTabs } from "@/components/home/install-tabs";
 
 interface ApiKeysManagerProps {
@@ -298,6 +299,16 @@ export function ApiKeysManager({ keys, header }: ApiKeysManagerProps) {
           )}
         </p>
         <InstallTabs stacked apiKey={createdToken} />
+        <p className="text-sm leading-7 text-site-text-2">
+          Key yang sama juga bisa dipakai untuk{" "}
+          <Link
+            className="text-site-text underline decoration-site-accent underline-offset-4 hover:text-site-accent-hover"
+            href="/panduan/api"
+          >
+            REST API
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

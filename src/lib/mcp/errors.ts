@@ -1,4 +1,5 @@
 export type McpErrorCode =
+  | "INVALID_REQUEST"
   | "INVALID_VIDEO_REFERENCE"
   | "CAPTIONS_UNAVAILABLE"
   | "VIDEO_UNAVAILABLE"
@@ -10,6 +11,7 @@ export type McpErrorCode =
   | "SERVICE_MISCONFIGURED";
 
 const messages: Record<McpErrorCode, string> = {
+  INVALID_REQUEST: "Parameter permintaan tidak valid.",
   INVALID_VIDEO_REFERENCE: "Masukkan URL YouTube atau ID video yang valid.",
   CAPTIONS_UNAVAILABLE: "Transkrip tidak tersedia untuk video ini.",
   VIDEO_UNAVAILABLE: "Video ini tidak tersedia di YouTube.",
