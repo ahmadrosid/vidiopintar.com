@@ -1,7 +1,6 @@
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
-const timestampMs = (name: string) =>
-  integer(name, { mode: "timestamp_ms" });
+const timestampMs = (name: string) => integer(name, { mode: "timestamp_ms" });
 
 const bool = (name: string) => integer(name, { mode: "boolean" });
 
@@ -13,7 +12,6 @@ export const user = sqliteTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
-  preferredLanguage: text("preferred_language").default("en").notNull(),
   createdAt: timestampMs("created_at")
     .$defaultFn(() => new Date())
     .notNull(),

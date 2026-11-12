@@ -18,8 +18,7 @@ interface UpgradePlansSectionProps {
 }
 
 interface ActiveSubscription {
-  planType: string;
-  expiresAt: string | Date;
+  expiresAt: Date;
 }
 
 const ctaClass =

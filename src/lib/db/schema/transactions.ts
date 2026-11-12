@@ -1,8 +1,7 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { user } from "./auth";
 
-const timestampMs = (name: string) =>
-  integer(name, { mode: "timestamp_ms" });
+const timestampMs = (name: string) => integer(name, { mode: "timestamp_ms" });
 
 export const transactions = sqliteTable("transactions", {
   id: text("id")
@@ -30,15 +29,4 @@ export type Transaction = typeof transactions.$inferSelect;
 
 export type NewTransaction = typeof transactions.$inferInsert;
 
-export type TransactionWithUser = Transaction & {
-  user: { name: string; email: string } | null;
-};
-
-export type TransactionStatus =
-  | "pending"
-  | "waiting_confirmation"
-  | "confirmed"
-  | "expired"
-  | "cancelled";
-
-export type PlanType = "monthly" | "yearly";
+export type TransactionStatus = "pending" | "confirmed" | "cancelled";

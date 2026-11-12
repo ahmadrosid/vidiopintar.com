@@ -14,7 +14,9 @@ export async function fetchVideoFromOEmbed(videoId: string) {
   );
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch video details: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to fetch video details: ${response.status} ${response.statusText}`,
+    );
   }
 
   const parsed = oEmbedSchema.safeParse(await response.json());
@@ -22,10 +24,7 @@ export async function fetchVideoFromOEmbed(videoId: string) {
 
   return {
     title: data.title ?? `Video ${videoId}`,
-    description: "",
     channelTitle: data.author_name ?? "Unknown Channel",
-    publishedAt: null,
     thumbnails: data.thumbnail_url ? { high: { url: data.thumbnail_url } } : {},
-    tags: [],
   };
 }

@@ -184,7 +184,7 @@ function baseLanguage(code: string) {
 }
 
 export async function getTranscriptPage(input: {
-  video?: string;
+  video: string;
   language?: string;
   cursor?: string;
   token: string;
@@ -200,7 +200,7 @@ export async function getTranscriptPage(input: {
     ? decodeCursor(input.token, input.cursor)
     : undefined;
 
-  const videoId = cursor?.videoId ?? normalizeVideoReference(input.video ?? "");
+  const videoId = cursor?.videoId ?? normalizeVideoReference(input.video);
   let response: TranscriptApiResponse | undefined;
 
   if (cursor) {

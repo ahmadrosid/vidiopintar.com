@@ -5,7 +5,8 @@ import { mcpApiKeys, mcpUsage } from "@/lib/db/schema";
 
 export const MAX_ACTIVE_KEYS_PER_USER = 5;
 
-const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
+const hashToken = (token: string) =>
+  createHash("sha256").update(token).digest("hex");
 
 const dayMs = 86_400_000;
 
@@ -19,19 +20,21 @@ export async function listUserMcpKeys(userId: string) {
       prefix: mcpApiKeys.prefix,
       createdAt: mcpApiKeys.createdAt,
       requestsPerDay: mcpApiKeys.requestsPerDay,
-      bytesPerDay: mcpApiKeys.bytesPerDay,
       requestsToday: mcpUsage.requests,
-      bytesToday: mcpUsage.outputBytes,
     })
     .from(mcpApiKeys)
     .leftJoin(
       mcpUsage,
-      and(eq(mcpUsage.keyId, mcpApiKeys.id), eq(mcpUsage.window, "day"), eq(mcpUsage.periodStart, today)),
+      and(
+        eq(mcpUsage.keyId, mcpApiKeys.id),
+        eq(mcpUsage.window, "day"),
+        eq(mcpUsage.periodStart, today),
+      ),
     )
     .where(and(eq(mcpApiKeys.userId, userId), isNull(mcpApiKeys.revokedAt)))
     .orderBy(desc(mcpApiKeys.createdAt));
 
-  return rows.map((row) => ({ ...row, requestsToday: row.requestsToday ?? 0, bytesToday: row.bytesToday ?? 0 }));
+  return rows.map((row) => ({ ...row, requestsToday: row.requestsToday ?? 0 }));
 }
 
 export async function createUserMcpKey(userId: string, name: string) {
@@ -53,15 +56,24 @@ export async function createUserMcpKey(userId: string, name: string) {
     createdAt: new Date(),
   });
 
-  return { token, prefix };
+  return { token };
 }
 
-export async function revokeUserMcpKey(userId: string, keyId: string) {
-  const result = await db
+export async function revokeUserMcpKey(
+  userId: string,
+  keyId: string,
+): Promise<void> {
+  await db
     .update(mcpApiKeys)
-    .set({ keyHash: hashToken(randomBytes(32).toString("hex")), revokedAt: new Date() })
-    .where(and(eq(mcpApiKeys.id, keyId), eq(mcpApiKeys.userId, userId), isNull(mcpApiKeys.revokedAt)))
-    .returning({ id: mcpApiKeys.id });
-
-  return result.length > 0;
+    .set({
+      keyHash: hashToken(randomBytes(32).toString("hex")),
+      revokedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(mcpApiKeys.id, keyId),
+        eq(mcpApiKeys.userId, userId),
+        isNull(mcpApiKeys.revokedAt),
+      ),
+    );
 }

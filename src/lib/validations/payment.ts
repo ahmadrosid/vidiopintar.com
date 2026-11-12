@@ -1,17 +1,9 @@
 export const PLAN_CONFIGS = {
   monthly: {
-    name: "Monthly Plan",
     amount: 50000,
-    currency: "IDR",
-    minAmount: 50000,
-    maxAmount: 50000,
   },
   yearly: {
-    name: "Yearly Plan",
     amount: 500000,
-    currency: "IDR",
-    minAmount: 500000,
-    maxAmount: 500000,
   },
 } as const;
 
@@ -29,7 +21,6 @@ const PAYMENT_CONTACT_CONFIG = {
 
 export function getPaymentSettings() {
   return {
-    id: "hardcoded",
     ...BANK_TRANSFER_DETAILS,
     ...PAYMENT_CONTACT_CONFIG,
   };

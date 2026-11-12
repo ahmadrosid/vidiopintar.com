@@ -8,16 +8,11 @@ export const OG_IMAGE = `${SITE_URL}/images/vidiopintar-og.jpeg`;
 export const SITE_LAST_MODIFIED = new Date("2026-07-08T00:00:00.000Z");
 
 export function absoluteUrl(path: string): string {
-  if (path.startsWith("http")) return path;
-
-  if (path === "/") return SITE_URL;
-
-  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  return path === "/" ? SITE_URL : `${SITE_URL}${path}`;
 }
 
 export function markdownUrlFor(path: string): string {
-  if (path === "/" || path === "") return `${SITE_URL}/index.html.md`;
+  if (path === "/") return `${SITE_URL}/index.html.md`;
 
   return `${absoluteUrl(path)}.md`;
 }
-

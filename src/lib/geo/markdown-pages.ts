@@ -166,7 +166,7 @@ function termsMarkdown(): string {
   ].join("\n");
 }
 
-export function normalizePath(rawPath: string): string {
+function normalizePath(rawPath: string): string {
   let path = rawPath.trim();
 
   if (!path.startsWith("/")) path = `/${path}`;
@@ -183,7 +183,6 @@ export function getMarkdownForPath(rawPath: string): string | null {
     case "/":
       return homeMarkdown();
     case "/panduan":
-    case "/mcp":
       return mcpMarkdown();
     case "/panduan/api":
       return restApiMarkdown();

@@ -212,9 +212,9 @@ async function recordRequestMetric(
   keyId: string,
   startedAt: number,
   outcome: string,
-  transcriptComplete = false,
-  providerAttempt = false,
-  videoId: string | null = null,
+  transcriptComplete: boolean,
+  providerAttempt: boolean,
+  videoId: string | null,
 ) {
   if (!keyId) return;
 

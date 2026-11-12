@@ -1,5 +1,9 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Clock01Icon, CrownIcon, SparklesIcon } from "@hugeicons/core-free-icons";
+import {
+  Clock01Icon,
+  CrownIcon,
+  SparklesIcon,
+} from "@hugeicons/core-free-icons";
 import { getCurrentUser } from "@/lib/auth";
 import { DashboardTitle } from "../dashboard-sidebar";
 import { Row } from "@/components/site/site-page";
@@ -19,25 +23,19 @@ export default async function BillingPage() {
   try {
     transactions = await transactionsRepository.getByUserId(user.id, 20);
   } catch (error) {
-    console.log('Could not get user transactions:', error);
+    console.log("Could not get user transactions:", error);
   }
 
-  const pendingTransactions = transactions.filter(t => t.status === 'pending' || t.status === 'waiting_confirmation');
+  const pendingTransactions = transactions.filter(
+    (t) => t.status === "pending",
+  );
 
   const currentPlan = await UserPlanService.getCurrentPlan(user.id);
 
-  let subscriptionDetails = null;
-
-  if (currentPlan !== 'free') {
-    const activeSubscription = await UserPlanService.hasActiveSubscription(user.id, currentPlan);
-
-    if (activeSubscription.hasActive && activeSubscription.expiresAt) {
-      subscriptionDetails = {
-        expiresAt: activeSubscription.expiresAt,
-        transaction: activeSubscription.transaction
-      };
-    }
-  }
+  const expiresAt =
+    currentPlan === "free"
+      ? null
+      : await UserPlanService.getActivePlanExpiry(user.id, currentPlan);
 
   const currentPaymentSettings = getPaymentSettings();
 
@@ -46,14 +44,14 @@ export default async function BillingPage() {
     UserPlanService.canPurchasePlan(user.id, "yearly"),
   ]);
 
-  const activeSubscriptions: Record<string, { planType: string; expiresAt: string | Date }> = {};
+  const activeSubscriptions: Record<string, { expiresAt: Date }> = {};
 
-  if (!monthlyCheck.canPurchase && monthlyCheck.activeSubscription) {
-    activeSubscriptions.monthly = monthlyCheck.activeSubscription;
+  if (!monthlyCheck.canPurchase) {
+    activeSubscriptions.monthly = { expiresAt: monthlyCheck.expiresAt };
   }
 
-  if (!yearlyCheck.canPurchase && yearlyCheck.activeSubscription) {
-    activeSubscriptions.yearly = yearlyCheck.activeSubscription;
+  if (!yearlyCheck.canPurchase) {
+    activeSubscriptions.yearly = { expiresAt: yearlyCheck.expiresAt };
   }
 
   return (
@@ -71,17 +69,31 @@ export default async function BillingPage() {
 
       <div className="[&>section:first-child]:border-t-0">
         {currentPlan !== "free" && (
-          <Row label="Paket saat ini" icon={<HugeiconsIcon icon={CrownIcon} />} wide>
-            <CurrentPlanCard currentPlan={currentPlan} subscriptionDetails={subscriptionDetails} />
+          <Row
+            label="Paket saat ini"
+            icon={<HugeiconsIcon icon={CrownIcon} />}
+            wide
+          >
+            <CurrentPlanCard currentPlan={currentPlan} expiresAt={expiresAt} />
           </Row>
         )}
 
         <Row label="Upgrade" icon={<HugeiconsIcon icon={SparklesIcon} />} wide>
-          <UpgradePlansSection currentPlan={currentPlan} activeSubscriptions={activeSubscriptions} />
+          <UpgradePlansSection
+            currentPlan={currentPlan}
+            activeSubscriptions={activeSubscriptions}
+          />
         </Row>
 
-        <Row label="Riwayat transaksi" icon={<HugeiconsIcon icon={Clock01Icon} />} wide>
-          <TransactionHistory transactions={transactions} currentPaymentSettings={currentPaymentSettings} />
+        <Row
+          label="Riwayat transaksi"
+          icon={<HugeiconsIcon icon={Clock01Icon} />}
+          wide
+        >
+          <TransactionHistory
+            transactions={transactions}
+            currentPaymentSettings={currentPaymentSettings}
+          />
         </Row>
       </div>
     </>

@@ -1,4 +1,4 @@
-import { getMarkdownForPath, normalizePath } from "@/lib/geo/markdown-pages";
+import { getMarkdownForPath } from "@/lib/geo/markdown-pages";
 import { SITE_LAST_MODIFIED } from "@/lib/geo/site";
 
 export const dynamic = "force-static";
@@ -20,20 +20,7 @@ function markdownResponse(body: string) {
 
 export async function GET(_request: Request, context: RouteContext) {
   const { path: segments = [] } = await context.params;
-  const joined = segments.join("/");
-
-  if (joined === "index.html" || joined === "index") {
-    const body = getMarkdownForPath("/");
-
-    if (!body) {
-      return new Response("Not found", { status: 404 });
-    }
-
-    return markdownResponse(body);
-  }
-
-  const path = normalizePath(joined);
-  const body = getMarkdownForPath(path);
+  const body = getMarkdownForPath(segments.join("/"));
 
   if (!body) {
     return new Response("Not found", { status: 404 });

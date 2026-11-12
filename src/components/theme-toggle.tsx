@@ -59,7 +59,7 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", dark);
 }
 
-export function ThemeToggle({ className = "" }: { className?: string }) {
+export function ThemeToggle({ className }: { className: string }) {
   // The server has no localStorage, so it renders "system" and the client reads the saved value during render.
   const theme = useSyncExternalStore(
     subscribe,

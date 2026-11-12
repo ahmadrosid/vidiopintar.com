@@ -4,14 +4,9 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CheckmarkCircle02Icon, Clock01Icon } from "@hugeicons/core-free-icons";
 import { formatDisplayDate } from "@/lib/utils";
 
-interface SubscriptionDetails {
-  expiresAt: Date;
-  transaction: any;
-}
-
 interface CurrentPlanCardProps {
   currentPlan: "monthly" | "yearly";
-  subscriptionDetails?: SubscriptionDetails | null;
+  expiresAt: Date | null;
 }
 
 function getDaysUntilExpiry(date: Date) {
@@ -49,13 +44,9 @@ const planDetails = {
 
 export function CurrentPlanCard({
   currentPlan,
-  subscriptionDetails,
+  expiresAt,
 }: CurrentPlanCardProps) {
   const plan = planDetails[currentPlan];
-
-  const daysLeft = subscriptionDetails
-    ? getDaysUntilExpiry(subscriptionDetails.expiresAt)
-    : 0;
 
   return (
     <div className="space-y-6 border border-site-line bg-site-panel p-5 sm:p-6">
@@ -71,7 +62,7 @@ export function CurrentPlanCard({
         </span>
       </div>
 
-      {subscriptionDetails && (
+      {expiresAt && (
         <div className="border border-site-line bg-site-panel p-4 text-sm">
           <div className="mb-2 flex items-center gap-2 text-site-text">
             <HugeiconsIcon
@@ -81,33 +72,31 @@ export function CurrentPlanCard({
             <span className="font-semibold">Status langganan</span>
           </div>
           <p className="text-site-text-2">
-            Berakhir pada {formatDisplayDate(subscriptionDetails.expiresAt)}
+            Berakhir pada {formatDisplayDate(expiresAt)}
           </p>
           <p className="mt-1 text-site-text-muted">
-            {daysLeft > 0 ? `${daysLeft} hari lagi` : "Sudah berakhir"}
+            {getDaysUntilExpiry(expiresAt)} hari lagi
           </p>
         </div>
       )}
 
-      {plan.features.length > 0 && (
-        <div>
-          <p className="mb-3 text-sm text-site-text-muted">Fitur paket</p>
-          <ul className="grid gap-2 md:grid-cols-2">
-            {plan.features.map((feature) => (
-              <li
-                key={feature}
-                className="flex items-center gap-2 text-site-text"
-              >
-                <HugeiconsIcon
-                  icon={CheckmarkCircle02Icon}
-                  className="size-4 shrink-0 text-site-accent"
-                />
-                {feature}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div>
+        <p className="mb-3 text-sm text-site-text-muted">Fitur paket</p>
+        <ul className="grid gap-2 md:grid-cols-2">
+          {plan.features.map((feature) => (
+            <li
+              key={feature}
+              className="flex items-center gap-2 text-site-text"
+            >
+              <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                className="size-4 shrink-0 text-site-accent"
+              />
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

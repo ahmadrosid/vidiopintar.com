@@ -43,10 +43,7 @@ class TransactionsRepository {
     return result[0] || null;
   }
 
-  async getByUserId(
-    userId: string,
-    limit: number = 10,
-  ): Promise<Transaction[]> {
+  async getByUserId(userId: string, limit: number): Promise<Transaction[]> {
     return await db
       .select()
       .from(transactions)
@@ -117,7 +114,7 @@ class TransactionsRepository {
   }
 
   async getAll(
-    limit: number = 50,
+    limit: number,
   ): Promise<
     (Transaction & { user: { name: string; email: string } | null })[]
   > {
