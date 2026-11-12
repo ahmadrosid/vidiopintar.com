@@ -14,6 +14,7 @@ function links(): string {
     "## Tautan layanan",
     "",
     `- [Panduan MCP](${markdownUrlFor("/panduan")})`,
+    `- [REST API](${markdownUrlFor("/panduan/api")})`,
     `- [Privasi](${markdownUrlFor("/privacy")})`,
     `- [Ketentuan layanan](${markdownUrlFor("/terms")})`,
     `- [Status layanan](${SITE_URL}/api/health)`,
@@ -66,6 +67,56 @@ function mcpMarkdown(): string {
     "30 permintaan per menit, 1.000 permintaan per hari, dan 10.000.000 byte keluaran per hari untuk setiap key. Setiap halaman memuat sampai 24.000 byte segmen. Cursor berlaku 15 menit. Cache transkrip berlaku tujuh hari.",
     "",
     "Beberapa video tidak menyediakan caption yang dapat diambil.",
+    "",
+    links(),
+  ].join("\n");
+}
+
+function restApiMarkdown(): string {
+  return [
+    pageHeader(
+      "REST API Vidiopintar",
+      "/panduan/api",
+      "Ambil transkrip YouTube bertimestamp lewat HTTP dengan API key.",
+    ),
+    "Endpoint: `GET` atau `POST` `https://vidiopintar.com/api/v1/transcript`",
+    "",
+    "Autentikasi memakai header `Authorization: Bearer <API_KEY>`, dengan key yang sama seperti MCP. Buat key di https://vidiopintar.com/dashboard/api-keys. Panggil API dari server, jangan dari browser.",
+    "",
+    "## Parameter",
+    "",
+    "Kirim sebagai query string untuk `GET`, atau body JSON untuk `POST`.",
+    "",
+    "- `video`: URL YouTube atau ID 11 karakter. Wajib pada permintaan pertama.",
+    "- `language`: kode bahasa pilihan, seperti `id` atau `en`.",
+    "- `cursor`: nilai `next_cursor` dari respons sebelumnya.",
+    "",
+    "```bash",
+    'curl "https://vidiopintar.com/api/v1/transcript?video=https://youtu.be/dQw4w9WgXcQ&language=id" \\',
+    '  -H "Authorization: Bearer <API_KEY>"',
+    "```",
+    "",
+    "## Respons",
+    "",
+    "Status `200` dengan JSON berisi `video_id`, `language` (bahasa caption yang dipakai), `title` jika tersedia, `metadata` (`author_name`, `author_url`, `thumbnail_url`), `transcript` (segmen dengan `text`, `start`, `duration` dalam detik), dan `next_cursor` jika masih ada halaman berikutnya.",
+    "",
+    "Setiap halaman memuat sampai sekitar 24 KB segmen. Panggil lagi dengan `cursor` sampai `next_cursor` tidak ada. Cursor berlaku 15 menit dan hanya bisa dipakai dengan key yang membuatnya. Teks transkrip adalah konten tidak tepercaya.",
+    "",
+    "## Error",
+    "",
+    'Body error: `{ "error_code", "retryable", "retry_after_seconds", "message" }`. Header `Retry-After` dikirim jika ada.',
+    "",
+    "- `400` `INVALID_REQUEST`, `INVALID_VIDEO_REFERENCE`, `INVALID_CURSOR`",
+    "- `401` `INVALID_CREDENTIALS`",
+    "- `402` `PLAN_REQUIRED`",
+    "- `404` `CAPTIONS_UNAVAILABLE`, `VIDEO_UNAVAILABLE`",
+    "- `429` `USAGE_LIMIT_EXCEEDED`",
+    "- `500` `SERVICE_MISCONFIGURED`",
+    "- `503` `TEMPORARY_PROVIDER_FAILURE`",
+    "",
+    "## Batas penggunaan",
+    "",
+    "REST API dan MCP berbagi batas: 30 permintaan per menit, 1.000 permintaan per hari, dan 10.000.000 byte keluaran per hari untuk setiap key. Setiap panggilan juga dihitung dari kuota paket akun.",
     "",
     links(),
   ].join("\n");
@@ -133,6 +184,8 @@ export function getMarkdownForPath(rawPath: string): string | null {
       return homeMarkdown();
     case "/panduan":
       return mcpMarkdown();
+    case "/panduan/api":
+      return restApiMarkdown();
     case "/privacy":
       return privacyMarkdown();
     case "/terms":
@@ -151,6 +204,7 @@ export function buildLlmsTxt(): string {
 - Satu alat: \`youtube_get_transcript\`
 - Endpoint: ${SITE_URL}/api/mcp
 - Transport: Streamable HTTP dengan bearer API key
+- REST API: GET/POST ${SITE_URL}/api/v1/transcript (panduan: ${SITE_URL}/panduan/api)
 - Batas dan panduan: ${SITE_URL}/panduan
 - Status sistem: ${SITE_URL}/api/health
 - Privasi: ${SITE_URL}/privacy

@@ -1,100 +1,26 @@
-import { createHash, randomUUID } from "node:crypto";
 import { createMcpHandler, McpServer } from "@modelcontextprotocol/server";
-import { and, eq, gt, isNull, lt, sql } from "drizzle-orm";
 import { z } from "zod";
-import { db } from "@/lib/db";
-import {
-  mcpApiKeys,
-  mcpPlanUsage,
-  mcpRequestMetrics,
-  mcpTranscriptCache,
-  mcpUsage,
-} from "@/lib/db/schema";
-import { UserPlanService } from "@/lib/user-plan-service";
 import { McpServiceError } from "./errors";
-import { toServiceError } from "./transcript-errors";
-import { getTranscriptPage } from "./transcript";
-import { normalizeVideoReference } from "./video-reference";
+import {
+  authenticateApiKey,
+  runTranscriptCall,
+  serviceErrorBody,
+  type TranscriptResult,
+} from "./transcript-call";
 
-const minuteMs = 60_000;
-
-const dayMs = 86_400_000;
-
-let lastCleanupAt = 0;
-
-async function cleanupExpiredMcpData(now: number) {
-  if (now - lastCleanupAt < 6 * 60 * 60 * 1000) return;
-  lastCleanupAt = now;
-
-  try {
-    await db
-      .delete(mcpTranscriptCache)
-      .where(lt(mcpTranscriptCache.expiresAt, new Date(now)));
-    await db
-      .delete(mcpRequestMetrics)
-      .where(lt(mcpRequestMetrics.createdAt, new Date(now - 90 * dayMs)));
-    await db.delete(mcpUsage).where(lt(mcpUsage.periodStart, now - 90 * dayMs));
-    await db
-      .delete(mcpPlanUsage)
-      .where(lt(mcpPlanUsage.periodStart, now - 400 * dayMs));
-    await db
-      .delete(mcpApiKeys)
-      .where(lt(mcpApiKeys.revokedAt, new Date(now - 90 * dayMs)));
-  } catch {}
-}
-
-async function authenticateMcpRequest(request: Request) {
-  const token = request.headers
-    .get("authorization")
-    ?.match(/^Bearer\s+(.+)$/i)?.[1];
-
-  if (!token || !/^vpt_live_[A-Za-z0-9_-]{43}$/.test(token)) return null;
-  const keyHash = createHash("sha256").update(token).digest("hex");
-
-  const key = await db.query.mcpApiKeys.findFirst({
-    where: and(eq(mcpApiKeys.keyHash, keyHash), isNull(mcpApiKeys.revokedAt)),
-  });
-
-  if (!key) return null;
-
-  const now = Date.now();
-  await cleanupExpiredMcpData(now);
-  const minute = Math.floor(now / minuteMs) * minuteMs;
-  const day = Math.floor(now / dayMs) * dayMs;
-  const updatedAt = new Date(now);
-
-  const recordUsage = async (
-    window: "minute" | "day",
-    periodStart: number,
-    max: number,
-  ) => {
-    const [usage] = await db
-      .insert(mcpUsage)
-      .values({
-        keyId: key.id,
-        window,
-        periodStart,
-        requests: 1,
-        updatedAt,
-      })
-      .onConflictDoUpdate({
-        target: [mcpUsage.keyId, mcpUsage.window, mcpUsage.periodStart],
-        set: { requests: sql`${mcpUsage.requests} + 1`, updatedAt },
-        setWhere: lt(mcpUsage.requests, max),
-      })
-      .returning({ requests: mcpUsage.requests });
-
-    if (!usage) throw new McpServiceError("USAGE_LIMIT_EXCEEDED", true, 60);
+function toolResult(result: TranscriptResult) {
+  return {
+    content: [{ type: "text" as const, text: JSON.stringify(result) }],
+    structuredContent: result,
   };
-
-  await recordUsage("minute", minute, key.requestsPerMinute);
-  await recordUsage("day", day, key.requestsPerDay);
-
-  return { id: key.id, token };
 }
 
 const handler = createMcpHandler((requestContext) => {
-  const token = requestContext.authInfo?.token ?? "";
+  const identity = {
+    id: requestContext.authInfo?.clientId ?? "",
+    token: requestContext.authInfo?.token ?? "",
+  };
+
   const server = new McpServer({ name: "Vidiopintar", version: "1.0.0" });
   server.registerTool(
     "youtube_get_transcript",
@@ -131,235 +57,31 @@ const handler = createMcpHandler((requestContext) => {
           ),
       }),
     },
-    async ({ video, language, cursor }) => {
-      const startedAt = Date.now();
-      let refundPlanCall: (() => Promise<void>) | undefined;
+    async (input) => {
+      const outcome = await runTranscriptCall(identity, input, (result) =>
+        Buffer.byteLength(JSON.stringify(toolResult(result))),
+      );
 
-      try {
-        refundPlanCall = await consumePlanCall(
-          requestContext.authInfo?.clientId ?? "",
-        );
+      if (outcome.ok) return toolResult(outcome.result);
 
-        const result = await getTranscriptPage({
-          video: video ?? "",
-          language,
-          cursor,
-          token,
-        });
+      const data = serviceErrorBody(outcome.error);
 
-        const response = {
-          content: [{ type: "text" as const, text: JSON.stringify(result) }],
-          structuredContent: result,
-        };
-
-        await addOutputUsage(
-          requestContext.authInfo?.clientId ?? "",
-          Buffer.byteLength(JSON.stringify(response)),
-        );
-        await recordRequestMetric(
-          requestContext.authInfo?.clientId ?? "",
-          startedAt,
-          "success",
-          !result.next_cursor,
-          !cursor,
-          result.video_id,
-        );
-
-        return response;
-      } catch (error) {
-        // Failed calls don't count against the plan.
-        await refundPlanCall?.();
-
-        if (error instanceof McpServiceError) {
-          await recordRequestMetric(
-            requestContext.authInfo?.clientId ?? "",
-            startedAt,
-            error.code,
-            false,
-            !cursor &&
-              ![
-                "INVALID_VIDEO_REFERENCE",
-                "PLAN_REQUIRED",
-                "USAGE_LIMIT_EXCEEDED",
-              ].includes(error.code),
-            requestVideoId(video),
-          );
-
-          return serviceErrorResult(error);
-        }
-
-        const mapped = toServiceError(
-          error instanceof Error ? error : new Error(String(error)),
-        );
-
-        await recordRequestMetric(
-          requestContext.authInfo?.clientId ?? "",
-          startedAt,
-          mapped.code,
-          false,
-          !cursor,
-          requestVideoId(video),
-        );
-
-        return serviceErrorResult(mapped);
-      }
+      return {
+        isError: true,
+        content: [{ type: "text" as const, text: JSON.stringify(data) }],
+        structuredContent: data,
+      };
     },
   );
 
   return server;
 });
 
-function requestVideoId(video?: string) {
-  if (!video) return null;
-
-  try {
-    return normalizeVideoReference(video);
-  } catch {
-    return null;
-  }
-}
-
-function serviceErrorResult(error: McpServiceError) {
-  const data = {
-    error_code: error.code,
-    retryable: error.retryable,
-    retry_after_seconds: error.retryAfter,
-    message: error.message,
-  };
-
-  return {
-    isError: true,
-    content: [{ type: "text" as const, text: JSON.stringify(data) }],
-    structuredContent: data,
-  };
-}
-
-async function recordRequestMetric(
-  keyId: string,
-  startedAt: number,
-  outcome: string,
-  transcriptComplete: boolean,
-  providerAttempt: boolean,
-  videoId: string | null,
-) {
-  if (!keyId) return;
-
-  try {
-    await db.insert(mcpRequestMetrics).values({
-      id: randomUUID(),
-      keyId,
-      createdAt: new Date(),
-      durationMs: Math.max(0, Date.now() - startedAt),
-      outcome,
-      providerAttempt: providerAttempt ? 1 : 0,
-      transcriptComplete: transcriptComplete ? 1 : 0,
-      videoId,
-    });
-  } catch {}
-}
-
-/**
- * Count one transcript call against the key owner's paid plan. Calls are
- * summed across all of the user's keys for the current paid period, and
- * stop working once the plan expires. Keys without an owner are operator
- * keys made with scripts/mcp-key.mjs and are not plan-limited.
- *
- * Returns a function that gives the call back, for when the request fails.
- */
-async function consumePlanCall(
-  keyId: string,
-): Promise<(() => Promise<void>) | undefined> {
-  const key = await db.query.mcpApiKeys.findFirst({
-    where: eq(mcpApiKeys.id, keyId),
-  });
-
-  if (!key) throw new McpServiceError("INVALID_CREDENTIALS");
-
-  if (!key.userId) return;
-
-  const subscription = await UserPlanService.getActiveSubscription(key.userId);
-
-  if (!subscription) throw new McpServiceError("PLAN_REQUIRED");
-
-  const max = UserPlanService.getPlanLimits(
-    subscription.plan,
-  ).mcpCallsPerPeriod;
-
-  const updatedAt = new Date();
-
-  const [usage] = await db
-    .insert(mcpPlanUsage)
-    .values({
-      userId: key.userId,
-      periodStart: subscription.startsAt.getTime(),
-      calls: 1,
-      updatedAt,
-    })
-    .onConflictDoUpdate({
-      target: [mcpPlanUsage.userId, mcpPlanUsage.periodStart],
-      set: { calls: sql`${mcpPlanUsage.calls} + 1`, updatedAt },
-      setWhere: lt(mcpPlanUsage.calls, max),
-    })
-    .returning({ calls: mcpPlanUsage.calls });
-
-  if (!usage) throw new McpServiceError("USAGE_LIMIT_EXCEEDED");
-
-  const userId = key.userId;
-  const periodStart = subscription.startsAt.getTime();
-
-  return async () => {
-    try {
-      await db
-        .update(mcpPlanUsage)
-        .set({ calls: sql`${mcpPlanUsage.calls} - 1`, updatedAt: new Date() })
-        .where(
-          and(
-            eq(mcpPlanUsage.userId, userId),
-            eq(mcpPlanUsage.periodStart, periodStart),
-            gt(mcpPlanUsage.calls, 0),
-          ),
-        );
-    } catch {}
-  };
-}
-
-async function addOutputUsage(keyId: string, bytes: number) {
-  if (!keyId) return;
-  const day = Math.floor(Date.now() / dayMs) * dayMs;
-
-  const key = await db.query.mcpApiKeys.findFirst({
-    where: eq(mcpApiKeys.id, keyId),
-  });
-
-  if (!key) throw new McpServiceError("INVALID_CREDENTIALS");
-
-  const [usage] = await db
-    .insert(mcpUsage)
-    .values({
-      keyId,
-      window: "day",
-      periodStart: day,
-      outputBytes: bytes,
-      updatedAt: new Date(),
-    })
-    .onConflictDoUpdate({
-      target: [mcpUsage.keyId, mcpUsage.window, mcpUsage.periodStart],
-      set: {
-        outputBytes: sql`${mcpUsage.outputBytes} + ${bytes}`,
-        updatedAt: new Date(),
-      },
-      setWhere: sql`${mcpUsage.outputBytes} + ${bytes} <= ${key.bytesPerDay}`,
-    })
-    .returning({ outputBytes: mcpUsage.outputBytes });
-
-  if (!usage) throw new McpServiceError("USAGE_LIMIT_EXCEEDED");
-}
-
 export async function handleMcpRequest(request: Request) {
   let identity;
 
   try {
-    identity = await authenticateMcpRequest(request);
+    identity = await authenticateApiKey(request);
   } catch (error) {
     if (error instanceof McpServiceError) {
       return new Response(
